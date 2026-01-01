@@ -1,0 +1,34 @@
+{
+  "name": "@yyc3/tool-registry",
+  "version": "1.0.0",
+  "description": "YYC³动态工具注册与发现系统",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "yyc3",
+    "tool",
+    "registry",
+    "discovery",
+    "orchestration"
+  ],
+  "author": "YYC³ <admin@0379.email>",
+  "license": "MIT",
+  "dependencies": {
+    "eventemitter3": "^5.0.1",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

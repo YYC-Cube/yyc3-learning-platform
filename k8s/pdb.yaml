@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: yyc3-learning-pdb
+  namespace: yyc3-learning
+  labels:
+    app: yyc3-learning
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: yyc3-learning

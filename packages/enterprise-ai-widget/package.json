@@ -1,0 +1,138 @@
+{
+  "name": "@yyc3/enterprise-ai-widget",
+  "version": "2.0.0",
+  "description": "YYC³ Enterprise AI Widget - Advanced intelligent assistant with integrated management systems",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles": "./dist/styles.css",
+    "./package.json": "././package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --minify && tsc --emitDeclarationOnly --outDir ./dist",
+    "dev": "bun --watch ./src/index.ts",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "lint": "eslint ./src --ext .ts,.tsx",
+    "lint:fix": "eslint ./src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "clean": "rm -rf ./dist",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "docs": "typedoc ./src --out ./docs --excludePrivate",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "keywords": [
+    "yyc3",
+    "ai",
+    "widget",
+    "enterprise",
+    "chat",
+    "assistant",
+    "autonomous",
+    "learning",
+    "management",
+    "dashboard",
+    "analytics",
+    "react",
+    "typescript",
+    "nextjs"
+  ],
+  "author": {
+    "name": "YYC³",
+    "email": "admin@0379.email",
+    "url": "https://yyc3.0379.email"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform.git",
+    "directory": "packages/enterprise-ai-widget"
+  },
+  "bugs": {
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform/issues"
+  },
+  "homepage": "https://github.com/YY-Nexus/yyc3-learning-platform/tree/main/packages/enterprise-ai-widget#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@yyc3/autonomous-engine": "workspace:*",
+    "@yyc3/model-adapter": "workspace:*",
+    "@yyc3/learning-system": "workspace:*",
+    "@yyc3/five-dimensional-management": "workspace:*",
+    "lucide-react": "^0.294.0",
+    "framer-motion": "^10.16.4",
+    "zustand": "^4.4.7",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-hotkeys-hook": "^4.4.1",
+    "react-use-gesture": "^9.1.3",
+    "react-spring": "^9.7.3",
+    "react-intersection-observer": "^9.5.3",
+    "react-virtualized-auto-sizer": "^1.0.20",
+    "react-window": "^1.8.8",
+    "react-window-infinite-loader": "^1.0.9",
+    "date-fns": "^2.30.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@types/react-beautiful-dnd": "^13.1.6",
+    "@types/react-window": "^1.8.7",
+    "@types/react-window-infinite-loader": "^1.0.8",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "typedoc": "^0.25.13",
+    "bun-types": "latest",
+    "@types/bun": "latest"
+  },
+  "config": {
+    "enterprise-ai-widget": {
+      "default-theme": "auto",
+      "max-messages": 1000,
+      "auto-save-interval": 30,
+      "performance-optimization": true,
+      "analytics-enabled": true,
+      "debug-mode": false
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/YY-Nexus"
+  }
+}

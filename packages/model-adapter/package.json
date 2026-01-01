@@ -1,0 +1,119 @@
+{
+  "name": "@yyc3/model-adapter",
+  "version": "1.0.0",
+  "description": "YYC³ Intelligent Model Adapter - Smart multi-model routing and management system",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target browser --minify && tsc --emitDeclarationOnly --outDir ./dist",
+    "dev": "bun --watch ./src/index.ts",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "lint": "eslint ./src --ext .ts,.tsx",
+    "lint:fix": "eslint ./src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "clean": "rm -rf ./dist",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "docs": "typedoc ./src --out ./docs --excludePrivate",
+    "bench": "node ./benchmarks/index.js"
+  },
+  "keywords": [
+    "yyc3",
+    "ai",
+    "llm",
+    "model-adapter",
+    "multi-model",
+    "routing",
+    "openai",
+    "anthropic",
+    "google",
+    "azure",
+    "machine-learning",
+    "artificial-intelligence",
+    "model-management",
+    "intelligent-routing",
+    "enterprise",
+    "typescript"
+  ],
+  "author": {
+    "name": "YYC³",
+    "email": "admin@0379.email",
+    "url": "https://yyc3.0379.email"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform.git",
+    "directory": "packages/model-adapter"
+  },
+  "bugs": {
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform/issues"
+  },
+  "homepage": "https://github.com/YY-Nexus/yyc3-learning-platform/tree/main/packages/model-adapter#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0",
+    "@azure/openai": "^1.0.0-beta.12",
+    "@google/generative-ai": "^0.15.0",
+    "eventemitter3": "^5.0.1",
+    "openai": "^4.104.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "bun-types": "latest",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.1.1",
+    "typedoc": "^0.25.7",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "config": {
+    "model-adapter": {
+      "default-model": "gpt-4",
+      "fallback-model": "gpt-3.5-turbo",
+      "timeout": 30000,
+      "max-retries": 3,
+      "cache-ttl": 300000,
+      "health-check-interval": 60000
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/YY-Nexus"
+  }
+}

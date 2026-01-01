@@ -1,0 +1,33 @@
+{
+  "name": "@yyc3/core-engine",
+  "version": "1.0.0",
+  "description": "YYC³智能自治核心引擎",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "yyc3",
+    "ai",
+    "agent",
+    "core-engine",
+    "autonomous"
+  ],
+  "author": "YYC³ <admin@0379.email>",
+  "license": "MIT",
+  "dependencies": {
+    "eventemitter3": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.18.0"
+  }
+}

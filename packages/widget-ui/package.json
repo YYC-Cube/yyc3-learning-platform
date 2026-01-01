@@ -1,0 +1,49 @@
+{
+  "name": "@yyc3/widget-ui",
+  "version": "1.0.0",
+  "description": "YYC³可插拔式拖拽移动AI系统前端组件",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "yyc3",
+    "ai",
+    "widget",
+    "drag-and-drop",
+    "intelligent"
+  ],
+  "author": "YYC³ <admin@0379.email>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform.git",
+    "directory": "packages/widget-ui"
+  },
+  "bugs": {
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform/issues"
+  },
+  "homepage": "https://github.com/YY-Nexus/yyc3-learning-platform/tree/main/packages/widget-ui#readme",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "dependencies": {
+    "@yyc3/autonomous-engine": "file:../autonomous-engine",
+    "@yyc3/core-engine": "file:../core-engine",
+    "eventemitter3": "^5.0.1",
+    "react": "^18.2.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
+    "react-dnd-touch-backend": "^16.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.27",
+    "@types/react-dom": "^18.3.7",
+    "typescript": "^5.3.0"
+  }
+}

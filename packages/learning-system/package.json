@@ -1,0 +1,131 @@
+{
+  "name": "@yyc3/learning-system",
+  "version": "1.0.0",
+  "description": "YYC³ Three-Layer Learning System - Advanced behavioral, strategic, and knowledge learning capabilities",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --minify && tsc --emitDeclarationOnly --outDir ./dist",
+    "dev": "bun --watch ./src/index.ts",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "lint": "eslint ./src --ext .ts,.tsx",
+    "lint:fix": "eslint ./src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "clean": "rm -rf ./dist",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "docs": "typedoc ./src --out ./docs --excludePrivate",
+    "bench": "node ./benchmarks/index.js"
+  },
+  "keywords": [
+    "yyc3",
+    "ai",
+    "machine-learning",
+    "behavioral-learning",
+    "strategic-learning",
+    "knowledge-management",
+    "reasoning",
+    "pattern-recognition",
+    "adaptive-systems",
+    "enterprise",
+    "typescript",
+    "learning-system"
+  ],
+  "author": {
+    "name": "YYC³ AI Team",
+    "email": "ai-team@yyc3.com",
+    "url": "https://yyc3.0379.email"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YYC-Cube/learning-platform.git",
+    "directory": "packages/learning-system"
+  },
+  "bugs": {
+    "url": "https://github.com/YYC-Cube/learning-platform/issues"
+  },
+  "homepage": "https://github.com/YYC-Cube/learning-platform/tree/main/packages/learning-system#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.22.4",
+    "eventemitter3": "^5.0.1",
+    "ml-regression": "^6.0.1",
+    "ml-matrix": "^6.10.8",
+    "ml-knn": "^6.0.1",
+    "ml-svm": "^6.0.1",
+    "tensorflow": "^4.15.0",
+    "tfjs-node": "^4.15.0",
+    "brain.js": "^2.0.0",
+    "natural": "^6.12.0",
+    "compromise": "^8.2.0",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.1",
+    "moment": "^2.29.4",
+    "csv-parser": "^3.0.0",
+    "node-json-db": "^1.4.1",
+    "level": "^8.0.0",
+    "level-sublevel": "^6.0.1",
+    "levelgraph": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/lodash": "^4.14.202",
+    "@types/uuid": "^9.0.8",
+    "@types/natural": "^6.8.5",
+    "@types/csv-parser": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-import": "^2.31.1",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "typedoc": "^0.25.13",
+    "bun-types": "latest",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "config": {
+    "learning-system": {
+      "default-model": "behavior-classifier",
+      "max-knowledge-items": 100000,
+      "sync-frequency": 60,
+      "optimization-enabled": true,
+      "security-level": "standard"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/YYC-Cube"
+  }
+}

@@ -1,0 +1,714 @@
+# ============================================================================
+# YYC³ AI Platform - Enterprise Microservices Architecture
+# Complete production-ready deployment configuration
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # ==================== API Gateway ====================
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: yyc3-api-gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NODE_ENV=production
+      - API_GATEWAY_PORT=80
+      - REDIS_URL=redis://redis:6379
+      - CONSUL_URL=consul://consul:8500
+      - JAEGER_URL=http://jaeger:14268/api/traces
+    volumes:
+      - ./api-gateway/config:/app/config
+      - ./api-gateway/logs:/app/logs
+      - ./api-gateway/ssl:/app/ssl:ro
+    networks:
+      - yyc3-network
+    depends_on:
+      - redis
+      - consul
+      - jaeger
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==================== Autonomous AI Engine Service ====================
+  autonomous-engine:
+    build:
+      context: ../../packages/autonomous-engine
+      dockerfile: Dockerfile
+    container_name: yyc3-autonomous-engine
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - MONGODB_URL=mongodb://mongodb:27017/autonomous-engine
+      - POSTGRES_URL=postgresql://postgres:password@postgres:5432/autonomous-engine
+      - KAFKA_BROKERS=kafka:9092
+      - CONSUL_URL=consul://consul:8500
+      - PROMETHEUS_PORT=9464
+      - LOG_LEVEL=info
+    volumes:
+      - ./autonomous-engine/config:/app/config
+      - ./autonomous-engine/data:/app/data
+      - ./autonomous-engine/logs:/app/logs
+    networks:
+      - yyc3-network
+    depends_on:
+      - redis
+      - mongodb
+      - postgres
+      - kafka
+      - consul
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ==================== Model Adapter Service ====================
+  model-adapter:
+    build:
+      context: ../../packages/model-adapter
+      dockerfile: Dockerfile
+    container_name: yyc3-model-adapter
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - MONGODB_URL=mongodb://mongodb:27017/model-adapter
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - CONSUL_URL=consul://consul:8500
+      - PROMETHEUS_PORT=9465
+      - GPU_ENABLED=false
+      - MAX_CONCURRENT_REQUESTS=100
+    volumes:
+      - ./model-adapter/config:/app/config
+      - ./model-adapter/cache:/app/cache
+      - ./model-adapter/logs:/app/logs
+    networks:
+      - yyc3-network
+    depends_on:
+      - redis
+      - mongodb
+      - consul
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  # ==================== Learning System Service ====================
+  learning-system:
+    build:
+      context: ../../packages/learning-system
+      dockerfile: Dockerfile
+    container_name: yyc3-learning-system
+    ports:
+      - "3003:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - MONGODB_URL=mongodb://mongodb:27017/learning-system
+      - NEO4J_URL=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=learning-system-password
+      - TENSORFLOW_SERVING_URL=http://tensorflow-serving:8501
+      - CONSUL_URL=consul://consul:8500
+      - PROMETHEUS_PORT=9466
+      - ML_MODEL_PATH=/app/models
+    volumes:
+      - ./learning-system/config:/app/config
+      - ./learning-system/models:/app/models
+      - ./learning-system/data:/app/data
+      - ./learning-system/logs:/app/logs
+    networks:
+      - yyc3-network
+    depends_on:
+      - redis
+      - mongodb
+      - neo4j
+      - tensorflow-serving
+      - consul
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '2.5'
+          memory: 3G
+        reservations:
+          cpus: '1.5'
+          memory: 1.5G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ==================== Five Dimensional Management Service ====================
+  five-dimensional-management:
+    build:
+      context: ../../packages/five-dimensional-management
+      dockerfile: Dockerfile
+    container_name: yyc3-five-dimensional-management
+    ports:
+      - "3004:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgresql://postgres:password@postgres:5432/five-dimensional
+      - INFLUXDB_URL=http://influxdb:8086
+      - GRAFANA_URL=http://grafana:3000
+      - CONSUL_URL=consul://consul:8500
+      - PROMETHEUS_PORT=9467
+      - WEBSOCKET_PORT=3001
+    volumes:
+      - ./five-dimensional-management/config:/app/config
+      - ./five-dimensional-management/data:/app/data
+      - ./five-dimensional-management/logs:/app/logs
+    networks:
+      - yyc3-network
+    depends_on:
+      - redis
+      - postgres
+      - influxdb
+      - grafana
+      - consul
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 2G
+        reservations:
+          cpus: '0.75'
+          memory: 1G
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+
+  # ==================== Enterprise AI Widget Service ====================
+  enterprise-ai-widget:
+    build:
+      context: ../../packages/enterprise-ai-widget
+      dockerfile: Dockerfile
+    container_name: yyc3-enterprise-ai-widget
+    ports:
+      - "3005:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_URL=redis://redis:6379
+      - CONSUL_URL=consul://consul:8500
+      - PROMETHEUS_PORT=9468
+      - NEXT_PUBLIC_API_URL=https://api.yyc3.0379.email
+      - NEXT_PUBLIC_WS_URL=wss://api.yyc3.0379.email
+    volumes:
+      - ./enterprise-ai-widget/config:/app/config
+      - ./enterprise-ai-widget/public:/app/public
+      - ./enterprise-ai-widget/logs:/app/logs
+    networks:
+      - yyc3-network
+    depends_on:
+      - redis
+      - consul
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # ==================== Database Services ====================
+  mongodb:
+    image: mongo:7.0
+    container_name: yyc3-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=mongo-password
+      - MONGO_INITDB_DATABASE=yyc3-platform
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+      - ./databases/mongodb/init:/docker-entrypoint-initdb.d
+      - ./databases/mongodb/config:/etc/mongod.conf
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'
+          memory: 2G
+        reservations:
+          cpus: '0.75'
+          memory: 1G
+    command: ["mongod", "--config", "/etc/mongod.conf"]
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: yyc3-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=yyc3-platform
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres-password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./databases/postgres/init:/docker-entrypoint-initdb.d
+      - ./databases/postgres/config:/etc/postgresql/postgresql.conf
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1.5G
+        reservations:
+          cpus: '0.5'
+          memory: 768M
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+
+  neo4j:
+    image: neo4j:5.15-community
+    container_name: yyc3-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/neo4j-password
+      - NEO4J_PLUGINS=["apoc", "graph-data-science"]
+      - NEO4J_dbms_memory_heap_initial__size=1G
+      - NEO4J_dbms_memory_heap_max__size=2G
+      - NEO4J_dbms_memory_pagecache_size=1G
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: yyc3-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=yyc3-metrics
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=influx-password
+      - INFLUXDB_RETENTION_POLICY=30d
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+      - influxdb_config:/etc/influxdb2
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: yyc3-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass redis-password
+    volumes:
+      - redis_data:/data
+      - ./databases/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ==================== Message Queue ====================
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: yyc3-zookeeper
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+      - ZOOKEEPER_SERVER_ID=1
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: yyc3-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_LOG_RETENTION_HOURS=168
+      - KAFKA_LOG_SEGMENT_BYTES=1073741824
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - yyc3-network
+    depends_on:
+      - zookeeper
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ==================== AI/ML Services ====================
+  tensorflow-serving:
+    image: tensorflow/serving:2.15.0-gpu
+    container_name: yyc3-tensorflow-serving
+    ports:
+      - "8501:8501"
+      - "8500:8500"
+    environment:
+      - MODEL_NAME=yyc3-ml-models
+      - MODEL_BASE_PATH=/models
+    volumes:
+      - ./ml-models/tensorflow:/models/yyc3-ml-models
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+  # ==================== Observability Stack ====================
+  consul:
+    image: consul:1.17
+    container_name: yyc3-consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+    command: consul agent -server -bootstrap -ui -client=0.0.0.0
+    volumes:
+      - consul_data:/consul/data
+      - ./consul/config:/consul/config
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: yyc3-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+    volumes:
+      - prometheus_data:/prometheus
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/rules:/etc/prometheus/rules
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: yyc3-grafana
+    ports:
+      - "3006:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=grafana-password
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.49
+    container_name: yyc3-jaeger
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=memory
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: yyc3-elasticsearch
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - yyc3-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.0
+    container_name: yyc3-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - yyc3-network
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+
+# ==================== Networks ====================
+networks:
+  yyc3-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+    labels:
+      - "yyc3.network=production"
+
+# ==================== Volumes ====================
+volumes:
+  mongodb_data:
+    driver: local
+    labels:
+      - "yyc3.volume=mongodb"
+  mongodb_config:
+    driver: local
+    labels:
+      - "yyc3.volume=mongodb-config"
+  postgres_data:
+    driver: local
+    labels:
+      - "yyc3.volume=postgres"
+  neo4j_data:
+    driver: local
+    labels:
+      - "yyc3.volume=neo4j"
+  neo4j_logs:
+    driver: local
+    labels:
+      - "yyc3.volume=neo4j-logs"
+  neo4j_import:
+    driver: local
+    labels:
+      - "yyc3.volume=neo4j-import"
+  neo4j_plugins:
+    driver: local
+    labels:
+      - "yyc3.volume=neo4j-plugins"
+  influxdb_data:
+    driver: local
+    labels:
+      - "yyc3.volume=influxdb"
+  influxdb_config:
+    driver: local
+    labels:
+      - "yyc3.volume=influxdb-config"
+  redis_data:
+    driver: local
+    labels:
+      - "yyc3.volume=redis"
+  zookeeper_data:
+    driver: local
+    labels:
+      - "yyc3.volume=zookeeper"
+  zookeeper_logs:
+    driver: local
+    labels:
+      - "yyc3.volume=zookeeper-logs"
+  kafka_data:
+    driver: local
+    labels:
+      - "yyc3.volume=kafka"
+  consul_data:
+    driver: local
+    labels:
+      - "yyc3.volume=consul"
+  prometheus_data:
+    driver: local
+    labels:
+      - "yyc3.volume=prometheus"
+  grafana_data:
+    driver: local
+    labels:
+      - "yyc3.volume=grafana"
+  elasticsearch_data:
+    driver: local
+    labels:
+      - "yyc3.volume=elasticsearch"

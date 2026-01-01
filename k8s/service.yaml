@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: yyc3-learning
+  namespace: yyc3-learning
+  labels:
+    app: yyc3-learning
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+spec:
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    app: yyc3-learning
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: yyc3-learning-metrics
+  namespace: yyc3-learning
+  labels:
+    app: yyc3-learning
+spec:
+  type: ClusterIP
+  ports:
+  - name: metrics
+    port: 3000
+    targetPort: 3000
+    protocol: TCP
+  selector:
+    app: yyc3-learning

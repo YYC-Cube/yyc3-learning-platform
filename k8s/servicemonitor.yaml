@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: yyc3-learning
+  namespace: yyc3-learning
+  labels:
+    app: yyc3-learning
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: yyc3-learning
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s
+    scrapeTimeout: 10s

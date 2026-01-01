@@ -1,0 +1,129 @@
+{
+  "name": "@yyc3/five-dimensional-management",
+  "version": "1.0.0",
+  "description": "YYC³ Five-Dimensional Closed-Loop Management System - Goal/Technology/Data/UX/Value integrated management",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "././package.json"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --minify && tsc --emitDeclarationOnly --outDir ./dist",
+    "dev": "bun --watch ./src/index.ts",
+    "test": "bun test",
+    "test:coverage": "bun test --coverage",
+    "lint": "eslint ./src --ext .ts,.tsx",
+    "lint:fix": "eslint ./src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "clean": "rm -rf ./dist",
+    "prepublishOnly": "npm run clean && npm run build && npm run test",
+    "docs": "typedoc ./src --out ./docs --excludePrivate",
+    "bench": "node ./benchmarks/index.js"
+  },
+  "keywords": [
+    "yyc3",
+    "ai",
+    "management-system",
+    "closed-loop",
+    "five-dimensional",
+    "goal-management",
+    "technology-optimization",
+    "data-analytics",
+    "ux-research",
+    "value-creation",
+    "enterprise",
+    "typescript",
+    "monitoring"
+  ],
+  "author": {
+    "name": "YYC³",
+    "email": "admin@0379.email",
+    "url": "https://yyc3.0379.email"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform.git",
+    "directory": "packages/five-dimensional-management"
+  },
+  "bugs": {
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform/issues"
+  },
+  "homepage": "https://github.com/YY-Nexus/yyc3-learning-platform/tree/main/packages/five-dimensional-management#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.22.4",
+    "eventemitter3": "^5.0.1",
+    "uuid": "^9.0.1",
+    "node-cron": "^3.0.3",
+    "ws": "^8.16.0",
+    "express": "^4.18.2",
+    "p-queue": "^8.0.1",
+    "p-limit": "^5.0.0",
+    "async": "^3.2.5",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/lodash": "^4.14.202",
+    "@types/uuid": "^9.0.8",
+    "@types/node-cron": "^3.0.11",
+    "@types/ws": "^8.5.10",
+    "@types/express": "^4.17.21",
+    "@types/async": "^3.2.24",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-import": "^2.31.1",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "typedoc": "^0.25.13",
+    "bun-types": "latest",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "config": {
+    "five-dimensional-management": {
+      "update-frequency": 60,
+      "max-history-records": 10000,
+      "alert-thresholds": {
+        "goal-deviation": 0.15,
+        "performance-degradation": 0.2,
+        "error-rate": 0.05
+      },
+      "optimization-enabled": true,
+      "security-level": "standard"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/YY-Nexus"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "name": "@yyc3/autonomous-engine",
+  "version": "1.0.0",
+  "description": "YYC³ 自治AI引擎 - 基于五高五标五化设计原则的企业级自治AI系统核心",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target node --format esm --sourcemap && tsc --emitDeclarationOnly",
+    "dev": "bun --watch src/index.ts",
+    "start": "bun dist/index.js",
+    "test": "bun test",
+    "lint": "eslint src --ext .ts",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "yyc3",
+    "ai",
+    "autonomous",
+    "engine",
+    "event-driven",
+    "goal-driven",
+    "enterprise",
+    "microservices",
+    "learning",
+    "decision-making",
+    "collaboration"
+  ],
+  "author": "YYC³ <admin@0379.email>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform.git",
+    "directory": "packages/autonomous-engine"
+  },
+  "bugs": {
+    "url": "https://github.com/YY-Nexus/yyc3-learning-platform/issues"
+  },
+  "homepage": "https://yyc3.0379.email",
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "dependencies": {
+    "@yyc3/core-engine": "file:../core-engine",
+    "@yyc3/model-adapter": "file:../model-adapter",
+    "eventemitter3": "^5.0.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "bun-types": "latest",
+    "eslint": "^8.55.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs",
+      "types": "./dist/types.d.ts"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/YY-Nexus"
+  }
+}

@@ -1,0 +1,504 @@
+name: High Availability Deployment - YYC³ Learning Platform
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      region:
+        description: '部署区域'
+        required: true
+        default: 'primary'
+        type: choice
+        options:
+          - primary
+          - secondary
+          - both
+      rollback:
+        description: '执行回滚'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '8'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: yyc3-learning-platform
+  PRIMARY_REGION: 'us-east-1'
+  SECONDARY_REGION: 'us-west-2'
+
+jobs:
+  # 多区域镜像构建
+  multi-region-build:
+    name: 多区域镜像构建
+    runs-on: ubuntu-latest
+    needs: [security-check]
+    strategy:
+      matrix:
+        region: [primary, secondary]
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录到 GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 提取 Docker 元数据
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=${{ matrix.region }}-
+            type=raw,value=${{ matrix.region }}-latest,enable=${{ matrix.region == 'primary' }}
+
+      - name: 构建并推送多架构镜像
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            REGION=${{ matrix.region }}
+            NEXT_PUBLIC_API_BASE_URL=${{ secrets.PRODUCTION_API_URL }}
+            NEXT_PUBLIC_APP_VERSION=${{ github.sha }}
+
+  # 主区域部署
+  primary-region-deploy:
+    name: 主区域部署
+    runs-on: ubuntu-latest
+    needs: [multi-region-build]
+    if: github.event.inputs.region != 'secondary'
+    environment:
+      name: production-primary
+      url: https://yyc3-learning.yyc3.0379.email
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 配置主区域 kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.PRIMARY_KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: 验证集群连接
+        run: kubectl cluster-info
+
+      - name: 部署到主区域
+        run: |
+          sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/deployment.yaml
+          sed -i "s|REGION|primary|g" k8s/configmap.yaml
+          
+          kubectl apply -f k8s/configmap.yaml -n yyc3-learning
+          kubectl apply -f k8s/secret.yaml -n yyc3-learning
+          kubectl apply -f k8s/pdb.yaml -n yyc3-learning
+          kubectl apply -f k8s/networkpolicy.yaml -n yyc3-learning
+          kubectl apply -f k8s/servicemonitor.yaml -n yyc3-learning
+          kubectl apply -f k8s/deployment.yaml -n yyc3-learning
+
+      - name: 执行蓝绿部署
+        run: |
+          CURRENT_COLOR=$(kubectl get deployment yyc3-learning -n yyc3-learning -o jsonpath='{.spec.template.metadata.labels.color}' 2>/dev/null || echo "blue")
+          NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
+          
+          sed -i "s|COLOR|$NEW_COLOR|g" k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml -n yyc3-learning
+          
+          kubectl wait --for=condition=ready pod -l app=yyc3-learning,color=$NEW_COLOR -n yyc3-learning --timeout=5m
+          
+          kubectl patch service yyc3-learning -n yyc3-learning -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
+          
+          echo "主区域部署成功，新颜色: $NEW_COLOR"
+
+      - name: 健康检查
+        run: |
+          SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          
+          for i in {1..30}; do
+            if curl -f http://$SERVICE_IP:3000/api/health; then
+              echo "主区域健康检查通过"
+              exit 0
+            fi
+            echo "等待健康检查... ($i/30)"
+            sleep 10
+          done
+          
+          echo "健康检查失败"
+          exit 1
+
+  # 备区域部署
+  secondary-region-deploy:
+    name: 备区域部署
+    runs-on: ubuntu-latest
+    needs: [multi-region-build]
+    if: github.event.inputs.region != 'primary'
+    environment:
+      name: production-secondary
+      url: https://yyc3-learning-secondary.yyc3.0379.email
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 配置备区域 kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.SECONDARY_KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: 验证集群连接
+        run: kubectl cluster-info
+
+      - name: 部署到备区域
+        run: |
+          sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/deployment.yaml
+          sed -i "s|REGION|secondary|g" k8s/configmap.yaml
+          
+          kubectl apply -f k8s/configmap.yaml -n yyc3-learning
+          kubectl apply -f k8s/secret.yaml -n yyc3-learning
+          kubectl apply -f k8s/pdb.yaml -n yyc3-learning
+          kubectl apply -f k8s/networkpolicy.yaml -n yyc3-learning
+          kubectl apply -f k8s/deployment.yaml -n yyc3-learning
+
+      - name: 执行蓝绿部署
+        run: |
+          CURRENT_COLOR=$(kubectl get deployment yyc3-learning -n yyc3-learning -o jsonpath='{.spec.template.metadata.labels.color}' 2>/dev/null || echo "blue")
+          NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
+          
+          sed -i "s|COLOR|$NEW_COLOR|g" k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml -n yyc3-learning
+          
+          kubectl wait --for=condition=ready pod -l app=yyc3-learning,color=$NEW_COLOR -n yyc3-learning --timeout=5m
+          
+          kubectl patch service yyc3-learning -n yyc3-learning -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
+          
+          echo "备区域部署成功，新颜色: $NEW_COLOR"
+
+      - name: 健康检查
+        run: |
+          SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          
+          for i in {1..30}; do
+            if curl -f http://$SERVICE_IP:3000/api/health; then
+              echo "备区域健康检查通过"
+              exit 0
+            fi
+            echo "等待健康检查... ($i/30)"
+            sleep 10
+          done
+          
+          echo "健康检查失败"
+          exit 1
+
+  # 全局负载均衡配置
+  global-loadbalancer:
+    name: 全局负载均衡配置
+    runs-on: ubuntu-latest
+    needs: [primary-region-deploy, secondary-region-deploy]
+    if: github.event.inputs.region == 'both'
+    steps:
+      - name: 配置全局负载均衡
+        run: |
+          echo "配置全局负载均衡..."
+          echo "主区域: https://yyc3-learning.yyc3.0379.email"
+          echo "备区域: https://yyc3-learning-secondary.yyc3.0379.email"
+          
+          # 这里可以添加实际的负载均衡器配置
+          # 例如 AWS Route53, Cloudflare, 或其他 CDN 服务
+
+  # 灾难恢复测试
+  disaster-recovery-test:
+    name: 灾难恢复测试
+    runs-on: ubuntu-latest
+    needs: [primary-region-deploy]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.rollback == true
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 配置主区域 kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.PRIMARY_KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: 模拟主区域故障
+        run: |
+          echo "模拟主区域故障..."
+          kubectl scale deployment yyc3-learning -n yyc3-learning --replicas=0
+          
+          sleep 30
+
+      - name: 验证备区域接管
+        run: |
+          echo "验证备区域接管..."
+          # 这里应该验证备区域是否正常工作
+
+      - name: 恢复主区域
+        run: |
+          echo "恢复主区域..."
+          kubectl scale deployment yyc3-learning -n yyc3-learning --replicas=3
+
+  # 负载测试
+  load-test:
+    name: 负载测试
+    runs-on: ubuntu-latest
+    needs: [primary-region-deploy]
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+      - name: 运行负载测试
+        run: |
+          k6 run --out json=load-test-results.json <<EOF
+          import http from 'k6/http';
+          import { check, sleep } from 'k6';
+
+          export let options = {
+            stages: [
+              { duration: '2m', target: 100 },
+              { duration: '5m', target: 100 },
+              { duration: '2m', target: 200 },
+              { duration: '5m', target: 200 },
+              { duration: '2m', target: 0 },
+            ],
+            thresholds: {
+              http_req_duration: ['p(95)<500', 'p(99)<1000'],
+              http_req_failed: ['rate<0.01'],
+            },
+          };
+
+          export default function () {
+            let res = http.get('https://yyc3-learning.yyc3.0379.email/api/health');
+            check(res, {
+              'status was 200': (r) => r.status == 200,
+              'response time < 500ms': (r) => r.timings.duration < 500,
+            });
+            sleep(1);
+          }
+          EOF
+
+      - name: 上传负载测试结果
+        uses: actions/upload-artifact@v3
+        with:
+          name: load-test-results
+          path: load-test-results.json
+
+  # 混沌工程测试
+  chaos-engineering:
+    name: 混沌工程测试
+    runs-on: ubuntu-latest
+    needs: [primary-region-deploy]
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 配置 kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.PRIMARY_KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: 安装 Chaos Mesh
+        run: |
+          curl -sSL https://mirrors.chaos-mesh.org/v2.6.2/install.sh | bash
+
+      - name: 执行 Pod 故障注入
+        run: |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: chaos-mesh.org/v1alpha1
+          kind: PodChaos
+          metadata:
+            name: pod-failure-test
+            namespace: yyc3-learning
+          spec:
+            action: pod-failure
+            mode: one
+            selector:
+              namespaces:
+                - yyc3-learning
+              labelSelectors:
+                app: yyc3-learning
+            duration: "30s"
+          EOF
+
+      - name: 等待系统恢复
+        run: |
+          sleep 60
+          
+          kubectl wait --for=condition=ready pod -l app=yyc3-learning -n yyc3-learning --timeout=5m
+
+      - name: 验证系统可用性
+        run: |
+          SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          
+          for i in {1..10}; do
+            if curl -f http://$SERVICE_IP:3000/api/health; then
+              echo "系统已恢复"
+              exit 0
+            fi
+            echo "等待系统恢复... ($i/10)"
+            sleep 10
+          done
+          
+          echo "系统恢复失败"
+          exit 1
+
+  # 自动化回滚
+  auto-rollback:
+    name: 自动化回滚
+    runs-on: ubuntu-latest
+    needs: [primary-region-deploy]
+    if: failure()
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 配置 kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.PRIMARY_KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: 执行回滚
+        run: |
+          echo "检测到部署失败，执行自动回滚..."
+          
+          kubectl rollout undo deployment/yyc3-learning -n yyc3-learning
+          
+          kubectl rollout status deployment/yyc3-learning -n yyc3-learning --timeout=5m
+          
+          echo "回滚完成"
+
+      - name: 验证回滚
+        run: |
+          SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          
+          if curl -f http://$SERVICE_IP:3000/api/health; then
+            echo "回滚验证成功"
+          else
+            echo "回滚验证失败"
+            exit 1
+          fi
+
+      - name: 发送回滚通知
+        run: |
+          curl -X POST ${{ secrets.DINGTALK_WEBHOOK }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "msgtype": "text",
+              "text": {
+                "content": "⚠️ YYC³ Learning Platform 自动回滚已执行\n分支: ${{ github.ref }}\n提交: ${{ github.sha }}\n请检查系统状态"
+              }
+            }'
+
+  # 安全检查
+  security-check:
+    name: 安全检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 运行 Trivy 漏洞扫描
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - name: 上传 Trivy 扫描结果
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  # 部署后验证
+  post-deployment-validation:
+    name: 部署后验证
+    runs-on: ubuntu-latest
+    needs: [primary-region-deploy]
+    steps:
+      - name: 验证服务可用性
+        run: |
+          for i in {1..10}; do
+            if curl -f https://yyc3-learning.yyc3.0379.email/api/health; then
+              echo "服务可用性验证通过"
+              exit 0
+            fi
+            echo "等待服务启动... ($i/10)"
+            sleep 10
+          done
+          
+          echo "服务可用性验证失败"
+          exit 1
+
+      - name: 验证关键功能
+        run: |
+          # 验证关键 API 端点
+          curl -f https://yyc3-learning.yyc3.0379.email/api/courses
+          curl -f https://yyc3-learning.yyc3.0379.email/api/questions
+          
+          echo "关键功能验证通过"
+
+      - name: 性能基准测试
+        run: |
+          # 执行简单的性能测试
+          RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://yyc3-learning.yyc3.0379.email/api/health)
+          
+          echo "响应时间: $RESPONSE_TIME 秒"
+          
+          if (( $(echo "$RESPONSE_TIME < 1.0" | bc -l) )); then
+            echo "性能基准测试通过"
+          else
+            echo "性能基准测试失败"
+            exit 1
+          fi

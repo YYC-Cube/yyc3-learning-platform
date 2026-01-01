@@ -1,0 +1,694 @@
+name: CI/CD Pipeline - YYC³ Learning Platform
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  release:
+    types: [created]
+
+env:
+  NODE_VERSION: '18'
+  PNPM_VERSION: '8'
+  REGISTRY: ghcr.io
+  IMAGE_NAME: yyc3-learning-platform
+
+jobs:
+  # 代码质量检查
+  lint-and-format:
+    name: 代码质量检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 获取 pnpm store 目录
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: 设置 pnpm 缓存
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript 类型检查
+        run: pnpm run type-check
+
+      - name: ESLint 代码检查
+        run: pnpm run lint
+
+      - name: Prettier 格式检查
+        run: pnpm run format:check
+
+      - name: Stylelint CSS 检查
+        run: pnpm run lint:css
+
+  # 单元测试
+  unit-tests:
+    name: 单元测试
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 设置 pnpm 缓存
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 运行单元测试
+        run: pnpm run test:unit
+        env:
+          CI: true
+
+      - name: 生成测试覆盖率报告
+        run: pnpm run test:coverage
+
+      - name: 上传覆盖率报告到 Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+
+  # 集成测试
+  integration-tests:
+    name: 集成测试
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ai_learning_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 设置测试环境变量
+        run: |
+          echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ai_learning_test" >> $GITHUB_ENV
+          echo "REDIS_URL=redis://localhost:6379" >> $GITHUB_ENV
+          echo "NEXTAUTH_SECRET=test-secret" >> $GITHUB_ENV
+          echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
+
+      - name: 运行数据库迁移
+        run: pnpm run db:migrate
+
+      - name: 运行集成测试
+        run: pnpm run test:integration
+
+  # 端到端测试
+  e2e-tests:
+    name: 端到端测试
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 安装 Playwright 浏览器
+        run: pnpm exec playwright install --with-deps
+
+      - name: 构建应用
+        run: pnpm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: http://localhost:3000/api
+
+      - name: 启动应用
+        run: pnpm run start &
+        env:
+          PORT: 3000
+
+      - name: 等待应用启动
+        run: npx wait-on http://localhost:3000
+
+      - name: 运行 E2E 测试
+        run: pnpm run test:e2e
+
+      - name: 上传 E2E 测试报告
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  # 安全扫描
+  security-scan:
+    name: 安全扫描
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 运行 Trivy 漏洞扫描
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+      - name: 上传 Trivy 扫描结果到 GitHub Security
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: 运行 Snyk 安全扫描
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+      - name: 依赖漏洞扫描
+        run: |
+          pnpm audit --audit-level high --production
+
+      - name: 检查硬编码密钥
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          config-path: .gitleaks.toml
+          fail-on-secret: true
+
+  # 性能测试
+  performance-test:
+    name: 性能测试
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 构建应用
+        run: pnpm run build
+
+      - name: 启动应用
+        run: pnpm run start &
+
+      - name: 等待应用启动
+        run: npx wait-on http://localhost:3000
+
+      - name: 运行 Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.12.x
+          lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+  # 构建和部署
+  build-and-deploy:
+    name: 构建和部署
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, e2e-tests, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 构建应用
+        run: pnpm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.PRODUCTION_API_URL }}
+          NEXT_PUBLIC_APP_VERSION: ${{ github.sha }}
+
+      - name: 部署到 Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: '--prod'
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+
+      - name: 部署成功通知
+        if: success()
+        run: |
+          echo "🚀 部署成功！"
+          echo "应用已部署到生产环境"
+
+  # 预览环境部署
+  preview-deploy:
+    name: 预览环境部署
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 安装 pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 构建应用
+        run: pnpm run build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ secrets.PREVIEW_API_URL }}
+
+      - name: 部署预览环境
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.ORG_ID }}
+          vercel-project-id: ${{ secrets.PROJECT_ID }}
+
+  # 通知
+  notify:
+    name: 通知
+    runs-on: ubuntu-latest
+    needs: [build-and-deploy, preview-deploy]
+    if: always()
+    steps:
+      - name: 发送钉钉通知
+        if: needs.build-and-deploy.result == 'success'
+        run: |
+          curl -X POST ${{ secrets.DINGTALK_WEBHOOK }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "msgtype": "text",
+              "text": {
+                "content": "🎉 YanYu Smart Cloud³ Learning Hub 部署成功！\n分支: ${{ github.ref }}\n提交: ${{ github.sha }}\n作者: ${{ github.actor }}"
+              }
+            }'
+
+      - name: 发送失败通知
+        if: needs.build-and-deploy.result == 'failure'
+        run: |
+          curl -X POST ${{ secrets.DINGTALK_WEBHOOK }} \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "msgtype": "text",
+              "text": {
+                "content": "❌ YanYu Smart Cloud³ Learning Hub 部署失败！\n分支: ${{ github.ref }}\n提交: ${{ github.sha }}\n作者: ${{ github.actor }}\n请检查构建日志"
+              }
+            }'
+
+  # Docker 镜像构建和推送
+  docker-build-push:
+    name: Docker 镜像构建和推送
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录到 GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 提取 Docker 元数据
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 构建并推送 Docker 镜像
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            NEXT_PUBLIC_API_BASE_URL=${{ secrets.PRODUCTION_API_URL }}
+            NEXT_PUBLIC_APP_VERSION=${{ github.sha }}
+
+      - name: 生成镜像 SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ env.REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: spdx-json
+          output-file: sbom.json
+
+      - name: 上传 SBOM
+        uses: actions/upload-artifact@v3
+        with:
+          name: sbom
+          path: sbom.json
+
+  # Kubernetes 部署（蓝绿部署）
+  kubernetes-deploy:
+    name: Kubernetes 蓝绿部署
+    runs-on: ubuntu-latest
+    needs: [docker-build-push]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://yyc3-learning.yyc3.0379.email
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 配置 kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: 验证集群连接
+        run: kubectl cluster-info
+
+      - name: 创建命名空间（如果不存在）
+        run: |
+          kubectl create namespace yyc3-learning --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: 部署 ConfigMap 和 Secret
+        run: |
+          kubectl apply -f k8s/configmap.yaml -n yyc3-learning
+          kubectl apply -f k8s/secret.yaml -n yyc3-learning
+
+      - name: 更新镜像标签
+        run: |
+          sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/deployment.yaml
+
+      - name: 蓝绿部署 - 创建新版本
+        run: |
+          CURRENT_COLOR=$(kubectl get deployment yyc3-learning -n yyc3-learning -o jsonpath='{.spec.template.metadata.labels.color}' 2>/dev/null || echo "blue")
+          NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
+          
+          echo "CURRENT_COLOR=$CURRENT_COLOR"
+          echo "NEW_COLOR=$NEW_COLOR"
+          
+          sed -i "s|COLOR|$NEW_COLOR|g" k8s/deployment.yaml
+          
+          kubectl apply -f k8s/deployment.yaml -n yyc3-learning
+          
+          echo "NEW_COLOR=$NEW_COLOR" >> $GITHUB_ENV
+
+      - name: 等待新版本 Pod 就绪
+        run: |
+          kubectl rollout status deployment/yyc3-learning -n yyc3-learning --timeout=5m
+
+      - name: 健康检查
+        run: |
+          kubectl wait --for=condition=ready pod -l app=yyc3-learning,color=$NEW_COLOR -n yyc3-learning --timeout=3m
+          
+          POD_IP=$(kubectl get pod -l app=yyc3-learning,color=$NEW_COLOR -n yyc3-learning -o jsonpath='{.items[0].status.podIP}')
+          
+          for i in {1..30}; do
+            if curl -f http://$POD_IP:3000/health; then
+              echo "健康检查通过"
+              exit 0
+            fi
+            echo "等待健康检查... ($i/30)"
+            sleep 10
+          done
+          
+          echo "健康检查失败，触发回滚"
+          exit 1
+
+      - name: 切换流量到新版本
+        run: |
+          kubectl patch service yyc3-learning -n yyc3-learning -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
+
+      - name: 验证新版本流量
+        run: |
+          SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          
+          for i in {1..10}; do
+            RESPONSE=$(curl -s http://$SERVICE_IP:3000/api/health)
+            if echo "$RESPONSE" | grep -q "status.*ok"; then
+              echo "流量切换验证通过"
+              exit 0
+            fi
+            echo "等待流量切换... ($i/10)"
+            sleep 5
+          done
+
+      - name: 清理旧版本
+        run: |
+          OLD_COLOR=$([ "$NEW_COLOR" = "blue" ] && echo "green" || echo "blue")
+          kubectl scale deployment yyc3-learning -n yyc3-learning --replicas=0 || true
+          
+          echo "旧版本 $OLD_COLOR 已清理"
+
+      - name: 备份部署状态
+        run: |
+          kubectl get deployment yyc3-learning -n yyc3-learning -o yaml > deployment-backup-$(date +%Y%m%d-%H%M%S).yaml
+          
+          kubectl get pods -n yyc3-learning -o wide > pods-backup-$(date +%Y%m%d-%H%M%S).txt
+
+      - name: 上传备份文件
+        uses: actions/upload-artifact@v3
+        with:
+          name: k8s-backup
+          path: |
+            deployment-backup-*.yaml
+            pods-backup-*.txt
+          retention-days: 30
+
+      - name: 部署失败时自动回滚
+        if: failure()
+        run: |
+          echo "部署失败，执行自动回滚..."
+          
+          kubectl rollout undo deployment/yyc3-learning -n yyc3-learning
+          
+          kubectl rollout status deployment/yyc3-learning -n yyc3-learning --timeout=5m
+          
+          echo "回滚完成"
+
+  # 数据库备份
+  database-backup:
+    name: 数据库备份
+    runs-on: ubuntu-latest
+    needs: [kubernetes-deploy]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: 安装 PostgreSQL 客户端
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: 创建数据库备份
+        run: |
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          BACKUP_FILE="yyc3-learning-backup-$TIMESTAMP.sql.gz"
+          
+          PGPASSWORD="${{ secrets.DB_PASSWORD }}" pg_dump \
+            -h ${{ secrets.DB_HOST }} \
+            -p ${{ secrets.DB_PORT }} \
+            -U ${{ secrets.DB_USER }} \
+            -d ${{ secrets.DB_NAME }} \
+            -F c \
+            -f $BACKUP_FILE
+          
+          echo "BACKUP_FILE=$BACKUP_FILE" >> $GITHUB_ENV
+
+      - name: 上传备份到 S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --acl private
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: './'
+          DEST_DIR: 'backups/yyc3-learning/'
+
+      - name: 清理过期备份（保留最近 30 天）
+        run: |
+          aws s3 ls s3://${{ secrets.AWS_S3_BUCKET }}/backups/yyc3-learning/ \
+            | awk '{print $2}' \
+            | while read backup; do
+              backup_date=$(echo $backup | sed 's/\///')
+              if [ $(date -d "$backup_date" +%s) -lt $(date -d "30 days ago" +%s) ]; then
+                aws s3 rm s3://${{ secrets.AWS_S3_BUCKET }}/backups/yyc3-learning/$backup
+              fi
+            done
+
+  # 监控和告警
+  monitoring-setup:
+    name: 监控和告警设置
+    runs-on: ubuntu-latest
+    needs: [kubernetes-deploy]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.28.0'
+
+      - name: 配置 kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: 部署 Prometheus 和 Grafana
+        run: |
+          kubectl apply -f k8s/monitoring/prometheus.yaml -n yyc3-learning
+          kubectl apply -f k8s/monitoring/grafana.yaml -n yyc3-learning
+
+      - name: 部署告警规则
+        run: |
+          kubectl apply -f k8s/monitoring/alert-rules.yaml -n yyc3-learning
+
+      - name: 配置告警通知
+        run: |
+          kubectl create secret generic alertmanager-config \
+            --from-literal=webhook-url="${{ secrets.ALERT_WEBHOOK }}" \
+            --dry-run=client -o yaml | kubectl apply -f - -n yyc3-learning

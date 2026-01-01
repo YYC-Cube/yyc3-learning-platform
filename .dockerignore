@@ -1,0 +1,79 @@
+# 依赖
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# 构建产物
+.next
+out
+dist
+build
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+.github
+
+# 文档
+README.md
+CHANGELOG.md
+LICENSE
+docs
+*.md
+
+# 测试
+coverage
+.nyc_output
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+__tests__
+tests
+test
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 缓存
+.cache
+.parcel-cache
+.turbo
+.eslintcache
+
+# 临时文件
+tmp
+temp
+*.tmp
+*.temp
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# CI/CD
+.gitlab-ci.yml
+.travis.yml
+circle.yml
+
+# 其他
+.editorconfig
+.prettierrc
+.eslintrc*
+.stylelintrc*
+tsconfig.json

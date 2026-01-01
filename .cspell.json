@@ -1,0 +1,29 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "dictionaryDefinitions": [
+    {
+      "name": "yyc3-terms",
+      "path": "./.cspell-words.txt",
+      "addWords": true
+    }
+  ],
+  "dictionaries": [
+    "yyc3-terms"
+  ],
+  "words": [
+    "Agentic",
+    "yanyu",
+    "cmdk",
+    "vaul",
+    "Ollama",
+    "ollama"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    ".next/**",
+    "dist/**",
+    "coverage/**",
+    "__tests__/**/*.snap"
+  ]
+}

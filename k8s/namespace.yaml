@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: yyc3-learning
+  labels:
+    name: yyc3-learning
+    environment: production
+    workload: frontend

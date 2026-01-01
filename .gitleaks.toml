@@ -1,0 +1,74 @@
+# Gitleaks Configuration for YYC³ Learning Platform
+# This file defines the rules to detect hardcoded secrets in the codebase
+
+[title]
+name = "YYC³ Learning Platform Secret Detection"
+
+[rules]
+  [rules.password]
+    description = "Detects hardcoded passwords"
+    regex = "password\s*=\s*['\"]([^'\"]+)['\"]"
+    tags = ["password", "security"]
+
+  [rules.api_key]
+    description = "Detects hardcoded API keys"
+    regex = "api[_-]?key\s*=\s*['\"]([^'\"]+)['\"]"
+    tags = ["api-key", "security"]
+
+  [rules.jwt]
+    description = "Detects hardcoded JWT tokens"
+    regex = "eyJ[a-zA-Z0-9_\-]+\.eyJ[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]*"
+    tags = ["jwt", "token", "security"]
+
+  [rules.secret]
+    description = "Detects hardcoded secrets"
+    regex = "secret\s*=\s*['\"]([^'\"]+)['\"]"
+    tags = ["secret", "security"]
+
+  [rules.db_connection]
+    description = "Detects hardcoded database connection strings"
+    regex = "(postgresql|mysql|mongodb)://[^'\"]+"
+    tags = ["database", "connection", "security"]
+
+  [rules.aws_key]
+    description = "Detects AWS access keys"
+    regex = "AKIA[0-9A-Z]{16}"
+    tags = ["aws", "key", "security"]
+
+  [rules.azure_key]
+    description = "Detects Azure access keys"
+    regex = "[a-zA-Z0-9]{40}"
+    tags = ["azure", "key", "security"]
+
+  [rules.gcp_key]
+    description = "Detects GCP service account keys"
+    regex = "-----BEGIN PRIVATE KEY-----[\s\S]+?-----END PRIVATE KEY-----"
+    tags = ["gcp", "key", "security"]
+
+  [rules.slack_webhook]
+    description = "Detects Slack webhook URLs"
+    regex = "https://hooks.slack.com/services/[a-zA-Z0-9_/]+"
+    tags = ["slack", "webhook", "security"]
+
+  [rules.github_token]
+    description = "Detects GitHub tokens"
+    regex = "github.com/[^/]+/[^/]+\.git\?token=([a-zA-Z0-9_\-]+)"
+    tags = ["github", "token", "security"]
+
+[allowlist]
+  description = "Allowlist for false positives"
+  paths = [
+    "**/test/**",
+    "**/__tests__/**",
+    "**/fixtures/**",
+    "**/*.md",
+    "**/*.txt",
+    ".github/workflows/ci.yml",
+    "next.config.js",
+    ".env.example",
+    ".env.local.example"
+  ]
+
+  [allowlist.rules]
+    description = "Allowlist specific patterns"
+    regex = "(password|secret|key)\s*=\s*['\"](test|dummy|example|sample)[^'\"]*['\"]"

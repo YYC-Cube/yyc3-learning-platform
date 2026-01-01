@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YYC³ AI智能协作平台 - 企业级AI解决方案</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <h1>YYC³</h1>
+                    <span class="brand-subtitle">AI智能协作平台</span>
+                </div>
+
+                <div class="nav-menu">
+                    <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                        <span class="nav-icon">📊</span>
+                        <span>控制台</span>
+                    </a>
+                    <a href="#customer-lifecycle" class="nav-item" data-section="customer-lifecycle">
+                        <span class="nav-icon">👥</span>
+                        <span>客户管理</span>
+                    </a>
+                    <a href="#smart-calling" class="nav-item" data-section="smart-calling">
+                        <span class="nav-icon">📞</span>
+                        <span>智能外呼</span>
+                    </a>
+                    <a href="#smart-forms" class="nav-item" data-section="smart-forms">
+                        <span class="nav-icon">📋</span>
+                        <span>智能表单</span>
+                    </a>
+                    <a href="#hr-assistant" class="nav-item" data-section="hr-assistant">
+                        <span class="nav-icon">👤</span>
+                        <span>HR助手</span>
+                    </a>
+                    <a href="#ai-engine" class="nav-item" data-section="ai-engine">
+                        <span class="nav-icon">🤖</span>
+                        <span>AI引擎</span>
+                    </a>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="btn btn-primary" id="startAIChat">
+                        <span>💬</span>
+                        <span>AI对话</span>
+                    </button>
+                    <div class="user-profile">
+                        <div class="status-indicator online"></div>
+                        <span>管理员</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 控制台 -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2>智能控制台</h2>
+                    <p>实时监控四大AI系统运行状态和业务数据</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- 系统状态卡片 -->
+                    <div class="status-cards">
+                        <div class="status-card">
+                            <div class="card-header">
+                                <div class="card-icon">👥</div>
+                                <h3>客户全生命周期管理</h3>
+                                <div class="status-badge success">运行中</div>
+                            </div>
+                            <div class="card-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">1,247</span>
+                                    <span class="metric-label">活跃客户</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">89%</span>
+                                    <span class="metric-label">转化率</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">4.8</span>
+                                    <span class="metric-label">满意度</span>
+                                </div>
+                            </div>
+                            <div class="card-chart">
+                                <canvas id="customerChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="status-card">
+                            <div class="card-header">
+                                <div class="card-icon">📞</div>
+                                <h3>智能外呼系统</h3>
+                                <div class="status-badge success">运行中</div>
+                            </div>
+                            <div class="card-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">523</span>
+                                    <span class="metric-label">今日通话</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">67%</span>
+                                    <span class="metric-label">接通率</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">12%</span>
+                                    <span class="metric-label">转化率</span>
+                                </div>
+                            </div>
+                            <div class="card-chart">
+                                <canvas id="callingChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="status-card">
+                            <div class="card-header">
+                                <div class="card-icon">📋</div>
+                                <h3>智能表单系统</h3>
+                                <div class="status-badge success">运行中</div>
+                            </div>
+                            <div class="card-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">89</span>
+                                    <span class="metric-label">活跃表单</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">2,341</span>
+                                    <span class="metric-label">今日提交</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">94%</span>
+                                    <span class="metric-label">完成率</span>
+                                </div>
+                            </div>
+                            <div class="card-chart">
+                                <canvas id="formsChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="status-card">
+                            <div class="card-header">
+                                <div class="card-icon">👤</div>
+                                <h3>HR智能助手</h3>
+                                <div class="status-badge success">运行中</div>
+                            </div>
+                            <div class="card-metrics">
+                                <div class="metric">
+                                    <span class="metric-value">426</span>
+                                    <span class="metric-label">服务员工</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">156</span>
+                                    <span class="metric-label">今日查询</span>
+                                </div>
+                                <div class="metric">
+                                    <span class="metric-value">98%</span>
+                                    <span class="metric-label">解决率</span>
+                                </div>
+                            </div>
+                            <div class="card-chart">
+                                <canvas id="hrChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI引擎状态 -->
+                    <div class="ai-engine-status">
+                        <h3>AI引擎状态</h3>
+                        <div class="engine-grid">
+                            <div class="engine-card">
+                                <h4>模型状态</h4>
+                                <div class="model-list">
+                                    <div class="model-item">
+                                        <span class="model-name">llama3.2:1b</span>
+                                        <span class="model-status active">活跃</span>
+                                        <span class="model-load">12% CPU</span>
+                                    </div>
+                                    <div class="model-item">
+                                        <span class="model-name">qwen2.5-coder:1.5b</span>
+                                        <span class="model-status active">活跃</span>
+                                        <span class="model-load">8% CPU</span>
+                                    </div>
+                                    <div class="model-item">
+                                        <span class="model-name">llama3.2:3b</span>
+                                        <span class="model-status standby">待机</span>
+                                        <span class="model-load">0% CPU</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="engine-card">
+                                <h4>性能指标</h4>
+                                <div class="performance-metrics">
+                                    <div class="perf-item">
+                                        <span>平均响应时间</span>
+                                        <span class="perf-value">3.2s</span>
+                                    </div>
+                                    <div class="perf-item">
+                                        <span>成功率</span>
+                                        <span class="perf-value">94.5%</span>
+                                    </div>
+                                    <div class="perf-item">
+                                        <span>并发请求数</span>
+                                        <span class="perf-value">23</span>
+                                    </div>
+                                    <div class="perf-item">
+                                        <span>今日总请求</span>
+                                        <span class="perf-value">8,429</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="engine-card">
+                                <h4>成本优化</h4>
+                                <div class="cost-optimization">
+                                    <div class="cost-item">
+                                        <span>本地模型使用率</span>
+                                        <span class="cost-value">87%</span>
+                                    </div>
+                                    <div class="cost-item">
+                                        <span>API成本节省</span>
+                                        <span class="cost-value">¥2,847</span>
+                                    </div>
+                                    <div class="cost-item">
+                                        <span>智能路由命中率</span>
+                                        <span class="cost-value">92%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 实时活动日志 -->
+                    <div class="activity-log">
+                        <h3>实时活动日志</h3>
+                        <div class="log-container">
+                            <div class="log-item info">
+                                <span class="log-time">14:32:15</span>
+                                <span class="log-message">智能表单系统处理了新的客户反馈</span>
+                            </div>
+                            <div class="log-item success">
+                                <span class="log-time">14:31:48</span>
+                                <span class="log-message">智能外呼完成了一轮成功的客户沟通</span>
+                            </div>
+                            <div class="log-item warning">
+                                <span class="log-time">14:30:22</span>
+                                <span class="log-message">HR助手检测到异常登录尝试</span>
+                            </div>
+                            <div class="log-item info">
+                                <span class="log-time">14:29:05</span>
+                                <span class="log-message">客户生命周期系统更新了用户画像</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 客户全生命周期管理 -->
+            <section id="customer-lifecycle" class="content-section">
+                <div class="section-header">
+                    <h2>客户全生命周期管理</h2>
+                    <p>AI驱动的5阶段智能客户运营系统</p>
+                </div>
+
+                <div class="lifecycle-container">
+                    <!-- 阶段导航 -->
+                    <div class="lifecycle-nav">
+                        <div class="stage-nav active" data-stage="acquisition">
+                            <div class="stage-icon">🎯</div>
+                            <h4>获客培育</h4>
+                            <span class="stage-count">342</span>
+                        </div>
+                        <div class="stage-nav" data-stage="conversion">
+                            <div class="stage-icon">💰</div>
+                            <h4>转化成交</h4>
+                            <span class="stage-count">128</span>
+                        </div>
+                        <div class="stage-nav" data-stage="service">
+                            <div class="stage-icon">🛠️</div>
+                            <h4>客户服务</h4>
+                            <span class="stage-count">567</span>
+                        </div>
+                        <div class="stage-nav" data-stage="retention">
+                            <div class="stage-icon">🔒</div>
+                            <h4>留存扩展</h4>
+                            <span class="stage-count">234</span>
+                        </div>
+                        <div class="stage-nav" data-stage="analysis">
+                            <div class="stage-icon">📊</div>
+                            <h4>价值分析</h4>
+                            <span class="stage-count">89</span>
+                        </div>
+                    </div>
+
+                    <!-- 阶段内容 -->
+                    <div class="lifecycle-content">
+                        <div class="stage-content active" id="acquisition-content">
+                            <h3>获客培育阶段</h3>
+                            <div class="stage-metrics">
+                                <div class="metric-card">
+                                    <h4>线索评分</h4>
+                                    <div class="metric-chart">
+                                        <canvas id="leadScoringChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="metric-card">
+                                    <h4>培育策略</h4>
+                                    <div class="strategy-list">
+                                        <div class="strategy-item">
+                                            <span class="strategy-name">个性化邮件营销</span>
+                                            <span class="strategy-effectiveness">87%</span>
+                                        </div>
+                                        <div class="strategy-item">
+                                            <span class="strategy-name">社交媒体互动</span>
+                                            <span class="strategy-effectiveness">72%</span>
+                                        </div>
+                                        <div class="strategy-item">
+                                            <span class="strategy-name">内容营销</span>
+                                            <span class="strategy-effectiveness">68%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 智能外呼系统 -->
+            <section id="smart-calling" class="content-section">
+                <div class="section-header">
+                    <h2>智能外呼系统</h2>
+                    <p>AI语音+意图识别的智能沟通平台</p>
+                </div>
+
+                <div class="calling-container">
+                    <div class="calling-dashboard">
+                        <div class="calling-stats">
+                            <div class="stat-card">
+                                <h4>今日通话</h4>
+                                <div class="stat-value">523</div>
+                                <div class="stat-change positive">+12%</div>
+                            </div>
+                            <div class="stat-card">
+                                <h4>接通率</h4>
+                                <div class="stat-value">67%</div>
+                                <div class="stat-change positive">+5%</div>
+                            </div>
+                            <div class="stat-card">
+                                <h4>平均时长</h4>
+                                <div class="stat-value">2:34</div>
+                                <div class="stat-change negative">-8%</div>
+                            </div>
+                            <div class="stat-card">
+                                <h4>转化率</h4>
+                                <div class="stat-value">12%</div>
+                                <div class="stat-change positive">+3%</div>
+                            </div>
+                        </div>
+
+                        <div class="calling-controls">
+                            <button class="btn btn-primary" id="startCallingCampaign">
+                                <span>🚀</span>
+                                <span>开始外呼营销</span>
+                            </button>
+                            <button class="btn btn-secondary" id="callingAnalytics">
+                                <span>📊</span>
+                                <span>通话分析</span>
+                            </button>
+                            <button class="btn btn-secondary" id="scriptManager">
+                                <span>📝</span>
+                                <span>话术管理</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 智能表单系统 -->
+            <section id="smart-forms" class="content-section">
+                <div class="section-header">
+                    <h2>智能表单系统</h2>
+                    <p>动态表单+工作流自动化平台</p>
+                </div>
+
+                <div class="forms-container">
+                    <div class="forms-toolbar">
+                        <button class="btn btn-primary" id="createForm">
+                            <span>➕</span>
+                            <span>创建表单</span>
+                        </button>
+                        <button class="btn btn-secondary" id="formTemplates">
+                            <span>📋</span>
+                            <span>模板库</span>
+                        </button>
+                        <button class="btn btn-secondary" id="formAnalytics">
+                            <span>📊</span>
+                            <span>数据分析</span>
+                        </button>
+                    </div>
+
+                    <div class="forms-grid">
+                        <div class="form-card">
+                            <div class="form-header">
+                                <h4>客户满意度调查</h4>
+                                <div class="form-status published">已发布</div>
+                            </div>
+                            <div class="form-stats">
+                                <div class="stat">
+                                    <span class="stat-label">今日提交</span>
+                                    <span class="stat-value">47</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">完成率</span>
+                                    <span class="stat-value">89%</span>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn-small">查看数据</button>
+                                <button class="btn-small">编辑</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HR智能助手 -->
+            <section id="hr-assistant" class="content-section">
+                <div class="section-header">
+                    <h2>HR智能助手</h2>
+                    <p>全流程HR智能化助手</p>
+                </div>
+
+                <div class="hr-container">
+                    <div class="hr-modules">
+                        <div class="hr-module">
+                            <div class="module-icon">🎯</div>
+                            <h3>智能招聘</h3>
+                            <p>AI简历筛选 + 人岗匹配</p>
+                            <div class="module-stats">
+                                <span>待处理简历: 23</span>
+                                <span>匹配率: 87%</span>
+                            </div>
+                        </div>
+
+                        <div class="hr-module">
+                            <div class="module-icon">💬</div>
+                            <h3>员工服务</h3>
+                            <p>智能问答 + 流程自动化</p>
+                            <div class="module-stats">
+                                <span>今日咨询: 45</span>
+                                <span>解决率: 92%</span>
+                            </div>
+                        </div>
+
+                        <div class="hr-module">
+                            <div class="module-icon">📚</div>
+                            <h3>培训发展</h3>
+                            <p>个性化学习 + 技能评估</p>
+                            <div class="module-stats">
+                                <span>活跃学员: 156</span>
+                                <span>完成率: 78%</span>
+                            </div>
+                        </div>
+
+                        <div class="hr-module">
+                            <div class="module-icon">📈</div>
+                            <h3>绩效管理</h3>
+                            <p>智能评估 + 反馈分析</p>
+                            <div class="module-stats">
+                                <span>待评估: 12</span>
+                                <span>满意度: 4.6/5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI引擎 -->
+            <section id="ai-engine" class="content-section">
+                <div class="section-header">
+                    <h2>AI引擎</h2>
+                    <p>企业AI智能核心</p>
+                </div>
+
+                <div class="engine-container">
+                    <div class="engine-overview">
+                        <div class="engine-section">
+                            <h3>模型管理</h3>
+                            <div class="models-grid">
+                                <div class="model-card local active">
+                                    <div class="model-header">
+                                        <h4>llama3.2:1b</h4>
+                                        <div class="model-type">本地</div>
+                                    </div>
+                                    <div class="model-metrics">
+                                        <div class="metric">
+                                            <span class="metric-label">响应时间</span>
+                                            <span class="metric-value">1.2s</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-label">今日请求</span>
+                                            <span class="metric-value">2,847</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="model-card local active">
+                                    <div class="model-header">
+                                        <h4>qwen2.5-coder:1.5b</h4>
+                                        <div class="model-type">本地</div>
+                                    </div>
+                                    <div class="model-metrics">
+                                        <div class="metric">
+                                            <span class="metric-label">响应时间</span>
+                                            <span class="metric-value">2.1s</span>
+                                        </div>
+                                        <div class="metric">
+                                            <span class="metric-label">今日请求</span>
+                                            <span class="metric-value">1,523</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="engine-section">
+                            <h3>智能路由</h3>
+                            <div class="routing-stats">
+                                <div class="routing-item">
+                                    <span>简单查询路由到轻量模型</span>
+                                    <span class="routing-efficiency">94%</span>
+                                </div>
+                                <div class="routing-item">
+                                    <span>代码生成路由到专业模型</span>
+                                    <span class="routing-efficiency">89%</span>
+                                </div>
+                                <div class="routing-item">
+                                    <span>复杂推理路由到强大模型</span>
+                                    <span class="routing-efficiency">76%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- AI聊天对话框 -->
+        <div class="chat-container" id="chatContainer">
+            <div class="chat-header">
+                <h3>AI智能助手</h3>
+                <div class="chat-status">
+                    <div class="status-indicator online"></div>
+                    <span>在线</span>
+                </div>
+                <button class="chat-close" id="chatClose">×</button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    <div class="message-content">
+                        <p>您好！我是YYC³ AI智能助手，可以为您提供以下服务：</p>
+                        <ul>
+                            <li>客户生命周期管理咨询</li>
+                            <li>智能外呼策略建议</li>
+                            <li>表单设计和工作流优化</li>
+                            <li>HR管理智能化方案</li>
+                        </ul>
+                        <p>请问有什么可以帮助您的吗？</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <div class="input-group">
+                    <input type="text" id="chatInput" placeholder="输入您的问题..." />
+                    <button class="btn-send" id="chatSend">
+                        <span>➤</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 遮罩层 -->
+        <div class="overlay" id="overlay"></div>
+    </div>
+
+    <!-- 加载指示器 -->
+    <div class="loading-indicator" id="loadingIndicator">
+        <div class="spinner"></div>
+        <span>正在加载AI模型...</span>
+    </div>
+
+    <!-- 通知提示 -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <script type="module" src="./frontend.js"></script>
+</body>
+</html>

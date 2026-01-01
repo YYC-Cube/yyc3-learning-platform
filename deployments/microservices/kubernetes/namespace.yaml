@@ -1,0 +1,15 @@
+# ============================================================================
+# YYC³ AI Platform - Kubernetes Namespace Configuration
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: yyc3-platform
+  labels:
+    name: yyc3-platform
+    environment: production
+    project: yyc3-ai-platform
+  annotations:
+    description: "YYC³ AI Platform Production Namespace"
+    created-by: "yyc3-deployment-system"

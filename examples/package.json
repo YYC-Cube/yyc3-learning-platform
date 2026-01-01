@@ -1,0 +1,29 @@
+{
+  "name": "yyc3-examples",
+  "version": "1.0.0",
+  "description": "YYC³ 使用示例集合",
+  "author": "YYC³ <admin@0379.email>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YYC-Cube/learning-platform.git"
+  },
+  "scripts": {
+    "basic": "bun run basic-usage/index.ts",
+    "advanced": "bun run advanced-features/index.ts",
+    "rest-api": "bun run rest-api/index.ts",
+    "websocket": "bun run websocket-api/index.ts"
+  },
+  "dependencies": {
+    "@yyc3/autonomous-engine": "workspace:*",
+    "@yyc3/core-engine": "workspace:*",
+    "@yyc3/five-dimensional-management": "workspace:*",
+    "@yyc3/learning-system": "workspace:*",
+    "@yyc3/model-adapter": "workspace:*",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.13",
+    "typescript": "^5.7.3"
+  }
+}

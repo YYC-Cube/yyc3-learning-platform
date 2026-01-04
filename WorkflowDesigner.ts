@@ -244,7 +244,6 @@ class CanvasManager {
     this.config = config;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   initialize(workflowId: string, _metadata: Record<string, unknown>): void {
   }
 
@@ -349,7 +348,6 @@ class ExecutionEngine {
   }
 
   async execute(_workflow: unknown, _environment: unknown): Promise<{ success: boolean; result: { completed: boolean }; metrics: { nodesExecuted: number; totalTime: number; averageNodeTime: number; maxNodeTime: number; memoryUsed: number } }> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [, ] = [_workflow, _environment];
     // 模拟执行
     return {
@@ -366,7 +364,6 @@ class ExecutionEngine {
   }
 
   async debug(_workflow: unknown, _breakpoints: Breakpoint[]): Promise<DebugResult> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [, ] = [_workflow, _breakpoints];
     return {
       stopped: true,
@@ -850,7 +847,6 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private loadDefaultElements(_workflowId: string): void {
     // 加载默认元素
   }
@@ -874,12 +870,10 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private attachNodeInteractions(_visualElement: unknown, _nodeInstance: unknown): void {
     // 附加交互事件
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private canConnect(_source: unknown, _target: unknown): boolean {
     // 连接验证逻辑
     return true;
@@ -898,7 +892,6 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private updateNodeConnections(_sourceId: string, _targetId: string, _connection: unknown): void {
     // 更新节点连接信息
   }
@@ -914,17 +907,14 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private applyAction(_action: unknown, _reverse: boolean): void {
     // 应用撤销/重做动作
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private validateWorkflowForExecution(_workflow: unknown): ReturnType<typeof this.validateWorkflow> {
     return this.validateWorkflow();
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private compileWorkflow(_workflow: unknown): unknown {
     return _workflow;
   }
@@ -943,7 +933,6 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private visualizeExecutionResult(_result: unknown): string {
     return 'Execution visualization';
   }
@@ -953,18 +942,15 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     return JSON.stringify(workflow);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private validateRemoteChange(_event: unknown): { valid: boolean; reason?: string } {
     // 简化的验证逻辑
     return { valid: true };
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private applyRemoteChange(_event: unknown): void {
     // 应用远程变更
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private updateUIForChange(_event: unknown): void {
     // 更新UI
   }

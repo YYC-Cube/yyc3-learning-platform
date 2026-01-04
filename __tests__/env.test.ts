@@ -7,14 +7,14 @@
  * @copyright Copyright (c) 2025 YYC³
  * @license MIT
  */
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import { validateEnvConfig, getEnvInfo, isProduction, isDevelopment, isTest } from '../lib/env';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { validateEnvConfig, getEnvInfo, checkEnvironment } from '../lib/env';
 
 describe('环境变量验证模块', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    jest.resetModules();
+    // Vitest doesn't have resetModules, but we can clear env vars
     process.env = { ...originalEnv };
   });
 
@@ -40,8 +40,8 @@ describe('环境变量验证模块', () => {
     it('应该在生产环境中验证 JWT_SECRET 长度', () => {
       process.env.NODE_ENV = 'production';
       process.env.JWT_SECRET = 'short';
-      
-      expect(() => validateEnvConfig()).toThrow('JWT_SECRET 必须至少32个字符');
+
+      expect(() => validateEnvConfig()).toThrow(/JWT_SECRET.*至少.*32.*字符/);
     });
 
     it('应该在生产环境中验证数据库密码', () => {
@@ -106,26 +106,46 @@ describe('环境变量验证模块', () => {
   describe('环境检查函数', () => {
     it('应该正确识别开发环境', () => {
       process.env.NODE_ENV = 'development';
-      
-      expect(isDevelopment).toBe(true);
-      expect(isProduction).toBe(false);
-      expect(isTest).toBe(false);
+
+      const envCheck = checkEnvironment();
+
+      expect(envCheck.isDevelopment).toBe(true);
+      expect(envCheck.isProduction).toBe(false);
+      expect(envCheck.isTest).toBe(false);
+      expect(envCheck.nodeEnv).toBe('development');
     });
 
     it('应该正确识别生产环境', () => {
       process.env.NODE_ENV = 'production';
-      
-      expect(isDevelopment).toBe(false);
-      expect(isProduction).toBe(true);
-      expect(isTest).toBe(false);
+
+      const envCheck = checkEnvironment();
+
+      expect(envCheck.isDevelopment).toBe(false);
+      expect(envCheck.isProduction).toBe(true);
+      expect(envCheck.isTest).toBe(false);
+      expect(envCheck.nodeEnv).toBe('production');
     });
 
     it('应该正确识别测试环境', () => {
       process.env.NODE_ENV = 'test';
-      
-      expect(isDevelopment).toBe(false);
-      expect(isProduction).toBe(false);
-      expect(isTest).toBe(true);
+
+      const envCheck = checkEnvironment();
+
+      expect(envCheck.isDevelopment).toBe(false);
+      expect(envCheck.isProduction).toBe(false);
+      expect(envCheck.isTest).toBe(true);
+      expect(envCheck.nodeEnv).toBe('test');
+    });
+
+    it('应该在未设置NODE_ENV时默认为development', () => {
+      delete process.env.NODE_ENV;
+
+      const envCheck = checkEnvironment();
+
+      expect(envCheck.isDevelopment).toBe(true);
+      expect(envCheck.isProduction).toBe(false);
+      expect(envCheck.isTest).toBe(false);
+      expect(envCheck.nodeEnv).toBe('development');
     });
   });
 });

@@ -10,35 +10,36 @@
  */
 
 import { render, screen } from "@testing-library/react"
+import { describe, it, expect, vi, beforeEach } from "vitest"
 import { useRouter, usePathname } from "next/navigation"
 import Dashboard from "@/app/page"
 import { AIWidgetProvider } from "@/app/providers/AIWidgetContext"
 
 // Mock hooks
-jest.mock("next/navigation", () => ({
-  useRouter: jest.fn(),
-  usePathname: jest.fn(() => "/"),
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
+  usePathname: vi.fn(() => "/"),
 }))
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  clear: jest.fn(),
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  clear: vi.fn(),
 };
 global.localStorage = localStorageMock as any
 
-const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>
+const mockUseRouter = useRouter as unknown as ReturnType<typeof vi.fn>
 
 describe("Dashboard", () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
-      push: jest.fn(),
-      replace: jest.fn(),
-      prefetch: jest.fn(),
-      back: jest.fn(),
-      forward: jest.fn(),
-      refresh: jest.fn(),
+      push: vi.fn(),
+      replace: vi.fn(),
+      prefetch: vi.fn(),
+      back: vi.fn(),
+      forward: vi.fn(),
+      refresh: vi.fn(),
     })
     localStorageMock.getItem.mockReturnValue('true')
   })
@@ -53,17 +54,17 @@ describe("Dashboard", () => {
 
   it("正确渲染用户欢迎信息", () => {
     renderDashboard()
-    
+
     // 调试：查看渲染的所有文本内容
     // console.log(screen.debug())
-    
+
     // 检查欢迎信息（包含用户名称）
     expect(screen.getByText(/欢迎回来/)).toBeInTheDocument()
   })
 
   it("正确显示学习统计数据", () => {
     renderDashboard()
-    
+
     // 检查积分显示
     expect(screen.getByText("2450")).toBeInTheDocument()
     // 检查连续学习天数
@@ -72,23 +73,23 @@ describe("Dashboard", () => {
 
   it("正确渲染课程卡片", () => {
     renderDashboard()
-    
+
     // 检查课程标题
     expect(screen.getByText("GPT模型基础与应用")).toBeInTheDocument()
     expect(screen.getByText("Prompt Engineering实战")).toBeInTheDocument()
     expect(screen.getByText("AI应用开发框架")).toBeInTheDocument()
-    
+
     // 检查课程描述
     expect(screen.getByText("深入理解大语言模型的原理和实际应用")).toBeInTheDocument()
   })
 
   it("显示课程学习进度", () => {
     renderDashboard()
-    
+
     // 检查进度条
     const progressBars = screen.getAllByRole("progressbar")
     expect(progressBars).toHaveLength(3)
-    
+
     // 检查进度百分比
     expect(screen.getByText("75%").closest("div")).toBeInTheDocument()
     expect(screen.getByText("45%").closest("div")).toBeInTheDocument()
@@ -97,7 +98,7 @@ describe("Dashboard", () => {
 
   it("正确显示最近学习活动", () => {
     renderDashboard()
-    
+
     // 检查活动列表
     expect(screen.getByText("完成章节")).toBeInTheDocument()
     expect(screen.getByText("GPT-4 API集成实践")).toBeInTheDocument()
@@ -107,7 +108,7 @@ describe("Dashboard", () => {
 
   it("响应式布局元素存在", () => {
     renderDashboard()
-    
+
     // 检查响应式布局容器
     const navigationElements = screen.getAllByRole("navigation")
     expect(navigationElements).toHaveLength(2) // 顶部导航和底部导航

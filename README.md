@@ -40,6 +40,7 @@ YYC³ AI智能协作平台是一个企业级的智能化协作解决方案，集
 ### 🏆 五高五标五化
 
 #### 五高 (Five Highs)
+
 - **高性能** - 响应时间<200ms，支持10,000+并发
 - **高可靠性** - 99.9% SLA，自动故障恢复
 - **高安全性** - 端到端加密，零信任架构
@@ -47,6 +48,7 @@ YYC³ AI智能协作平台是一个企业级的智能化协作解决方案，集
 - **高可维护性** - 90%+代码覆盖率，自动化运维
 
 #### 五标 (Five Standards)
+
 - **国际标准** - ISO 27001/9001/20000认证
 - **行业标准** - 金融、医疗、云安全标准
 - **技术标准** - SOLID、DDD、12-Factor App
@@ -54,6 +56,7 @@ YYC³ AI智能协作平台是一个企业级的智能化协作解决方案，集
 - **合规标准** - GDPR、SOC 2、HIPAA
 
 #### 五化 (Five Modernizations)
+
 - **数字化** - 业务流程全面数字化
 - **智能化** - AI驱动的智能决策
 - **云原生化** - 容器化、微服务化
@@ -128,6 +131,7 @@ graph TB
 ## 📦 核心组件
 
 ### 🧠 AutonomousAIEngine - 自主AI引擎
+
 [📖 详细文档](./packages/autonomous-engine/README.md)
 
 ```typescript
@@ -147,6 +151,7 @@ const result = await engine.reason({
 ```
 
 **核心功能:**
+
 - 🎯 自主推理和规划
 - 🧠 上下文理解
 - 📈 决策优化
@@ -154,6 +159,7 @@ const result = await engine.reason({
 - 📚 持续学习
 
 ### 🔄 ModelAdapter - 智能模型适配器
+
 [📖 详细文档](./packages/model-adapter/README.md)
 
 ```typescript
@@ -174,6 +180,7 @@ const result = await adapter.processRequest({
 ```
 
 **核心功能:**
+
 - 🤖 多AI模型支持
 - 🎯 智能路由
 - 💰 成本优化
@@ -181,6 +188,7 @@ const result = await adapter.processRequest({
 - 📊 性能监控
 
 ### 🎓 LearningSystem - 三层学习系统
+
 [📖 详细文档](./packages/learning-system/README.md)
 
 ```typescript
@@ -198,6 +206,7 @@ await learning.generateInsights();
 ```
 
 **核心功能:**
+
 - 🧠 行为学习 - 模式识别和预测
 - 📈 策略学习 - 决策优化
 - 📚 知识学习 - 知识图谱构建
@@ -205,6 +214,7 @@ await learning.generateInsights();
 - 📊 学习效果评估
 
 ### 📊 FiveDimensionalManagement - 五维管理系统
+
 [📖 详细文档](./packages/five-dimensional-management/README.md)
 
 ```typescript
@@ -224,6 +234,7 @@ const insights = await management.getDashboardData();
 ```
 
 **五大维度:**
+
 - 🎯 **目标维度** - 战略目标、KPI跟踪
 - 💻 **技术维度** - 性能、可靠性、安全
 - 📊 **数据维度** - 质量、治理、分析
@@ -231,6 +242,7 @@ const insights = await management.getDashboardData();
 - 💰 **价值维度** - 财务、效率、ROI
 
 ### 🎨 EnterpriseAIWidget - 企业AI组件
+
 [📖 详细文档](./packages/enterprise-ai-widget/README.md)
 
 ```typescript
@@ -259,6 +271,7 @@ export default function App() {
 ```
 
 **核心功能:**
+
 - 💬 智能对话
 - 📈 实时洞察
 - 🎯 目标追踪
@@ -346,6 +359,7 @@ bun run websocket
 ```
 
 **示例目录**：
+
 - 📘 [基础使用示例](./examples/basic-usage/) - 核心组件的基本用法
 - 📗 [高级功能示例](./examples/advanced-features/) - 速率限制、加密、流式处理等
 - 📙 [REST API 示例](./examples/rest-api/) - RESTful API 完整调用示例
@@ -357,6 +371,7 @@ bun run websocket
 ## 📊 技术栈
 
 ### 前端技术
+
 - **React 18** - 用户界面框架
 - **TypeScript** - 类型安全的JavaScript
 - **Tailwind CSS** - 现代化CSS框架
@@ -364,12 +379,14 @@ bun run websocket
 - **Framer Motion** - 动画库
 
 ### 后端技术
+
 - **Node.js** - 运行时环境
 - **Express/Fastify** - Web框架
 - **TypeScript** - 类型安全
 - **Bun** - 高性能JavaScript运行时
 
 ### AI/ML技术
+
 - **TensorFlow.js** - 机器学习
 - **Brain.js** - 神经网络
 - **OpenAI API** - GPT模型
@@ -377,6 +394,7 @@ bun run websocket
 - **Google Gemini** - 多模态AI
 
 ### 数据存储
+
 - **MongoDB** - 文档数据库
 - **PostgreSQL** - 关系型数据库
 - **Redis** - 缓存存储
@@ -384,6 +402,7 @@ bun run websocket
 - **InfluxDB** - 时序数据库
 
 ### 部署运维
+
 - **Docker** - 容器化
 - **Kubernetes** - 容器编排
 - **Helm** - Kubernetes包管理
@@ -394,18 +413,21 @@ bun run websocket
 ## 📈 性能指标
 
 ### 响应性能
+
 - API平均响应时间: < 200ms
 - P99响应时间: < 500ms
 - 页面加载时间: < 2s
 - 并发用户数: 10,000+
 
 ### 可靠性
+
 - 系统可用性: 99.9%
 - 错误率: < 0.1%
 - 故障恢复时间: < 5分钟
 - 数据持久性: 99.999%
 
 ### 扩展性
+
 - 水平扩展: 自动
 - 垂直扩展: 支持
 - 微服务: 7个核心服务
@@ -414,18 +436,21 @@ bun run websocket
 ## 🔒 安全特性
 
 ### 认证授权
+
 - JWT令牌认证
 - 多因素认证支持
 - RBAC权限控制
 - OAuth 2.0集成
 
 ### 数据保护
+
 - 端到端加密(TLS 1.3)
 - 数据库加密
 - 敏感信息脱敏
 - GDPR合规
 
 ### 安全监控
+
 - 实时威胁检测
 - 异常行为分析
 - 安全审计日志
@@ -436,6 +461,7 @@ bun run websocket
 ### 认证与授权
 
 #### JWT令牌认证
+
 所有API请求都需要在请求头中包含有效的JWT令牌：
 
 ```http
@@ -443,6 +469,7 @@ Authorization: Bearer <your-jwt-token>
 ```
 
 #### 获取访问令牌
+
 ```http
 POST /api/v1/auth/login
 Content-Type: application/json
@@ -469,6 +496,7 @@ Response:
 ```
 
 #### 刷新令牌
+
 ```http
 POST /api/v1/auth/refresh
 Content-Type: application/json
@@ -513,6 +541,7 @@ API请求受速率限制保护，默认配置如下：
 #### 自主AI引擎
 
 ##### 1. 智能推理
+
 ```http
 POST /api/v1/engine/reason
 Authorization: Bearer <token>
@@ -579,6 +608,7 @@ Error Response (400 Bad Request):
 ```
 
 ##### 2. 任务规划
+
 ```http
 POST /api/v1/engine/plan
 Authorization: Bearer <token>
@@ -651,6 +681,7 @@ Response (200 OK):
 ```
 
 ##### 3. 执行任务
+
 ```http
 POST /api/v1/engine/execute
 Authorization: Bearer <token>
@@ -695,6 +726,7 @@ Response (200 OK):
 ```
 
 ##### 4. 查询引擎状态
+
 ```http
 GET /api/v1/engine/status
 Authorization: Bearer <token>
@@ -729,6 +761,7 @@ Response (200 OK):
 #### 模型适配器
 
 ##### 1. 处理请求
+
 ```http
 POST /api/v1/adapter/process
 Authorization: Bearer <token>
@@ -775,6 +808,7 @@ Response (200 OK):
 ```
 
 ##### 2. 获取可用模型
+
 ```http
 GET /api/v1/adapter/models
 Authorization: Bearer <token>
@@ -825,6 +859,7 @@ Response (200 OK):
 ```
 
 ##### 3. 更新配置
+
 ```http
 PUT /api/v1/adapter/config
 Authorization: Bearer <token>
@@ -859,6 +894,7 @@ Response (200 OK):
 ```
 
 ##### 4. 获取性能指标
+
 ```http
 GET /api/v1/adapter/metrics
 Authorization: Bearer <token>
@@ -915,6 +951,7 @@ Response (200 OK):
 #### 学习系统
 
 ##### 1. 记录交互
+
 ```http
 POST /api/v1/learning/record
 Authorization: Bearer <token>
@@ -953,6 +990,7 @@ Response (200 OK):
 ```
 
 ##### 2. 获取学习洞察
+
 ```http
 GET /api/v1/learning/insights
 Authorization: Bearer <token>
@@ -1009,6 +1047,7 @@ Response (200 OK):
 ```
 
 ##### 3. 训练模型
+
 ```http
 POST /api/v1/learning/train
 Authorization: Bearer <token>
@@ -1041,6 +1080,7 @@ Response (200 OK):
 ```
 
 ##### 4. 获取学习模型
+
 ```http
 GET /api/v1/learning/models
 Authorization: Bearer <token>
@@ -1076,6 +1116,7 @@ Response (200 OK):
 #### 五维管理
 
 ##### 1. 创建目标
+
 ```http
 POST /api/v1/management/goals
 Authorization: Bearer <token>
@@ -1120,6 +1161,7 @@ Response (200 OK):
 ```
 
 ##### 2. 获取仪表板数据
+
 ```http
 GET /api/v1/management/dashboard
 Authorization: Bearer <token>
@@ -1196,6 +1238,7 @@ Response (200 OK):
 ```
 
 ##### 3. 创建告警
+
 ```http
 POST /api/v1/management/alerts
 Authorization: Bearer <token>
@@ -1227,6 +1270,7 @@ Response (200 OK):
 ```
 
 ##### 4. 获取报告
+
 ```http
 GET /api/v1/management/reports
 Authorization: Bearer <token>
@@ -1496,6 +1540,7 @@ result = client.adapter.process(
 YYC³ 平台提供了全面的最佳实践指南，涵盖认证管理、错误处理、性能优化、安全防护、监控日志、测试策略、代码规范和部署策略等方面。
 
 **核心最佳实践**：
+
 - 🔐 **认证管理** - 安全的令牌管理和刷新机制
 - ⚠️ **错误处理** - 统一的错误处理和重试策略
 - ⚡ **性能优化** - 缓存、批处理和异步优化
@@ -1538,6 +1583,7 @@ bun test:security
 ## 📖 文档
 
 ### 架构文档
+
 - [系统架构设计](./docs/architecture.md)
 - [微服务架构](./docs/microservices.md)
 - [数据模型](./docs/data-model.md)
@@ -1545,6 +1591,7 @@ bun test:security
 - [五高五标五化实现指南](./docs/FIVE_HIGH_FIVE_STANDARD_FIVE_MODERNIZATION.md)
 
 ### 开发文档
+
 - [开发指南](./docs/development.md)
 - [API参考](./docs/api-reference.md)
 - [部署指南](./docs/deployment.md)
@@ -1552,6 +1599,7 @@ bun test:security
 - [贡献指南](./CONTRIBUTING.md)
 
 ### 用户文档
+
 - [快速入门](./docs/quick-start.md)
 - [用户手册](./docs/user-manual.md)
 - [最佳实践](./docs/best-practices.md)
@@ -1594,15 +1642,18 @@ chore: 构建工具或辅助工具的变动
 ## 🏆 致谢
 
 ### 核心团队
+
 - **YYC³ AI Team** - 架构设计与开发
 - **贡献者** - 社区贡献者
 
 ### 技术支持
+
 - **Discord** - [yyccommunity](https://discord.gg/yyccommunity)
 - **GitHub** - [issues](https://github.com/YYC-Cube/yyc3-learning-platform/issues)
 - **邮箱** - [admin@0379.email](mailto:admin@0379.email)
 
 ### 特别感谢
+
 - 所有开源项目的贡献者
 - YYC³社区的反馈和支持
 - 技术顾问的指导
@@ -1610,17 +1661,20 @@ chore: 构建工具或辅助工具的变动
 ## 🌐 相关链接
 
 ### 官方网站
+
 - **主站**: [https://yyc3.0379.email](https://yyc3.0379.email)
 - **文档中心**: [https://docs.yyc3.0379.email](https://docs.yyc3.0379.email)
 - **API文档**: [https://api.yyc3.0379.email](https://api.yyc3.0379.email)
 - **演示平台**: [https://demo.yyc3.0379.email](https://demo.yyc3.0379.email)
 
 ### 代码仓库
+
 - **GitHub**: [https://github.com/YYC-Cube/yyc3-learning-platform](https://github.com/YYC-Cube/yyc3-learning-platform)
 - **包管理**: [npm packages](https://www.npmjs.com/org/yyc3)
 - **Docker镜像**: [Docker Hub](https://hub.docker.com/u/yyc3)
 
 ### 社区资源
+
 - **技术博客**: [blog.yyc3.0379.email](https://blog.yyc3.0379.email)
 - **用户社区**: [community.yyc3.0379.email](https://community.yyc3.0379.email)
 - **开发者论坛**: [dev.yyc3.0379.email](https://dev.yyc3.0379.email)
@@ -1630,6 +1684,7 @@ chore: 构建工具或辅助工具的变动
 ## 🎉 项目状态
 
 ### 📊 完成进度
+
 - ✅ **核心架构**: 100% 完成
 - ✅ **五大系统**: 100% 实现
 - ✅ **微服务部署**: 100% 完成
@@ -1637,6 +1692,7 @@ chore: 构建工具或辅助工具的变动
 - ✅ **文档体系**: 100% 完善
 
 ### 🔥 最新特性
+
 - 🧠 自主AI引擎 v2.0
 - 🔄 智能模型适配器 v2.0
 - 🎓 三层学习系统 v1.0
@@ -1644,6 +1700,7 @@ chore: 构建工具或辅助工具的变动
 - 🎨 企业AI组件 v2.0
 
 ### 📈 平台数据
+
 - **代码行数**: 50,000+
 - **TypeScript文件**: 200+
 - **React组件**: 100+

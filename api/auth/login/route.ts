@@ -8,18 +8,30 @@ import { loginSchema } from '@/lib/validators'
 import { query } from '@/lib/database'
 import { generateToken, verifyPassword } from '@/lib/auth'
 import { logger } from '@/lib/logger'
+import { checkRateLimit, getClientIp, RateLimits, createRateLimitResponse } from '@/lib/security/rate-limiter'
+import { applySecurityHeadersToNextResponse } from '@/lib/security/headers'
 import type { DbUser } from '@/types/user'
 
 export async function POST(request: Request) {
   try {
+    // Rate limiting
+    const clientIp = getClientIp(request)
+    const rateLimitResult = await checkRateLimit(`login:${clientIp}`, RateLimits.auth)
+
+    if (!rateLimitResult.allowed) {
+      return createRateLimitResponse(rateLimitResult.resetTime)
+    }
+
     const body = await request.json()
-    
+
     // 验证请求数据
     const validation = loginSchema.safeParse(body)
     if (!validation.success) {
-      return NextResponse.json(
-        { error: '请求数据格式错误', details: validation.error.errors },
-        { status: 400 }
+      return applySecurityHeadersToNextResponse(
+        NextResponse.json(
+          { error: '请求数据格式错误', details: validation.error.errors },
+          { status: 400 }
+        )
       )
     }
 
@@ -32,9 +44,11 @@ export async function POST(request: Request) {
     )
 
     if (users.length === 0) {
-      return NextResponse.json(
-        { error: '邮箱或密码错误' },
-        { status: 401 }
+      return applySecurityHeadersToNextResponse(
+        NextResponse.json(
+          { error: '邮箱或密码错误' },
+          { status: 401 }
+        )
       )
     }
 
@@ -43,9 +57,11 @@ export async function POST(request: Request) {
     // 验证密码
     const isPasswordValid = await verifyPassword(password, user.password_hash || '')
     if (!isPasswordValid) {
-      return NextResponse.json(
-        { error: '邮箱或密码错误' },
-        { status: 401 }
+      return applySecurityHeadersToNextResponse(
+        NextResponse.json(
+          { error: '邮箱或密码错误' },
+          { status: 401 }
+        )
       )
     }
 
@@ -65,16 +81,25 @@ export async function POST(request: Request) {
     // 返回用户信息（不包含密码）
     const { password_hash: _, ...userWithoutPassword } = user
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       success: true,
       token,
       user: userWithoutPassword,
     })
+
+    // Apply security headers
+    response.headers.set('X-RateLimit-Limit', RateLimits.auth.limit.toString())
+    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
+    response.headers.set('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString())
+
+    return applySecurityHeadersToNextResponse(response)
   } catch (error) {
     logger.error('Login error:', error)
-    return NextResponse.json(
-      { error: '服务器错误，请稍后重试' },
-      { status: 500 }
+    return applySecurityHeadersToNextResponse(
+      NextResponse.json(
+        { error: '服务器错误，请稍后重试' },
+        { status: 500 }
+      )
     )
   }
 }

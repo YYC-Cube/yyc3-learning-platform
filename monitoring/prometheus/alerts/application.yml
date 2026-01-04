@@ -1,0 +1,118 @@
+# Alert rules for YYC³ Learning Platform
+
+groups:
+  - name: application_alerts
+    interval: 30s
+    rules:
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(errors_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors/sec"
+
+      # Critical error rate
+      - alert: CriticalErrorRate
+        expr: rate(errors_total[5m]) > 50
+        for: 2m
+        labels:
+          severity: critical
+          component: application
+        annotations:
+          summary: "Critical error rate detected"
+          description: "Error rate is {{ $value }} errors/sec"
+
+      # High HTTP 5xx rate
+      - alert: HighHTTP5xxRate
+        expr: rate(http_requests_5xx_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High HTTP 5xx rate"
+          description: "{{ $value }} 5xx responses/sec"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: system_memory_bytes{type="heap_used"} / system_memory_bytes{type="heap_total"} > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: application
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      # Critical memory usage
+      - alert: CriticalMemoryUsage
+        expr: system_memory_bytes{type="heap_used"} / system_memory_bytes{type="heap_total"} > 0.95
+        for: 2m
+        labels:
+          severity: critical
+          component: application
+        annotations:
+          summary: "Critical memory usage"
+          description: "Memory usage is {{ $value | humanizePercentage }}"
+
+      # High response time
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_ms_bucket[5m])) > 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: api
+        annotations:
+          summary: "High API response time"
+          description: "P95 response time is {{ $value }}ms"
+
+      # Service down
+      - alert: ServiceDown
+        expr: up{job="learning-platform"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: application
+        annotations:
+          summary: "Service is down"
+          description: "Learning Platform service has been down for more than 2 minutes"
+
+  - name: infrastructure_alerts
+    interval: 30s
+    rules:
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: (100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)) > 80
+        for: 10m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is {{ $value }}%"
+
+      # Disk space low
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 20
+        for: 10m
+        labels:
+          severity: warning
+          component: infrastructure
+        annotations:
+          summary: "Disk space low"
+          description: "Only {{ $value }}% disk space remaining"
+
+      # Disk space critical
+      - alert: DiskSpaceCritical
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          component: infrastructure
+        annotations:
+          summary: "Disk space critical"
+          description: "Only {{ $value }}% disk space remaining"

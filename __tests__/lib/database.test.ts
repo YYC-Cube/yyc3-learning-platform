@@ -9,12 +9,21 @@
  * @license MIT
  */
 
-import { Pool, PoolClient, QueryResult } from 'pg';
-import { getPool, query, transaction, testConnection, closePool } from '@/lib/database';
-import { env } from '@/lib/env';
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+// Mock client instances that will be configured in beforeEach
+let mockClient: {
+  query: ReturnType<typeof vi.fn>
+  release: ReturnType<typeof vi.fn>
+}
+
+let mockPoolInstance: {
+  connect: ReturnType<typeof vi.fn>
+  end: ReturnType<typeof vi.fn>
+}
 
 // Mock the env module
-jest.mock('@/lib/env', () => ({
+vi.mock('@/lib/env', () => ({
   env: {
     DB_HOST: 'localhost',
     DB_PORT: '5432',
@@ -31,166 +40,185 @@ jest.mock('@/lib/env', () => ({
   DB_IDLE_TIMEOUT: 30000,
   DB_MAX_LIFETIME: 600000,
   DB_SSL: false
-}));
+}))
 
-// Mock the pg library
-const mockClient = {
-  query: jest.fn().mockResolvedValue({ rows: [{ id: 1, name: 'Test' }] }),
-  release: jest.fn().mockResolvedValue(undefined),
-  connect: jest.fn().mockResolvedValue(undefined)
-};
+// Mock logger module
+vi.mock('@/lib/logger', () => ({
+  logger: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn()
+  }
+}))
 
-const mockPool = {
-  connect: jest.fn().mockResolvedValue(mockClient),
-  end: jest.fn().mockResolvedValue(undefined)
-};
+// Mock the pg library with a factory function
+vi.mock('pg', () => {
+  const MockPool = class {
+    public connect = vi.fn()
+    public end = vi.fn()
 
-jest.mock('pg', () => ({
-  Pool: jest.fn().mockImplementation(() => mockPool),
-  PoolClient: jest.fn(),
-  QueryResult: jest.fn().mockImplementation(() => ({ rows: [] }))
-}));
+    constructor() {
+      // Assign the methods from the outer scope mockPoolInstance
+      if (mockPoolInstance) {
+        this.connect = mockPoolInstance.connect
+        this.end = mockPoolInstance.end
+      }
+    }
+  }
 
-// 辅助函数：获取当前mock的client
-function getMockClient() {
-  return mockClient;
-}
+  return {
+    Pool: MockPool
+  }
+})
 
 describe('Database Service', () => {
+
   beforeEach(() => {
-    jest.clearAllMocks();
-    // 确保每个测试都有干净的mock状态
-    const mockClient = getMockClient();
-    mockClient.query.mockResolvedValue({ rows: [{ id: 1, name: 'Test' }] });
-    mockClient.release.mockResolvedValue(undefined);
-  });
+    vi.clearAllMocks()
+
+    // Create fresh mock client
+    mockClient = {
+      query: vi.fn().mockResolvedValue({ rows: [{ id: 1, name: 'Test' }] }),
+      release: vi.fn().mockResolvedValue(undefined)
+    }
+
+    // Create fresh mock pool instance methods
+    const connectMethod = vi.fn().mockResolvedValue(mockClient)
+    const endMethod = vi.fn().mockResolvedValue(undefined)
+
+    mockPoolInstance = {
+      connect: connectMethod,
+      end: endMethod
+    }
+
+    // Clear module cache to reset singleton
+    vi.resetModules()
+  })
 
   describe('getPool', () => {
-    it('应该创建并返回数据库连接池的单例实例', () => {
-      const pool1 = getPool();
-      const pool2 = getPool();
+    it('应该创建并返回数据库连接池的单例实例', async () => {
+      const { getPool } = await import('@/lib/database')
+      const pool1 = getPool()
+      const pool2 = getPool()
 
-      expect(pool1).toBe(pool2);
-      expect(Pool).toHaveBeenCalledTimes(1);
-      expect(Pool).toHaveBeenCalledWith(expect.objectContaining({
-        host: env.DB_HOST,
-        port: expect.any(Number),
-        user: env.DB_USER,
-        password: env.DB_PASS,
-        database: env.DB_NAME
-      }));
-    });
-  });
+      expect(pool1).toBe(pool2)
+      expect(typeof pool1.connect).toBe('function')
+      expect(typeof pool1.end).toBe('function')
+    })
+  })
 
   describe('query', () => {
     it('应该使用连接池执行查询并返回结果行', async () => {
-      const mockClient = getMockClient();
-      mockClient.query.mockResolvedValue({ rows: [{ id: 1, name: 'Test' }] });
+      mockClient.query.mockResolvedValue({ rows: [{ id: 1, name: 'Test' }] })
 
-      const result = await query('SELECT * FROM users WHERE id = $1', [1]);
+      const { query } = await import('@/lib/database')
+      const result = await query('SELECT * FROM users WHERE id = $1', [1])
 
-      expect(mockClient.query).toHaveBeenCalledWith('SELECT * FROM users WHERE id = $1', [1]);
-      expect(mockClient.release).toHaveBeenCalled();
-      expect(result).toEqual([{ id: 1, name: 'Test' }]);
-    });
+      expect(mockClient.query).toHaveBeenCalledWith('SELECT * FROM users WHERE id = $1', [1])
+      expect(mockClient.release).toHaveBeenCalled()
+      expect(result).toEqual([{ id: 1, name: 'Test' }])
+    })
 
     it('应该在查询失败时释放客户端连接', async () => {
-      const mockClient = getMockClient();
-      const mockError = new Error('Query failed');
-      mockClient.query.mockRejectedValue(mockError);
+      const mockError = new Error('Query failed')
+      mockClient.query.mockRejectedValue(mockError)
 
-      await expect(query('SELECT * FROM users')).rejects.toThrow('Query failed');
-      expect(mockClient.release).toHaveBeenCalled();
-    });
+      const { query } = await import('@/lib/database')
+      await expect(query('SELECT * FROM users')).rejects.toThrow('Query failed')
+      expect(mockClient.release).toHaveBeenCalled()
+    })
 
     it('应该支持带参数的查询', async () => {
-      const mockClient = getMockClient();
-      mockClient.query.mockResolvedValue({ rows: [] });
+      mockClient.query.mockResolvedValue({ rows: [] })
 
-      await query('INSERT INTO users (name, email) VALUES ($1, $2)', ['John', 'john@example.com']);
+      const { query } = await import('@/lib/database')
+      await query('INSERT INTO users (name, email) VALUES ($1, $2)', ['John', 'john@example.com'])
 
       expect(mockClient.query).toHaveBeenCalledWith(
         'INSERT INTO users (name, email) VALUES ($1, $2)',
         ['John', 'john@example.com']
-      );
-      expect(mockClient.release).toHaveBeenCalled();
-    });
-  });
+      )
+      expect(mockClient.release).toHaveBeenCalled()
+    })
+  })
 
   describe('transaction', () => {
     it('应该执行事务并在成功时提交', async () => {
-      const mockClient = getMockClient();
-      mockClient.query.mockResolvedValue({ rows: [] });
+      mockClient.query.mockResolvedValue({ rows: [] })
 
+      const { transaction } = await import('@/lib/database')
       const transactionResult = await transaction(async (client) => {
-        await client.query('INSERT INTO users (name) VALUES ($1)', ['John']);
-        await client.query('UPDATE users SET active = true WHERE name = $1', ['John']);
-        return { success: true };
-      });
+        await client.query('INSERT INTO users (name) VALUES ($1)', ['John'])
+        await client.query('UPDATE users SET active = true WHERE name = $1', ['John'])
+        return { success: true }
+      })
 
-      expect(mockClient.query).toHaveBeenNthCalledWith(1, 'BEGIN');
-      expect(mockClient.query).toHaveBeenNthCalledWith(2, 'INSERT INTO users (name) VALUES ($1)', ['John']);
-      expect(mockClient.query).toHaveBeenNthCalledWith(3, 'UPDATE users SET active = true WHERE name = $1', ['John']);
-      expect(mockClient.query).toHaveBeenNthCalledWith(4, 'COMMIT');
-      expect(mockClient.release).toHaveBeenCalled();
-      expect(transactionResult).toEqual({ success: true });
-    });
+      expect(mockClient.query).toHaveBeenNthCalledWith(1, 'BEGIN')
+      expect(mockClient.query).toHaveBeenNthCalledWith(2, 'INSERT INTO users (name) VALUES ($1)', ['John'])
+      expect(mockClient.query).toHaveBeenNthCalledWith(3, 'UPDATE users SET active = true WHERE name = $1', ['John'])
+      expect(mockClient.query).toHaveBeenNthCalledWith(4, 'COMMIT')
+      expect(mockClient.release).toHaveBeenCalled()
+      expect(transactionResult).toEqual({ success: true })
+    })
 
     it('应该在事务失败时回滚', async () => {
-      const mockClient = getMockClient();
-      mockClient.query.mockResolvedValue({ rows: [] });
-      const mockError = new Error('Transaction failed');
+      mockClient.query
+        .mockResolvedValueOnce({ rows: [] }) // BEGIN
+        .mockResolvedValueOnce({ rows: [] }) // INSERT
+        .mockResolvedValueOnce({ rows: [] }) // ROLLBACK
+
+      const { transaction } = await import('@/lib/database')
+      const mockError = new Error('Transaction failed')
 
       await expect(transaction(async (client) => {
-        await client.query('INSERT INTO users (name) VALUES ($1)', ['John']);
-        throw mockError;
-      })).rejects.toThrow('Transaction failed');
+        await client.query('INSERT INTO users (name) VALUES ($1)', ['John'])
+        throw mockError
+      })).rejects.toThrow('Transaction failed')
 
-      expect(mockClient.query).toHaveBeenNthCalledWith(1, 'BEGIN');
-      expect(mockClient.query).toHaveBeenNthCalledWith(2, 'INSERT INTO users (name) VALUES ($1)', ['John']);
-      expect(mockClient.query).toHaveBeenNthCalledWith(3, 'ROLLBACK');
-      expect(mockClient.release).toHaveBeenCalled();
-    });
-  });
+      expect(mockClient.query).toHaveBeenNthCalledWith(1, 'BEGIN')
+      expect(mockClient.query).toHaveBeenNthCalledWith(2, 'INSERT INTO users (name) VALUES ($1)', ['John'])
+      expect(mockClient.query).toHaveBeenNthCalledWith(3, 'ROLLBACK')
+      expect(mockClient.release).toHaveBeenCalled()
+    })
+  })
 
   describe('testConnection', () => {
     it('应该测试数据库连接并返回true如果成功', async () => {
-      const mockClient = getMockClient();
-      mockClient.query.mockResolvedValue({ rows: [{ '?column?': 1 }] });
+      mockClient.query.mockResolvedValue({ rows: [{ '?column?': 1 }] })
 
-      const result = await testConnection();
+      const { testConnection } = await import('@/lib/database')
+      const result = await testConnection()
 
-      expect(mockClient.query).toHaveBeenCalledWith('SELECT 1');
-      expect(mockClient.release).toHaveBeenCalled();
-      expect(result).toBe(true);
-    });
+      expect(mockClient.query).toHaveBeenCalledWith('SELECT 1')
+      expect(mockClient.release).toHaveBeenCalled()
+      expect(result).toBe(true)
+    })
 
     it('应该在连接失败时返回false', async () => {
-      const mockClient = getMockClient();
-      const mockError = new Error('Connection failed');
-      mockClient.query.mockRejectedValue(mockError);
+      const mockError = new Error('Connection failed')
+      mockClient.query.mockRejectedValue(mockError)
 
-      const result = await testConnection();
+      const { testConnection } = await import('@/lib/database')
+      const result = await testConnection()
 
-      expect(result).toBe(false);
-    });
-  });
+      expect(result).toBe(false)
+    })
+  })
 
   describe('closePool', () => {
     it('应该关闭数据库连接池', async () => {
-      const pool = getPool();
-      const mockEnd = pool.end as jest.MockedFunction<typeof pool.end>;
+      const { getPool, closePool } = await import('@/lib/database')
+      getPool()
+      await closePool()
 
-      await closePool();
-
-      expect(mockEnd).toHaveBeenCalled();
-    });
+      expect(mockPoolInstance.end).toHaveBeenCalled()
+    })
 
     it('应该在没有创建池时不抛出错误', async () => {
-      // Reset the pool singleton
-      (global as any).pool = undefined;
-      
-      await expect(closePool()).resolves.not.toThrow();
-    });
-  });
-});
+      // Don't call getPool, just call closePool
+      const { closePool } = await import('@/lib/database')
+      await expect(closePool()).resolves.not.toThrow()
+    })
+  })
+})

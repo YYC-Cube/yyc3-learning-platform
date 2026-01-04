@@ -9,21 +9,21 @@
  * @license MIT
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { 
-  AppError, ValidationError, AuthenticationError, AuthorizationError, 
-  NotFoundError, DatabaseError, ExternalApiError, RateLimitError, 
-  ErrorType, logError, handleApiError, createApiResponse 
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import {
+  AppError, ValidationError, AuthenticationError, AuthorizationError,
+  NotFoundError, DatabaseError, ExternalApiError, RateLimitError,
+  ErrorType, logError, handleApiError, createApiResponse
 } from '@/lib/error-handler';
 
 describe('错误处理模块', () => {
   // 清除控制台错误
   beforeEach(() => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('自定义错误类', () => {

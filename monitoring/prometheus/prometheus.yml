@@ -1,0 +1,57 @@
+# Prometheus configuration for YYC³ Learning Platform
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'yyc3-learning-platform'
+    environment: 'development'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager:9093
+
+# Rule files
+rule_files:
+  - '/etc/prometheus/alerts/*.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Learning Platform API
+  - job_name: 'learning-platform'
+    scrape_interval: 15s
+    metrics_path: '/api/metrics'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:3000'
+        labels:
+          service: 'learning-platform'
+          tier: 'application'
+
+  # Node Exporter (system metrics)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets:
+          - 'node-exporter:9100'
+        labels:
+          service: 'node-exporter'
+          tier: 'infrastructure'
+
+  # Next.js application (if running separately)
+  - job_name: 'nextjs-app'
+    scrape_interval: 30s
+    metrics_path: '/api/metrics'
+    static_configs:
+      - targets:
+          - 'host.docker.internal:3000'
+        labels:
+          service: 'nextjs'
+          tier: 'frontend'

@@ -1,0 +1,60 @@
+# AlertManager configuration
+
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'localhost:587'
+  smtp_from: 'alertmanager@yyc3-learning.com'
+  smtp_auth_username: 'alertmanager@yyc3-learning.com'
+  smtp_auth_password: 'password'
+
+# Templates
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route configuration
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 12h
+  receiver: 'default'
+
+  routes:
+    # Critical alerts go immediately
+    - match:
+        severity: critical
+      receiver: 'critical'
+      group_wait: 10s
+      repeat_interval: 5m
+
+    # Warning alerts
+    - match:
+        severity: warning
+      receiver: 'warnings'
+      group_wait: 5m
+      repeat_interval: 1h
+
+# Receivers configuration
+receivers:
+  - name: 'default'
+    webhook_configs:
+      - url: 'http://localhost:5001/alerts'
+
+  - name: 'critical'
+    webhook_configs:
+      - url: 'http://localhost:5001/alerts'
+        send_resolved: true
+
+  - name: 'warnings'
+    webhook_configs:
+      - url: 'http://localhost:5001/alerts'
+        send_resolved: true
+
+# Inhibition rules
+inhibit_rules:
+  # Inhibit warning if critical is firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']

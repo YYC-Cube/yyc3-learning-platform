@@ -15,8 +15,10 @@ export class Logger {
   private config: LoggerConfig;
 
   constructor(config?: Partial<LoggerConfig>) {
+    // Edge Runtime 和客户端安全的环境检测
+    // 完全避免使用任何 Node.js API
     this.config = {
-      level: process.env.NODE_ENV === 'production' ? LogLevel.WARN : LogLevel.INFO,
+      level: LogLevel.INFO, // 默认INFO级别，避免环境检测问题
       enableTimestamp: true,
       ...config
     };

@@ -127,7 +127,11 @@ describe('ErrorBoundary', () => {
     expect(mockBack).toHaveBeenCalled();
 
     // 清理
-    delete (window as Partial<Window>).history;
+    Object.defineProperty(window, 'history', {
+      value: undefined,
+      writable: true,
+      configurable: true,
+    });
   });
 
   it('应该记录错误信息到控制台', () => {

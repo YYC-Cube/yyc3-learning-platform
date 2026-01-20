@@ -37,6 +37,65 @@ export function AdvancedExam({ examType, timeLimit = 90, onComplete }: AdvancedE
   const [showResults, setShowResults] = useState(false)
   const [results, setResults] = useState<AdvancedExamResults | null>(null)
 
+  const handleSubmitExam = useCallback(() => {
+    const timeUsed = timeLimit * 60 - timeRemaining
+    let totalPoints = 0
+    let earnedPoints = 0
+    const feedback: Record<string, string> = {}
+
+    examQuestions.forEach((question) => {
+      totalPoints += question.points
+      const userAnswer = answers[question.id] || ""
+
+      if (question.type === "definition") {
+        const keywords = (question.referenceAnswer || "").split(/[，,、；;。]/).map(k => k.trim())
+        const matchedKeywords = keywords.filter(k => userAnswer.toLowerCase().includes(k.toLowerCase()))
+        const pointsEarned = Math.round((matchedKeywords.length / keywords.length) * question.points)
+        earnedPoints += pointsEarned
+
+        if (pointsEarned < question.points) {
+          feedback[question.id] = `关键点匹配度: ${matchedKeywords.length}/${keywords.length}`
+        }
+      } else if (question.type === "comparison") {
+        const userPoints = userAnswer.split(/[，,、；;。]/).map(p => p.trim())
+        const requiredPoints = (question.referenceAnswer || "").split(/[，,、；;。]/).map(p => p.trim())
+        const matchedPoints = requiredPoints.filter(p => userPoints.some(up => up.includes(p)))
+        const pointsEarned = Math.round((matchedPoints.length / requiredPoints.length) * question.points)
+        earnedPoints += pointsEarned
+
+        if (pointsEarned < question.points) {
+          feedback[question.id] = `对比点匹配度: ${matchedPoints.length}/${requiredPoints.length}`
+        }
+      } else if (question.type === "application") {
+        const requiredKeywords = (question.referenceAnswer || "").split(/[，,、；;。]/).map(k => k.trim())
+        const matchedKeywords = requiredKeywords.filter(k => userAnswer.toLowerCase().includes(k.toLowerCase()))
+        const pointsEarned = Math.round((matchedKeywords.length / requiredKeywords.length) * question.points)
+        earnedPoints += pointsEarned
+
+        if (pointsEarned < question.points) {
+          feedback[question.id] = `应用要点匹配度: ${matchedKeywords.length}/${requiredKeywords.length}`
+        }
+      }
+    })
+
+    const score = Math.round((earnedPoints / totalPoints) * 100)
+
+    const examResults: AdvancedExamResults = {
+      totalQuestions: examQuestions.length,
+      totalPoints,
+      earnedPoints,
+      score,
+      timeUsed,
+      answers,
+      feedback,
+    }
+
+    setResults(examResults)
+    setExamCompleted(true)
+    setShowResults(true)
+    onComplete?.(examResults)
+  }, [answers, examQuestions, timeLimit, timeRemaining, onComplete])
+
   // 初始化考试
   useEffect(() => {
     let questions: AdvancedExamQuestion[] = []
@@ -93,56 +152,6 @@ export function AdvancedExam({ examType, timeLimit = 90, onComplete }: AdvancedE
       [questionId]: answer,
     }))
   }
-
-  const handleSubmitExam = useCallback(() => {
-    const timeUsed = timeLimit * 60 - timeRemaining
-    let totalPoints = 0
-    let earnedPoints = 0
-    const feedback: Record<string, string> = {}
-
-    examQuestions.forEach((question) => {
-      totalPoints += question.points
-      const userAnswer = answers[question.id] || ""
-
-      // 简单的评分逻辑（实际应用中需要更复杂的AI评分）
-      if (userAnswer.trim().length > 0) {
-        const answerLength = userAnswer.trim().length
-        const hasKeywords = question.keywords.some((keyword) =>
-          userAnswer.toLowerCase().includes(keyword.toLowerCase()),
-        )
-
-        let score = 0
-        if (question.type === "definition") {
-          score = hasKeywords && answerLength > 100 ? question.points * 0.8 : question.points * 0.5
-        } else if (question.type === "comparison") {
-          score = hasKeywords && answerLength > 200 ? question.points * 0.8 : question.points * 0.6
-        } else if (question.type === "application") {
-          score = hasKeywords && answerLength > 150 ? question.points * 0.8 : question.points * 0.6
-        }
-
-        earnedPoints += score
-        feedback[question.id] =
-          `得分：${score.toFixed(1)}/${question.points}分。${hasKeywords ? "包含关键概念" : "建议补充关键概念"}。`
-      } else {
-        feedback[question.id] = `未作答，得分：0/${question.points}分。`
-      }
-    })
-
-    const examResults: AdvancedExamResults = {
-      totalQuestions: examQuestions.length,
-      totalPoints,
-      earnedPoints,
-      score: Math.round((earnedPoints / totalPoints) * 100),
-      timeUsed,
-      answers,
-      feedback,
-    }
-
-    setResults(examResults)
-    setExamCompleted(true)
-    setShowResults(true)
-    onComplete?.(examResults)
-  }, [timeLimit, timeRemaining, examQuestions, answers, onComplete])
 
   const currentQuestion = examQuestions[currentQuestionIndex]
 

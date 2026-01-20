@@ -3,12 +3,34 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import axios from 'axios';
-import { AgenticCore } from '@/packages/autonomous-engine/src/core/AgenticCore';
-import { toolRegistry } from '@/packages/tool-registry/src/ToolRegistry';
-import { vectorKnowledgeBase } from '@/packages/knowledge-base/src/VectorKnowledgeBase';
-import { metaLearningLayer } from '@/packages/learning-system/src/MetaLearningLayer';
-import { EventDispatcher, eventDispatcher } from '@/packages/core-engine/src/EventDispatcher';
-import { logger } from '@/lib/logger';
+import { AgenticCore } from '../../../packages/autonomous-engine/src/core/AgenticCore';
+import { ToolRegistry, RegisteredTool } from '../../../packages/tool-registry/src/ToolRegistry';
+import { VectorKnowledgeBase } from '../../../packages/knowledge-base/src/VectorKnowledgeBase';
+import { MetaLearningLayer } from '../../../packages/learning-system/src/MetaLearningLayer';
+import { LearningSystem } from '../../../packages/learning-system/src/LearningSystem';
+import { EventDispatcher, eventDispatcher } from '../../../packages/core-engine/src/EventDispatcher';
+import { logger } from '../../../lib/logger';
+import fetch from 'node-fetch';
+
+// Import or define LearningError interface
+type ErrorType = 'validation' | 'processing' | 'integration' | 'configuration' | 'runtime';
+type LayerType = 'behavioral' | 'strategic' | 'knowledge' | 'integration';
+type ErrorSeverity = 'low' | 'medium' | 'high' | 'critical';
+
+interface ErrorContext {
+  [key: string]: any;
+}
+
+interface LearningError {
+  id: string;
+  timestamp: number;
+  type: ErrorType;
+  layer: LayerType;
+  severity: ErrorSeverity;
+  message: string;
+  context: ErrorContext;
+  stack?: string;
+}
 
 // ==================== 类型定义 ====================
 
@@ -24,6 +46,10 @@ export class APIGateway {
   private port: number;
   private agentEngine: AgenticCore;
   private eventDispatcher: EventDispatcher;
+  private toolRegistry: ToolRegistry;
+  private vectorKnowledgeBase: VectorKnowledgeBase;
+  private metaLearningLayer: MetaLearningLayer;
+  private learningSystem: LearningSystem;
   private serviceUrls: {
     aiEngine: string;
     dataService: string;
@@ -37,6 +63,18 @@ export class APIGateway {
       maxConcurrentTasks: 10,
       enableLearning: true
     });
+    // 实例化工具和服务
+    this.toolRegistry = new ToolRegistry({ 
+      enableHealthCheck: true,
+      maxCacheSize: 1000,
+      healthCheckInterval: 30000,
+      maxResults: 100,
+      defaultCacheTTL: 3600000, // 1小时
+      enableMetrics: true
+    });
+    this.vectorKnowledgeBase = new VectorKnowledgeBase(384);
+    this.metaLearningLayer = new MetaLearningLayer();
+    this.learningSystem = new LearningSystem();
     this.serviceUrls = {
       aiEngine: process.env.AI_ENGINE_URL || 'http://localhost:3201',
       dataService: process.env.DATA_SERVICE_URL || 'http://localhost:3202'
@@ -136,8 +174,8 @@ export class APIGateway {
     // 获取所有工具
     this.app.get('/api/tools', async (req: AuthenticatedRequest, res: Response) => {
       try {
-        const tools = toolRegistry.getAllTools();
-        const metadata = tools.map(tool => tool.metadata);
+        const tools = this.toolRegistry.getTools();
+        const metadata = tools.map((tool: RegisteredTool) => tool.metadata);
         res.json({ tools: metadata });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -152,8 +190,8 @@ export class APIGateway {
           return res.status(400).json({ error: '缺少搜索查询参数: q' });
         }
 
-        const tools = toolRegistry.searchTools(q);
-        res.json({ tools: tools.map(t => t.metadata) });
+        const tools = this.toolRegistry.searchTools(q);
+        res.json({ tools: tools.map((t: RegisteredTool) => t.metadata) });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
       }
@@ -168,7 +206,7 @@ export class APIGateway {
           return res.status(400).json({ error: '缺少必需的参数: toolId, input' });
         }
 
-        const result = await toolRegistry.execute(toolId, input, {
+        const result = await this.toolRegistry.execute(toolId, input, {
           userId: req.userId!,
           sessionId: req.sessionId!,
           timestamp: Date.now(),
@@ -186,7 +224,7 @@ export class APIGateway {
     this.app.get('/api/tools/:toolId/stats', async (req: AuthenticatedRequest, res: Response) => {
       try {
         const { toolId } = req.params;
-        const stats = toolRegistry.getToolStats(toolId);
+        const stats = this.toolRegistry.getToolStats(toolId);
 
         if (!stats) {
           return res.status(404).json({ error: '工具未找到' });
@@ -209,7 +247,7 @@ export class APIGateway {
           return res.status(400).json({ error: '缺少必需的参数: text' });
         }
 
-        const id = await vectorKnowledgeBase.addEmbedding(text, metadata);
+        const id = await this.vectorKnowledgeBase.addEmbedding(text, metadata);
         res.json({ id, success: true });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -225,7 +263,7 @@ export class APIGateway {
           return res.status(400).json({ error: '缺少必需的参数: query' });
         }
 
-        const results = await vectorKnowledgeBase.semanticSearch(query, topK, threshold, filters);
+        const results = await this.vectorKnowledgeBase.semanticSearch(query, topK, threshold, filters);
         res.json({ results });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -241,7 +279,7 @@ export class APIGateway {
           return res.status(400).json({ error: '缺少必需的参数: query' });
         }
 
-        const result = await vectorKnowledgeBase.ragQuery({
+        const result = await this.vectorKnowledgeBase.ragQuery({
           query,
           topK,
           threshold,
@@ -257,7 +295,7 @@ export class APIGateway {
     // 获取知识库统计
     this.app.get('/api/knowledge/stats', async (req: AuthenticatedRequest, res: Response) => {
       try {
-        const stats = vectorKnowledgeBase.getStats();
+        const stats = this.vectorKnowledgeBase.getStats();
         res.json(stats);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -307,7 +345,7 @@ export class APIGateway {
           metadata: metadata || {}
         };
 
-        metaLearningLayer.recordExperience(experience);
+        this.metaLearningLayer.recordExperience(experience);
         res.json({ success: true });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -317,7 +355,7 @@ export class APIGateway {
     // 获取学习统计
     this.app.get('/api/learning/stats', async (req: AuthenticatedRequest, res: Response) => {
       try {
-        const stats = metaLearningLayer.getStatistics();
+        const stats = this.metaLearningLayer.getStatistics();
         res.json(stats);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -333,7 +371,7 @@ export class APIGateway {
           return res.status(400).json({ error: '缺少必需的参数: state' });
         }
 
-        const action = metaLearningLayer.selectAction(state);
+        const action = this.metaLearningLayer.selectAction(state);
         res.json({ action });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -347,9 +385,9 @@ export class APIGateway {
       try {
         const stats = {
           agent: this.agentEngine.getSystemStatus(),
-          tools: toolRegistry.getSystemStats(),
-          knowledge: vectorKnowledgeBase.getStats(),
-          learning: metaLearningLayer.getStatistics()
+          tools: this.toolRegistry.getSystemStats(),
+          knowledge: this.vectorKnowledgeBase.getStats(),
+          learning: this.metaLearningLayer.getStatistics()
         };
 
         res.json(stats);
@@ -401,20 +439,20 @@ export class APIGateway {
 
   private setupEventSubscriptions(): void {
     // 订阅学习系统事件
-    if (learningSystem) {
-      learningSystem.on('learned', (result) => {
+    if (this.learningSystem) {
+      this.learningSystem.on('learned', (result: any) => {
         logger.info('[Learning] New learning result:', result);
       });
 
-      learningSystem.on('adapted', (strategy) => {
+      this.learningSystem.on('adapted', (strategy: any) => {
         logger.info('[Learning] Strategy adapted:', strategy);
       });
 
-      learningSystem.on('insight', (insight) => {
+      this.learningSystem.on('insight', (insight: any) => {
         logger.info('[Learning] New insight:', insight);
       });
 
-      learningSystem.on('error', (error) => {
+      this.learningSystem.on('error', (error: LearningError) => {
         logger.error('[Learning] Error:', error);
       });
     }

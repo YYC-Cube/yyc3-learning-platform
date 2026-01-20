@@ -36,12 +36,18 @@ export default defineConfig({
         '**/*.spec.tsx',
       ],
       // 覆盖率阈值
-      lines: 20,
-      functions: 20,
-      branches: 20,
-      statements: 20,
-      // 所有文件都包含在覆盖率中
-      all: true,
+      thresholds: {
+        lines: 20,
+        functions: 20,
+        branches: 20,
+        statements: 20,
+      },
+      include: [
+        'src/**/*.{js,ts,jsx,tsx}',
+        'components/**/*.{js,ts,jsx,tsx}',
+        'lib/**/*.{js,ts}',
+        'app/**/*.{js,ts,jsx,tsx}',
+      ],
     },
 
     // 测试超时时间
@@ -72,11 +78,6 @@ export default defineConfig({
 
     // 报告器配置
     reporters: ['verbose', 'json', 'html'],
-
-    // 并行执行
-    threads: true,
-    maxThreads: 4,
-    minThreads: 1,
 
     // 别名配置
     alias: {

@@ -70,14 +70,13 @@ export class CacheManager<T = any> extends EventEmitter {
   private evictionPolicy: EvictionPolicy;
   private cleanupInterval?: NodeJS.Timeout;
   private statistics: CacheStatistics;
-  private accessTimes: Map<string, number[]>;
+  private destroyed: boolean = false;
 
   constructor(config: CacheManagerConfig = {}) {
     super();
 
     this.cache = new Map();
     this.evictionPolicy = config.evictionPolicy || 'LRU';
-    this.accessTimes = new Map();
 
     this.config = {
       maxSize: config.maxSize || 1000,
@@ -174,8 +173,19 @@ export class CacheManager<T = any> extends EventEmitter {
         lastAccess: Date.now()
       };
 
+      // 检查是否需要清理过期条目
+      if (this.cache.size >= this.config.maxSize * 0.8) {
+        this.cleanupExpiredEntries();
+      }
+
+      // 如果仍然超过最大大小，执行驱逐策略
       if (this.cache.size >= this.config.maxSize && !this.cache.has(key)) {
-        this.evict();
+        // 如果内存使用也超过阈值，批量驱逐更多条目
+        if (this.checkMemoryThreshold()) {
+          this.batchEvict(20); // 批量驱逐20个条目
+        } else {
+          this.evict();
+        }
       }
 
       this.cache.set(key, entry);
@@ -184,8 +194,11 @@ export class CacheManager<T = any> extends EventEmitter {
 
       this.emit('cache:set', { key, entry });
 
+      // 异步保存到持久化存储，避免阻塞主线程
       if (this.config.enablePersistence) {
-        await this.saveToPersistence();
+        this.saveToPersistence().catch(error => {
+          logger.error('[CacheManager] Failed to save to persistence:', error);
+        });
       }
 
       return {
@@ -199,6 +212,92 @@ export class CacheManager<T = any> extends EventEmitter {
         fromCache: false,
         error: error instanceof Error ? error.message : 'Unknown error'
       };
+    }
+  }
+
+  /**
+   * 清理所有过期条目
+   */
+  private cleanupExpiredEntries(): number {
+    const now = Date.now();
+    let evictedCount = 0;
+
+    for (const [key, entry] of this.cache.entries()) {
+      if (this.isExpired(entry)) {
+        this.cache.delete(key);
+        evictedCount++;
+      }
+    }
+
+    if (evictedCount > 0) {
+      this.statistics.totalEvictions += evictedCount;
+      this.updateStatistics();
+      this.emit('cache:cleanup', { count: evictedCount });
+    }
+
+    return evictedCount;
+  }
+
+  /**
+   * 批量驱逐条目
+   */
+  private batchEvict(count: number): void {
+    if (this.cache.size === 0 || count <= 0) {
+      return;
+    }
+
+    let evicted = 0;
+    const entriesToEvict: string[] = [];
+
+    // 根据驱逐策略找出要驱逐的条目
+    switch (this.evictionPolicy) {
+      case 'LRU':
+        // 找出最久未访问的条目
+        const sortedByLastAccess = Array.from(this.cache.entries())
+          .sort(([_, a], [__, b]) => a.lastAccess - b.lastAccess)
+          .slice(0, count);
+        entriesToEvict.push(...sortedByLastAccess.map(([key]) => key));
+        break;
+        
+      case 'LFU':
+        // 找出访问次数最少的条目
+        const sortedByHits = Array.from(this.cache.entries())
+          .sort(([_, a], [__, b]) => a.hits - b.hits)
+          .slice(0, count);
+        entriesToEvict.push(...sortedByHits.map(([key]) => key));
+        break;
+        
+      case 'FIFO':
+        // 找出最旧的条目
+        const sortedByTimestamp = Array.from(this.cache.entries())
+          .sort(([_, a], [__, b]) => a.timestamp - b.timestamp)
+          .slice(0, count);
+        entriesToEvict.push(...sortedByTimestamp.map(([key]) => key));
+        break;
+        
+      case 'TTL':
+        // 找出剩余TTL最短的条目
+        const sortedByTTL = Array.from(this.cache.entries())
+          .sort(([_, a], [__, b]) => {
+            const ttlA = a.ttl - (Date.now() - a.timestamp);
+            const ttlB = b.ttl - (Date.now() - b.timestamp);
+            return ttlA - ttlB;
+          })
+          .slice(0, count);
+        entriesToEvict.push(...sortedByTTL.map(([key]) => key));
+        break;
+    }
+
+    // 执行批量驱逐
+    for (const key of entriesToEvict) {
+      this.cache.delete(key);
+      evicted++;
+    }
+
+    if (evicted > 0) {
+      this.statistics.totalEvictions += evicted;
+      this.updateStatistics();
+      this.emit('cache:batch-evict', { count: evicted, policy: this.evictionPolicy });
     }
   }
 
@@ -428,15 +527,37 @@ export class CacheManager<T = any> extends EventEmitter {
       (this.statistics.avgAccessTime * totalAccesses + accessTime) / (totalAccesses + 1);
   }
 
+  /**
+   * 更准确的内存使用估计（包含key、value和元数据）
+   */
   private estimateMemoryUsage(): number {
     let total = 0;
 
-    for (const entry of this.cache.values()) {
+    for (const [key, entry] of this.cache.entries()) {
+      // 估计key的大小
+      const keySize = key.length * 2;
+      
+      // 估计value的大小
       const valueSize = JSON.stringify(entry.value).length * 2;
-      total += valueSize;
+      
+      // 估计元数据的大小
+      const metadataSize = entry.metadata ? JSON.stringify(entry.metadata).length * 2 : 0;
+      
+      // 估计CacheEntry其他字段的大小
+      const entryOverhead = 200; // 估算其他字段的内存开销（字节）
+      
+      total += keySize + valueSize + metadataSize + entryOverhead;
     }
 
     return total;
+  }
+
+  /**
+   * 检查内存使用是否超过阈值
+   */
+  private checkMemoryThreshold(): boolean {
+    const MAX_MEMORY_USAGE = 100 * 1024 * 1024; // 100MB 内存使用阈值
+    return this.estimateMemoryUsage() > MAX_MEMORY_USAGE;
   }
 
   private async saveToPersistence(): Promise<void> {
@@ -485,12 +606,23 @@ export class CacheManager<T = any> extends EventEmitter {
   }
 
   destroy(): void {
-    if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
+    if (this.destroyed) {
+      logger.warn('CacheManager already destroyed');
+      return;
     }
 
-    this.cache.clear();
-    this.accessTimes.clear();
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = undefined;
+    }
+
+    // 清理所有事件监听器
     this.removeAllListeners();
+
+    // 清空缓存
+    this.cache.clear();
+    
+    this.destroyed = true;
+    logger.info('CacheManager destroyed');
   }
 }

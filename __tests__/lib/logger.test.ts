@@ -252,7 +252,7 @@ describe('Logger分支测试', () => {
   describe('默认配置', () => {
     it('应该在开发环境默认使用INFO级别', () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
+      process.env = { ...process.env, NODE_ENV: 'development' };
 
       const devLogger = new Logger();
 
@@ -261,12 +261,12 @@ describe('Logger分支测试', () => {
 
       expect(consoleLogSpy).toHaveBeenCalledTimes(1);
 
-      process.env.NODE_ENV = originalEnv;
+      process.env = { ...process.env, NODE_ENV: originalEnv };
     });
 
     it('应该在生产环境默认使用WARN级别', () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'production';
+      process.env = { ...process.env, NODE_ENV: 'production' };
 
       const prodLogger = new Logger();
 
@@ -277,7 +277,7 @@ describe('Logger分支测试', () => {
       expect(consoleLogSpy).not.toHaveBeenCalled();
       expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
 
-      process.env.NODE_ENV = originalEnv;
+      process.env = { ...process.env, NODE_ENV: originalEnv };
     });
 
     it('应该默认启用时间戳', () => {

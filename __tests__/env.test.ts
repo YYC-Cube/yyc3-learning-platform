@@ -14,8 +14,7 @@ describe('环境变量验证模块', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    // Vitest doesn't have resetModules, but we can clear env vars
-    process.env = { ...originalEnv };
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
@@ -24,38 +23,31 @@ describe('环境变量验证模块', () => {
 
   describe('validateEnvConfig', () => {
     it('应该在开发环境中成功验证', () => {
-      process.env.NODE_ENV = 'development';
-      process.env.JWT_SECRET = 'test-secret-key-for-development-purposes-only';
+      process.env = { ...originalEnv, NODE_ENV: 'development', JWT_SECRET: 'test-secret-key-for-development-purposes-only' };
       
       expect(() => validateEnvConfig()).not.toThrow();
     });
 
     it('应该在测试环境中成功验证', () => {
-      process.env.NODE_ENV = 'test';
-      process.env.JWT_SECRET = 'test-secret-key-for-testing-purposes-only';
+      process.env = { ...originalEnv, NODE_ENV: 'test', JWT_SECRET: 'test-secret-key-for-testing-purposes-only' };
       
       expect(() => validateEnvConfig()).not.toThrow();
     });
 
     it('应该在生产环境中验证 JWT_SECRET 长度', () => {
-      process.env.NODE_ENV = 'production';
-      process.env.JWT_SECRET = 'short';
+      process.env = { ...originalEnv, NODE_ENV: 'production', JWT_SECRET: 'short' };
 
       expect(() => validateEnvConfig()).toThrow(/JWT_SECRET.*至少.*32.*字符/);
     });
 
     it('应该在生产环境中验证数据库密码', () => {
-      process.env.NODE_ENV = 'production';
-      process.env.JWT_SECRET = 'a'.repeat(32);
-      process.env.DB_PASS = 'your_secure_password_here';
+      process.env = { ...originalEnv, NODE_ENV: 'production', JWT_SECRET: 'a'.repeat(32), DB_PASS: 'your_secure_password_here' };
       
       expect(() => validateEnvConfig()).toThrow('生产环境中必须设置安全的数据库密码');
     });
 
     it('应该在生产环境中使用安全的配置', () => {
-      process.env.NODE_ENV = 'production';
-      process.env.JWT_SECRET = 'a'.repeat(32);
-      process.env.DB_PASS = 'secure-production-password-12345';
+      process.env = { ...originalEnv, NODE_ENV: 'production', JWT_SECRET: 'a'.repeat(32), DB_PASS: 'secure-production-password-12345' };
       
       expect(() => validateEnvConfig()).not.toThrow();
     });
@@ -63,8 +55,7 @@ describe('环境变量验证模块', () => {
 
   describe('getEnvInfo', () => {
     it('应该返回环境变量信息', () => {
-      process.env.NODE_ENV = 'development';
-      process.env.JWT_SECRET = 'test-secret-key';
+      process.env = { ...originalEnv, NODE_ENV: 'development', JWT_SECRET: 'test-secret-key' };
       
       const info = getEnvInfo();
       
@@ -78,8 +69,7 @@ describe('环境变量验证模块', () => {
     });
 
     it('不应该包含敏感信息', () => {
-      process.env.JWT_SECRET = 'secret-key';
-      process.env.DB_PASS = 'db-password';
+      process.env = { ...originalEnv, JWT_SECRET: 'secret-key', DB_PASS: 'db-password' };
       
       const info = getEnvInfo();
       
@@ -90,10 +80,7 @@ describe('环境变量验证模块', () => {
     });
 
     it('应该正确显示可选服务的状态', () => {
-      process.env.REDIS_HOST = 'localhost';
-      process.env.REDIS_PORT = '6379';
-      process.env.SENTRY_DSN = 'https://sentry.io/dsn';
-      process.env.OPENAI_API_KEY = 'sk-test';
+      process.env = { ...originalEnv, REDIS_HOST: 'localhost', REDIS_PORT: '6379', SENTRY_DSN: 'https://sentry.io/dsn', OPENAI_API_KEY: 'sk-test' };
       
       const info = getEnvInfo();
       
@@ -105,7 +92,7 @@ describe('环境变量验证模块', () => {
 
   describe('环境检查函数', () => {
     it('应该正确识别开发环境', () => {
-      process.env.NODE_ENV = 'development';
+      process.env = { ...originalEnv, NODE_ENV: 'development' };
 
       const envCheck = checkEnvironment();
 
@@ -116,7 +103,7 @@ describe('环境变量验证模块', () => {
     });
 
     it('应该正确识别生产环境', () => {
-      process.env.NODE_ENV = 'production';
+      process.env = { ...originalEnv, NODE_ENV: 'production' };
 
       const envCheck = checkEnvironment();
 
@@ -127,7 +114,7 @@ describe('环境变量验证模块', () => {
     });
 
     it('应该正确识别测试环境', () => {
-      process.env.NODE_ENV = 'test';
+      process.env = { ...originalEnv, NODE_ENV: 'test' };
 
       const envCheck = checkEnvironment();
 
@@ -138,7 +125,9 @@ describe('环境变量验证模块', () => {
     });
 
     it('应该在未设置NODE_ENV时默认为development', () => {
-      delete process.env.NODE_ENV;
+      const envWithoutNode = { ...originalEnv };
+      delete envWithoutNode.NODE_ENV;
+      process.env = envWithoutNode;
 
       const envCheck = checkEnvironment();
 

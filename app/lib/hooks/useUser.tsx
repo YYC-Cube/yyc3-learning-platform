@@ -253,10 +253,12 @@ export function useUser() {
     fetchUser()
   }, [])
 
-  const updateUser = (updates: Partial<User>) => {
+  const updateUser = async (updates: Partial<User>): Promise<boolean> => {
     if (user) {
       setUser({ ...user, ...updates })
+      return true
     }
+    return false
   }
 
   const logout = () => {

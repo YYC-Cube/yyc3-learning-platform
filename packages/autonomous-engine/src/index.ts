@@ -4,6 +4,7 @@
  */
 
 export { AutonomousAIEngine } from './AutonomousAIEngine.js';
+export { AgenticCore } from './core/AgenticCore.js';
 export type {
   IAutonomousAIEngine,
   EngineCapabilities,

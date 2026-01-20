@@ -1,4 +1,4 @@
-import { createLogger } from '../../../../lib/logger';
+import { createLogger } from '../lib/logger';
 
 const logger = createLogger('PositionOptimizer');
 
@@ -43,7 +43,7 @@ export class PositionOptimizer {
     let viewport: ViewportInfo = { width: 1024, height: 768, scrollX: 0, scrollY: 0 };
     if (typeof window !== 'undefined') {
       viewport = this.getViewportInfo();
-    };
+    }
 
     switch (position.toLowerCase()) {
       case 'top-left':

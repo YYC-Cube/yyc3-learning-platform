@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -72,16 +72,16 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
     return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
 
-  const handleStartExam = () => {
+  const handleStartExam = useCallback(() => {
     setExamStarted(true)
-  }
+  }, [])
 
-  const handleAnswerChange = (questionId: string, answer: any) => {
+  const handleAnswerChange = useCallback((questionId: string, answer: any) => {
     setAnswers((prev) => ({
       ...prev,
       [questionId]: answer,
     }))
-  }
+  }, [])
 
   const handleSubmitExam = useCallback(() => {
     const timeUsed = timeLimit * 60 - timeRemaining
@@ -134,7 +134,7 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
     onComplete?.(examResults)
   }, [timeLimit, timeRemaining, examQuestions, answers, onComplete])
 
-  const currentQuestion = examQuestions[currentQuestionIndex]
+  const currentQuestion = useMemo(() => examQuestions[currentQuestionIndex], [examQuestions, currentQuestionIndex])
 
   if (!examStarted) {
     return (

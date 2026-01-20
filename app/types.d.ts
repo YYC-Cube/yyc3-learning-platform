@@ -22,7 +22,7 @@ export interface Course {
   title: string
   description: string
   image: string
-  level: "beginner" | "intermediate" | "advanced"
+  level: string
   duration: string
   progress: number
   chapters: number

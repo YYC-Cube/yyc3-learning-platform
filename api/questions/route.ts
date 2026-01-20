@@ -9,6 +9,8 @@ import path from 'path'
 import { questionsFromJSON, questionsToJSON } from '@/lib/question-parser'
 import type { Question, QuestionFilter } from '@/types/question'
 import { logger } from '@/lib/logger'
+import { getClientIp } from '@/lib/security/rate-limiter'
+import { logDataAccessEvent, logDataModificationEvent, logValidationErrorEvent } from '@/lib/security/audit-log'
 
 const QUESTIONS_FILE = path.join(process.cwd(), 'data', 'questions', 'single-choice-questions.json')
 
@@ -67,6 +69,7 @@ function filterQuestions(questions: Question[], filter: QuestionFilter): Questio
  */
 export async function GET(request: Request) {
   try {
+    const clientIp = getClientIp(request)
     const { searchParams } = new URL(request.url)
     
     const typeParam = searchParams.get('type')
@@ -91,6 +94,13 @@ export async function GET(request: Request) {
     const endIndex = startIndex + pageSize
     const paginatedQuestions = questions.slice(startIndex, endIndex)
     
+    logDataAccessEvent('get_questions', 'questions', true, undefined, clientIp, {
+      filter,
+      page,
+      pageSize,
+      total,
+    })
+    
     return NextResponse.json({
       questions: paginatedQuestions,
       total,
@@ -98,7 +108,11 @@ export async function GET(request: Request) {
       pageSize,
       totalPages: Math.ceil(total / pageSize)
     })
-  } catch {
+  } catch (error) {
+    const clientIp = getClientIp(request)
+    logDataAccessEvent('get_questions', 'questions', false, undefined, clientIp, {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
     return NextResponse.json({ error: '获取题库失败' }, { status: 500 })
   }
 }
@@ -108,6 +122,7 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
   try {
+    const clientIp = getClientIp(request)
     const newQuestion = await request.json() as Question
     
     const questions = loadQuestions()
@@ -119,11 +134,24 @@ export async function POST(request: Request) {
     questions.push(newQuestion)
     
     if (!saveQuestions(questions)) {
+      logDataModificationEvent('create_question', 'questions', false, undefined, clientIp, {
+        questionId: newQuestion.id,
+      }, 'Failed to save questions')
       return NextResponse.json({ error: '保存题目失败' }, { status: 500 })
     }
     
+    logDataModificationEvent('create_question', 'questions', true, undefined, clientIp, {
+      questionId: newQuestion.id,
+      type: newQuestion.type,
+      category: newQuestion.category,
+    })
+    
     return NextResponse.json({ question: newQuestion }, { status: 201 })
-  } catch {
+  } catch (error) {
+    const clientIp = getClientIp(request)
+    logDataModificationEvent('create_question', 'questions', false, undefined, clientIp, {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }, 'Failed to create question')
     return NextResponse.json({ error: '创建题目失败' }, { status: 500 })
   }
 }
@@ -133,10 +161,12 @@ export async function POST(request: Request) {
  */
 export async function DELETE(request: Request) {
   try {
+    const clientIp = getClientIp(request)
     const { searchParams } = new URL(request.url)
     const idsStr = searchParams.get('ids')
     
     if (!idsStr) {
+      logValidationErrorEvent('delete_questions', 'Missing question IDs', undefined, clientIp)
       return NextResponse.json({ error: '缺少题目ID' }, { status: 400 })
     }
     
@@ -147,14 +177,26 @@ export async function DELETE(request: Request) {
     questions = questions.filter(q => !ids.includes(q.id))
     
     if (!saveQuestions(questions)) {
+      logDataModificationEvent('delete_questions', 'questions', false, undefined, clientIp, {
+        ids,
+      }, 'Failed to save questions')
       return NextResponse.json({ error: '删除题目失败' }, { status: 500 })
     }
+    
+    logDataModificationEvent('delete_questions', 'questions', true, undefined, clientIp, {
+      ids,
+      deletedCount: originalCount - questions.length,
+    })
     
     return NextResponse.json({ 
       deleted: originalCount - questions.length,
       remaining: questions.length 
     })
-  } catch {
+  } catch (error) {
+    const clientIp = getClientIp(request)
+    logDataModificationEvent('delete_questions', 'questions', false, undefined, clientIp, {
+      error: error instanceof Error ? error.message : 'Unknown error',
+    }, 'Failed to delete questions')
     return NextResponse.json({ error: '删除题目失败' }, { status: 500 })
   }
 }

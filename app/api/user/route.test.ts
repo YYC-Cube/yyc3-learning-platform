@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { NextRequest } from 'next/server';
 import { GET } from './route';
 
 // Mock logger
@@ -22,7 +23,7 @@ describe('GET /api/user', () => {
   });
 
   it('should require authentication', async () => {
-    const request = new Request('http://localhost:3000/api/user');
+    const request = new NextRequest('http://localhost:3000/api/user');
 
     // This should fail without auth token (if auth is implemented)
     const response = await GET(request);
@@ -32,7 +33,7 @@ describe('GET /api/user', () => {
   });
 
   it('should return user data when authenticated', async () => {
-    const request = new Request('http://localhost:3000/api/user', {
+    const request = new NextRequest('http://localhost:3000/api/user', {
       headers: {
         Authorization: 'Bearer mock-token',
       },
@@ -48,7 +49,7 @@ describe('GET /api/user', () => {
   });
 
   it('should include learning stats', async () => {
-    const request = new Request('http://localhost:3000/api/user');
+    const request = new NextRequest('http://localhost:3000/api/user');
 
     const response = await GET(request);
     const data = await response.json();
@@ -61,7 +62,7 @@ describe('GET /api/user', () => {
   });
 
   it('should include enrolled courses', async () => {
-    const request = new Request('http://localhost:3000/api/user');
+    const request = new NextRequest('http://localhost:3000/api/user');
 
     const response = await GET(request);
     const data = await response.json();

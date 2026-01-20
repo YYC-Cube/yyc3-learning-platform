@@ -17,6 +17,7 @@ import BottomNav from "@/components/bottom-nav";
 import AIAssistantProvider from "@/app/providers/AIAssistantProvider";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import LazyAIWidgetWrapper from "@/components/intelligent-ai-widget/lazy-ai-widget";
 import "./mobile-styles.css";
 
 const inter = Inter({ subsets: ["latin"] });

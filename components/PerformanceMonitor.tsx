@@ -4,7 +4,7 @@
  * @author YYC³ Team
  * @version 1.0.0
  * @created 2025-01-30
- * @modified 2025-01-30
+ * @modified 2026-01-21
  * @copyright Copyright (c) 2025 YYC³
  * @license MIT
  */
@@ -13,12 +13,16 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { usePathname } from 'next/navigation';
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
 
 interface PerformanceMetric {
   name: string;
   value: number;
   timestamp: number;
   url: string;
+  unit?: string;
+  status?: 'pass' | 'fail' | 'warning';
+  threshold?: number;
 }
 
 interface PerformanceMonitorProps {
@@ -29,6 +33,75 @@ interface PerformanceMonitorProps {
   /** 自定义指标上报回调 */
   onMetricReport?: (metric: PerformanceMetric) => void;
 }
+
+interface PerformanceThreshold {
+  name: string;
+  threshold: number;
+  unit: string;
+  critical: boolean;
+}
+
+const PERFORMANCE_THRESHOLDS: PerformanceThreshold[] = [
+  { name: 'componentRenderTime', threshold: 40, unit: 'ms', critical: true },
+  { name: 'firstContentfulPaint', threshold: 1800, unit: 'ms', critical: true },
+  { name: 'largestContentfulPaint', threshold: 2500, unit: 'ms', critical: true },
+  { name: 'interactionToNextPaint', threshold: 200, unit: 'ms', critical: true },
+  { name: 'cumulativeLayoutShift', threshold: 0.1, unit: '', critical: true },
+  { name: 'timeToInteractive', threshold: 3800, unit: 'ms', critical: true },
+  { name: 'totalBlockingTime', threshold: 300, unit: 'ms', critical: true },
+  { name: 'cacheHitRate', threshold: 90, unit: '%', critical: false },
+  { name: 'databaseQueryTime', threshold: 100, unit: 'ms', critical: true },
+  { name: 'apiResponseTime', threshold: 200, unit: 'ms', critical: true },
+];
+
+function evaluatePerformanceMetric(name: string, value: number): PerformanceMetric {
+  const threshold = PERFORMANCE_THRESHOLDS.find(t => t.name === name);
+  
+  if (!threshold) {
+    return {
+      name,
+      value,
+      timestamp: Date.now(),
+      url: window.location.pathname,
+    };
+  }
+
+  let status: 'pass' | 'fail' | 'warning';
+  
+  if (threshold.critical) {
+    status = value <= threshold.threshold ? 'pass' : 'fail';
+  } else {
+    if (value >= threshold.threshold) {
+      status = 'pass';
+    } else if (value >= threshold.threshold * 0.8) {
+      status = 'warning';
+    } else {
+      status = 'fail';
+    }
+  }
+
+  return {
+    name,
+    value,
+    timestamp: Date.now(),
+    url: window.location.pathname,
+    unit: threshold.unit,
+    status,
+    threshold: threshold.threshold,
+  };
+}
+
+const logger = {
+  error: (message: string, error: any) => {
+    console.error(`[PerformanceMonitor] ${message}`, error);
+  },
+  warn: (message: string) => {
+    console.warn(`[PerformanceMonitor] ${message}`);
+  },
+  info: (message: string) => {
+    console.info(`[PerformanceMonitor] ${message}`);
+  },
+};
 
 export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   enabled = true,
@@ -90,63 +163,30 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     // 重置已上报指标集合
     metricsReported.current.clear();
 
-    // 检查PerformanceObserver支持
-    if ('PerformanceObserver' in window) {
-      // 监控Paint指标 (FCP, LCP)
-      const paintObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          reportMetric(entry.name, entry.startTime);
-        });
-      });
+    // 使用web-vitals库监控核心Web Vitals
+    onCLS((metric) => {
+      const evaluatedMetric = evaluatePerformanceMetric('cumulativeLayoutShift', metric.value);
+      reportMetric(evaluatedMetric.name, evaluatedMetric.value);
+    });
 
-      paintObserver.observe({ entryTypes: ['paint'] });
+    onFCP((metric) => {
+      const evaluatedMetric = evaluatePerformanceMetric('firstContentfulPaint', metric.value);
+      reportMetric(evaluatedMetric.name, evaluatedMetric.value);
+    });
 
-      // 监控Largest Contentful Paint
-      const lcpObserver = new PerformanceObserver((list) => {
-        const entries = list.getEntries();
-        const lastEntry = entries[entries.length - 1];
-        reportMetric('LCP', lastEntry.startTime);
-      });
+    onINP((metric) => {
+      const evaluatedMetric = evaluatePerformanceMetric('interactionToNextPaint', metric.value);
+      reportMetric(evaluatedMetric.name, evaluatedMetric.value);
+    });
 
-      lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+    onLCP((metric) => {
+      const evaluatedMetric = evaluatePerformanceMetric('largestContentfulPaint', metric.value);
+      reportMetric(evaluatedMetric.name, evaluatedMetric.value);
+    });
 
-      // 监控First Input Delay
-      const fidObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          const fidEntry = entry as any;
-          reportMetric('FID', fidEntry.processingStart - fidEntry.startTime);
-        });
-      });
-
-      fidObserver.observe({ entryTypes: ['first-input'] });
-
-      // 监控Cumulative Layout Shift
-      const clsObserver = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          const clsEntry = entry as any;
-          if (!clsEntry.hadRecentInput) {
-            const currentCls = clsEntry.value;
-            reportMetric('CLS', currentCls);
-          }
-        });
-      });
-
-      clsObserver.observe({ entryTypes: ['layout-shift'] });
-
-      // 清理函数
-      return () => {
-        paintObserver.disconnect();
-        lcpObserver.disconnect();
-        fidObserver.disconnect();
-        clsObserver.disconnect();
-      };
-    }
-
-    // 监控TTFB
-    if (performance.timing) {
-      const ttfb = performance.timing.responseStart - performance.timing.requestStart;
-      reportMetric('TTFB', ttfb);
-    }
+    onTTFB((metric) => {
+      reportMetric('timeToFirstByte', metric.value);
+    });
 
     // 监控资源加载时间
     const resourceObserver = new PerformanceObserver((list) => {

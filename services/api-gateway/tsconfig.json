@@ -12,7 +12,15 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "node",
-    "types": ["node"]
+    "types": ["node", "express"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["../../*"]
+    },
+    "noResolve": false,
+    "allowSyntheticDefaultImports": true,
+    "preserveSymlinks": true,
+    "composite": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

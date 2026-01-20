@@ -747,6 +747,8 @@ export class ToolRegistry extends EventEmitter {
     return true;
   }
 
+
+
   private checkRateLimit(_toolId: string): boolean {
     // 简化的速率限制检查
     return true;
@@ -947,8 +949,115 @@ export class ToolRegistry extends EventEmitter {
     return Array.from(this.tools.values());
   }
 
+  /**
+   * 搜索工具
+   */
+  searchTools(query: string): RegisteredTool[] {
+    const lowercaseQuery = query.toLowerCase();
+    return Array.from(this.tools.values())
+      .filter(tool => 
+        tool.metadata.name.toLowerCase().includes(lowercaseQuery) ||
+        tool.metadata.description.toLowerCase().includes(lowercaseQuery) ||
+        tool.metadata.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery))
+      );
+  }
+
+  /**
+   * 执行工具
+   */
+  async execute(toolId: string, input: unknown, context: ExecutionContext): Promise<ToolExecutionResult> {
+    const tool = this.getToolById(toolId);
+    if (!tool) {
+      throw new ToolNotFoundError(toolId);
+    }
+
+    try {
+      // 更新使用统计
+      this.updateUsageStats(toolId, 0, true);
+      
+      // 执行工具
+      const result = await tool.execute(input, context);
+      return {
+        success: true,
+        data: result,
+        executionTime: 0,
+        cached: false,
+        metadata: {
+          toolId,
+          executionTime: 0,
+          cached: false
+        }
+      };
+    } catch (error) {
+      this.updateErrorStats(toolId);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+        executionTime: 0,
+        cached: false,
+        metadata: {
+          toolId,
+          executionTime: 0,
+          error: error instanceof Error ? error.message : String(error),
+          cached: false
+        }
+      };
+    }
+  }
+
+  /**
+   * 获取工具统计信息
+   */
+  getToolStats(toolId: string): ToolUsageStats | undefined {
+    return this.usageStats.get(toolId);
+  }
+
+  /**
+   * 获取系统统计信息
+   */
+  getSystemStats(): {
+    totalTools: number;
+    totalExecutions: number;
+    totalErrors: number;
+    avgSuccessRate: number;
+  } {
+    return {
+      totalTools: this.tools.size,
+      totalExecutions: Array.from(this.usageStats.values())
+        .reduce((sum, stats) => sum + stats.usageCount, 0),
+      totalErrors: Array.from(this.usageStats.values())
+        .reduce((sum, stats) => sum + stats.errorCount, 0),
+      avgSuccessRate: this.calculateOverallSuccessRate()
+    };
+  }
+
   getToolById(toolId: string): RegisteredTool | undefined {
     return this.tools.get(toolId);
+  }
+
+  /**
+   * 更新错误统计信息
+   */
+  updateErrorStats(toolId: string): void {
+    const stats = this.usageStats.get(toolId);
+    if (stats) {
+      stats.errorCount++;
+    }
+  }
+
+  /**
+   * 计算整体成功率
+   */
+  calculateOverallSuccessRate(): number {
+    let totalExecutions = 0;
+    let totalSuccessCount = 0;
+
+    for (const stats of this.usageStats.values()) {
+      totalExecutions += stats.usageCount;
+      totalSuccessCount += stats.successCount;
+    }
+
+    return totalExecutions > 0 ? totalSuccessCount / totalExecutions : 0;
   }
 
   getToolsByCategory(category: string): RegisteredTool[] {

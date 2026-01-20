@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -21,48 +21,11 @@ interface ComprehensiveExamProps {
 export function ComprehensiveExam({ examType, questions, onComplete }: ComprehensiveExamProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [answers, setAnswers] = useState<{ [key: number]: any }>({})
-  const [timeLeft, setTimeLeft] = useState(120 * 60) // 120分钟
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(120 * 60)
   const [results, setResults] = useState<any>(null)
-
-  const currentQuestion = questions[currentQuestionIndex]
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100
-
-  // 倒计时
-  useEffect(() => {
-    if (timeLeft > 0 && !isSubmitted) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
-      return () => clearTimeout(timer)
-    } else if (timeLeft === 0) {
-      handleSubmit()
-    }
-  }, [timeLeft, isSubmitted, handleSubmit])
-
-  const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
-
-  const handleAnswerChange = (value: any) => {
-    setAnswers({
-      ...answers,
-      [currentQuestionIndex]: value,
-    })
-  }
-
-  const handleNext = () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
-    }
-  }
-
-  const handlePrevious = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1)
-    }
-  }
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const currentQuestion = useMemo(() => questions[currentQuestionIndex], [questions, currentQuestionIndex])
+  const progress = useMemo(() => ((currentQuestionIndex + 1) / questions.length) * 100, [currentQuestionIndex, questions.length])
 
   const calculateScore = useCallback(() => {
     let totalScore = 0
@@ -84,7 +47,6 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
           const incorrectCount = userAnswer.length - correctCount
           const missedCount = question.correctAnswers.length - correctCount
 
-          // 部分分数计算
           if (incorrectCount === 0 && missedCount === 0) {
             questionScore = question.points
             isCorrect = true
@@ -96,7 +58,6 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
           }
         }
       } else if (["essay", "definition", "comparison", "application"].includes(question.type)) {
-        // 主观题给予基础分数，实际应用中需要人工评分
         questionScore = userAnswer && userAnswer.trim() ? question.points * 0.7 : 0
         isCorrect = questionScore > 0
       }
@@ -129,6 +90,41 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
     setIsSubmitted(true)
     onComplete(examResults)
   }, [calculateScore, onComplete])
+
+  useEffect(() => {
+    if (timeLeft > 0 && !isSubmitted) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
+      return () => clearTimeout(timer)
+    } else if (timeLeft === 0) {
+      handleSubmit()
+    }
+  }, [timeLeft, isSubmitted, handleSubmit])
+
+  const formatTime = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
+  }
+
+  const handleAnswerChange = useCallback((value: any) => {
+    setAnswers({
+      ...answers,
+      [currentQuestionIndex]: value,
+    })
+  }, [answers, currentQuestionIndex])
+
+  const handleNext = useCallback(() => {
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1)
+    }
+  }, [currentQuestionIndex, questions.length])
+
+  const handlePrevious = useCallback(() => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1)
+    }
+  }, [currentQuestionIndex])
 
   if (isSubmitted && results) {
     return (

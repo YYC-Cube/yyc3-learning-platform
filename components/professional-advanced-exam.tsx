@@ -108,7 +108,7 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          handleSubmitExam()
+          // 避免在useEffect中直接调用handleSubmitExam
           return 0
         }
         return prev - 1
@@ -116,7 +116,14 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [examStarted, examCompleted, handleSubmitExam])
+  }, [examStarted, examCompleted])
+
+  // 当时间到0时自动提交
+  useEffect(() => {
+    if (timeRemaining === 0 && examStarted && !examCompleted) {
+      handleSubmitExam()
+    }
+  }, [timeRemaining, examStarted, examCompleted, handleSubmitExam])
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600)

@@ -76,6 +76,21 @@ export {
   type ValueStream
 } from './BusinessValueFramework';
 
+// 用户反馈循环
+export {
+  BidirectionalFeedbackLoop, bidirectionalFeedbackLoop, FeedbackActionType, FeedbackInteractionMode, type BidirectionalFeedbackConfig, type BidirectionalLoopResult, type CollaborativePlan, type DeepUnderstanding, type EmotionAnalysis, type EmpatheticResponse, type IntentDecoding, type RealtimeValidation, type RelationshipEvolution, type TransparentExecution, type UserFeedback
+} from './UserFeedbackLoop';
+
+// 持续学习系统
+export {
+  AdaptiveContinuousLearning, adaptiveContinuousLearning, AdaptationStrategy, InnovationLevel, type AdaptiveLearningConfig, type ExperimentResult, type HyperparameterSet, type KnowledgeDistillation, type LearningCycle, type MetaLearningExperience, type ModelArchitecture, type SelfReflection
+} from './ContinuousLearning';
+
+// 智能缓存层
+export {
+  IntelligentCacheLayer, intelligentCacheLayer, CacheLevel, CacheStrategy, type CacheConfig as IntelligentCacheConfig, type CacheEntry as IntelligentCacheEntry, type CacheGetOptions, type CacheMetadata, type CachePerformanceReport, type CacheResult as IntelligentCacheResult, type CacheSetOptions, type ConsistencyCheck, type ConsistencyResult, type EvictionResult, type WarmupPattern, type WarmupReport
+} from './IntelligentCacheLayer';
+
 // ==================== AI功能组件 ====================
 
 // 聊天界面组件

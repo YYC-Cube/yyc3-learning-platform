@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 
 declare global {
-  namespace jest {
+  namespace Vi {
     interface Matchers<R = any, T = any> {
       toBeInTheDocument(): R
       toHaveAttribute(attr: string, value?: any): R

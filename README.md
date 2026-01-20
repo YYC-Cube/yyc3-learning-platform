@@ -483,8 +483,8 @@ Response:
 {
   "success": true,
   "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token": "<JWT_ACCESS_TOKEN>",
+    "refreshToken": "<JWT_REFRESH_TOKEN>",
     "expiresIn": 3600,
     "user": {
       "id": "user-123",
@@ -1512,14 +1512,14 @@ from yyc3 import YYC3Client
 
 # 初始化客户端
 client = YYC3Client(
-    api_key='your-api-key',
+    api_key='<YOUR_API_KEY>',
     base_url='https://api.yyc3.0379.email'
 )
 
 # 认证
 client.auth.login(
     email='user@example.com',
-    password='password'
+    password='<YOUR_PASSWORD>'
 )
 
 # 使用AI引擎

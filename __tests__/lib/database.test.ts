@@ -52,17 +52,17 @@ vi.mock('@/lib/logger', () => ({
   }
 }))
 
-// Mock the pg library with a factory function
+// Mocks pg library with a factory function
 vi.mock('pg', () => {
   const MockPool = class {
     public connect = vi.fn()
     public end = vi.fn()
 
     constructor() {
-      // Assign the methods from the outer scope mockPoolInstance
+      // Assigns methods from the outer scope mockPoolInstance
       if (mockPoolInstance) {
-        this.connect = mockPoolInstance.connect
-        this.end = mockPoolInstance.end
+        this.connect = mockPoolInstance.connect as any
+        this.end = mockPoolInstance.end as any
       }
     }
   }

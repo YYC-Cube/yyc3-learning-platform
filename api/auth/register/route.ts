@@ -10,6 +10,7 @@ import { hashPassword } from '@/lib/auth'
 import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp, RateLimits, createRateLimitResponse } from '@/lib/security/rate-limiter'
 import { applySecurityHeadersToNextResponse } from '@/lib/security/headers'
+import { logAuthenticationEvent, logRateLimitEvent } from '@/lib/security/audit-log'
 
 export async function POST(request: Request) {
   try {
@@ -18,6 +19,7 @@ export async function POST(request: Request) {
     const rateLimitResult = await checkRateLimit(`register:${clientIp}`, RateLimits.auth)
 
     if (!rateLimitResult.allowed) {
+      logRateLimitEvent('register', clientIp)
       return createRateLimitResponse(rateLimitResult.resetTime)
     }
 
@@ -77,6 +79,8 @@ export async function POST(request: Request) {
 
     const userId = newUsers[0].id
 
+    logAuthenticationEvent('register', true, userId.toString(), clientIp)
+
     const response = NextResponse.json({
       success: true,
       message: '注册成功',
@@ -91,6 +95,7 @@ export async function POST(request: Request) {
     return applySecurityHeadersToNextResponse(response)
   } catch (error) {
     logger.error('Register error:', error)
+    logAuthenticationEvent('register', false, undefined, clientIp, error instanceof Error ? error.message : 'Unknown error')
     return applySecurityHeadersToNextResponse(
       NextResponse.json(
         { error: '服务器错误，请稍后重试' },

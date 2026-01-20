@@ -1,4 +1,5 @@
 # ![YYC³ 智能应用](public/github.png)  
+
 # 星云操作系统 - 企业级 AI 智能管理平台
 
 <p align="center">
@@ -28,7 +29,6 @@
   <a href="#"><img src="https://img.shields.io/badge/语言-中文支持-red" alt="中文支持" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" /></a>
 </p>
-
 
 📦 项目特性
 
@@ -60,6 +60,7 @@
 ---
 
 ## 目录总览（高层）
+
 项目以功能分层与模块化组件组织，便于维护与逐步扩展。
 
 ```
@@ -122,6 +123,7 @@
 ---
 
 ## 关键设计原则
+
 - 单一职责：每个组件/模块聚焦一个功能，便于测试与复用。  
 - 分层清晰：UI / Hooks / Lib / Pages 明确分离，降低耦合。  
 - 可扩展与可替换：AI、通知、权限等子系统采用适配器模式，便于替换实现（例如本地 mock → 后端服务）。  
@@ -130,6 +132,7 @@
 ---
 
 ## 安装与启动（开发）
+
 先确保 Node.js 与 pnpm/yarn/npm 已安装，示例以 pnpm 为例：
 
 1. 安装依赖
@@ -137,7 +140,7 @@
 
 2. 本地开发
    - pnpm dev
-   - 打开 http://localhost:3000
+   - 打开 <http://localhost:3000>
 
 3. 构建与生产
    - pnpm build
@@ -148,6 +151,7 @@
 ---
 
 ## 代码约定
+
 - 使用 TypeScript（.tsx / .ts）与 React Hooks。  
 - 组件命名：驼峰且以功能结尾，如 MetricsCard、AuthGuard。  
 - 文件组织：页面放在 app 下；纯展示组件放 components/ui；复杂业务组件放 components/ 下对应子目录。  
@@ -157,6 +161,7 @@
 ---
 
 ## 权限与安全
+
 - 全局布局 layout.tsx 包含 AuthProvider，负责在页面路由级别提供会话/权限。  
 - auth/ 中封装鉴权逻辑（permission checks、role mapping、multi-tenant 支持）。  
 - 敏感操作需要在后端校验权限；前端只做界面层次的门控（UX）。
@@ -164,6 +169,7 @@
 ---
 
 ## 常见开发任务
+
 - 添加新页面：在 app/ 下新建子目录并添加 page.tsx（和可选的 layout.tsx / loading.tsx）。  
 - 添加可复用组件：components/<feature>/ 新建组件并在 components/ui 中复用基础 UI。  
 - 集成真实数据源：把 lib/<service> 的 mock 替换为 API 调用，保持接口适配层不变。
@@ -171,6 +177,7 @@
 ---
 
 ## 部署建议
+
 - 使用 Vercel / Netlify 进行静态 SSR 部署（Next.js App Router 支持）。  
 - 后端服务（AI 引擎、通知、权限）请分别容器化并提供稳定 API。  
 - 为关键路由与 API 启用监控与告警（Sentry / Prometheus / Grafana）。
@@ -178,6 +185,7 @@
 ---
 
 ## 贡献指南
+
 1. Fork -> 新建 feature 分支 (feat/xxx 或 fix/xxx)。  
 2. 提交遵循 Conventional Commits（feat/fix/docs/...）。  
 3. 发起 Pull Request，添加变更说明与关联 issue。  
@@ -186,6 +194,7 @@
 ---
 
 ## TODO / 后续扩展建议
+
 - 增加示例数据与 Storybook 展示组件状态。  
 - 为 charts 提供性能优化（虚拟化、大数据分页）。  
 - 引入 RBAC 管理后台页面（在 components/auth 中扩展）。  
@@ -198,6 +207,7 @@
 位置: `lib/ai-engine.ts`, `hooks/use-ai-analysis.ts`, `components/ai-insights-panel.tsx`
 
 **功能:**
+
 - 时间序列预测（移动平均算法）
 - 异常检测（Z-score 统计方法）
 - 趋势分析（线性回归）
@@ -208,6 +218,7 @@
 位置: `lib/auth/`, `components/auth/`
 
 **角色层级:**
+
 - 超级管理员 (super_admin)
 - 管理员 (admin)
 - 经理 (manager)
@@ -215,6 +226,7 @@
 - 查看者 (viewer)
 
 **权限类型:**
+
 - view:dashboard - 查看仪表板
 - view:analytics - 查看数据分析
 - view:data - 查看数据中心
@@ -250,6 +262,7 @@ const { user, hasPermission } = useAuth()
 位置: `components/charts/`
 
 **图表类型:**
+
 - **高级折线图** - 带渐变填充的时间序列图表
 - **热力图** - 24小时活动热力分析
 - **径向进度图** - 多指标环形展示
@@ -260,12 +273,12 @@ const { user, hasPermission } = useAuth()
 \`\`\`typescript
 import { RealTimeGauge } from '@/components/charts/real-time-gauge'
 
-<RealTimeGauge 
-  value={cpuUsage} 
-  max={100} 
-  label="CPU" 
-  color="cyan" 
-  size="medium" 
+<RealTimeGauge
+  value={cpuUsage}
+  max={100}
+  label="CPU"
+  color="cyan"
+  size="medium"
 />
 \`\`\`
 
@@ -274,6 +287,7 @@ import { RealTimeGauge } from '@/components/charts/real-time-gauge'
 位置: `lib/notifications/`, `components/notifications/`
 
 **通知类型:**
+
 - info - 信息通知
 - success - 成功通知
 - warning - 警告通知
@@ -281,6 +295,7 @@ import { RealTimeGauge } from '@/components/charts/real-time-gauge'
 - system - 系统通知
 
 **优先级:**
+
 - low - 低优先级
 - medium - 中优先级
 - high - 高优先级
@@ -306,6 +321,7 @@ addNotification({
 位置: `components/mobile/`, `hooks/use-mobile.ts`
 
 **移动端组件:**
+
 - MobileNav - 侧边抽屉导航
 - MobileBottomNav - 底部标签栏
 - MobileMetricCard - 优化的指标卡片
@@ -322,16 +338,16 @@ const isMobile = useMobile()
 
 ## 页面路由
 
-| 路由 | 页面 | 权限要求 |
-|------|------|----------|
-| `/` | 主仪表板 | view:dashboard |
-| `/analytics` | 数据分析 | view:analytics |
-| `/data-center` | 数据中心 | view:data |
-| `/network` | 网络监控 | view:network |
-| `/security` | 安全防护 | view:security |
-| `/console` | 系统控制台 | execute:commands |
-| `/communications` | 通讯中心 | 无 |
-| `/settings` | 系统设置 | manage:settings |
+| 路由              | 页面       | 权限要求         |
+| ----------------- | ---------- | ---------------- |
+| `/`               | 主仪表板   | view:dashboard   |
+| `/analytics`      | 数据分析   | view:analytics   |
+| `/data-center`    | 数据中心   | view:data        |
+| `/network`        | 网络监控   | view:network     |
+| `/security`       | 安全防护   | view:security    |
+| `/console`        | 系统控制台 | execute:commands |
+| `/communications` | 通讯中心   | 无               |
+| `/settings`       | 系统设置   | manage:settings  |
 
 ## 环境变量
 
@@ -349,7 +365,7 @@ const isMobile = useMobile()
   --foreground: 210 40% 98%;
   --primary: 189 94% 43%;
   --primary-foreground: 0 0% 100%;
-  /* ... 更多颜色变量 */
+  /*... 更多颜色变量*/
 }
 \`\`\`
 
@@ -361,16 +377,15 @@ const isMobile = useMobile()
 
 🧭 页面路由
 
-路由	页面	权限要求
-/	主仪表板	view:dashboard
-/analytics	数据分析	view:analytics
-/data-center	数据中心	view:data
-/network	网络监控	view:network
-/security	安全防护	view:security
-/console	系统控制台	execute:commands
-/communications	通讯中心	无
-/settings	系统设置	manage:settings
-
+路由 页面 权限要求
+/ 主仪表板 view:dashboard
+/analytics 数据分析 view:analytics
+/data-center 数据中心 view:data
+/network 网络监控 view:network
+/security 安全防护 view:security
+/console 系统控制台 execute:commands
+/communications 通讯中心 无
+/settings 系统设置 manage:settings
 
 🧪 性能优化
 
@@ -388,7 +403,7 @@ const isMobile = useMobile()
 - Edge (最新版本)
 
 🤝 贡献指南
-Fork 仓库：https://github.com/YYC-Cube/yyc3-Futuristic-Dashboard.git
+Fork 仓库：<https://github.com/YYC-Cube/yyc3-Futuristic-Dashboard.git>
 
 创建分支
 
@@ -405,7 +420,7 @@ Fork 仓库：https://github.com/YYC-Cube/yyc3-Futuristic-Dashboard.git
 如有问题或建议，请通过以下方式联系:
 
 提交 Issue
-联系邮箱：admin@0379.email
+联系邮箱：<admin@0379.email>
 查看项目文档
 
 🕘 更新日志

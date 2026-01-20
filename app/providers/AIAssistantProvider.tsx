@@ -1,6 +1,6 @@
 "use client";
 
-import { IntelligentAIWidget } from '@/components/intelligent-ai-widget/intelligent-ai-widget';
+import LazyAIWidgetWrapper from '@/components/intelligent-ai-widget/lazy-ai-widget';
 import { useEffect, useState } from 'react';
 import { AIWidgetProvider, useAIWidget } from './AIWidgetContext';
 import { logger } from '@/lib/logger';
@@ -30,7 +30,7 @@ function AIAssistantContent({ children }: { children: React.ReactNode }) {
     <>
       {children}
       {isMounted && showWidget && userId && (
-        <IntelligentAIWidget
+        <LazyAIWidgetWrapper
           userId={userId}
           initialPosition="bottom-right"
         />

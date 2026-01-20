@@ -28,7 +28,7 @@ describe('calculateScore', () => {
         text: 'Question 1',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 'A',
-        difficulty: 'easy',
+        difficulty: 'easy' as const,
         category: 'math',
       },
       {
@@ -36,7 +36,7 @@ describe('calculateScore', () => {
         text: 'Question 2',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 'B',
-        difficulty: 'medium',
+        difficulty: 'medium' as const,
         category: 'science',
       },
       {
@@ -44,7 +44,7 @@ describe('calculateScore', () => {
         text: 'Question 3',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 'C',
-        difficulty: 'hard',
+        difficulty: 'hard' as const,
         category: 'math',
       },
     ];
@@ -150,7 +150,7 @@ describe('calculateScore', () => {
         text: 'Question 4',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 'D',
-        difficulty: 'easy',
+        difficulty: 'easy' as const,
         category: 'math',
       },
       {
@@ -158,7 +158,7 @@ describe('calculateScore', () => {
         text: 'Question 5',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 'A',
-        difficulty: 'medium',
+        difficulty: 'medium' as const,
         category: 'science',
       },
     ];
@@ -361,13 +361,13 @@ describe('getQuestionsByDifficulty', () => {
   });
 
   it('应该在没有匹配题目时返回空数组', () => {
-    const questions = [
+    const questions: Question[] = [
       {
         id: '1',
         text: 'Question 1',
         options: ['A', 'B'],
         correctAnswer: 'A',
-        difficulty: 'easy',
+        difficulty: 'easy' as const,
         category: 'math',
       },
     ];

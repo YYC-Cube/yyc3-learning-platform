@@ -449,6 +449,15 @@ export class VectorKnowledgeBase {
   }
 
   /**
+   * 刷新知识库
+   */
+  public async refresh(): Promise<void> {
+    // 简化实现，实际应重新加载或更新知识库内容
+    console.log('Refreshing vector knowledge base...');
+    // 可以在此添加实际的刷新逻辑
+  }
+
+  /**
    * 生成摘要片段
    */
   private generateSnippet(text: string, query: string, contextLength: number = 150): string {

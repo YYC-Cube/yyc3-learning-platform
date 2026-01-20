@@ -5,6 +5,7 @@
 
 import { ReactNode, ComponentType } from 'react'
 import { ImageProps } from 'next/image'
+import { vi } from 'vitest'
 
 // ============================================
 // 组件 Props 类型
@@ -281,9 +282,9 @@ export type Mocked<T> = {
 // ============================================
 
 declare module 'vitest' {
-  export interface Matcher<typeof expect> {
-    toBeValidHttpResponse(): void
-    toHaveValidPagination(): void
-    toBeAuthenticated(): void
+  export interface Matchers<R, T = any> {
+    toBeValidHttpResponse(): R
+    toHaveValidPagination(): R
+    toBeAuthenticated(): R
   }
 }

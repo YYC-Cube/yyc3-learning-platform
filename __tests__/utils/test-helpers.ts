@@ -5,6 +5,7 @@
 
 import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement } from 'react';
+import { vi } from 'vitest';
 
 /**
  * 自定义渲染函数，包含默认的Providers
@@ -82,7 +83,19 @@ export function mockFetch(response: any, status = 200) {
     ok: status >= 200 && status < 300,
     status,
     json: async () => response,
-  } as any);
+    headers: new Headers(),
+    redirected: false,
+    statusText: status === 200 ? 'OK' : 'Error',
+    type: 'basic' as ResponseType,
+    url: 'http://localhost',
+    clone: vi.fn(),
+    body: null,
+    bodyUsed: false,
+    arrayBuffer: vi.fn(),
+    blob: vi.fn(),
+    formData: vi.fn(),
+    text: vi.fn(),
+  } as unknown as Response);
 }
 
 /**

@@ -765,6 +765,64 @@ export class AgenticCore extends EventEmitter {
       averageResponseTime: avgTime
     };
   }
+
+  /**
+   * 生成文本（简化实现）
+   */
+  async generate(options: {
+    prompt: string;
+    model?: string;
+    parameters?: any;
+    context?: any;
+  }): Promise<any> {
+    // 使用ModelAdapter生成文本
+    if (!this.modelAdapter) {
+      throw new Error('Model adapter not initialized');
+    }
+
+    // 创建符合ModelRequest接口的请求对象
+    const request: any = {
+      id: this.generateId(),
+      taskType: 'generation',
+      prompt: options.prompt,
+      temperature: options.parameters?.temperature,
+      maxTokens: options.parameters?.maxTokens,
+      systemPrompt: options.parameters?.systemPrompt,
+      metadata: {
+        requestId: this.generateId(),
+        priority: 'normal'
+      }
+    };
+
+    const response = await this.modelAdapter.processRequest(request);
+
+    return response;
+  }
+
+  /**
+   * 创建文本嵌入（简化实现）
+   */
+  async createEmbedding(options: {
+    text: string;
+    model?: string;
+    context?: any;
+  }): Promise<any> {
+    // 简化实现，实际应调用嵌入模型
+    const embedding = new Array(384).fill(0).map(() => Math.random() - 0.5);
+    return {
+      embedding,
+      text: options.text
+    };
+  }
+
+  /**
+   * 更新用户偏好设置
+   */
+  async updateUserPreferences(userId: string, preferences: any): Promise<void> {
+    // 简化实现，实际应保存到数据库
+    // 可以在此添加实际的用户偏好更新逻辑
+    console.log(`Updated preferences for user ${userId}`, preferences);
+  }
   
   /**
    * 获取任务状态

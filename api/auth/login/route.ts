@@ -11,6 +11,7 @@ import { logger } from '@/lib/logger'
 import { checkRateLimit, getClientIp, RateLimits, createRateLimitResponse } from '@/lib/security/rate-limiter'
 import { applySecurityHeadersToNextResponse } from '@/lib/security/headers'
 import type { DbUser } from '@/types/user'
+import { logAuthenticationEvent, logRateLimitEvent } from '@/lib/security/audit-log'
 
 export async function POST(request: Request) {
   try {
@@ -19,6 +20,7 @@ export async function POST(request: Request) {
     const rateLimitResult = await checkRateLimit(`login:${clientIp}`, RateLimits.auth)
 
     if (!rateLimitResult.allowed) {
+      logRateLimitEvent('login', clientIp)
       return createRateLimitResponse(rateLimitResult.resetTime)
     }
 
@@ -44,6 +46,7 @@ export async function POST(request: Request) {
     )
 
     if (users.length === 0) {
+      logAuthenticationEvent('login', false, undefined, clientIp, 'Email not found')
       return applySecurityHeadersToNextResponse(
         NextResponse.json(
           { error: '邮箱或密码错误' },
@@ -57,6 +60,7 @@ export async function POST(request: Request) {
     // 验证密码
     const isPasswordValid = await verifyPassword(password, user.password_hash || '')
     if (!isPasswordValid) {
+      logAuthenticationEvent('login', false, user.id.toString(), clientIp, 'Invalid password')
       return applySecurityHeadersToNextResponse(
         NextResponse.json(
           { error: '邮箱或密码错误' },
@@ -77,6 +81,8 @@ export async function POST(request: Request) {
       'UPDATE learning_users SET last_login_at = NOW() WHERE id = $1',
       [user.id]
     )
+
+    logAuthenticationEvent('login', true, user.id.toString(), clientIp)
 
     // 返回用户信息（不包含密码）
     const { password_hash: _, ...userWithoutPassword } = user

@@ -215,7 +215,7 @@ describe('cn - className合并工具', () => {
   describe('实际使用场景', () => {
     it('应该正确处理按钮类名组合', () => {
       const isActive = true;
-      const variant = 'primary';
+      const variant: 'primary' | 'secondary' = 'primary' as 'primary' | 'secondary';
 
       const buttonClass = cn(
         'px-4 py-2 rounded font-medium transition-colors',
@@ -239,7 +239,7 @@ describe('cn - className合并工具', () => {
 
     it('应该正确处理卡片类名组合', () => {
       const isDark = false;
-      const size = 'large';
+      const size: 'large' | 'small' = 'large' as 'large' | 'small';
 
       const cardClass = cn(
         'rounded-lg shadow-md p-6',

@@ -479,12 +479,21 @@ export class EnhancedLearningSystem extends EventEmitter {
     try {
       const prompt = this.buildAnalysisPrompt(experience);
       
-      const response = await this.modelAdapter.generate({
+      // 创建符合ModelRequest接口的请求对象
+      const request: any = {
+        id: `ai-analyze-${Date.now()}`,
+        taskType: 'analysis',
         prompt,
         temperature: 0.3,
         maxTokens: 500,
-        systemPrompt: 'You are a learning analysis system. Analyze the provided experience and extract key insights.'
-      });
+        systemPrompt: 'You are a learning analysis system. Analyze the provided experience and extract key insights.',
+        metadata: {
+          requestId: `ai-analyze-${Date.now()}`,
+          priority: 'normal'
+        }
+      };
+      
+      const response = await this.modelAdapter.processRequest(request);
       
       const insights = this.extractInsights(response);
       

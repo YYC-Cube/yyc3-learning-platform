@@ -51,15 +51,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       errorInfo
     });
 
-    // 记录错误信息使用全局错误日志函数
-    logError(error, {
+    const errorMessage = error.message || '未知错误';
+
+    logError(errorMessage, error, {
       context: 'ErrorBoundary',
       componentStack: errorInfo.componentStack
     });
 
-    // 显示错误通知 - 直接使用控制台输出，因为类组件中useToast的使用比较复杂
-    // 在实际生产环境中，可以集成第三方错误监控服务
-    logger.error('应用发生错误', error.message || '未知错误');
+    console.error('应用发生错误', errorMessage);
   }
 
   private handleReset = (): void => {

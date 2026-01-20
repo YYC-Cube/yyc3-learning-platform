@@ -87,6 +87,7 @@ import {
   MonitoringReport,
   BatchRequest,
   BatchResponse,
+  RequestMetadata,
   RoutingMetrics,
   ModelCapabilities,
   ModelPricing,
@@ -523,46 +524,7 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
     }
   }
 
-  /**
-   * Generate text from a prompt
-   * 从提示生成文本
-   */
-  async generate(options: {
-    prompt: string;
-    maxTokens?: number;
-    temperature?: number;
-    model?: string;
-    systemPrompt?: string;
-  }): Promise<{ text: string; usage?: any }> {
-    const requestBase = {
-      id: `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      taskType: 'generation' as const,
-      prompt: options.prompt,
-      metadata: {
-        requestId: `gen_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        priority: 'normal' as const
-      }
-    };
 
-    const request: ModelRequest = requestBase;
-
-    if (options.systemPrompt !== undefined) {
-      request.systemPrompt = options.systemPrompt;
-    }
-    if (options.maxTokens !== undefined) {
-      request.maxTokens = options.maxTokens;
-    }
-    if (options.temperature !== undefined) {
-      request.temperature = options.temperature;
-    }
-
-    const response = await this.processRequest(request);
-
-    return {
-      text: typeof response.content === 'string' ? response.content : JSON.stringify(response.content),
-      usage: response.usage
-    };
-  }
 
   /**
    * Generate streaming text from a prompt (callback version)
@@ -577,41 +539,13 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
       systemPrompt?: string;
     },
     onChunk: (chunk: string) => void
-  ): Promise<void> {
-    const requestBase = {
-      id: `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      taskType: 'generation' as const,
-      prompt: options.prompt,
-      metadata: {
-        requestId: `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        priority: 'normal' as const
-      }
-    };
-
-    const request: ModelRequest = requestBase;
-
-    if (options.systemPrompt !== undefined) {
-      request.systemPrompt = options.systemPrompt;
-    }
-    if (options.maxTokens !== undefined) {
-      request.maxTokens = options.maxTokens;
-    }
-    if (options.temperature !== undefined) {
-      request.temperature = options.temperature;
-    }
-    request.stream = true;
-
-    await this.processStreamingRequest(request, (chunk) => {
-      const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
-      onChunk(content);
-    });
-  }
+  ): Promise<void>;
 
   /**
    * Generate streaming text from a prompt (async generator version)
    * 从提示生成流式文本（异步生成器版本）
    */
-  async *generateStream(
+  generateStream(
     options: {
       prompt: string;
       maxTokens?: number;
@@ -619,7 +553,42 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
       model?: string;
       systemPrompt?: string;
     }
-  ): AsyncIterable<{ text: string }> {
+  ): AsyncIterable<{ text: string }>;
+
+  /**
+   * Implementation of generateStream method overloads
+   */
+  async generateStream(
+    options: {
+      prompt: string;
+      maxTokens?: number;
+      temperature?: number;
+      model?: string;
+      systemPrompt?: string;
+    },
+    onChunk: (chunk: string) => void
+  ): Promise<void>;
+
+  generateStream(
+    options: {
+      prompt: string;
+      maxTokens?: number;
+      temperature?: number;
+      model?: string;
+      systemPrompt?: string;
+    }
+  ): AsyncIterable<{ text: string }>;
+
+  generateStream(
+    options: {
+      prompt: string;
+      maxTokens?: number;
+      temperature?: number;
+      model?: string;
+      systemPrompt?: string;
+    },
+    onChunk?: (chunk: string) => void
+  ): Promise<void> | AsyncIterable<{ text: string }> {
     const requestBase = {
       id: `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       taskType: 'generation' as const,
@@ -641,16 +610,73 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
     if (options.temperature !== undefined) {
       request.temperature = options.temperature;
     }
+
     request.stream = true;
 
-    const chunks: string[] = [];
-    await this.processStreamingRequest(request, (chunk) => {
-      const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
-      chunks.push(content);
-    });
-
-    for (const chunk of chunks) {
-      yield { text: chunk };
+    if (onChunk) {
+      // Callback version - return a promise
+      return this.processStreamingRequest(request, (chunk) => {
+        const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+        onChunk(content);
+      });
+    } else {
+      // Async generator version - return an async iterable
+      const modelAdapter = this;
+      
+      return {
+        [Symbol.asyncIterator]() {
+          let done = false;
+          let error: Error | null = null;
+          const chunks: { text: string }[] = [];
+          let resolveNext: ((value: IteratorResult<{ text: string }>) => void) | null = null;
+          
+          // Start processing the request
+          modelAdapter.processStreamingRequest(request, (chunk) => {
+            const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+            const iterResult = { value: { text: content }, done: false };
+            
+            if (resolveNext) {
+              resolveNext(iterResult);
+              resolveNext = null;
+            } else {
+              chunks.push({ text: content });
+            }
+          })
+          .then(() => {
+            done = true;
+            if (resolveNext) {
+              resolveNext({ value: undefined, done: true });
+              resolveNext = null;
+            }
+          })
+          .catch((err) => {
+            error = err;
+            done = true;
+            if (resolveNext) {
+              resolveNext({ value: undefined, done: true });
+              resolveNext = null;
+            }
+          });
+          
+          return {
+            next() {
+              if (error) {
+                throw error;
+              }
+              
+              if (chunks.length > 0) {
+                return Promise.resolve({ value: chunks.shift()!, done: false });
+              } else if (done) {
+                return Promise.resolve({ value: undefined, done: true });
+              } else {
+                return new Promise<IteratorResult<{ text: string }>>((resolve) => {
+                  resolveNext = resolve;
+                });
+              }
+            }
+          };
+        }
+      };
     }
   }
 
@@ -704,11 +730,76 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
    * 获取模型指标
    */
   getModelMetrics(modelId: string): ModelMetrics | undefined {
-    return this._metrics.providerMetrics
-      ? Object.values(this._metrics.providerMetrics)
-          .flatMap(pm => pm.models)
-          .find(m => m.modelId === modelId)
-      : undefined;
+    if (!this._metrics.providerMetrics) return undefined;
+    
+    return Object.values(this._metrics.providerMetrics)
+      .flatMap(pm => pm.models)
+      .find(m => m.modelId === modelId);
+  }
+
+  /**
+   * Generate text from a prompt (convenience method)
+   * 从提示生成文本（便捷方法）
+   */
+  async generateText(options: {
+    id?: string;
+    taskType?: TaskType;
+    prompt: string;
+    systemPrompt?: string;
+    temperature?: number;
+    maxTokens?: number;
+    metadata?: RequestMetadata;
+  }): Promise<ModelResponse> {
+    const request: ModelRequest = {
+      id: options.id || `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      taskType: options.taskType || 'generation',
+      prompt: options.prompt,
+      metadata: options.metadata || {
+        requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        priority: 'normal'
+      }
+    };
+
+    if (options.systemPrompt !== undefined) {
+      request.systemPrompt = options.systemPrompt;
+    }
+    if (options.temperature !== undefined) {
+      request.temperature = options.temperature;
+    }
+    if (options.maxTokens !== undefined) {
+      request.maxTokens = options.maxTokens;
+    }
+
+    return this.processRequest(request);
+  }
+
+  /**
+   * Generate text from a prompt (simple version)
+   * 从提示生成文本（简单版本）
+   */
+  async generate(options: {
+    prompt: string;
+    maxTokens?: number;
+    temperature?: number;
+    model?: string;
+    systemPrompt?: string;
+  }): Promise<{ text: string; usage?: any }> {
+    const response = await this.generateText({
+      prompt: options.prompt,
+      maxTokens: options.maxTokens,
+      temperature: options.temperature,
+      systemPrompt: options.systemPrompt
+    });
+
+    // Handle both string and ContentBlock[] response types
+    const textContent = Array.isArray(response.content)
+      ? response.content.map(block => block.content as string).join('')
+      : response.content || '';
+
+    return {
+      text: textContent,
+      usage: response.usage
+    };
   }
 
   /**

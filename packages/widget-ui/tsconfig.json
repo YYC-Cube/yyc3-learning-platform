@@ -28,9 +28,10 @@
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@yyc3/core-engine": ["../core-engine/dist"]
+      "@yyc3/core-engine": ["../core-engine/dist"],
+      "../../../../lib/logger": ["../../../lib/logger"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "../../../lib/logger.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

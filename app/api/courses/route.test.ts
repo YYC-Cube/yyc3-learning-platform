@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { NextRequest } from 'next/server';
 import { GET } from './route';
 
 // Mock logger
@@ -22,7 +23,7 @@ describe('GET /api/courses', () => {
   });
 
   it('should return list of courses', async () => {
-    const request = new Request('http://localhost:3000/api/courses');
+    const request = new NextRequest('http://localhost:3000/api/courses');
     const response = await GET(request);
     const data = await response.json();
 
@@ -35,7 +36,7 @@ describe('GET /api/courses', () => {
   });
 
   it('should return courses with required fields', async () => {
-    const request = new Request('http://localhost:3000/api/courses');
+    const request = new NextRequest('http://localhost:3000/api/courses');
     const response = await GET(request);
     const data = await response.json();
 
@@ -48,7 +49,7 @@ describe('GET /api/courses', () => {
   });
 
   it('should support category filtering via query params', async () => {
-    const request = new Request('http://localhost:3000/api/courses?category=ai-basics');
+    const request = new NextRequest('http://localhost:3000/api/courses?category=ai-basics');
     const response = await GET(request);
     const data = await response.json();
 
@@ -57,7 +58,7 @@ describe('GET /api/courses', () => {
   });
 
   it('should support pagination', async () => {
-    const request = new Request('http://localhost:3000/api/courses?limit=2&offset=0');
+    const request = new NextRequest('http://localhost:3000/api/courses?limit=2&offset=0');
     const response = await GET(request);
     const data = await response.json();
 

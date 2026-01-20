@@ -295,7 +295,7 @@ describe('ApiClient', () => {
         json: async () => {
           throw new Error('Invalid JSON');
         },
-      } as Response);
+      } as unknown as Response);
 
       await expect(apiClient.get('/test')).rejects.toThrow('Invalid JSON');
     });
@@ -304,7 +304,7 @@ describe('ApiClient', () => {
       mockFetch.mockResolvedValue({
         ok: false,
         json: async () => ({ error: 'Some error' }),
-      } as Response);
+      } as unknown as Response);
 
       await expect(apiClient.get('/test')).rejects.toThrow('Request failed');
     });

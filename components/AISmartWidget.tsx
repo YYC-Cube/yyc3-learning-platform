@@ -13,7 +13,12 @@ import React, { useRef, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
-import { IntelligentAIWidget, ThemeProvider } from '@yyc3/widget-ui';
+import { IntelligentAIWidget } from './intelligent-ai-widget/intelligent-ai-widget';
+
+// Mock ThemeProvider for now
+const ThemeProvider: React.FC<{ initialTheme: string; children: React.ReactNode }> = ({ children }) => {
+  return <>{children}</>;
+};
 
 /**
  * AI智能小部件客户端组件
@@ -46,9 +51,8 @@ export const AISmartWidget: React.FC = () => {
     <DndProvider backend={Backend}>
       <ThemeProvider initialTheme="light">
         <IntelligentAIWidget
-          initialPosition={{ x: 20, y: 100 }}
-          initialSize={{ width: 350, height: 500 }}
-          initialView="chat"
+          userId="default-user"
+          initialPosition="bottom-right"
         />
       </ThemeProvider>
     </DndProvider>

@@ -57,17 +57,17 @@ function BottomNav() {
       aria-label="底部导航"
       data-bottom-nav="true"
       style={{
-        display: "flex !important",
-        visibility: "visible !important",
-        opacity: "1 !important",
-        position: "fixed !important",
-        bottom: "0 !important",
-        left: "0 !important",
-        right: "0 !important",
-        zIndex: "9999 !important",
-        backgroundColor: "white !important",
-        borderTop: "1px solid #e5e7eb !important",
-        boxShadow: "0 -4px 6px -1px rgba(0, 0, 0, 0.1) !important",
+        display: "flex" as any,
+        visibility: "visible" as any,
+        opacity: "1" as any,
+        position: "fixed" as any,
+        bottom: "0" as any,
+        left: "0" as any,
+        right: "0" as any,
+        zIndex: "9999" as any,
+        backgroundColor: "white" as any,
+        borderTop: "1px solid #e5e7eb" as any,
+        boxShadow: "0 -4px 6px -1px rgba(0, 0, 0, 0.1)" as any,
       }}
     >
       <div className="flex justify-around items-center h-16 px-2 w-full">

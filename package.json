@@ -60,6 +60,7 @@
     "@radix-ui/react-toggle-group": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tailwindcss/postcss": "^4.1.18",
+    "@tanstack/react-virtual": "^3.13.18",
     "@testing-library/dom": "^10.4.0",
     "@yyc3/core-engine": "file:packages/core-engine",
     "@yyc3/five-dimensional-management": "file:packages/five-dimensional-management",
@@ -97,6 +98,7 @@
     "@eslint/eslintrc": "^3.3.3",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.1.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.6.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/jest": "^29.5.14",
@@ -108,6 +110,7 @@
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
+    "@welldone-software/why-did-you-render": "^10.0.1",
     "autoprefixer": "^10.4.20",
     "bcryptjs": "^3.0.3",
     "eslint": "^9.39.1",
@@ -117,6 +120,7 @@
     "jest-environment-jsdom": "^30.2.0",
     "jsdom": "^27.4.0",
     "jsonwebtoken": "^9.0.3",
+    "lighthouse": "^13.0.1",
     "pg": "^8.16.3",
     "postcss": "^8.5",
     "postcss-custom-properties": "^14.0.1",
@@ -126,6 +130,7 @@
     "tailwindcss": "^3.4.17",
     "ts-jest": "^29.4.6",
     "typescript": "^5",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "web-vitals": "^5.1.0"
   }
 }

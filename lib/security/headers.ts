@@ -35,7 +35,29 @@ const DEFAULT_SECURITY_HEADERS: Record<string, string> = {
 
   // Permissions policy
   'Permissions-Policy':
-    'geolocation=(), microphone=(), camera=(), interest-cohort=()',
+    'geolocation=(), microphone=(), camera=(), interest-cohort=(), fullscreen=(), payment=()',
+
+  // Feature policy (legacy, for older browsers)
+  'Feature-Policy':
+    'geolocation \'none\'; microphone \'none\'; camera \'none\'; payment \'none\'',
+
+  // Cache control
+  'Cache-Control': 'no-cache, no-store, must-revalidate',
+
+  // Pragma (legacy)
+  'Pragma': 'no-cache',
+
+  // Expires (legacy)
+  'Expires': '0',
+
+  // X-Permitted-Cross-Domain-Policies
+  'X-Permitted-Cross-Domain-Policies': 'none',
+
+  // X-Download-Options
+  'X-Download-Options': 'noopen',
+
+  // X-DNS-Prefetch-Control
+  'X-DNS-Prefetch-Control': 'off',
 };
 
 /**
@@ -56,7 +78,21 @@ export function getSecurityHeaders(
   if (config.enableCSP !== false) {
     const csp =
       config.cspDirectives ||
-      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';";
+      "default-src 'self'; " +
+      "script-src 'self' 'strict-dynamic' 'unsafe-inline' https:; " +
+      "script-src-elem 'self' 'unsafe-inline'; " +
+      "style-src 'self' 'unsafe-inline'; " +
+      "img-src 'self' data: blob: https:; " +
+      "font-src 'self' data:; " +
+      "connect-src 'self' https: wss:; " +
+      "media-src 'self' data: https:; " +
+      "object-src 'none'; " +
+      "frame-ancestors 'none'; " +
+      "base-uri 'self'; " +
+      "form-action 'self'; " +
+      "frame-src 'self' https:; " +
+      "worker-src 'self' blob:; " +
+      "manifest-src 'self';";
 
     headers['Content-Security-Policy'] = csp;
   }

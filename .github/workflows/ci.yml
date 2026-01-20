@@ -9,7 +9,7 @@ on:
     types: [created]
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: "18"
   REGISTRY: ghcr.io
   IMAGE_NAME: yyc3-learning-platform
 
@@ -86,6 +86,7 @@ jobs:
       - name: 上传覆盖率报告到 Codecov
         uses: codecov/codecov-action@v3
         with:
+          # 需要在GitHub仓库secrets中配置CODECOV_TOKEN
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
@@ -201,39 +202,35 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 运行 Trivy 漏洞扫描
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '1'
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
 
       - name: 上传 Trivy 扫描结果到 GitHub Security
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
 
       - name: 运行 Snyk 安全扫描
         uses: snyk/actions/node@master
         env:
+          # 需要在GitHub仓库secrets中配置SNYK_TOKEN
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
 
       - name: 依赖漏洞扫描
         run: |
-          pnpm audit --audit-level high --production
+          npm audit --audit-level high --production
 
       - name: 检查硬编码密钥
         uses: gitleaks/gitleaks-action@v2
@@ -255,19 +252,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 构建应用
-        run: pnpm run build
+        run: npm run build
 
       - name: 启动应用
-        run: pnpm run start &
+        run: npm run start &
 
       - name: 等待应用启动
         run: npx wait-on http://localhost:3000
@@ -277,6 +269,7 @@ jobs:
           npm install -g @lhci/cli@0.12.x
           lhci autorun
         env:
+          # 需要在GitHub仓库secrets中配置LHCI_GITHUB_APP_TOKEN
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
 
   # 构建和部署
@@ -294,16 +287,11 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 构建应用
-        run: pnpm run build
+        run: npm run build
         env:
           NEXT_PUBLIC_API_BASE_URL: ${{ secrets.PRODUCTION_API_URL }}
           NEXT_PUBLIC_APP_VERSION: ${{ github.sha }}
@@ -313,7 +301,7 @@ jobs:
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: '--prod'
+          vercel-args: "--prod"
           vercel-org-id: ${{ secrets.ORG_ID }}
           vercel-project-id: ${{ secrets.PROJECT_ID }}
 
@@ -338,16 +326,11 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 构建应用
-        run: pnpm run build
+        run: npm run build
         env:
           NEXT_PUBLIC_API_BASE_URL: ${{ secrets.PREVIEW_API_URL }}
 
@@ -460,9 +443,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [docker-build-push]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    environment:
-      name: production
-      url: https://yyc3-learning.yyc3.0379.email
+
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -470,7 +451,7 @@ jobs:
       - name: 设置 kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'v1.28.0'
+          version: "v1.28.0"
 
       - name: 配置 kubeconfig
         run: |
@@ -498,14 +479,14 @@ jobs:
         run: |
           CURRENT_COLOR=$(kubectl get deployment yyc3-learning -n yyc3-learning -o jsonpath='{.spec.template.metadata.labels.color}' 2>/dev/null || echo "blue")
           NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
-          
+
           echo "CURRENT_COLOR=$CURRENT_COLOR"
           echo "NEW_COLOR=$NEW_COLOR"
-          
+
           sed -i "s|COLOR|$NEW_COLOR|g" k8s/deployment.yaml
-          
+
           kubectl apply -f k8s/deployment.yaml -n yyc3-learning
-          
+
           echo "NEW_COLOR=$NEW_COLOR" >> $GITHUB_ENV
 
       - name: 等待新版本 Pod 就绪
@@ -515,9 +496,9 @@ jobs:
       - name: 健康检查
         run: |
           kubectl wait --for=condition=ready pod -l app=yyc3-learning,color=$NEW_COLOR -n yyc3-learning --timeout=3m
-          
+
           POD_IP=$(kubectl get pod -l app=yyc3-learning,color=$NEW_COLOR -n yyc3-learning -o jsonpath='{.items[0].status.podIP}')
-          
+
           for i in {1..30}; do
             if curl -f http://$POD_IP:3000/health; then
               echo "健康检查通过"
@@ -526,7 +507,7 @@ jobs:
             echo "等待健康检查... ($i/30)"
             sleep 10
           done
-          
+
           echo "健康检查失败，触发回滚"
           exit 1
 
@@ -537,7 +518,7 @@ jobs:
       - name: 验证新版本流量
         run: |
           SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          
+
           for i in {1..10}; do
             RESPONSE=$(curl -s http://$SERVICE_IP:3000/api/health)
             if echo "$RESPONSE" | grep -q "status.*ok"; then
@@ -552,13 +533,13 @@ jobs:
         run: |
           OLD_COLOR=$([ "$NEW_COLOR" = "blue" ] && echo "green" || echo "blue")
           kubectl scale deployment yyc3-learning -n yyc3-learning --replicas=0 || true
-          
+
           echo "旧版本 $OLD_COLOR 已清理"
 
       - name: 备份部署状态
         run: |
           kubectl get deployment yyc3-learning -n yyc3-learning -o yaml > deployment-backup-$(date +%Y%m%d-%H%M%S).yaml
-          
+
           kubectl get pods -n yyc3-learning -o wide > pods-backup-$(date +%Y%m%d-%H%M%S).txt
 
       - name: 上传备份文件
@@ -574,11 +555,11 @@ jobs:
         if: failure()
         run: |
           echo "部署失败，执行自动回滚..."
-          
+
           kubectl rollout undo deployment/yyc3-learning -n yyc3-learning
-          
+
           kubectl rollout status deployment/yyc3-learning -n yyc3-learning --timeout=5m
-          
+
           echo "回滚完成"
 
   # 数据库备份
@@ -597,7 +578,7 @@ jobs:
         run: |
           TIMESTAMP=$(date +%Y%m%d-%H%M%S)
           BACKUP_FILE="yyc3-learning-backup-$TIMESTAMP.sql.gz"
-          
+
           PGPASSWORD="${{ secrets.DB_PASSWORD }}" pg_dump \
             -h ${{ secrets.DB_HOST }} \
             -p ${{ secrets.DB_PORT }} \
@@ -605,7 +586,7 @@ jobs:
             -d ${{ secrets.DB_NAME }} \
             -F c \
             -f $BACKUP_FILE
-          
+
           echo "BACKUP_FILE=$BACKUP_FILE" >> $GITHUB_ENV
 
       - name: 上传备份到 S3
@@ -617,8 +598,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: './'
-          DEST_DIR: 'backups/yyc3-learning/'
+          SOURCE_DIR: "./"
+          DEST_DIR: "backups/yyc3-learning/"
 
       - name: 清理过期备份（保留最近 30 天）
         run: |
@@ -644,7 +625,7 @@ jobs:
       - name: 设置 kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'v1.28.0'
+          version: "v1.28.0"
 
       - name: 配置 kubeconfig
         run: |

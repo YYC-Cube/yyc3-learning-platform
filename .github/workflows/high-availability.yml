@@ -80,9 +80,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [multi-region-build]
     if: github.event.inputs.region != 'secondary'
-    environment:
-      name: production-primary
-      url: https://yyc3-learning.yyc3.0379.email
+
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
@@ -149,9 +147,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [multi-region-build]
     if: github.event.inputs.region != 'primary'
-    environment:
-      name: production-secondary
-      url: https://yyc3-learning-secondary.yyc3.0379.email
+
     steps:
       - name: 检出代码
         uses: actions/checkout@v4

@@ -15,6 +15,7 @@ out/
 .next/
 .nuxt/
 .vuepress/dist/
+tsconfig.tsbuildinfo
 
 # Environment variables
 .env

@@ -10,7 +10,6 @@ on:
 
 env:
   NODE_VERSION: '18'
-  PNPM_VERSION: '8'
   REGISTRY: ghcr.io
   IMAGE_NAME: yyc3-learning-platform
 
@@ -28,38 +27,28 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: 获取 pnpm store 目录
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: 设置 pnpm 缓存
+      - name: 设置 npm 缓存
         uses: actions/cache@v3
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-node-
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: TypeScript 类型检查
-        run: pnpm run type-check
+        run: npm run type-check
 
       - name: ESLint 代码检查
-        run: pnpm run lint
+        run: npm run lint
 
       - name: Prettier 格式检查
-        run: pnpm run format:check
+        run: npm run format:check
 
       - name: Stylelint CSS 检查
-        run: pnpm run lint:css
+        run: npm run lint:css
 
   # 单元测试
   unit-tests:
@@ -75,29 +64,24 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: 设置 pnpm 缓存
+      - name: 设置 npm 缓存
         uses: actions/cache@v3
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-node-
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 运行单元测试
-        run: pnpm run test:unit
+        run: npm run test:unit
         env:
           CI: true
 
       - name: 生成测试覆盖率报告
-        run: pnpm run test:coverage
+        run: npm run test:coverage
 
       - name: 上传覆盖率报告到 Codecov
         uses: codecov/codecov-action@v3
@@ -144,13 +128,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 设置测试环境变量
         run: |
@@ -160,10 +139,10 @@ jobs:
           echo "NEXTAUTH_URL=http://localhost:3000" >> $GITHUB_ENV
 
       - name: 运行数据库迁移
-        run: pnpm run db:migrate
+        run: npm run db:migrate
 
       - name: 运行集成测试
-        run: pnpm run test:integration
+        run: npm run test:integration
 
   # 端到端测试
   e2e-tests:
@@ -179,24 +158,19 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 安装 pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: 安装 Playwright 浏览器
-        run: pnpm exec playwright install --with-deps
+        run: npx playwright install --with-deps
 
       - name: 构建应用
-        run: pnpm run build
+        run: npm run build
         env:
           NEXT_PUBLIC_API_BASE_URL: http://localhost:3000/api
 
       - name: 启动应用
-        run: pnpm run start &
+        run: npm run start &
         env:
           PORT: 3000
 
@@ -204,7 +178,7 @@ jobs:
         run: npx wait-on http://localhost:3000
 
       - name: 运行 E2E 测试
-        run: pnpm run test:e2e
+        run: npm run test:e2e
 
       - name: 上传 E2E 测试报告
         uses: actions/upload-artifact@v3

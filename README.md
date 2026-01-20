@@ -52,12 +52,12 @@ YYC³ (YanYuCloudCube) AI Collaboration Platform is a **completely free, open-so
 
 ### 💡 Core Values
 
-| Dimension | Description |
-|-----------|-------------|
-| 🎓 **Educational Democratization** | Free AI learning resources and practical platform for learners worldwide |
-| 🔧 **Developer-Centric** | Lowering AI application development barriers with complete technology stack |
-| 🏢 **Enterprise-Ready** | Meeting enterprise requirements for high availability, security, and performance |
-| 🌍 **Open Ecosystem** | Embracing open-source philosophy, encouraging community innovation |
+| Dimension                         | Description                                                                      |
+| --------------------------------- | -------------------------------------------------------------------------------- |
+| 🎓 **Educational Democratization** | Free AI learning resources and practical platform for learners worldwide         |
+| 🔧 **Developer-Centric**           | Lowering AI application development barriers with complete technology stack      |
+| 🏢 **Enterprise-Ready**            | Meeting enterprise requirements for high availability, security, and performance |
+| 🌍 **Open Ecosystem**              | Embracing open-source philosophy, encouraging community innovation               |
 
 ---
 
@@ -223,11 +223,11 @@ await learning.learn({
 
 **Technical Highlights:**
 
-| Layer | Architecture | Key Algorithms |
-|-------|--------------|----------------|
-| **Behavioral** | Pattern Recognition & Classification | LSTM, Random Forest, K-Means |
-| **Strategic** | Goal-Oriented Planning | GOAP, MCTS, Reinforcement Learning |
-| **Knowledge** | Knowledge Graph & Reasoning | Graph Neural Networks, NLP, Transformer |
+| Layer          | Architecture                         | Key Algorithms                          |
+| -------------- | ------------------------------------ | --------------------------------------- |
+| **Behavioral** | Pattern Recognition & Classification | LSTM, Random Forest, K-Means            |
+| **Strategic**  | Goal-Oriented Planning               | GOAP, MCTS, Reinforcement Learning      |
+| **Knowledge**  | Knowledge Graph & Reasoning          | Graph Neural Networks, NLP, Transformer |
 
 ---
 
@@ -302,46 +302,46 @@ export default function App() {
 
 ### Frontend Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 19.0 | UI framework with Concurrent Rendering |
-| **Next.js** | 16.1 | React framework with SSR/SSG |
-| **TypeScript** | 5.0+ | Type-safe development |
-| **Tailwind CSS** | 4.1 | Utility-first CSS framework |
-| **Radix UI** | Latest | Accessible component primitives |
-| **Framer Motion** | Latest | Declarative animations |
-| **Zod** | 3.24 | Runtime type validation |
+| Technology        | Version | Purpose                                |
+| ----------------- | ------- | -------------------------------------- |
+| **React**         | 19.0    | UI framework with Concurrent Rendering |
+| **Next.js**       | 16.1    | React framework with SSR/SSG           |
+| **TypeScript**    | 5.0+    | Type-safe development                  |
+| **Tailwind CSS**  | 4.1     | Utility-first CSS framework            |
+| **Radix UI**      | Latest  | Accessible component primitives        |
+| **Framer Motion** | Latest  | Declarative animations                 |
+| **Zod**           | 3.24    | Runtime type validation                |
 
 ### Backend Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Node.js** | 18.0+ | JavaScript runtime |
-| **Bun** | 1.0+ | High-performance runtime (recommended) |
-| **Express/Fastify** | Latest | Web framework |
-| **PostgreSQL** | 15+ | Primary database |
-| **Redis** | 7.0+ | Caching and session store |
-| **Neo4j** | 5.0+ | Graph database for knowledge layer |
+| Technology          | Version | Purpose                                |
+| ------------------- | ------- | -------------------------------------- |
+| **Node.js**         | 18.0+   | JavaScript runtime                     |
+| **Bun**             | 1.0+    | High-performance runtime (recommended) |
+| **Express/Fastify** | Latest  | Web framework                          |
+| **PostgreSQL**      | 15+     | Primary database                       |
+| **Redis**           | 7.0+    | Caching and session store              |
+| **Neo4j**           | 5.0+    | Graph database for knowledge layer     |
 
 ### AI/ML Stack
 
-| Technology | Purpose |
-|------------|---------|
-| **TensorFlow.js** | Machine learning in browser |
-| **OpenAI API** | GPT-4 integration |
-| **Anthropic Claude** | Advanced conversational AI |
-| **Google Gemini** | Multimodal capabilities |
-| **DeepSeek** | Open-source LLM |
+| Technology           | Purpose                     |
+| -------------------- | --------------------------- |
+| **TensorFlow.js**    | Machine learning in browser |
+| **OpenAI API**       | GPT-4 integration           |
+| **Anthropic Claude** | Advanced conversational AI  |
+| **Google Gemini**    | Multimodal capabilities     |
+| **DeepSeek**         | Open-source LLM             |
 
 ### DevOps & Infrastructure
 
-| Technology | Purpose |
-|------------|---------|
-| **Docker** | Containerization |
+| Technology     | Purpose                 |
+| -------------- | ----------------------- |
+| **Docker**     | Containerization        |
 | **Kubernetes** | Container orchestration |
-| **Prometheus** | Metrics collection |
-| **Grafana** | Visualization dashboard |
-| **ELK Stack** | Centralized logging |
+| **Prometheus** | Metrics collection      |
+| **Grafana**    | Visualization dashboard |
+| **ELK Stack**  | Centralized logging     |
 
 ---
 
@@ -427,32 +427,32 @@ kubectl get pods -n yyc3-platform
 
 ### System Performance
 
-| Metric | Target | Achieved |
-|--------|--------|----------|
+| Metric                | Target  | Achieved  |
+| --------------------- | ------- | --------- |
 | **API Response Time** | < 200ms | 180ms avg |
-| **P99 Response Time** | < 500ms | 420ms |
-| **Page Load Time** | < 2s | 1.8s |
-| **Concurrent Users** | 10,000+ | 12,000+ |
+| **P99 Response Time** | < 500ms | 420ms     |
+| **Page Load Time**    | < 2s    | 1.8s      |
+| **Concurrent Users**  | 10,000+ | 12,000+   |
 
 ### System Reliability
 
-| Metric | Target | Achieved |
-|--------|--------|----------|
-| **System Availability** | 99.9% | 99.95% |
-| **Error Rate** | < 0.1% | 0.05% |
-| **Recovery Time** | < 5min | 3min avg |
-| **Data Durability** | 99.999% | 99.999% |
+| Metric                  | Target  | Achieved |
+| ----------------------- | ------- | -------- |
+| **System Availability** | 99.9%   | 99.95%   |
+| **Error Rate**          | < 0.1%  | 0.05%    |
+| **Recovery Time**       | < 5min  | 3min avg |
+| **Data Durability**     | 99.999% | 99.999%  |
 
 ### Test Coverage
 
-| Component | Coverage | Status |
-|-----------|----------|--------|
-| Autonomous AI Engine | 95% | ✅ |
-| Model Adapter | 92% | ✅ |
-| Learning System | 88% | ✅ |
-| Five-Dimensional Management | 90% | ✅ |
-| Widget UI | 85% | ✅ |
-| **Overall** | **85%** | ✅ |
+| Component                   | Coverage | Status |
+| --------------------------- | -------- | ------ |
+| Autonomous AI Engine        | 95%      | ✅      |
+| Model Adapter               | 92%      | ✅      |
+| Learning System             | 88%      | ✅      |
+| Five-Dimensional Management | 90%      | ✅      |
+| Widget UI                   | 85%      | ✅      |
+| **Overall**                 | **85%**  | ✅      |
 
 ---
 
@@ -493,16 +493,16 @@ Authorization: Bearer <your-jwt-token>
 
 ### Core API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/v1/engine/reason` | POST | AI reasoning engine |
-| `/api/v1/engine/plan` | POST | Task planning |
-| `/api/v1/engine/execute` | POST | Execute task |
-| `/api/v1/adapter/process` | POST | Process with model adapter |
-| `/api/v1/learning/record` | POST | Record interaction |
-| `/api/v1/learning/insights` | GET | Get learning insights |
-| `/api/v1/management/goals` | POST/GET | Goal management |
-| `/api/v1/management/dashboard` | GET | Dashboard data |
+| Endpoint                       | Method   | Description                |
+| ------------------------------ | -------- | -------------------------- |
+| `/api/v1/engine/reason`        | POST     | AI reasoning engine        |
+| `/api/v1/engine/plan`          | POST     | Task planning              |
+| `/api/v1/engine/execute`       | POST     | Execute task               |
+| `/api/v1/adapter/process`      | POST     | Process with model adapter |
+| `/api/v1/learning/record`      | POST     | Record interaction         |
+| `/api/v1/learning/insights`    | GET      | Get learning insights      |
+| `/api/v1/management/goals`     | POST/GET | Goal management            |
+| `/api/v1/management/dashboard` | GET      | Dashboard data             |
 
 For complete API documentation, visit: [https://docs.yyc3.0379.email/api](https://docs.yyc3.0379.email/api)
 
@@ -567,12 +567,12 @@ YYC³（言语云立方）AI智能协作平台是一个**完全免费、开源**
 
 ### 💡 核心价值
 
-| 维度 | 描述 |
-|-----------|-------------|
-| 🎓 **教育普及** - 为学习者提供免费的AI学习资源和实践平台 |
-| 🔧 **开发者友好** - 降低AI应用开发门槛，提供完整的技术栈 |
+| 维度                                                        | 描述 |
+| ----------------------------------------------------------- | ---- |
+| 🎓 **教育普及** - 为学习者提供免费的AI学习资源和实践平台     |
+| 🔧 **开发者友好** - 降低AI应用开发门槛，提供完整的技术栈     |
 | 🏢 **企业就绪** - 满足企业级应用的高可用、高安全、高性能要求 |
-| 🌍 **开放生态** - 遵循开源理念，鼓励社区贡献与创新 |
+| 🌍 **开放生态** - 遵循开源理念，鼓励社区贡献与创新           |
 
 ---
 
@@ -738,10 +738,10 @@ await learning.learn({
 
 **技术亮点:**
 
-| 层次 | 架构 | 核心算法 |
-|-------|--------------|----------------|
-| **行为层** | 模式识别与分类 | LSTM、随机森林、K-Means |
-| **策略层** | 目标导向规划 | GOAP、MCTS、强化学习 |
+| 层次       | 架构           | 核心算法                     |
+| ---------- | -------------- | ---------------------------- |
+| **行为层** | 模式识别与分类 | LSTM、随机森林、K-Means      |
+| **策略层** | 目标导向规划   | GOAP、MCTS、强化学习         |
 | **知识层** | 知识图谱与推理 | 图神经网络、NLP、Transformer |
 
 ---
@@ -817,46 +817,46 @@ export default function App() {
 
 ### 前端技术
 
-| 技术 | 版本 | 用途 |
-|------------|---------|---------|
-| **React** | 19.0 | UI框架，支持并发渲染 |
-| **Next.js** | 16.1 | React框架，支持SSR/SSG |
-| **TypeScript** | 5.0+ | 类型安全开发 |
-| **Tailwind CSS** | 4.1 | 实用优先CSS框架 |
-| **Radix UI** | Latest | 无障碍组件基元 |
-| **Framer Motion** | Latest | 声明式动画 |
-| **Zod** | 3.24 | 运行时类型验证 |
+| 技术              | 版本   | 用途                   |
+| ----------------- | ------ | ---------------------- |
+| **React**         | 19.0   | UI框架，支持并发渲染   |
+| **Next.js**       | 16.1   | React框架，支持SSR/SSG |
+| **TypeScript**    | 5.0+   | 类型安全开发           |
+| **Tailwind CSS**  | 4.1    | 实用优先CSS框架        |
+| **Radix UI**      | Latest | 无障碍组件基元         |
+| **Framer Motion** | Latest | 声明式动画             |
+| **Zod**           | 3.24   | 运行时类型验证         |
 
 ### 后端技术
 
-| 技术 | 版本 | 用途 |
-|------------|---------|---------|
-| **Node.js** | 18.0+ | JavaScript运行时 |
-| **Bun** | 1.0+ | 高性能运行时（推荐） |
-| **Express/Fastify** | Latest | Web框架 |
-| **PostgreSQL** | 15+ | 主数据库 |
-| **Redis** | 7.0+ | 缓存和会话存储 |
-| **Neo4j** | 5.0+ | 知识层图数据库 |
+| 技术                | 版本   | 用途                 |
+| ------------------- | ------ | -------------------- |
+| **Node.js**         | 18.0+  | JavaScript运行时     |
+| **Bun**             | 1.0+   | 高性能运行时（推荐） |
+| **Express/Fastify** | Latest | Web框架              |
+| **PostgreSQL**      | 15+    | 主数据库             |
+| **Redis**           | 7.0+   | 缓存和会话存储       |
+| **Neo4j**           | 5.0+   | 知识层图数据库       |
 
 ### AI/ML技术
 
-| 技术 | 用途 |
-|------------|---------|
-| **TensorFlow.js** | 浏览器端机器学习 |
-| **OpenAI API** | GPT-4集成 |
-| **Anthropic Claude** | 高级对话AI |
-| **Google Gemini** | 多模态能力 |
-| **DeepSeek** | 开源大语言模型 |
+| 技术                 | 用途             |
+| -------------------- | ---------------- |
+| **TensorFlow.js**    | 浏览器端机器学习 |
+| **OpenAI API**       | GPT-4集成        |
+| **Anthropic Claude** | 高级对话AI       |
+| **Google Gemini**    | 多模态能力       |
+| **DeepSeek**         | 开源大语言模型   |
 
 ### DevOps与基础设施
 
-| 技术 | 用途 |
-|------------|---------|
-| **Docker** | 容器化 |
-| **Kubernetes** | 容器编排 |
-| **Prometheus** | 指标收集 |
-| **Grafana** | 可视化仪表板 |
-| **ELK Stack** | 集中式日志 |
+| 技术           | 用途         |
+| -------------- | ------------ |
+| **Docker**     | 容器化       |
+| **Kubernetes** | 容器编排     |
+| **Prometheus** | 指标收集     |
+| **Grafana**    | 可视化仪表板 |
+| **ELK Stack**  | 集中式日志   |
 
 ---
 
@@ -942,32 +942,32 @@ kubectl get pods -n yyc3-platform
 
 ### 系统性能
 
-| 指标 | 目标值 | 实际值 |
-|--------|--------|----------|
-| **API响应时间** | < 200ms | 180ms 平均 |
-| **P99响应时间** | < 500ms | 420ms |
-| **页面加载时间** | < 2s | 1.8s |
-| **并发用户数** | 10,000+ | 12,000+ |
+| 指标             | 目标值  | 实际值     |
+| ---------------- | ------- | ---------- |
+| **API响应时间**  | < 200ms | 180ms 平均 |
+| **P99响应时间**  | < 500ms | 420ms      |
+| **页面加载时间** | < 2s    | 1.8s       |
+| **并发用户数**   | 10,000+ | 12,000+    |
 
 ### 系统可靠性
 
-| 指标 | 目标值 | 实际值 |
-|--------|--------|----------|
-| **系统可用性** | 99.9% | 99.95% |
-| **错误率** | < 0.1% | 0.05% |
-| **故障恢复时间** | < 5min | 3分钟 平均 |
-| **数据持久性** | 99.999% | 99.999% |
+| 指标             | 目标值  | 实际值     |
+| ---------------- | ------- | ---------- |
+| **系统可用性**   | 99.9%   | 99.95%     |
+| **错误率**       | < 0.1%  | 0.05%      |
+| **故障恢复时间** | < 5min  | 3分钟 平均 |
+| **数据持久性**   | 99.999% | 99.999%    |
 
 ### 测试覆盖率
 
-| 组件 | 覆盖率 | 状态 |
-|-----------|----------|--------|
-| 自主AI引擎 | 95% | ✅ |
-| 模型适配器 | 92% | ✅ |
-| 学习系统 | 88% | ✅ |
-| 五维管理系统 | 90% | ✅ |
-| Widget UI | 85% | ✅ |
-| **整体** | **85%** | ✅ |
+| 组件         | 覆盖率  | 状态 |
+| ------------ | ------- | ---- |
+| 自主AI引擎   | 95%     | ✅    |
+| 模型适配器   | 92%     | ✅    |
+| 学习系统     | 88%     | ✅    |
+| 五维管理系统 | 90%     | ✅    |
+| Widget UI    | 85%     | ✅    |
+| **整体**     | **85%** | ✅    |
 
 ---
 
@@ -1008,16 +1008,16 @@ Authorization: Bearer <your-jwt-token>
 
 ### 核心API端点
 
-| 端点 | 方法 | 描述 |
-|----------|--------|-------------|
-| `/api/v1/engine/reason` | POST | AI推理引擎 |
-| `/api/v1/engine/plan` | POST | 任务规划 |
-| `/api/v1/engine/execute` | POST | 执行任务 |
-| `/api/v1/adapter/process` | POST | 使用模型适配器处理 |
-| `/api/v1/learning/record` | POST | 记录交互 |
-| `/api/v1/learning/insights` | GET | 获取学习洞察 |
-| `/api/v1/management/goals` | POST/GET | 目标管理 |
-| `/api/v1/management/dashboard` | GET | 仪表板数据 |
+| 端点                           | 方法     | 描述               |
+| ------------------------------ | -------- | ------------------ |
+| `/api/v1/engine/reason`        | POST     | AI推理引擎         |
+| `/api/v1/engine/plan`          | POST     | 任务规划           |
+| `/api/v1/engine/execute`       | POST     | 执行任务           |
+| `/api/v1/adapter/process`      | POST     | 使用模型适配器处理 |
+| `/api/v1/learning/record`      | POST     | 记录交互           |
+| `/api/v1/learning/insights`    | GET      | 获取学习洞察       |
+| `/api/v1/management/goals`     | POST/GET | 目标管理           |
+| `/api/v1/management/dashboard` | GET      | 仪表板数据         |
 
 完整API文档，请访问: [https://docs.yyc3.0379.email/api](https://docs.yyc3.0379.email/api)
 

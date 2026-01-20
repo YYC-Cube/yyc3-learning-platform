@@ -22,7 +22,6 @@ on:
 
 env:
   NODE_VERSION: '18'
-  PNPM_VERSION: '8'
   REGISTRY: ghcr.io
   IMAGE_NAME: yyc3-learning-platform
   PRIMARY_REGION: 'us-east-1'
@@ -106,7 +105,7 @@ jobs:
         run: |
           sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/deployment.yaml
           sed -i "s|REGION|primary|g" k8s/configmap.yaml
-          
+
           kubectl apply -f k8s/configmap.yaml -n yyc3-learning
           kubectl apply -f k8s/secret.yaml -n yyc3-learning
           kubectl apply -f k8s/pdb.yaml -n yyc3-learning
@@ -118,20 +117,20 @@ jobs:
         run: |
           CURRENT_COLOR=$(kubectl get deployment yyc3-learning -n yyc3-learning -o jsonpath='{.spec.template.metadata.labels.color}' 2>/dev/null || echo "blue")
           NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
-          
+
           sed -i "s|COLOR|$NEW_COLOR|g" k8s/deployment.yaml
           kubectl apply -f k8s/deployment.yaml -n yyc3-learning
-          
+
           kubectl wait --for=condition=ready pod -l app=yyc3-learning,color=$NEW_COLOR -n yyc3-learning --timeout=5m
-          
+
           kubectl patch service yyc3-learning -n yyc3-learning -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
-          
+
           echo "主区域部署成功，新颜色: $NEW_COLOR"
 
       - name: 健康检查
         run: |
           SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          
+
           for i in {1..30}; do
             if curl -f http://$SERVICE_IP:3000/api/health; then
               echo "主区域健康检查通过"
@@ -140,7 +139,7 @@ jobs:
             echo "等待健康检查... ($i/30)"
             sleep 10
           done
-          
+
           echo "健康检查失败"
           exit 1
 
@@ -175,7 +174,7 @@ jobs:
         run: |
           sed -i "s|IMAGE_TAG|${{ github.sha }}|g" k8s/deployment.yaml
           sed -i "s|REGION|secondary|g" k8s/configmap.yaml
-          
+
           kubectl apply -f k8s/configmap.yaml -n yyc3-learning
           kubectl apply -f k8s/secret.yaml -n yyc3-learning
           kubectl apply -f k8s/pdb.yaml -n yyc3-learning
@@ -186,20 +185,20 @@ jobs:
         run: |
           CURRENT_COLOR=$(kubectl get deployment yyc3-learning -n yyc3-learning -o jsonpath='{.spec.template.metadata.labels.color}' 2>/dev/null || echo "blue")
           NEW_COLOR=$([ "$CURRENT_COLOR" = "blue" ] && echo "green" || echo "blue")
-          
+
           sed -i "s|COLOR|$NEW_COLOR|g" k8s/deployment.yaml
           kubectl apply -f k8s/deployment.yaml -n yyc3-learning
-          
+
           kubectl wait --for=condition=ready pod -l app=yyc3-learning,color=$NEW_COLOR -n yyc3-learning --timeout=5m
-          
+
           kubectl patch service yyc3-learning -n yyc3-learning -p '{"spec":{"selector":{"color":"'$NEW_COLOR'"}}}'
-          
+
           echo "备区域部署成功，新颜色: $NEW_COLOR"
 
       - name: 健康检查
         run: |
           SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          
+
           for i in {1..30}; do
             if curl -f http://$SERVICE_IP:3000/api/health; then
               echo "备区域健康检查通过"
@@ -208,7 +207,7 @@ jobs:
             echo "等待健康检查... ($i/30)"
             sleep 10
           done
-          
+
           echo "健康检查失败"
           exit 1
 
@@ -224,7 +223,7 @@ jobs:
           echo "配置全局负载均衡..."
           echo "主区域: https://yyc3-learning.yyc3.0379.email"
           echo "备区域: https://yyc3-learning-secondary.yyc3.0379.email"
-          
+
           # 这里可以添加实际的负载均衡器配置
           # 例如 AWS Route53, Cloudflare, 或其他 CDN 服务
 
@@ -253,7 +252,7 @@ jobs:
         run: |
           echo "模拟主区域故障..."
           kubectl scale deployment yyc3-learning -n yyc3-learning --replicas=0
-          
+
           sleep 30
 
       - name: 验证备区域接管
@@ -366,13 +365,13 @@ jobs:
       - name: 等待系统恢复
         run: |
           sleep 60
-          
+
           kubectl wait --for=condition=ready pod -l app=yyc3-learning -n yyc3-learning --timeout=5m
 
       - name: 验证系统可用性
         run: |
           SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          
+
           for i in {1..10}; do
             if curl -f http://$SERVICE_IP:3000/api/health; then
               echo "系统已恢复"
@@ -381,7 +380,7 @@ jobs:
             echo "等待系统恢复... ($i/10)"
             sleep 10
           done
-          
+
           echo "系统恢复失败"
           exit 1
 
@@ -409,17 +408,17 @@ jobs:
       - name: 执行回滚
         run: |
           echo "检测到部署失败，执行自动回滚..."
-          
+
           kubectl rollout undo deployment/yyc3-learning -n yyc3-learning
-          
+
           kubectl rollout status deployment/yyc3-learning -n yyc3-learning --timeout=5m
-          
+
           echo "回滚完成"
 
       - name: 验证回滚
         run: |
           SERVICE_IP=$(kubectl get service yyc3-learning -n yyc3-learning -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          
+
           if curl -f http://$SERVICE_IP:3000/api/health; then
             echo "回滚验证成功"
           else
@@ -477,7 +476,7 @@ jobs:
             echo "等待服务启动... ($i/10)"
             sleep 10
           done
-          
+
           echo "服务可用性验证失败"
           exit 1
 
@@ -486,16 +485,16 @@ jobs:
           # 验证关键 API 端点
           curl -f https://yyc3-learning.yyc3.0379.email/api/courses
           curl -f https://yyc3-learning.yyc3.0379.email/api/questions
-          
+
           echo "关键功能验证通过"
 
       - name: 性能基准测试
         run: |
           # 执行简单的性能测试
           RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' https://yyc3-learning.yyc3.0379.email/api/health)
-          
+
           echo "响应时间: $RESPONSE_TIME 秒"
-          
+
           if (( $(echo "$RESPONSE_TIME < 1.0" | bc -l) )); then
             echo "性能基准测试通过"
           else

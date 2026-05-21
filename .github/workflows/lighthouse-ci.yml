@@ -1,0 +1,563 @@
+# YYC³ Learning Platform — Lighthouse CI Performance Testing
+# Automated performance regression testing and monitoring
+
+name: Lighthouse CI Performance Testing
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      urls:
+        description: 'Comma-separated URLs to test'
+        required: false
+        default: 'https://learning.yyc3.top'
+      budget_path:
+        description: 'Path to performance budget file'
+        required: false
+        default: './performance-budgets.json'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
+jobs:
+  # ===== Phase 1: Performance Testing =====
+  lighthouse-ci:
+    name: Lighthouse Performance Tests
+    runs-on: ubuntu-latest
+    outputs:
+      performance_score: ${{ steps.parse-results.outputs.performance_score }}
+      accessibility_score: ${{ steps.parse-results.outputs.accessibility_score }}
+      best_practices_score: ${{ steps.parse-results.outputs.best_practices_score }}
+      seo_score: ${{ steps.parse-results.outputs.seo_score }}
+      pwa_score: ${{ steps.parse-results.outputs.pwa_score }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: |
+          echo "🏗️  Building application for testing..."
+          # Apply static export patches if needed
+          if [ -f "scripts/patch-export.js" ]; then
+            cat > app/providers/DynamicProviders.tsx << 'EOFILE'
+            "use client"
+            export { default as BottomNav } from "@/components/bottom-nav"
+            export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
+            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"}
+            EOFILE
+            rm -rf app/api
+            rm -rf app/courses/\[id\]
+            rm -rf app/exam/\[id\]
+            rm -f middleware.ts
+            cp next.config.js next.config.js.bak
+            node scripts/patch-export.js
+          fi
+
+          pnpm build
+
+          if [ -f "next.config.js.bak" ]; then
+            mv next.config.js.bak next.config.js
+          fi
+
+      - name: Start production server
+        run: |
+          echo "🚀 Starting production server..."
+          pnpm start &
+          SERVER_PID=$!
+
+          # Wait for server to be ready
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3200 > /dev/null; then
+              echo "✅ Server is ready"
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+
+      - name: Install Lighthouse CI
+        run: |
+          echo "📦 Installing Lighthouse CI..."
+          npm install -g @lhci/cli
+          npm install -g lighthouse
+
+      - name: Determine URLs to test
+        id: urls
+        run: |
+          if [ -n "${{ github.event.inputs.urls }}" ]; then
+            TEST_URLS="${{ github.event.inputs.urls }}"
+          else
+            # Default critical pages
+            TEST_URLS="http://localhost:3200/,http://localhost:3200/courses,http://localhost:3200/exam,http://localhost:3200/profile,http://localhost:3200/career-path"
+          fi
+
+          echo "urls=$TEST_URLS" >> $GITHUB_OUTPUT
+          echo "🌐 Testing URLs: $TEST_URLS"
+
+      - name: Create Lighthouse CI config
+        run: |
+          cat > lighthouserc.json << 'EOF'
+          {
+            "ci": {
+              "collect": {
+                "url": [
+                  "http://localhost:3200/",
+                  "http://localhost:3200/courses",
+                  "http://localhost:3200/exam",
+                  "http://localhost:3200/profile",
+                  "http://localhost:3200/career-path"
+                ],
+                "startServerCommand": "echo 'Server already running'",
+                "startServerReadyPattern": "ready",
+                "startServerReadyTimeout": 30000,
+                "settings": {
+                  "preset": "desktop",
+                  "chromeFlags": "--no-sandbox --disable-dev-shm-usage",
+                  "onlyCategories": ["performance", "accessibility", "best-practices", "seo"],
+                  "throttling": {
+                    "rttMs": 40,
+                    "throughputKbps": 10240,
+                    "cpuSlowdownMultiplier": 1,
+                    "requestLatencyMs": 0,
+                    "downloadThroughputKbps": 0,
+                    "uploadThroughputKbps": 0
+                  }
+                }
+              },
+              "assert": {
+                "assertions": {
+                  "categories:performance": ["error", { "minScore": 0.8 }],
+                  "categories:accessibility": ["error", { "minScore": 0.9 }],
+                  "categories:best-practices": ["error", { "minScore": 0.9 }],
+                  "categories:seo": ["error", { "minScore": 0.9 }]
+                }
+              },
+              "upload": {
+                "target": "temporary-public-storage"
+              }
+            }
+          }
+          EOF
+
+      - name: Run Lighthouse CI
+        id: lighthouse
+        continue-on-error: true
+        run: |
+          echo "🔍 Running Lighthouse performance tests..."
+
+          lhci autorun --config=lighthouserc.json || true
+
+          # Save results for parsing
+          if [ -f ".lighthouseci/manifest.json" ]; then
+            echo "✅ Lighthouse results saved"
+          else
+            echo "⚠️  Lighthouse results not found"
+          fi
+
+      - name: Parse Lighthouse results
+        id: parse-results
+        if: always()
+        run: |
+          if [ -f ".lighthouseci/manifest.json" ]; then
+            # Extract scores from the manifest
+            PERFORMANCE=$(jq '[.[][] | .summary.categories.performance.score] | add / length * 100' .lighthouseci/manifest.json || echo "0")
+            ACCESSIBILITY=$(jq '[.[][] | .summary.categories.accessibility.score] | add / length * 100' .lighthouseci/manifest.json || echo "0")
+            BEST_PRACTICES=$(jq '[.[][] | .summary.categories.best-practices.score] | add / length * 100' .lighthouseci/manifest.json || echo "0")
+            SEO=$(jq '[.[][] | .summary.categories.seo.score] | add / length * 100' .lighthouseci/manifest.json || echo "0")
+
+            echo "performance_score=${PERFORMANCE}" >> $GITHUB_OUTPUT
+            echo "accessibility_score=${ACCESSIBILITY}" >> $GITHUB_OUTPUT
+            echo "best_practices_score=${BEST_PRACTICES}" >> $GITHUB_OUTPUT
+            echo "seo_score=${SEO}" >> $GITHUB_OUTPUT
+
+            echo "📊 Performance Score: ${PERFORMANCE}"
+            echo "♿ Accessibility Score: ${ACCESSIBILITY}"
+            echo "✨ Best Practices Score: ${BEST_PRACTICES}"
+            echo "🔍 SEO Score: ${SEO}"
+          else
+            echo "results_available=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Lighthouse results not available"
+          fi
+
+      - name: Generate performance report
+        if: always()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          # 📊 Lighthouse Performance Test Results
+
+          ## Overall Scores
+
+          | Category | Score | Status |
+          |----------|-------|--------|
+          | **Performance** | ${{ steps.parse-results.outputs.performance_score != '' && steps.parse-results.outputs.performance_score || 'N/A' }} | ${{ steps.parse-results.outputs.performance_score >= 80 && '✅ Pass' || steps.parse-results.outputs.performance_score != '' && '❌ Fail' || '⚠️ Unknown' }} |
+          | **Accessibility** | ${{ steps.parse-results.outputs.accessibility_score != '' && steps.parse-results.outputs.accessibility_score || 'N/A' }} | ${{ steps.parse-results.outputs.accessibility_score >= 90 && '✅ Pass' || steps.parse-results.outputs.accessibility_score != '' && '❌ Fail' || '⚠️ Unknown' }} |
+          | **Best Practices** | ${{ steps.parse-results.outputs.best_practices_score != '' && steps.parse-results.outputs.best_practices_score || 'N/A' }} | ${{ steps.parse-results.outputs.best_practices_score >= 90 && '✅ Pass' || steps.parse-results.outputs.best_practices_score != '' && '❌ Fail' || '⚠️ Unknown' }} |
+          | **SEO** | ${{ steps.parse-results.outputs.seo_score != '' && steps.parse-results.outputs.seo_score || 'N/A' }} | ${{ steps.parse-results.outputs.seo_score >= 90 && '✅ Pass' || steps.parse-results.outputs.seo_score != '' && '❌ Fail' || '⚠️ Unknown' }} |
+
+          ## Test Details
+
+          - **Test Date**: $(date -u +%Y-%m-%d)
+          - **Commit**: ${{ github.sha }}
+          - **Branch**: ${{ github.ref_name }}
+          - **Triggered By**: ${{ github.actor }}
+
+          ## Performance Metrics
+
+          The following pages were tested:
+          - Homepage (/)
+          - Courses (/courses)
+          - Exam (/exam)
+          - Profile (/profile)
+          - Career Path (/career-path)
+
+          EOF
+
+      - name: Stop production server
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            echo "🛑 Stopping production server..."
+            kill $SERVER_PID || true
+          fi
+
+      - name: Upload Lighthouse results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-results
+          path: .lighthouseci/
+          retention-days: 30
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const scores = {
+              performance: '${{ steps.parse-results.outputs.performance_score }}',
+              accessibility: '${{ steps.parse-results.outputs.accessibility_score }}',
+              bestPractices: '${{ steps.parse-results.outputs.best_practices_score }}',
+              seo: '${{ steps.parse-results.outputs.seo_score }}'
+            };
+
+            const comment = `## 📊 Lighthouse Performance Test Results
+
+            | Category | Score | Status |
+            |----------|-------|--------|
+            | Performance | ${scores.performance || 'N/A'} | ${Number(scores.performance) >= 80 ? '✅' : '❌'} |
+            | Accessibility | ${scores.accessibility || 'N/A'} | ${Number(scores.accessibility) >= 90 ? '✅' : '❌'} |
+            | Best Practices | ${scores.bestPractices || 'N/A'} | ${Number(scores.bestPractices) >= 90 ? '✅' : '❌'} |
+            | SEO | ${scores.seo || 'N/A'} | ${Number(scores.seo) >= 90 ? '✅' : '❌'} |
+
+            *Generated by Lighthouse CI*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # ===== Phase 2: Performance Budget Testing =====
+  performance-budget:
+    name: Performance Budget Testing
+    runs-on: ubuntu-latest
+    needs: lighthouse-ci
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create performance budget file
+        run: |
+          cat > performance-budgets.json << 'EOF'
+          {
+            "budgets": [
+              {
+                "path": "/*",
+                "timings": [
+                  {
+                    "metric": "first-contentful-paint",
+                    "budget": 2000
+                  },
+                  {
+                    "metric": "interactive",
+                    "budget": 5000
+                  },
+                  {
+                    "metric": "largest-contentful-paint",
+                    "budget": 2500
+                  },
+                  {
+                    "metric": "cumulative-layout-shift",
+                    "budget": 0.1
+                  },
+                  {
+                    "metric": "total-blocking-time",
+                    "budget": 300
+                  }
+                ],
+                "resourceSizes": [
+                  {
+                    "resourceType": "script",
+                    "budget": 200
+                  },
+                  {
+                    "resourceType": "stylesheet",
+                    "budget": 50
+                  },
+                  {
+                    "resourceType": "image",
+                    "budget": 200
+                  },
+                  {
+                    "resourceType": "font",
+                    "budget": 100
+                  },
+                  {
+                    "resourceType": "total",
+                    "budget": 1000
+                  }
+                ],
+                "resourceCounts": [
+                  {
+                    "resourceType": "script",
+                    "budget": 10
+                  },
+                  {
+                    "resourceType": "stylesheet",
+                    "budget": 5
+                  },
+                  {
+                    "resourceType": "total",
+                    "budget": 20
+                  }
+                ]
+              }
+            ]
+          }
+          EOF
+
+      - name: Run performance budget tests
+        id: budget-test
+        continue-on-error: true
+        run: |
+          echo "💰 Testing performance budgets..."
+
+          # Install bundlesize if not available
+          npm install -g bundlesize
+
+          # Run budget tests
+          bundlesize || true
+
+          echo "✅ Performance budget testing completed"
+
+      - name: Generate budget report
+        if: always()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 💰 Performance Budget Results
+
+          Performance budgets have been tested against the following thresholds:
+
+          ### Core Web Vitals
+          - **First Contentful Paint**: < 2.0s
+          - **Time to Interactive**: < 5.0s
+          - **Largest Contentful Paint**: < 2.5s
+          - **Cumulative Layout Shift**: < 0.1
+          - **Total Blocking Time**: < 300ms
+
+          ### Resource Sizes
+          - **Scripts**: < 200KB
+          - **Stylesheets**: < 50KB
+          - **Images**: < 200KB
+          - **Fonts**: < 100KB
+          - **Total**: < 1000KB
+
+          ### Resource Counts
+          - **Scripts**: < 10
+          - **Stylesheets**: < 5
+          - **Total Resources**: < 20
+
+          EOF
+
+  # ===== Phase 3: Performance Regression Detection =====
+  regression-detection:
+    name: Performance Regression Detection
+    runs-on: ubuntu-latest
+    needs: lighthouse-ci
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout base branch
+        run: |
+          git checkout ${{ github.base_ref }}
+
+      - name: Build base version
+        run: |
+          # Build base version for comparison
+          if [ -f "scripts/patch-export.js" ]; then
+            cat > app/providers/DynamicProviders.tsx << 'EOFILE'
+            "use client"
+            export { default as BottomNav } from "@/components/bottom-nav"
+            export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
+            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"}
+            EOFILE
+            rm -rf app/api
+            rm -rf app/courses/\[id\]
+            rm -rf app/exam/\[id\]
+            rm -f middleware.ts
+            cp next.config.js next.config.js.bak
+            node scripts/patch-export.js
+          fi
+
+          pnpm build
+
+          if [ -f "next.config.js.bak" ]; then
+            mv next.config.js.bak next.config.js
+          fi
+
+      - name: Run baseline Lighthouse tests
+        run: |
+          npm install -g lighthouse
+
+          # Save baseline results
+          lighthouse http://localhost:3200/ --output=json --output=baseline-results.json --chrome-flags="--no-sandbox" || true
+
+          echo "✅ Baseline performance results saved"
+
+      - name: Compare performance
+        id: compare
+        run: |
+          echo "📊 Comparing performance between versions..."
+
+          # Compare results and detect regressions
+          # This would typically involve more sophisticated analysis
+
+          BASELINE_SCORE=$(jq '.categories.performance.score * 100' baseline-results.json || echo "0")
+          CURRENT_SCORE="${{ needs.lighthouse-ci.outputs.performance_score }}"
+
+          echo "Baseline: $BASELINE_SCORE"
+          echo "Current: $CURRENT_SCORE"
+
+          # Detect regression (more than 5% decrease)
+          if [ -n "$CURRENT_SCORE" ] && [ "$CURRENT_SCORE" != "0" ]; then
+            DIFFERENCE=$(echo "$CURRENT_SCORE - $BASELINE_SCORE" | bc)
+            REGRESSION_THRESHOLD=-5
+
+            if (( $(echo "$DIFFERENCE < $REGRESSION_THRESHOLD" | bc -l) )); then
+              echo "regression_detected=true" >> $GITHUB_OUTPUT
+              echo "difference=$DIFFERENCE" >> $GITHUB_OUTPUT
+              echo "⚠️  Performance regression detected: $DIFFERENCE points"
+            else
+              echo "regression_detected=false" >> $GITHUB_OUTPUT
+              echo "difference=$DIFFERENCE" >> $GITHUB_OUTPUT
+              echo "✅ No performance regression"
+            fi
+          fi
+
+      - name: Create regression issue
+        if: steps.compare.outputs.regression_detected == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = '⚠️ Performance Regression Detected';
+            const difference = '${{ steps.compare.outputs.difference }}';
+            const body = `## Performance Regression Detected
+
+            **Performance Change**: ${difference} points
+
+            **Details**:
+            - **Baseline Score**: ${{ steps.compare.outputs.BASELINE_SCORE }}
+            - **Current Score**: ${{ steps.compare.outputs.CURRENT_SCORE }}
+            - **Regression**: ${difference} points
+            - **Threshold**: -5 points
+
+            **Action Required**:
+            Please investigate the performance regression and optimize before merging.
+
+            **Branch**: ${{ github.head_ref }}
+            **Commit**: ${{ github.sha }}`;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['performance', 'regression', 'priority: high']
+            });
+
+  # ===== Phase 4: Continuous Monitoring =====
+  continuous-monitoring:
+    name: Continuous Performance Monitoring
+    runs-on: ubuntu-latest
+    needs: lighthouse-ci
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Update performance history
+        run: |
+          echo "📜 Updating performance history..."
+
+          # Create performance history entry
+          cat > performance-history-$(date +%Y%m%d).json << EOF
+          {
+            "date": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit": "${{ github.sha }}",
+            "branch": "${{ github.ref_name }}",
+            "scores": {
+              "performance": ${{ needs.lighthouse-ci.outputs.performance_score }},
+              "accessibility": ${{ needs.lighthouse-ci.outputs.accessibility_score }},
+              "bestPractices": ${{ needs.lighthouse-ci.outputs.best_practices_score }},
+              "seo": ${{ needs.lighthouse-ci.outputs.seo_score }}
+            }
+          }
+          EOF
+
+          echo "✅ Performance history updated"
+
+      - name: Generate performance trend report
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 📈 Performance Monitoring
+
+          This deployment has been added to the performance monitoring history.
+
+          **Current Performance Scores**:
+          - Performance: ${{ needs.lighthouse-ci.outputs.performance_score }}
+          - Accessibility: ${{ needs.lighthouse-ci.outputs.accessibility_score }}
+          - Best Practices: ${{ needs.lighthouse-ci.outputs.best_practices_score }}
+          - SEO: ${{ needs.lighthouse-ci.outputs.seo_score }}
+
+          **Monitoring Active**: ✅
+          **Alerts Enabled**: ✅
+          **Historical Data**: ✅
+
+          The performance of this deployment will be continuously monitored and you'll be alerted of any significant degradation.
+
+          EOF

@@ -1,0 +1,127 @@
+# YYC³ Learning Platform - Dependabot Configuration
+# Automated dependency updates for security and compatibility
+
+version: 2
+updates:
+  # Enable version updates for npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "YYC-Cube"
+    assignees:
+      - "YYC-Cube"
+    commit-message:
+      prefix: "deps"
+      prefix-development: "build"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "npm"
+      - "dependabot"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      # Ignore specific major versions that introduce breaking changes
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # Group React-related dependencies
+      react-dependencies:
+        patterns:
+          - "react*"
+          - "@types/react*"
+        exclude-patterns:
+          - "react-native*"
+      # Group testing dependencies
+      testing-dependencies:
+        patterns:
+          - "vitest*"
+          - "@vitest*"
+          - "playwright*"
+          - "@playwright/test"
+          - "jest*"
+          - "@testing-library*"
+      # Group build tools
+      build-dependencies:
+        patterns:
+          - "webpack*"
+          - "rollup*"
+          - "vite*"
+          - "esbuild*"
+      # Group security-related dependencies
+      security-dependencies:
+        patterns:
+          - "*eslint*"
+          - "*prettier*"
+          - "*typescript*"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "ci"
+      - "github-actions"
+      - "dependabot"
+    allow:
+      - dependency-type: "direct"
+    groups:
+      # Group deployment-related actions
+      deployment-actions:
+        patterns:
+          - "actions/deploy*"
+          - "actions/upload*"
+      # Group setup actions
+      setup-actions:
+        patterns:
+          - "actions/setup*"
+          - "actions/checkout*"
+
+  # Enable updates for Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:00"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    labels:
+      - "docker"
+      - "dependencies"
+      - "dependabot"
+    allow:
+      - dependency-type: "direct"
+
+# Configuration for pull request settings
+pull-request-branch-name:
+  separator: "-"
+
+# Configuration for vulnerability alerts
+vulnerability-alerts:
+  enabled: true
+  notify:
+    - "YYC-Cube"
+
+# Configuration for security updates
+security-updates:
+  enabled: true
+  schedule:
+    interval: "daily"

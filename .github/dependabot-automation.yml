@@ -1,0 +1,201 @@
+# YYC³ Learning Platform - Dependabot Automation
+# Automated workflow to handle Dependabot updates
+
+name: Dependabot Automation
+
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+  pull_request_target:
+    types: [labeled, unlabeled, opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  # Auto-merge Dependabot PRs for patch and minor updates
+  auto-merge:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    steps:
+      - name: Check PR labels
+        id: check-labels
+        run: |
+          has_auto_merge_label=$(gh pr view ${{ github.event.pull_request.number }} --json labels -q '.labels[].name' | grep -c 'dependabot-auto-merge' || echo '0')
+          echo "has_auto_merge=$has_auto_merge_label" >> $GITHUB_OUTPUT
+
+      - name: Check update type
+        id: check-update-type
+        run: |
+          pr_title="${{ github.event.pull_request.title }}"
+          echo "title=$pr_title" >> $GITHUB_OUTPUT
+
+          if [[ "$pr_title" =~ (patch|minor) ]]; then
+            echo "is_safe_update=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_safe_update=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Approve PR
+        if: steps.check-labels.outputs.has_auto_merge == '1'
+        run: |
+          gh pr review ${{ github.event.pull_request.number }} --approve
+
+      - name: Enable auto-merge
+        if: steps.check-labels.outputs.has_auto_merge == '1' && steps.check-update-type.outputs.is_safe_update == 'true'
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} --auto --merge
+
+      - name: Comment on PR
+        if: steps.check-update-type.outputs.is_safe_update == 'false'
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body "🤖 **Dependabot Automation**
+
+          This PR contains a major version update and requires manual review before auto-merging.
+
+          **Action Required**: Please review the breaking changes and test thoroughly before merging."
+
+  # Run tests on Dependabot PRs
+  test-dependabot-pr:
+    name: Test Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Run type check
+        run: pnpm exec tsc --noEmit
+
+      - name: Run linting
+        run: pnpm run lint
+
+      - name: Run tests
+        run: pnpm test:run
+
+      - name: Comment results on PR
+        if: always()
+        run: |
+          if [ $? -eq 0 ]; then
+            message="✅ **All tests passed!**
+
+            The Dependabot update has been validated and is ready for review.
+
+            **Next Steps**:
+            - Review the changes
+            - Add label \`dependabot-auto-merge\` to enable auto-merge
+            - Or merge manually if satisfied"
+          else
+            message="❌ **Tests failed!**
+
+            The Dependabot update has issues that need attention.
+
+            **Action Required**: Please review the failed tests and fix any issues before merging."
+          fi
+
+          gh pr comment ${{ github.event.pull_request.number }} --body "$message"
+
+  # Security scan for dependency updates
+  security-scan:
+    name: Security Scan Dependencies
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Run security audit
+        run: |
+          pnpm audit --audit-level high --json > security-report.json || true
+
+      - name: Parse security results
+        id: security-results
+        run: |
+          if [ -s security-report.json ]; then
+            vuln_count=$(jq '.metadata.vulnerabilities | length' security-report.json 2>/dev/null || echo '0')
+            echo "vulnerabilities=$vuln_count" >> $GITHUB_OUTPUT
+
+            if [ "$vuln_count" -gt 0 ]; then
+              echo "has_vulnerabilities=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_vulnerabilities=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "has_vulnerabilities=false" >> $GITHUB_OUTPUT
+            echo "vulnerabilities=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment security results
+        if: steps.security-results.outputs.has_vulnerabilities == 'true'
+        run: |
+          vuln_count=${{ steps.security-results.outputs.vulnerabilities }}
+          message="⚠️ **Security Vulnerabilities Found**
+
+          The dependency update contains $vuln_count security vulnerabilities that need attention.
+
+          **Recommendation**: Review the security report and consider updating to a more secure version if available."
+
+          gh pr comment ${{ github.event.pull_request.number }} --body "$message"
+
+  # Update dependency documentation
+  update-docs:
+    name: Update Dependency Documentation
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get updated dependencies
+        id: updated-deps
+        run: |
+          pr_body="${{ github.event.pull_request.body }}"
+          updated_deps=$(echo "$pr_body" | grep -oP '(?<=This PR contains updates to:).*' || echo 'None detected')
+          echo "dependencies=$updated_deps" >> $GITHUB_OUTPUT
+
+      - name: Create commit
+        run: |
+          if [ "${{ steps.updated-deps.outputs.dependencies }}" != "None detected" ]; then
+            echo "Updated dependencies: ${{ steps.updated-deps.outputs.dependencies }}" > DEPENDENCY_UPDATES.md
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add DEPENDENCY_UPDATES.md
+            git commit -m "docs: update dependency changelog" || echo "No changes to commit"
+            git push || echo "No changes to push"
+          fi

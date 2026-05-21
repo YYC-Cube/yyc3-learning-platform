@@ -109,7 +109,7 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^5.1.2",
+    "@vitejs/plugin-react": "^5.2.0",
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
     "@welldone-software/why-did-you-render": "^10.0.1",
@@ -118,13 +118,13 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^15.5.7",
     "eslint-plugin-jsdoc": "^62.9.0",
-    "happy-dom": "^20.0.11",
+    "happy-dom": "^20.9.0",
     "identity-obj-proxy": "^3.0.0",
     "jsdom": "^27.4.0",
     "jsonwebtoken": "^9.0.3",
     "lighthouse": "^13.0.1",
     "pg": "^8.16.3",
-    "postcss": "^8.5",
+    "postcss": "^8.5.15",
     "postcss-custom-properties": "^14.0.1",
     "prettier": "^3.8.3",
     "snyk": "^1.1301.2",
@@ -134,5 +134,23 @@
     "typescript": "^5",
     "vitest": "^4.0.16",
     "web-vitals": "^5.1.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "basic-ftp": "^5.0.5",
+      "minimatch": "^9.0.6",
+      "picomatch": "^4.0.2",
+      "anymatch>picomatch": "^4.0.2",
+      "brace-expansion": "^2.0.2",
+      "rollup": "^4.59.0",
+      "ws": "^8.18.0",
+      "lodash": "^4.17.21",
+      "lodash-es": "^4.17.21",
+      "postcss": "^8.5.6",
+      "ajv": "^6.12.6",
+      "ip-address": "^9.0.5",
+      "flatted": "^3.3.3",
+      "fast-uri": "^3.0.6"
+    }
   }
 }

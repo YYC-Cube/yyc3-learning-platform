@@ -75,6 +75,7 @@ export default defineConfig({
       'dist/',
       'build/',
       '.next/',
+      '.pnpm-store/**',
       'coverage/',
       '**/node_modules/**',
       'services/**/node_modules/**',

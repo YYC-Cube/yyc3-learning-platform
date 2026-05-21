@@ -6,7 +6,7 @@
 > **标语**：万象归元于云枢 | 深栈智启新纪元
 > **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
-![YYC³ Banner](public/git_1800_450-2.png)
+![YYC³ Family](public/Family-001.png)
 
 **永久免费开源** — 企业级AI智能学习协作平台
 

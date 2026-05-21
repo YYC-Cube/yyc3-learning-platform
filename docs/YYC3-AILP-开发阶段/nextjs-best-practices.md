@@ -61,6 +61,7 @@ async function ProductsPage() {
 const products = await fetchProducts()
 
 return (
+
 <div>
 <h1>Products</h1>
 <ProductList products={products} />
@@ -77,6 +78,7 @@ function ProductList({ products }) {
 const [filter, setFilter] = useState("")
 
 return (
+
 <div>
 <input
 value={filter}
@@ -114,6 +116,7 @@ import ServerComponent from "./server-component"
 // app/layout.tsx (服务器组件)
 export default function RootLayout({ children }) {
 return (
+
 <html>
 <body>
 <Header />
@@ -231,6 +234,7 @@ export default function Page() {
 const [count, setCount] = useState(0)
 
 return (
+
 <div>
 <StaticHeader />
 <Counter count={count} setCount={setCount} />
@@ -242,6 +246,7 @@ return (
 // ✅ 只有交互部分是客户端
 export default function Page() {
 return (
+
 <div>
 <StaticHeader />
 <Counter /> {/_ 这个是客户端组件 _/}
@@ -264,6 +269,7 @@ const HeavyComponent = dynamic(
 
 export default function Page() {
 return (
+
 <div>
 <LightContent />
 <HeavyComponent />
@@ -284,6 +290,7 @@ fetchPosts()
 ])
 
 return (
+
 <div>
 <UserInfo user={user} />
 <PostList posts={posts} />

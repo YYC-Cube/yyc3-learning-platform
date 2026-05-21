@@ -182,6 +182,7 @@ document.removeEventListener('mouseup', stopDrag);
 }, [state.isDragging]);
 
 return (
+
 <div className="ai-widget-system">
 {/_ Logo触发按钮 _/}
 <div 
@@ -332,6 +333,7 @@ if (!message.trim()) return;
 };
 
 return (
+
 <div className="ai-chat-interface">
 {/_ 标签导航 _/}
 <div className="ai-tab-navigation">
@@ -397,6 +399,7 @@ onAction
 const isUser = message.role === 'user';
 
 return (
+
 <div className={`ai-message-bubble ${isUser ? 'user' : 'assistant'}`}>
 <div className="message-avatar">
 {isUser ? <UserAvatar /> : <AIAvatar />}
@@ -859,6 +862,7 @@ return (
 <Provider store={store}>
 <BrowserRouter>
 <AIProvider>
+
 <div className="app">
 {/_ 其他应用组件 _/}
 <MainLayout />

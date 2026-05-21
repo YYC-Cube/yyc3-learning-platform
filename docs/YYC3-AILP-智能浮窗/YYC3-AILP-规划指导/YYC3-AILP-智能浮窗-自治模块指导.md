@@ -538,6 +538,7 @@ config={{
           customerInsightTool
         ]
       }} >
+
 <div className="app">
 <MainApplication />
 <FloatingAIWidget />
@@ -562,6 +563,7 @@ parameters: { productId }
 };
 
 return (
+
 <div>
 {/_ 组件内容 _/}
 <button onClick={() => analyzeProductPerformance('123')}>

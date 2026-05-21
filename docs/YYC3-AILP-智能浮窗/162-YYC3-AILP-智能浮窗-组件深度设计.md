@@ -1594,31 +1594,30 @@ this.setupPrivacyGuards();
   maxQueueSize: config.maxQueueSize
   });
 
+  // 事件处理
+  this.eventProcessor = new EventProcessor({
+  enrichment: config.enableEnrichment,
+  validation: config.enableValidation,
+  deduplication: config.enableDeduplication
+  });
 
-    // 事件处理
-    this.eventProcessor = new EventProcessor({
-      enrichment: config.enableEnrichment,
-      validation: config.enableValidation,
-      deduplication: config.enableDeduplication
-    });
+  // 存储
+  this.timeSeriesDB = new TimeSeriesDatabase({
+  url: config.timeseriesDbUrl,
+  retention: config.retentionDays
+  });
 
-    // 存储
-    this.timeSeriesDB = new TimeSeriesDatabase({
-      url: config.timeseriesDbUrl,
-      retention: config.retentionDays
-    });
+  // 分析引擎
+  this.realtimeAnalyzer = new RealtimeAnalyzer({
+  windowSize: config.realtimeWindowSize,
+  slideInterval: config.slideInterval
+  });
 
-    // 分析引擎
-    this.realtimeAnalyzer = new RealtimeAnalyzer({
-      windowSize: config.realtimeWindowSize,
-      slideInterval: config.slideInterval
-    });
-
-    // 隐私保护
-    this.anonymizer = new DataAnonymizer({
-      anonymizationLevel: config.anonymizationLevel,
-      pseudonymization: config.enablePseudonymization
-    });
+  // 隐私保护
+  this.anonymizer = new DataAnonymizer({
+  anonymizationLevel: config.anonymizationLevel,
+  pseudonymization: config.enablePseudonymization
+  });
 
 }
 
@@ -1630,10 +1629,9 @@ this.setupPrivacyGuards();
   const startTime = Date.now();
   const eventId = this.generateEventId();
 
-
-    try {
-      // 1. 验证事件
-      const validatedEvent = await this.eventValidator.validate(event);
+  try {
+  // 1. 验证事件
+  const validatedEvent = await this.eventValidator.validate(event);
 
       // 2. 隐私处理
       const anonymizedEvent = await this.anonymizer.anonymize(validatedEvent);
@@ -1659,10 +1657,10 @@ this.setupPrivacyGuards();
         processedIn: Date.now() - startTime
       };
 
-    } catch (error) {
-      // 错误处理
-      return await this.handleTrackingError(error, event, options);
-    }
+  } catch (error) {
+  // 错误处理
+  return await this.handleTrackingError(error, event, options);
+  }
 
 }
 
@@ -1674,23 +1672,22 @@ this.setupPrivacyGuards();
   // 1. 解析查询
   const parsedQuery = await this.parseRealtimeQuery(query);
 
+  // 2. 执行分析
+  const analysis = await this.realtimeAnalyzer.analyze(parsedQuery);
 
-    // 2. 执行分析
-    const analysis = await this.realtimeAnalyzer.analyze(parsedQuery);
+  // 3. 聚合结果
+  const aggregated = await this.aggregateRealtimeResults(analysis);
 
-    // 3. 聚合结果
-    const aggregated = await this.aggregateRealtimeResults(analysis);
+  // 4. 生成洞察
+  const insights = await this.generateRealtimeInsights(aggregated);
 
-    // 4. 生成洞察
-    const insights = await this.generateRealtimeInsights(aggregated);
-
-    return {
-      query,
-      results: aggregated,
-      insights,
-      timestamp: new Date(),
-      expiresAt: new Date(Date.now() + query.cacheTtl || 60000)
-    };
+  return {
+  query,
+  results: aggregated,
+  insights,
+  timestamp: new Date(),
+  expiresAt: new Date(Date.now() + query.cacheTtl || 60000)
+  };
 
 }
 
@@ -1702,30 +1699,29 @@ this.setupPrivacyGuards();
   // 1. 数据提取
   const dataset = await this.extractBatchData(query);
 
+  // 2. 数据清洗
+  const cleaned = await this.cleanBatchData(dataset);
 
-    // 2. 数据清洗
-    const cleaned = await this.cleanBatchData(dataset);
+  // 3. 分析处理
+  const analysis = await this.batchAnalyzer.analyze(cleaned, query.metrics);
 
-    // 3. 分析处理
-    const analysis = await this.batchAnalyzer.analyze(cleaned, query.metrics);
+  // 4. 报告生成
+  const report = await this.reportGenerator.generate(analysis, query.format);
 
-    // 4. 报告生成
-    const report = await this.reportGenerator.generate(analysis, query.format);
+  // 5. 分发报告
+  if (query.delivery) {
+  await this.deliverReport(report, query.delivery);
+  }
 
-    // 5. 分发报告
-    if (query.delivery) {
-      await this.deliverReport(report, query.delivery);
-    }
-
-    return {
-      reportId: this.generateReportId(),
-      query,
-      generatedAt: new Date(),
-      dataRange: query.dateRange,
-      metrics: query.metrics,
-      report,
-      deliveryStatus: query.delivery ? 'delivered' : 'generated'
-    };
+  return {
+  reportId: this.generateReportId(),
+  query,
+  generatedAt: new Date(),
+  dataRange: query.dateRange,
+  metrics: query.metrics,
+  report,
+  deliveryStatus: query.delivery ? 'delivered' : 'generated'
+  };
 
 }
 
@@ -1737,29 +1733,28 @@ this.setupPrivacyGuards();
   // 1. 用户旅程重建
   const userJourney = await this.reconstructUserJourney(userId, timeframe);
 
+  // 2. 行为模式识别
+  const patterns = await this.identifyBehaviorPatterns(userJourney);
 
-    // 2. 行为模式识别
-    const patterns = await this.identifyBehaviorPatterns(userJourney);
+  // 3. 细分分析
+  const segmentation = await this.segmentUserBehavior(patterns);
 
-    // 3. 细分分析
-    const segmentation = await this.segmentUserBehavior(patterns);
+  // 4. 预测分析
+  const predictions = await this.predictUserBehavior(segmentation);
 
-    // 4. 预测分析
-    const predictions = await this.predictUserBehavior(segmentation);
+  // 5. 推荐生成
+  const recommendations = await this.generateBehaviorRecommendations(predictions);
 
-    // 5. 推荐生成
-    const recommendations = await this.generateBehaviorRecommendations(predictions);
-
-    return {
-      userId,
-      timeframe,
-      journey: userJourney,
-      patterns,
-      segmentation,
-      predictions,
-      recommendations,
-      privacyLevel: this.ensurePrivacyCompliance(userId)
-    };
+  return {
+  userId,
+  timeframe,
+  journey: userJourney,
+  patterns,
+  segmentation,
+  predictions,
+  recommendations,
+  privacyLevel: this.ensurePrivacyCompliance(userId)
+  };
 
 }
 
@@ -1771,33 +1766,32 @@ this.setupPrivacyGuards();
   // 1. 获取测试数据
   const testData = await this.getABTestData(testId);
 
+  // 2. 统计显著性检验
+  const significance = await this.calculateStatisticalSignificance(testData);
 
-    // 2. 统计显著性检验
-    const significance = await this.calculateStatisticalSignificance(testData);
+  // 3. 效果评估
+  const effectiveness = await this.evaluateTestEffectiveness(testData);
 
-    // 3. 效果评估
-    const effectiveness = await this.evaluateTestEffectiveness(testData);
+  // 4. 置信区间计算
+  const confidenceIntervals = await this.calculateConfidenceIntervals(testData);
 
-    // 4. 置信区间计算
-    const confidenceIntervals = await this.calculateConfidenceIntervals(testData);
+  // 5. 建议生成
+  const recommendations = await this.generateABTestRecommendations({
+  significance,
+  effectiveness,
+  confidenceIntervals
+  });
 
-    // 5. 建议生成
-    const recommendations = await this.generateABTestRecommendations({
-      significance,
-      effectiveness,
-      confidenceIntervals
-    });
-
-    return {
-      testId,
-      status: this.determineTestStatus(significance),
-      significance,
-      effectiveness,
-      confidenceIntervals,
-      recommendations,
-      sampleSize: testData.totalSamples,
-      duration: testData.duration
-    };
+  return {
+  testId,
+  status: this.determineTestStatus(significance),
+  significance,
+  effectiveness,
+  confidenceIntervals,
+  recommendations,
+  sampleSize: testData.totalSamples,
+  duration: testData.duration
+  };
 
 }
 }
@@ -1929,24 +1923,23 @@ this.runSecurityBaseline();
   maxLoginAttempts: config.maxLoginAttempts
   });
 
+  // 授权
+  this.authzEngine = new AuthorizationEngine({
+  model: config.authzModel,
+  enforceOn: config.enforceAuthorizationOn
+  });
 
-    // 授权
-    this.authzEngine = new AuthorizationEngine({
-      model: config.authzModel,
-      enforceOn: config.enforceAuthorizationOn
-    });
+  // 加密
+  this.cryptoEngine = new CryptoEngine({
+  algorithm: config.encryptionAlgorithm,
+  keyRotation: config.keyRotationInterval
+  });
 
-    // 加密
-    this.cryptoEngine = new CryptoEngine({
-      algorithm: config.encryptionAlgorithm,
-      keyRotation: config.keyRotationInterval
-    });
-
-    // 威胁检测
-    this.threatDetector = new ThreatDetectionEngine({
-      anomalyThreshold: config.anomalyThreshold,
-      learningPeriod: config.learningPeriod
-    });
+  // 威胁检测
+  this.threatDetector = new ThreatDetectionEngine({
+  anomalyThreshold: config.anomalyThreshold,
+  learningPeriod: config.learningPeriod
+  });
 
 }
 
@@ -1958,10 +1951,9 @@ this.runSecurityBaseline();
   const startTime = Date.now();
   const authId = this.generateAuthId();
 
-
-    try {
-      // 1. 基础验证
-      const basicAuth = await this.authnProvider.verifyCredentials(credentials);
+  try {
+  // 1. 基础验证
+  const basicAuth = await this.authnProvider.verifyCredentials(credentials);
 
       // 2. 风险评估
       const riskAssessment = await this.assessAuthRisk(basicAuth, context);
@@ -2000,10 +1992,10 @@ this.runSecurityBaseline();
         mfaRequired: riskAssessment.riskLevel > this.config.mfaThreshold
       };
 
-    } catch (error) {
-      // 认证失败处理
-      return await this.handleAuthFailure(error, credentials, context, authId);
-    }
+  } catch (error) {
+  // 认证失败处理
+  return await this.handleAuthFailure(error, credentials, context, authId);
+  }
 
 }
 
@@ -2015,38 +2007,37 @@ this.runSecurityBaseline();
   // 1. 解析请求
   const parsedRequest = await this.parseAuthzRequest(request);
 
+  // 2. 策略评估
+  const policyEvaluation = await this.evaluatePolicies(parsedRequest);
 
-    // 2. 策略评估
-    const policyEvaluation = await this.evaluatePolicies(parsedRequest);
+  // 3. 属性验证
+  const attributeValidation = await this.validateAttributes(parsedRequest);
 
-    // 3. 属性验证
-    const attributeValidation = await this.validateAttributes(parsedRequest);
+  // 4. 风险检查
+  const riskCheck = await this.checkAuthorizationRisk(parsedRequest);
 
-    // 4. 风险检查
-    const riskCheck = await this.checkAuthorizationRisk(parsedRequest);
+  // 5. 决策生成
+  const decision = this.makeAuthorizationDecision({
+  policyEvaluation,
+  attributeValidation,
+  riskCheck
+  });
 
-    // 5. 决策生成
-    const decision = this.makeAuthorizationDecision({
-      policyEvaluation,
-      attributeValidation,
-      riskCheck
-    });
+  // 6. 记录授权决策
+  await this.auditLogger.logAuthorization({
+  request: parsedRequest,
+  decision,
+  timestamp: new Date(),
+  evaluatedAt: new Date()
+  });
 
-    // 6. 记录授权决策
-    await this.auditLogger.logAuthorization({
-      request: parsedRequest,
-      decision,
-      timestamp: new Date(),
-      evaluatedAt: new Date()
-    });
-
-    return {
-      allowed: decision.allowed,
-      reason: decision.reason,
-      constraints: decision.constraints,
-      elevationPossible: decision.elevationPossible,
-      auditTrailId: decision.auditTrailId
-    };
+  return {
+  allowed: decision.allowed,
+  reason: decision.reason,
+  constraints: decision.constraints,
+  elevationPossible: decision.elevationPossible,
+  auditTrailId: decision.auditTrailId
+  };
 
 }
 
@@ -2058,32 +2049,31 @@ this.runSecurityBaseline();
   // 1. 收集安全事件
   const securityEvents = await this.collectSecurityEvents();
 
+  // 2. 异常检测
+  const anomalies = await this.detectAnomalies(securityEvents);
 
-    // 2. 异常检测
-    const anomalies = await this.detectAnomalies(securityEvents);
+  // 3. 威胁情报匹配
+  const threatMatches = await this.matchThreatIntelligence(anomalies);
 
-    // 3. 威胁情报匹配
-    const threatMatches = await this.matchThreatIntelligence(anomalies);
+  // 4. 行为分析
+  const behaviorAnalysis = await this.analyzeSuspiciousBehavior(threatMatches);
 
-    // 4. 行为分析
-    const behaviorAnalysis = await this.analyzeSuspiciousBehavior(threatMatches);
+  // 5. 风险评估
+  const riskAssessment = await this.assessThreatRisk(behaviorAnalysis);
 
-    // 5. 风险评估
-    const riskAssessment = await this.assessThreatRisk(behaviorAnalysis);
+  // 6. 响应建议
+  const responseRecommendations = await this.recommendResponses(riskAssessment);
 
-    // 6. 响应建议
-    const responseRecommendations = await this.recommendResponses(riskAssessment);
-
-    return {
-      timestamp: new Date(),
-      eventsAnalyzed: securityEvents.length,
-      anomaliesDetected: anomalies.length,
-      threatsIdentified: threatMatches.length,
-      riskLevel: riskAssessment.overallRisk,
-      highRiskItems: riskAssessment.highRiskItems,
-      recommendations: responseRecommendations,
-      actionsTaken: await this.executeThreatResponses(responseRecommendations)
-    };
+  return {
+  timestamp: new Date(),
+  eventsAnalyzed: securityEvents.length,
+  anomaliesDetected: anomalies.length,
+  threatsIdentified: threatMatches.length,
+  riskLevel: riskAssessment.overallRisk,
+  highRiskItems: riskAssessment.highRiskItems,
+  recommendations: responseRecommendations,
+  actionsTaken: await this.executeThreatResponses(responseRecommendations)
+  };
 
 }
 
@@ -2095,42 +2085,41 @@ this.runSecurityBaseline();
   // 1. 数据分类
   const classification = await this.classifyData(data, context);
 
+  // 2. 加密处理
+  const encrypted = await this.encryptData(data, classification);
 
-    // 2. 加密处理
-    const encrypted = await this.encryptData(data, classification);
+  // 3. 访问控制
+  const accessControl = await this.applyAccessControl(encrypted, context);
 
-    // 3. 访问控制
-    const accessControl = await this.applyAccessControl(encrypted, context);
+  // 4. 数据脱敏（如果需要）
+  const masked = await this.maskDataIfNeeded(encrypted, context);
 
-    // 4. 数据脱敏（如果需要）
-    const masked = await this.maskDataIfNeeded(encrypted, context);
+  // 5. 水印添加（可选）
+  const watermarked = await this.addWatermarkIfNeeded(masked, context);
 
-    // 5. 水印添加（可选）
-    const watermarked = await this.addWatermarkIfNeeded(masked, context);
+  // 6. 审计记录
+  await this.auditDataProtection({
+  dataId: encrypted.id,
+  classification,
+  protectionApplied: {
+  encryption: true,
+  accessControl: true,
+  masking: masked !== encrypted,
+  watermark: watermarked !== masked
+  },
+  context,
+  timestamp: new Date()
+  });
 
-    // 6. 审计记录
-    await this.auditDataProtection({
-      dataId: encrypted.id,
-      classification,
-      protectionApplied: {
-        encryption: true,
-        accessControl: true,
-        masking: masked !== encrypted,
-        watermark: watermarked !== masked
-      },
-      context,
-      timestamp: new Date()
-    });
-
-    return {
-      originalId: data.id,
-      protectedId: encrypted.id,
-      data: watermarked,
-      protectionLevel: classification.protectionLevel,
-      accessPolicy: accessControl.policy,
-      encryptionMetadata: encrypted.metadata,
-      auditTrailId: this.generateAuditTrailId()
-    };
+  return {
+  originalId: data.id,
+  protectedId: encrypted.id,
+  data: watermarked,
+  protectionLevel: classification.protectionLevel,
+  accessPolicy: accessControl.policy,
+  encryptionMetadata: encrypted.metadata,
+  auditTrailId: this.generateAuditTrailId()
+  };
 
 }
 
@@ -2142,40 +2131,39 @@ this.runSecurityBaseline();
   // 1. 合规性检查
   const complianceChecks = await this.checkCompliance();
 
+  // 2. 安全配置审计
+  const configurationAudit = await this.auditSecurityConfigurations();
 
-    // 2. 安全配置审计
-    const configurationAudit = await this.auditSecurityConfigurations();
+  // 3. 漏洞扫描
+  const vulnerabilityScan = await this.scanVulnerabilities();
 
-    // 3. 漏洞扫描
-    const vulnerabilityScan = await this.scanVulnerabilities();
+  // 4. 渗透测试结果
+  const penetrationTestResults = await this.analyzePenetrationTests();
 
-    // 4. 渗透测试结果
-    const penetrationTestResults = await this.analyzePenetrationTests();
+  // 5. 安全态势评估
+  const securityPosture = await this.assessSecurityPosture({
+  complianceChecks,
+  configurationAudit,
+  vulnerabilityScan,
+  penetrationTestResults
+  });
 
-    // 5. 安全态势评估
-    const securityPosture = await this.assessSecurityPosture({
-      complianceChecks,
-      configurationAudit,
-      vulnerabilityScan,
-      penetrationTestResults
-    });
+  // 6. 生成改进计划
+  const improvementPlan = await this.createSecurityImprovementPlan(securityPosture);
 
-    // 6. 生成改进计划
-    const improvementPlan = await this.createSecurityImprovementPlan(securityPosture);
-
-    return {
-      auditDate: new Date(),
-      auditor: this.config.auditorName,
-      scope: this.config.auditScope,
-      complianceResults: complianceChecks,
-      configurationFindings: configurationAudit.findings,
-      vulnerabilities: vulnerabilityScan.results,
-      penetrationTestFindings: penetrationTestResults,
-      securityPosture,
-      improvementPlan,
-      riskRating: securityPosture.overallRisk,
-      nextAuditDate: this.calculateNextAuditDate(securityPosture.overallRisk)
-    };
+  return {
+  auditDate: new Date(),
+  auditor: this.config.auditorName,
+  scope: this.config.auditScope,
+  complianceResults: complianceChecks,
+  configurationFindings: configurationAudit.findings,
+  vulnerabilities: vulnerabilityScan.results,
+  penetrationTestFindings: penetrationTestResults,
+  securityPosture,
+  improvementPlan,
+  riskRating: securityPosture.overallRisk,
+  nextAuditDate: this.calculateNextAuditDate(securityPosture.overallRisk)
+  };
 
 }
 }
@@ -2317,20 +2305,19 @@ this.setupStorageManagement();
   autoCompaction: config.autoCompaction
   });
 
+  // 同步管理器
+  this.syncManager = new SyncManager({
+  strategy: config.syncStrategy,
+  batchSize: config.syncBatchSize,
+  retryPolicy: config.retryPolicy,
+  priority: config.syncPriority
+  });
 
-    // 同步管理器
-    this.syncManager = new SyncManager({
-      strategy: config.syncStrategy,
-      batchSize: config.syncBatchSize,
-      retryPolicy: config.retryPolicy,
-      priority: config.syncPriority
-    });
-
-    // 网络监控
-    this.networkMonitor = new NetworkMonitor({
-      checkInterval: config.networkCheckInterval,
-      endpoints: config.networkTestEndpoints
-    });
+  // 网络监控
+  this.networkMonitor = new NetworkMonitor({
+  checkInterval: config.networkCheckInterval,
+  endpoints: config.networkTestEndpoints
+  });
 
 }
 
@@ -2342,10 +2329,9 @@ this.setupStorageManagement();
   const operationId = this.generateOperationId();
   const startTime = Date.now();
 
-
-    try {
-      // 1. 验证操作
-      const validatedOperation = await this.validateOperation(operation);
+  try {
+  // 1. 验证操作
+  const validatedOperation = await this.validateOperation(operation);
 
       // 2. 检查网络状态
       const networkStatus = await this.networkMonitor.getStatus();
@@ -2358,10 +2344,10 @@ this.setupStorageManagement();
         return await this.executeOffline(validatedOperation, operationId);
       }
 
-    } catch (error) {
-      // 错误处理
-      return await this.handleOperationError(error, operation, operationId, startTime);
-    }
+  } catch (error) {
+  // 错误处理
+  return await this.handleOperationError(error, operation, operationId, startTime);
+  }
 
 }
 
@@ -2373,22 +2359,21 @@ this.setupStorageManagement();
   // 1. 存储到本地数据库
   await this.localDatabase.storeOperation(operation, operationId);
 
+  // 2. 加入同步队列
+  await this.queueManager.enqueue(operation, operationId);
 
-    // 2. 加入同步队列
-    await this.queueManager.enqueue(operation, operationId);
+  // 3. 更新UI状态
+  await this.uxManager.showOfflineStatus(operation);
 
-    // 3. 更新UI状态
-    await this.uxManager.showOfflineStatus(operation);
-
-    // 4. 返回结果
-    return {
-      success: true,
-      operationId,
-      status: 'queued',
-      queuedAt: new Date(),
-      estimatedSyncTime: await this.estimateSyncTime(operation),
-      localData: await this.getLocalDataPreview(operation)
-    };
+  // 4. 返回结果
+  return {
+  success: true,
+  operationId,
+  status: 'queued',
+  queuedAt: new Date(),
+  estimatedSyncTime: await this.estimateSyncTime(operation),
+  localData: await this.getLocalDataPreview(operation)
+  };
 
 }
 
@@ -2400,18 +2385,17 @@ this.setupStorageManagement();
   const syncId = this.generateSyncId();
   const startTime = Date.now();
 
-
-    try {
-      // 1. 检查网络连接
-      const canSync = await this.canStartSync();
-      if (!canSync) {
-        return {
-          syncId,
-          success: false,
-          reason: 'network_unavailable',
-          attemptedAt: new Date()
-        };
-      }
+  try {
+  // 1. 检查网络连接
+  const canSync = await this.canStartSync();
+  if (!canSync) {
+  return {
+  syncId,
+  success: false,
+  reason: 'network_unavailable',
+  attemptedAt: new Date()
+  };
+  }
 
       // 2. 获取待同步操作
       const pendingOperations = await this.queueManager.getPendingOperations();
@@ -2447,10 +2431,10 @@ this.setupStorageManagement();
         nextSync: await this.scheduleNextSync()
       };
 
-    } catch (error) {
-      // 同步失败处理
-      return await this.handleSyncError(error, syncId, startTime);
-    }
+  } catch (error) {
+  // 同步失败处理
+  return await this.handleSyncError(error, syncId, startTime);
+  }
 
 }
 
@@ -2461,27 +2445,27 @@ this.setupStorageManagement();
   private async resolveConflicts(syncResults: SyncGroupResult[]): Promise<ConflictResolutionResult> {
   const resolutions = [];
 
-
-    for (const groupResult of syncResults) {
-      if (groupResult.conflicts.length > 0) {
-        // 为每个冲突选择合适的解决策略
-        for (const conflict of groupResult.conflicts) {
-          const resolutionStrategy = await this.selectResolutionStrategy(conflict);
-          const resolution = await this.applyResolutionStrategy(conflict, resolutionStrategy);
+  for (const groupResult of syncResults) {
+  if (groupResult.conflicts.length > 0) {
+  // 为每个冲突选择合适的解决策略
+  for (const conflict of groupResult.conflicts) {
+  const resolutionStrategy = await this.selectResolutionStrategy(conflict);
+  const resolution = await this.applyResolutionStrategy(conflict, resolutionStrategy);
 
           resolutions.push(resolution);
         }
       }
-    }
 
-    return {
-      totalConflicts: resolutions.length,
-      resolved: resolutions.filter(r => r.resolved).length,
-      unresolved: resolutions.filter(r => !r.resolved).length,
-      resolutions,
-      appliedStrategies: [...new Set(resolutions.map(r => r.strategy))],
-      requiresManualIntervention: resolutions.some(r => r.requiresManualResolution)
-    };
+  }
+
+  return {
+  totalConflicts: resolutions.length,
+  resolved: resolutions.filter(r => r.resolved).length,
+  unresolved: resolutions.filter(r => !r.resolved).length,
+  resolutions,
+  appliedStrategies: [...new Set(resolutions.map(r => r.strategy))],
+  requiresManualIntervention: resolutions.some(r => r.requiresManualResolution)
+  };
 
 }
 
@@ -2493,29 +2477,28 @@ this.setupStorageManagement();
   // 1. 分析存储使用
   const storageAnalysis = await this.analyzeStorageUsage();
 
+  // 2. 识别优化机会
+  const optimizationOpportunities = await this.identifyOptimizationOpportunities(storageAnalysis);
 
-    // 2. 识别优化机会
-    const optimizationOpportunities = await this.identifyOptimizationOpportunities(storageAnalysis);
+  // 3. 执行优化操作
+  const optimizationResults = await this.executeOptimizations(optimizationOpportunities);
 
-    // 3. 执行优化操作
-    const optimizationResults = await this.executeOptimizations(optimizationOpportunities);
+  // 4. 验证优化效果
+  const verification = await this.verifyOptimizationResults(optimizationResults);
 
-    // 4. 验证优化效果
-    const verification = await this.verifyOptimizationResults(optimizationResults);
+  // 5. 调整存储策略
+  await this.adjustStorageStrategy(verification);
 
-    // 5. 调整存储策略
-    await this.adjustStorageStrategy(verification);
-
-    return {
-      timestamp: new Date(),
-      initialUsage: storageAnalysis.totalUsed,
-      finalUsage: verification.finalUsage,
-      freedSpace: storageAnalysis.totalUsed - verification.finalUsage,
-      optimizationsApplied: optimizationResults.applied.length,
-      optimizationDetails: optimizationResults,
-      verification,
-      recommendations: await this.generateStorageRecommendations(verification)
-    };
+  return {
+  timestamp: new Date(),
+  initialUsage: storageAnalysis.totalUsed,
+  finalUsage: verification.finalUsage,
+  freedSpace: storageAnalysis.totalUsed - verification.finalUsage,
+  optimizationsApplied: optimizationResults.applied.length,
+  optimizationDetails: optimizationResults,
+  verification,
+  recommendations: await this.generateStorageRecommendations(verification)
+  };
 
 }
 
@@ -2537,7 +2520,7 @@ this.setupStorageManagement();
   ],
   duration: 5000
   };
-      await this.notificationManager.show(notification);
+  await this.notificationManager.show(notification);
 
       // 更新应用状态
       await this.updateAppState({
@@ -2545,18 +2528,18 @@ this.setupStorageManagement();
         queuedOperations: await this.queueManager.getCount(),
         lastSyncAttempt: await this.getLastSyncTime()
       });
+
   },
 
-
-    // 显示同步进度
-    showSyncProgress: async (progress: SyncProgress): Promise<void> => {
-      // 显示进度条
-      await this.progressTracker.showProgress({
-        current: progress.current,
-        total: progress.total,
-        message: progress.message,
-        estimatedTime: progress.estimatedTime
-      });
+  // 显示同步进度
+  showSyncProgress: async (progress: SyncProgress): Promise<void> => {
+  // 显示进度条
+  await this.progressTracker.showProgress({
+  current: progress.current,
+  total: progress.total,
+  message: progress.message,
+  estimatedTime: progress.estimatedTime
+  });
 
       // 更新UI元素
       await this.updateSyncUI({
@@ -2564,31 +2547,32 @@ this.setupStorageManagement();
         progress: (progress.current / progress.total) * 100,
         currentOperation: progress.currentOperation
       });
-    },
 
-    // 处理同步完成
-    handleSyncComplete: async (result: SyncResult): Promise<void> => {
-      if (result.success) {
-        await this.notificationManager.show({
-          type: 'success',
-          title: '同步完成',
-          message: `成功同步 ${result.operationsSynced} 个操作`,
-          icon: 'cloud_done',
-          duration: 3000
-        });
-      } else {
-        await this.notificationManager.show({
-          type: 'error',
-          title: '同步失败',
-          message: result.reason || '同步过程中出现错误',
-          icon: 'error',
-          actions: [
-            { label: '重试', action: 'retry_sync' },
-            { label: '查看详情', action: 'view_sync_details' }
-          ],
-          persistent: true
-        });
-      }
+  },
+
+  // 处理同步完成
+  handleSyncComplete: async (result: SyncResult): Promise<void> => {
+  if (result.success) {
+  await this.notificationManager.show({
+  type: 'success',
+  title: '同步完成',
+  message: `成功同步 ${result.operationsSynced} 个操作`,
+  icon: 'cloud_done',
+  duration: 3000
+  });
+  } else {
+  await this.notificationManager.show({
+  type: 'error',
+  title: '同步失败',
+  message: result.reason || '同步过程中出现错误',
+  icon: 'error',
+  actions: [
+  { label: '重试', action: 'retry_sync' },
+  { label: '查看详情', action: 'view_sync_details' }
+  ],
+  persistent: true
+  });
+  }
 
       // 更新应用状态
       await this.updateAppState({
@@ -2596,7 +2580,8 @@ this.setupStorageManagement();
         lastSync: new Date(),
         syncStatus: result.success ? 'success' : 'failed'
       });
-    }
+
+  }
 
 };
 }

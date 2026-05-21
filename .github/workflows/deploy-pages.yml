@@ -11,12 +11,12 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'pages'
+  group: "pages"
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '9'
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
 
 jobs:
   build:
@@ -39,11 +39,26 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Patch layout for static export
+        env:
+          NEXT_PUBLIC_APP_URL: https://learning.yyc3.top
+          NEXT_PUBLIC_API_URL: https://learning.yyc3.top/api
+        run: |
+          sed -i.bak 's/{ ssr: false }/{} /g' app/layout.tsx
+
       - name: Build for GitHub Pages (static export)
         env:
           NEXT_PUBLIC_APP_URL: https://learning.yyc3.top
           NEXT_PUBLIC_API_URL: https://learning.yyc3.top/api
           NODE_ENV: production
+          JWT_SECRET: pages-build-dummy-key
+          JWT_EXPIRES_IN: 7d
+          BCRYPT_ROUNDS: 10
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USER: dummy
+          DB_PASS: dummy
+          DB_NAME: dummy
         run: |
           cp next.config.js next.config.js.bak
           node -e "
@@ -56,8 +71,9 @@ jobs:
           delete cfg.headers;
           require('fs').writeFileSync('next.config.js', 'module.exports = ' + JSON.stringify(cfg, null, 2));
           "
-          pnpm build
+          NEXT_TURBOPACK=0 pnpm build --no-turbopack 2>&1 || pnpm build 2>&1
           mv next.config.js.bak next.config.js
+          mv app/layout.tsx.bak app/layout.tsx
 
       - name: Add CNAME
         run: echo "learning.yyc3.top" > out/CNAME

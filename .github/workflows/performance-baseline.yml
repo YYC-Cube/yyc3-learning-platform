@@ -110,7 +110,7 @@ jobs:
           path: current-results/
 
       - name: Download Baseline Results
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: performance-baseline.yml
           name: performance-baseline-results

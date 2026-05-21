@@ -1,0 +1,527 @@
+# YYC³ Learning Platform — JMeter Load Testing
+# Automated API performance and load testing
+
+name: JMeter Load Testing
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      users:
+        description: 'Number of concurrent users'
+        required: false
+        default: '100'
+        type: choice
+        options:
+          - '50'
+          - '100'
+          - '200'
+          - '500'
+          - '1000'
+      duration:
+        description: 'Test duration in seconds'
+        required: false
+        default: '300'
+      ramp_up:
+        description: 'Ramp-up time in seconds'
+        required: false
+        default: '30'
+      target_url:
+        description: 'Target URL for testing'
+        required: false
+        default: 'http://localhost:3200'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  JMETER_VERSION: '5.6.2'
+
+jobs:
+  # ===== Phase 1: Setup Environment =====
+  setup-load-test:
+    name: Setup Load Test Environment
+    runs-on: ubuntu-latest
+    outputs:
+      test_url: ${{ steps.setup.outputs.test_url }}
+      users: ${{ steps.setup.outputs.users }}
+      duration: ${{ steps.setup.outputs.duration }}
+      ramp_up: ${{ steps.setup.outputs.ramp_up }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine test environment
+        id: setup
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            test_url="${{ github.event.inputs.target_url }}"
+          else
+            # Use production URL for main branch, staging for others
+            if [ "${{ github.ref_name }}" == "main" ]; then
+              test_url="https://learning.yyc3.top"
+            else
+              test_url="http://localhost:3200"
+            fi
+          fi
+
+          users="${{ github.event.inputs.users || '100' }}"
+          duration="${{ github.event.inputs.duration || '300' }}"
+          ramp_up="${{ github.event.inputs.ramp_up || '30' }}"
+
+          echo "test_url=$test_url" >> $GITHUB_OUTPUT
+          echo "users=$users" >> $GITHUB_OUTPUT
+          echo "duration=$duration" >> $GITHUB_OUTPUT
+          echo "ramp_up=$ramp_up" >> $GITHUB_OUTPUT
+
+          echo "🎯 Load Test Configuration:"
+          echo "  URL: $test_url"
+          echo "  Users: $users"
+          echo "  Duration: ${duration}s"
+          echo "  Ramp-up: ${ramp_up}s"
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install JMeter
+        run: |
+          echo "📦 Installing Apache JMeter..."
+          wget -q https://downloads.apache.org//jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.tgz
+          tar -xzf apache-jmeter-${{ env.JMETER_VERSION }}.tgz
+          mv apache-jmeter-${{ env.JMETER_VERSION }} jmeter
+          chmod +x jmeter/bin/jmeter
+          echo "✅ JMeter installed"
+
+      - name: Install additional JMeter plugins
+        run: |
+          echo "🔌 Installing JMeter plugins..."
+          wget -q https://jmeter-plugins.org/files/packages/jmeter-plugins-manager-1.7.jar
+          mv jmeter-plugins-manager-1.7.jar jmeter/lib/ext/
+          echo "✅ Plugins installed"
+
+      - name: Validate JMeter installation
+        run: |
+          ./jmeter/bin/jmeter --version
+          echo "✅ JMeter ready"
+
+  # ===== Phase 2: Start Application =====
+  start-application:
+    name: Start Application for Testing
+    runs-on: ubuntu-latest
+    needs: setup-load-test
+    if: github.event_name != 'workflow_dispatch' || github.event.inputs.target_url == 'http://localhost:3200'
+    outputs:
+      app_started: ${{ steps.start.outputs.app_started }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '9'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: |
+          echo "🏗️  Building application..."
+          # Apply static export patches if needed
+          if [ -f "scripts/patch-export.js" ]; then
+            cat > app/providers/DynamicProviders.tsx << 'EOFILE'
+            "use client"
+            export { default as BottomNav } from "@/components/bottom-nav"
+            export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
+            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"}
+            EOFILE
+            rm -rf app/api
+            rm -rf app/courses/\[id\]
+            rm -rf app/exam/\[id\]
+            rm -f middleware.ts
+            cp next.config.js next.config.js.bak
+            node scripts/patch-export.js
+          fi
+
+          pnpm build
+
+          if [ -f "next.config.js.bak" ]; then
+            mv next.config.js.bak next.config.js
+          fi
+
+      - name: Start application server
+        id: start
+        run: |
+          echo "🚀 Starting application server..."
+          pnpm start &
+          SERVER_PID=$!
+
+          echo "Waiting for server to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3200 > /dev/null; then
+              echo "✅ Server is ready"
+              echo "app_started=true" >> $GITHUB_OUTPUT
+              echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+              break
+            fi
+            echo "Waiting... ($i/30)"
+            sleep 2
+          done
+
+      - name: Verify application health
+        run: |
+          echo "🏥 Verifying application health..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3200/api/health)
+
+          if [ "$response" = "200" ]; then
+            echo "✅ Application is healthy"
+          else
+            echo "❌ Application health check failed (HTTP: $response)"
+            exit 1
+          fi
+
+  # ===== Phase 3: Run Load Tests =====
+  run-load-tests:
+    name: Execute Load Tests
+    runs-on: ubuntu-latest
+    needs: [setup-load-test, start-application]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install JMeter
+        run: |
+          wget -q https://downloads.apache.org//jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.tgz
+          tar -xzf apache-jmeter-${{ env.JMETER_VERSION }}.tgz
+          mv apache-jmeter-${{ env.JMETER_VERSION }} jmeter
+          chmod +x jmeter/bin/jmeter
+
+      - name: Create JMeter test plan
+        run: |
+          cat > api-load-test.jmx << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <jmeterTestPlan version="1.2" properties="5.0">
+            <hashTree>
+              <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="API Load Test" enabled="true">
+                <elementProp name="TestPlan.user_defined_variables" elementType="Arguments">
+                  <collectionProp name="Arguments.arguments">
+                    <elementProp name="BASE_URL" elementType="Argument">
+                      <stringProp name="Argument.name">BASE_URL</stringProp>
+                      <stringProp name="Argument.value">${{ needs.setup-load-test.outputs.test_url }}</stringProp>
+                    </elementProp>
+                    <elementProp name="USERS" elementType="Argument">
+                      <stringProp name="Argument.name">USERS</stringProp>
+                      <stringProp name="Argument.value">${{ needs.setup-load-test.outputs.users }}</stringProp>
+                    </elementProp>
+                    <elementProp name="RAMP_UP" elementType="Argument">
+                      <stringProp name="Argument.name">RAMP_UP</stringProp>
+                      <stringProp name="Argument.value">${{ needs.setup-load-test.outputs.ramp_up }}</stringProp>
+                    </elementProp>
+                    <elementProp name="DURATION" elementType="Argument">
+                      <stringProp name="Argument.name">DURATION</stringProp>
+                      <stringProp name="Argument.value">${{ needs.setup-load-test.outputs.duration }}</stringProp>
+                    </elementProp>
+                  </collectionProp>
+                </elementProp>
+              </TestPlan>
+              <hashTree>
+                <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Load Test Thread Group" enabled="true">
+                  <stringProp name="ThreadGroup.num_threads">${{ needs.setup-load-test.outputs.users }}</stringProp>
+                  <stringProp name="ThreadGroup.ramp_time">${{ needs.setup-load-test.outputs.ramp_up }}</stringProp>
+                  <stringProp name="ThreadGroup.duration">${{ needs.setup-load-test.outputs.duration }}</stringProp>
+                </ThreadGroup>
+              </hashTree>
+            </hashTree>
+          </jmeterTestPlan>
+          EOF
+
+      - name: Run JMeter load tests
+        id: jmeter-test
+        continue-on-error: true
+        run: |
+          echo "🔥 Starting JMeter load tests..."
+          echo "Configuration:"
+          echo "  URL: ${{ needs.setup-load-test.outputs.test_url }}"
+          echo "  Users: ${{ needs.setup-load-test.outputs.users }}"
+          echo "  Duration: ${{ needs.setup-load-test.outputs.duration }}s"
+          echo "  Ramp-up: ${{ needs.setup-load-test.outputs.ramp_up }}s"
+
+          # Run JMeter in non-GUI mode
+          ./jmeter/bin/jmeter -n -t api-load-test.jmx \
+            -JBASE_URL=${{ needs.setup-load-test.outputs.test_url }} \
+            -JUSERS=${{ needs.setup-load-test.outputs.users }} \
+            -JRAMP_UP=${{ needs.setup-load-test.outputs.ramp_up }} \
+            -JDURATION=${{ needs.setup-load-test.outputs.duration }} \
+            -l test-results.jtl \
+            -e -o test-results-html
+
+          echo "✅ Load tests completed"
+
+      - name: Generate test report
+        if: always()
+        run: |
+          echo "📊 Generating load test report..."
+
+          # Parse JMeter results
+          if [ -f test-results.jtl ]; then
+            total_requests=$(grep -c '<httpSample' test-results.jtl || echo "0")
+            failed_requests=$(grep -c 's="false"' test-results.jtl || echo "0")
+            success_rate=$(echo "scale=2; ($total_requests - $failed_requests) * 100 / $total_requests" | bc)
+
+            echo "Total Requests: $total_requests"
+            echo "Failed Requests: $failed_requests"
+            echo "Success Rate: ${success_rate}%"
+
+            # Create summary
+            cat > load-test-summary.txt << EOF
+          # Load Test Summary
+
+          **Configuration:**
+          - Users: ${{ needs.setup-load-test.outputs.users }}
+          - Duration: ${{ needs.setup-load-test.outputs.duration }}s
+          - Ramp-up: ${{ needs.setup-load-test.outputs.ramp_up }}s
+          - Target: ${{ needs.setup-load-test.outputs.test_url }}
+
+          **Results:**
+          - Total Requests: $total_requests
+          - Failed Requests: $failed_requests
+          - Success Rate: ${success_rate}%
+
+          **Test Time:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          EOF
+
+            cat load-test-summary.txt
+          fi
+
+      - name: Upload JMeter results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-results
+          path: |
+            test-results.jtl
+            test-results-html/
+            load-test-summary.txt
+          retention-days: 30
+
+      - name: Stop application server
+        if: always() && needs.start-application.outputs.app_started == 'true'
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            echo "🛑 Stopping application server..."
+            kill $SERVER_PID || true
+          fi
+
+  # ===== Phase 4: Analyze Results =====
+  analyze-results:
+    name: Analyze Load Test Results
+    runs-on: ubuntu-latest
+    needs: [setup-load-test, run-load-tests]
+    if: always()
+    steps:
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: jmeter-results
+          path: ./results
+
+      - name: Analyze performance metrics
+        id: analysis
+        run: |
+          echo "📈 Analyzing performance metrics..."
+
+          if [ -f results/test-results.jtl ]; then
+            # Extract key metrics from JTL file
+            avg_response_time=$(grep -oP 't="\d+"' results/test-results.jtl | awk -F'=' '{sum+=$2; count++} END {printf "%.0f", sum/count}')
+            max_response_time=$(grep -oP 't="\d+"' results/test-results.jtl | awk -F'=' '{print $2}' | sort -rn | head -1)
+            min_response_time=$(grep -oP 't="\d+"' results/test-results.jtl | awk -F'=' '{print $2}' | sort -n | head -1)
+
+            total_requests=$(grep -c '<httpSample' results/test-results.jtl || echo "0")
+            failed_requests=$(grep -c 's="false"' results/test-results.jtl || echo "0")
+            error_rate=$(echo "scale=2; $failed_requests * 100 / $total_requests" | bc)
+
+            echo "avg_response_time=$avg_response_time" >> $GITHUB_OUTPUT
+            echo "max_response_time=$max_response_time" >> $GITHUB_OUTPUT
+            echo "min_response_time=$min_response_time" >> $GITHUB_OUTPUT
+            echo "total_requests=$total_requests" >> $GITHUB_OUTPUT
+            echo "failed_requests=$failed_requests" >> $GITHUB_OUTPUT
+            echo "error_rate=$error_rate" >> $GITHUB_OUTPUT
+
+            echo "📊 Performance Metrics:"
+            echo "  Average Response Time: ${avg_response_time}ms"
+            echo "  Max Response Time: ${max_response_time}ms"
+            echo "  Min Response Time: ${min_response_time}ms"
+            echo "  Total Requests: $total_requests"
+            echo "  Failed Requests: $failed_requests"
+            echo "  Error Rate: ${error_rate}%"
+          fi
+
+      - name: Determine performance grade
+        id: grade
+        run: |
+          avg_time="${{ steps.analysis.outputs.avg_response_time }}"
+          error_rate="${{ steps.analysis.outputs.error_rate }}"
+
+          # Grade performance
+          if [ -n "$avg_time" ] && [ -n "$error_rate" ]; then
+            if (( $(echo "$avg_time < 1000" | bc -l) )) && (( $(echo "$error_rate < 1" | bc -l) )); then
+              grade="A"
+              status="excellent"
+            elif (( $(echo "$avg_time < 2000" | bc -l) )) && (( $(echo "$error_rate < 5" | bc -l) )); then
+              grade="B"
+              status="good"
+            elif (( $(echo "$avg_time < 5000" | bc -l) )) && (( $(echo "$error_rate < 10" | bc -l) )); then
+              grade="C"
+              status="acceptable"
+            else
+              grade="D"
+              status="poor"
+            fi
+
+            echo "grade=$grade" >> $GITHUB_OUTPUT
+            echo "status=$status" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate comprehensive report
+        if: always()
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          # 🔥 JMeter Load Test Results
+
+          ## Test Configuration
+
+          | Parameter | Value |
+          |-----------|-------|
+          | **Users** | ${{ needs.setup-load-test.outputs.users }} |
+          | **Duration** | ${{ needs.setup-load-test.outputs.duration }}s |
+          | **Ramp-up** | ${{ needs.setup-load-test.outputs.ramp_up }}s |
+          | **Target URL** | ${{ needs.setup-load-test.outputs.test_url }} |
+
+          ## Performance Metrics
+
+          | Metric | Value |
+          |--------|-------|
+          | **Average Response Time** | ${{ steps.analysis.outputs.avg_response_time }}ms |
+          | **Max Response Time** | ${{ steps.analysis.outputs.max_response_time }}ms |
+          | **Min Response Time** | ${{ steps.analysis.outputs.min_response_time }}ms |
+          | **Total Requests** | ${{ steps.analysis.outputs.total_requests }} |
+          | **Failed Requests** | ${{ steps.analysis.outputs.failed_requests }} |
+          | **Error Rate** | ${{ steps.analysis.outputs.error_rate }}% |
+
+          ## Performance Assessment
+
+          **Grade:** ${{ steps.grade.outputs.grade }} (${{ steps.grade.outputs.status }})
+
+          ### Performance Criteria
+
+          - **A (Excellent)**: < 1s response time, < 1% errors
+          - **B (Good)**: < 2s response time, < 5% errors
+          - **C (Acceptable)**: < 5s response time, < 10% errors
+          - **D (Poor)**: > 5s response time, > 10% errors
+
+          ### Recommendations
+
+          EOF
+
+          if [ "${{ steps.grade.outputs.grade }}" = "A" ]; then
+            echo "✅ **Excellent performance!** System is handling load well." >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.grade.outputs.grade }}" = "B" ]; then
+            echo "👍 **Good performance.** Consider optimization for peak loads." >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.grade.outputs.grade }}" = "C" ]; then
+            echo "⚠️  **Acceptable performance.** Optimization recommended." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Poor performance.** Immediate optimization required." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Test Date**: $(date -u +%Y-%m-%d)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create performance issue
+        if: steps.grade.outputs.grade == 'D'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const grade = '${{ steps.grade.outputs.grade }}';
+            const status = '${{ steps.grade.outputs.status }}';
+            const avgTime = '${{ steps.analysis.outputs.avg_response_time }}';
+            const errorRate = '${{ steps.analysis.outputs.error_rate }}';
+
+            const title = '🔥 Performance Issues Detected in Load Testing';
+            const body = `## Performance Load Test Results
+
+            **Performance Grade**: ${grade} (${status})
+
+            **Critical Metrics**:
+            - **Average Response Time**: ${avgTime}ms
+            - **Error Rate**: ${errorRate}%
+
+            **Issue**: Load testing revealed performance degradation under stress.
+
+            **Recommendations**:
+            1. Review database queries and add indexes
+            2. Implement caching strategies
+            3. Optimize API response times
+            4. Consider horizontal scaling
+            5. Review and optimize bottlenecks
+
+            **Test Configuration**:
+            - Users: ${{ needs.setup-load-test.outputs.users }}
+            - Duration: ${{ needs.setup-load-test.outputs.duration }}s
+            - Target: ${{ needs.setup-load-test.outputs.test_url }}
+
+            **Branch**: ${{ github.ref_name }}
+            **Commit**: ${{ github.sha }}`;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              labels: ['performance', 'load-testing', 'priority: high']
+            });
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const grade = '${{ steps.grade.outputs.grade }}';
+            const avgTime = '${{ steps.analysis.outputs.avg_response_time }}';
+            const errorRate = '${{ steps.analysis.outputs.error_rate }}';
+
+            const comment = `## 🔥 Load Test Results
+
+            | Metric | Value | Grade |
+            |--------|-------|------|
+            | Performance | ${grade} | ${grade === 'A' ? '✅' : grade === 'B' ? '👍' : grade === 'C' ? '⚠️' : '❌'} |
+            | Avg Response Time | ${avgTime}ms | - |
+            | Error Rate | ${errorRate}% | - |
+
+            *Load testing with ${{ needs.setup-load-test.outputs.users }} users for ${{ needs.setup-load-test.outputs.duration }} seconds*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

@@ -11,7 +11,7 @@ export enum FeedbackInteractionMode {
   PROACTIVE = 'proactive',
   CONVERSATIONAL = 'conversational',
   GAMIFIED = 'gamified',
-  COMMUNITY = 'community'
+  COMMUNITY = 'community',
 }
 
 export enum FeedbackActionType {
@@ -22,7 +22,7 @@ export enum FeedbackActionType {
   CUSTOMIZE = 'customize',
   ESCALATE = 'escalate',
   EDUCATE = 'educate',
-  REWARD = 'reward'
+  REWARD = 'reward',
 }
 
 export interface UserFeedback {
@@ -183,9 +183,14 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       automationLevel: 'semi_auto',
       approvalThreshold: 0.8,
       escalationRules: {},
-      communityFeatures: ['idea_voting', 'collaborative_editing', 'expert_review', 'transparency_log'],
+      communityFeatures: [
+        'idea_voting',
+        'collaborative_editing',
+        'expert_review',
+        'transparency_log',
+      ],
       communityModeration: 'ai_enhanced',
-      ...config
+      ...config,
     };
   }
 
@@ -213,7 +218,11 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       this.emit('phase:completed', { phase: 'validation', loopId, result: realtimeValidation });
 
       const relationshipEvolution = await this.deepenRelationship(realtimeValidation);
-      this.emit('phase:completed', { phase: 'relationship', loopId, result: relationshipEvolution });
+      this.emit('phase:completed', {
+        phase: 'relationship',
+        loopId,
+        result: relationshipEvolution,
+      });
 
       const result: BidirectionalLoopResult = {
         loopId,
@@ -226,7 +235,7 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
         realtimeValidation,
         relationshipEvolution,
         loopClosureScore: this.calculateClosureScore(realtimeValidation, relationshipEvolution),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       this.emit('loop:completed', { loopId, result, duration: Date.now() - startTime });
@@ -239,7 +248,10 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
     }
   }
 
-  private async listenAndUnderstandDeeply(feedback: UserFeedback, conversationId: string): Promise<DeepUnderstanding> {
+  private async listenAndUnderstandDeeply(
+    feedback: UserFeedback,
+    conversationId: string
+  ): Promise<DeepUnderstanding> {
     const emotionAnalysis = await this.analyzeEmotionMultimodally(feedback);
     const intentDecoding = await this.decodeDeepIntent(feedback, emotionAnalysis);
     const contextFusion = await this.fuseContext(feedback, intentDecoding);
@@ -254,7 +266,7 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       contextFusion,
       needMining,
       priorityJudgment,
-      understandingConfidence
+      understandingConfidence,
     };
   }
 
@@ -266,13 +278,38 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
     let valence = 0;
     let arousal = 0.5;
 
-    const positiveKeywords = ['happy', 'great', 'excellent', 'love', 'wonderful', 'amazing', 'thank', 'thanks'];
-    const negativeKeywords = ['angry', 'frustrated', 'hate', 'terrible', 'awful', 'disappointed', 'broken'];
-    const urgentKeywords = ['urgent', 'asap', 'immediately', 'emergency', 'critical', 'broken', 'not working'];
+    const positiveKeywords = [
+      'happy',
+      'great',
+      'excellent',
+      'love',
+      'wonderful',
+      'amazing',
+      'thank',
+      'thanks',
+    ];
+    const negativeKeywords = [
+      'angry',
+      'frustrated',
+      'hate',
+      'terrible',
+      'awful',
+      'disappointed',
+      'broken',
+    ];
+    const urgentKeywords = [
+      'urgent',
+      'asap',
+      'immediately',
+      'emergency',
+      'critical',
+      'broken',
+      'not working',
+    ];
 
-    const hasPositive = positiveKeywords.some(kw => text.includes(kw));
-    const hasNegative = negativeKeywords.some(kw => text.includes(kw));
-    const hasUrgent = urgentKeywords.some(kw => text.includes(kw));
+    const hasPositive = positiveKeywords.some((kw) => text.includes(kw));
+    const hasNegative = negativeKeywords.some((kw) => text.includes(kw));
+    const hasUrgent = urgentKeywords.some((kw) => text.includes(kw));
 
     if (hasUrgent) {
       primary = 'urgent';
@@ -296,11 +333,14 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       confidence: 0.85,
       intensity,
       valence,
-      arousal
+      arousal,
     };
   }
 
-  private async decodeDeepIntent(feedback: UserFeedback, emotion: EmotionAnalysis): Promise<IntentDecoding> {
+  private async decodeDeepIntent(
+    feedback: UserFeedback,
+    emotion: EmotionAnalysis
+  ): Promise<IntentDecoding> {
     const text = feedback.content.toLowerCase();
     let primaryIntent = 'general_feedback';
     let urgency: 'low' | 'medium' | 'high' | 'urgent' = 'low';
@@ -308,7 +348,11 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
     if (text.includes('bug') || text.includes('error') || text.includes('broken')) {
       primaryIntent = 'report_bug';
       urgency = emotion.primary === 'urgent' ? 'urgent' : 'high';
-    } else if (text.includes('feature') || text.includes('suggest') || text.includes('would like')) {
+    } else if (
+      text.includes('feature') ||
+      text.includes('suggest') ||
+      text.includes('would like')
+    ) {
       primaryIntent = 'feature_request';
       urgency = 'medium';
     } else if (text.includes('help') || text.includes('how to') || text.includes('question')) {
@@ -325,11 +369,13 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       primaryIntent,
       confidence: 0.8,
       entities,
-      urgency
+      urgency,
     };
   }
 
-  private extractEntities(text: string): Array<{ type: string; value: string; confidence: number }> {
+  private extractEntities(
+    text: string
+  ): Array<{ type: string; value: string; confidence: number }> {
     const entities: Array<{ type: string; value: string; confidence: number }> = [];
 
     const featurePattern = /feature\s+(\w+)/i;
@@ -341,14 +387,17 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
     return entities;
   }
 
-  private async fuseContext(feedback: UserFeedback, intent: IntentDecoding): Promise<Record<string, unknown>> {
+  private async fuseContext(
+    feedback: UserFeedback,
+    intent: IntentDecoding
+  ): Promise<Record<string, unknown>> {
     return {
       userId: feedback.userId,
       timestamp: feedback.timestamp,
       category: feedback.category,
       intent: intent.primaryIntent,
       urgency: intent.urgency,
-      previousFeedbacks: this.feedbackHistory.get(feedback.userId)?.length || 0
+      previousFeedbacks: this.feedbackHistory.get(feedback.userId)?.length || 0,
     };
   }
 
@@ -436,14 +485,18 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       emotionMatching: {
         matched: true,
         tone,
-        style
+        style,
       },
       responseContent,
-      empathyScore
+      empathyScore,
     };
   }
 
-  private calculateEmpathyScore(understanding: DeepUnderstanding, tone: string, style: string): number {
+  private calculateEmpathyScore(
+    understanding: DeepUnderstanding,
+    tone: string,
+    style: string
+  ): number {
     let score = 0.5;
 
     if (understanding.emotionAnalysis.valence < -0.3 && tone === 'apologetic') {
@@ -470,34 +523,40 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
         id: 'immediate_fix',
         description: 'Immediate fix with hotfix deployment',
         votes: 0,
-        estimatedEffort: '2-4 hours'
+        estimatedEffort: '2-4 hours',
       },
       {
         id: 'scheduled_update',
         description: 'Include in next scheduled update',
         votes: 0,
-        estimatedEffort: '1-2 weeks'
+        estimatedEffort: '1-2 weeks',
       },
       {
         id: 'feature_enhancement',
         description: 'Enhance as part of feature roadmap',
         votes: 0,
-        estimatedEffort: '1-2 months'
-      }
+        estimatedEffort: '1-2 months',
+      },
     ];
 
-    const selectedSolution = suggestedAction === FeedbackActionType.FIX ? 'immediate_fix' :
-      suggestedAction === FeedbackActionType.IMPROVE ? 'feature_enhancement' :
-        'scheduled_update';
+    const selectedSolution =
+      suggestedAction === FeedbackActionType.FIX
+        ? 'immediate_fix'
+        : suggestedAction === FeedbackActionType.IMPROVE
+          ? 'feature_enhancement'
+          : 'scheduled_update';
 
     const now = new Date();
     const timeline = {
       start: now,
       milestones: [
         { date: new Date(now.getTime() + 24 * 60 * 60 * 1000), description: 'Analysis completed' },
-        { date: new Date(now.getTime() + 48 * 60 * 60 * 1000), description: 'Solution implemented' }
+        {
+          date: new Date(now.getTime() + 48 * 60 * 60 * 1000),
+          description: 'Solution implemented',
+        },
       ],
-      expectedCompletion: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
+      expectedCompletion: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
     };
 
     return {
@@ -505,7 +564,7 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       solutions,
       selectedSolution,
       timeline,
-      collaborationLevel: 0.8
+      collaborationLevel: 0.8,
     };
   }
 
@@ -516,7 +575,7 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       completedSteps: 1,
       totalSteps: 5,
       currentStatus: 'Planning phase completed',
-      lastUpdate: now
+      lastUpdate: now,
     };
 
     const issues: Array<{
@@ -532,7 +591,7 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       plan,
       realtimeProgress,
       issues,
-      transparencyScore
+      transparencyScore,
     };
   }
 
@@ -540,8 +599,8 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
     const before = { satisfaction: 0.6, responseTime: 200 };
     const after = { satisfaction: 0.85, responseTime: 150 };
     const improvement = {
-      satisfaction: (after.satisfaction - before.satisfaction) / before.satisfaction * 100,
-      responseTime: (before.responseTime - after.responseTime) / before.responseTime * 100
+      satisfaction: ((after.satisfaction - before.satisfaction) / before.satisfaction) * 100,
+      responseTime: ((before.responseTime - after.responseTime) / before.responseTime) * 100,
     };
 
     return {
@@ -550,10 +609,10 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       impactMetrics: {
         before,
         after,
-        improvement
+        improvement,
       },
       feedbackCollected: 5,
-      validationScore: 0.85
+      validationScore: 0.85,
     };
   }
 
@@ -564,19 +623,24 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       {
         date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
         type: 'feedback',
-        satisfaction: 0.6
+        satisfaction: 0.6,
       },
       {
         date: new Date(),
         type: 'resolution',
-        satisfaction: validation.userSatisfaction
-      }
+        satisfaction: validation.userSatisfaction,
+      },
     ];
 
     const trustScore = validation.validationScore;
-    const loyaltyLevel = trustScore > 0.8 ? 'advocate' :
-      trustScore > 0.6 ? 'loyal' :
-        trustScore > 0.4 ? 'engaged' : 'new';
+    const loyaltyLevel =
+      trustScore > 0.8
+        ? 'advocate'
+        : trustScore > 0.6
+          ? 'loyal'
+          : trustScore > 0.4
+            ? 'engaged'
+            : 'new';
     const relationshipDepth = trustScore * 0.7 + interactionHistory.length * 0.03;
 
     return {
@@ -584,12 +648,15 @@ export class BidirectionalFeedbackLoop extends EventEmitter {
       interactionHistory,
       trustScore,
       loyaltyLevel,
-      relationshipDepth
+      relationshipDepth,
     };
   }
 
-  private calculateClosureScore(validation: RealtimeValidation, relationship: RelationshipEvolution): number {
-    return (validation.validationScore * 0.6) + (relationship.relationshipDepth * 0.4);
+  private calculateClosureScore(
+    validation: RealtimeValidation,
+    relationship: RelationshipEvolution
+  ): number {
+    return validation.validationScore * 0.6 + relationship.relationshipDepth * 0.4;
   }
 
   private storeResult(result: BidirectionalLoopResult): void {

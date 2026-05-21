@@ -26,7 +26,7 @@ export type {
   ResourceRequirements,
   ResourceAllocation,
   DecisionEvaluation,
-  LearningProgress
+  LearningProgress,
 } from './IAutonomousAIEngine.js';
 
 // 重新导出所有类型定义

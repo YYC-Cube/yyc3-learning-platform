@@ -1,7 +1,7 @@
-const tseslint = require('@typescript-eslint/eslint-plugin')
-const tsParser = require('@typescript-eslint/parser')
-const nextPlugin = require('@next/eslint-plugin-next')
-const reactPlugin = require('eslint-plugin-react')
+const tseslint = require('@typescript-eslint/eslint-plugin');
+const tsParser = require('@typescript-eslint/parser');
+const nextPlugin = require('@next/eslint-plugin-next');
+const reactPlugin = require('eslint-plugin-react');
 
 module.exports = [
   {
@@ -74,4 +74,4 @@ module.exports = [
       'no-var': 'error',
     },
   },
-]
+];

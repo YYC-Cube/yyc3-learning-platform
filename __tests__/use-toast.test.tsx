@@ -141,7 +141,7 @@ describe('use-toast hook', () => {
 
       const newState = reducer(initialStateWithToasts, action);
 
-      expect(newState.toasts.every(t => t.open === false)).toBe(true);
+      expect(newState.toasts.every((t) => t.open === false)).toBe(true);
     });
 
     it('应该移除指定的toast', async () => {

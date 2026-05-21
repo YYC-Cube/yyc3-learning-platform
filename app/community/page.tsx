@@ -4,15 +4,15 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Textarea } from "@/components/ui/textarea"
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Users,
   MessageCircle,
@@ -32,141 +32,142 @@ import {
   Star,
   Pin,
   Flag,
-} from "lucide-react"
-import Link from "next/link"
+} from 'lucide-react';
+import Link from 'next/link';
 
 interface Post {
-  id: string
-  title: string
-  content: string
+  id: string;
+  title: string;
+  content: string;
   author: {
-    name: string
-    avatar: string
-    level: string
-  }
-  category: string
-  tags: string[]
-  likes: number
-  replies: number
-  views: number
-  createdAt: Date
-  isPinned?: boolean
-  isHot?: boolean
+    name: string;
+    avatar: string;
+    level: string;
+  };
+  category: string;
+  tags: string[];
+  likes: number;
+  replies: number;
+  views: number;
+  createdAt: Date;
+  isPinned?: boolean;
+  isHot?: boolean;
 }
 
 export default function CommunityPage() {
-  const [selectedCategory, setSelectedCategory] = useState("all")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [showNewPost, setShowNewPost] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showNewPost, setShowNewPost] = useState(false);
 
   const posts: Post[] = [
     {
-      id: "1",
-      title: "GPT-4 API调用最佳实践分享",
-      content: "最近在项目中大量使用GPT-4 API，总结了一些优化经验，包括prompt设计、参数调优、成本控制等方面...",
+      id: '1',
+      title: 'GPT-4 API调用最佳实践分享',
+      content:
+        '最近在项目中大量使用GPT-4 API，总结了一些优化经验，包括prompt设计、参数调优、成本控制等方面...',
       author: {
-        name: "AI架构师",
-        avatar: "/placeholder.svg?height=40&width=40&text=AI",
-        level: "高级工程师",
+        name: 'AI架构师',
+        avatar: '/placeholder.svg?height=40&width=40&text=AI',
+        level: '高级工程师',
       },
-      category: "experience",
-      tags: ["GPT-4", "API", "最佳实践"],
+      category: 'experience',
+      tags: ['GPT-4', 'API', '最佳实践'],
       likes: 45,
       replies: 12,
       views: 234,
-      createdAt: new Date("2024-03-20"),
+      createdAt: new Date('2024-03-20'),
       isPinned: true,
       isHot: true,
     },
     {
-      id: "2",
-      title: "Prompt工程师认证考试经验分享",
-      content: "刚刚通过了Prompt工程师认证考试，分享一下备考经验和考试技巧，希望对大家有帮助...",
+      id: '2',
+      title: 'Prompt工程师认证考试经验分享',
+      content: '刚刚通过了Prompt工程师认证考试，分享一下备考经验和考试技巧，希望对大家有帮助...',
       author: {
-        name: "YanYu同学",
-        avatar: "/placeholder.svg?height=40&width=40&text=YY",
-        level: "中级AI工程师",
+        name: 'YanYu同学',
+        avatar: '/placeholder.svg?height=40&width=40&text=YY',
+        level: '中级AI工程师',
       },
-      category: "certification",
-      tags: ["认证考试", "Prompt工程", "经验分享"],
+      category: 'certification',
+      tags: ['认证考试', 'Prompt工程', '经验分享'],
       likes: 32,
       replies: 8,
       views: 156,
-      createdAt: new Date("2024-03-19"),
+      createdAt: new Date('2024-03-19'),
       isHot: true,
     },
     {
-      id: "3",
-      title: "求助：多模态AI模型部署问题",
-      content: "在部署多模态AI模型时遇到内存不足的问题，有没有大佬能指导一下优化方案？",
+      id: '3',
+      title: '求助：多模态AI模型部署问题',
+      content: '在部署多模态AI模型时遇到内存不足的问题，有没有大佬能指导一下优化方案？',
       author: {
-        name: "新手小白",
-        avatar: "/placeholder.svg?height=40&width=40&text=新",
-        level: "初级学员",
+        name: '新手小白',
+        avatar: '/placeholder.svg?height=40&width=40&text=新',
+        level: '初级学员',
       },
-      category: "help",
-      tags: ["多模态AI", "部署", "求助"],
+      category: 'help',
+      tags: ['多模态AI', '部署', '求助'],
       likes: 8,
       replies: 15,
       views: 89,
-      createdAt: new Date("2024-03-18"),
+      createdAt: new Date('2024-03-18'),
     },
     {
-      id: "4",
-      title: "开源项目：AI学习助手Chrome插件",
-      content: "开发了一个Chrome插件，可以在浏览网页时提供AI学习建议和知识点解释，欢迎大家试用...",
+      id: '4',
+      title: '开源项目：AI学习助手Chrome插件',
+      content: '开发了一个Chrome插件，可以在浏览网页时提供AI学习建议和知识点解释，欢迎大家试用...',
       author: {
-        name: "开源贡献者",
-        avatar: "/placeholder.svg?height=40&width=40&text=开",
-        level: "资深工程师",
+        name: '开源贡献者',
+        avatar: '/placeholder.svg?height=40&width=40&text=开',
+        level: '资深工程师',
       },
-      category: "project",
-      tags: ["开源项目", "Chrome插件", "AI助手"],
+      category: 'project',
+      tags: ['开源项目', 'Chrome插件', 'AI助手'],
       likes: 67,
       replies: 23,
       views: 345,
-      createdAt: new Date("2024-03-17"),
+      createdAt: new Date('2024-03-17'),
       isHot: true,
     },
-  ]
+  ];
 
   const categories = [
-    { id: "all", name: "全部", icon: Users, count: posts.length },
-    { id: "experience", name: "经验分享", icon: Lightbulb, count: 1 },
-    { id: "help", name: "求助问答", icon: HelpCircle, count: 1 },
-    { id: "project", name: "项目展示", icon: BookOpen, count: 1 },
-    { id: "certification", name: "认证考试", icon: Star, count: 1 },
-  ]
+    { id: 'all', name: '全部', icon: Users, count: posts.length },
+    { id: 'experience', name: '经验分享', icon: Lightbulb, count: 1 },
+    { id: 'help', name: '求助问答', icon: HelpCircle, count: 1 },
+    { id: 'project', name: '项目展示', icon: BookOpen, count: 1 },
+    { id: 'certification', name: '认证考试', icon: Star, count: 1 },
+  ];
 
   const filteredPosts = posts.filter((post) => {
-    const matchesCategory = selectedCategory === "all" || post.category === selectedCategory
+    const matchesCategory = selectedCategory === 'all' || post.category === selectedCategory;
     const matchesSearch =
-      searchQuery === "" ||
+      searchQuery === '' ||
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    return matchesCategory && matchesSearch
-  })
+      post.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesCategory && matchesSearch;
+  });
 
   const getCategoryIcon = (categoryId: string) => {
-    const category = categories.find((c) => c.id === categoryId)
-    return category?.icon || MessageCircle
-  }
+    const category = categories.find((c) => c.id === categoryId);
+    return category?.icon || MessageCircle;
+  };
 
   const getCategoryColor = (categoryId: string) => {
     switch (categoryId) {
-      case "experience":
-        return "bg-blue-100 text-blue-800"
-      case "help":
-        return "bg-red-100 text-red-800"
-      case "project":
-        return "bg-green-100 text-green-800"
-      case "certification":
-        return "bg-purple-100 text-purple-800"
+      case 'experience':
+        return 'bg-blue-100 text-blue-800';
+      case 'help':
+        return 'bg-red-100 text-red-800';
+      case 'project':
+        return 'bg-green-100 text-green-800';
+      case 'certification':
+        return 'bg-purple-100 text-purple-800';
       default:
-        return "bg-gray-100 text-gray-800"
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pb-20">
@@ -188,7 +189,10 @@ export default function CommunityPage() {
               <p className="text-gray-600 mt-1">与同学们交流学习心得，共同进步</p>
             </div>
           </div>
-          <Button onClick={() => setShowNewPost(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button
+            onClick={() => setShowNewPost(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
             <Plus className="h-4 w-4 mr-2" />
             发布帖子
           </Button>
@@ -225,11 +229,11 @@ export default function CommunityPage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {categories.map((category) => {
-                  const Icon = category.icon
+                  const Icon = category.icon;
                   return (
                     <Button
                       key={category.id}
-                      variant={selectedCategory === category.id ? "default" : "ghost"}
+                      variant={selectedCategory === category.id ? 'default' : 'ghost'}
                       className="w-full justify-start"
                       onClick={() => setSelectedCategory(category.id)}
                     >
@@ -239,7 +243,7 @@ export default function CommunityPage() {
                         {category.count}
                       </Badge>
                     </Button>
-                  )
+                  );
                 })}
               </CardContent>
             </Card>
@@ -251,13 +255,20 @@ export default function CommunityPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                  {["GPT-4", "Prompt工程", "机器学习", "深度学习", "API", "最佳实践", "认证考试", "项目实战"].map(
-                    (tag) => (
-                      <Badge key={tag} variant="outline" className="cursor-pointer hover:bg-blue-50">
-                        {tag}
-                      </Badge>
-                    ),
-                  )}
+                  {[
+                    'GPT-4',
+                    'Prompt工程',
+                    '机器学习',
+                    '深度学习',
+                    'API',
+                    '最佳实践',
+                    '认证考试',
+                    '项目实战',
+                  ].map((tag) => (
+                    <Badge key={tag} variant="outline" className="cursor-pointer hover:bg-blue-50">
+                      {tag}
+                    </Badge>
+                  ))}
                 </div>
               </CardContent>
             </Card>
@@ -293,13 +304,16 @@ export default function CommunityPage() {
             {/* 帖子列表 */}
             <div className="space-y-4">
               {filteredPosts.map((post) => {
-                const CategoryIcon = getCategoryIcon(post.category)
+                const CategoryIcon = getCategoryIcon(post.category);
                 return (
                   <Card key={post.id} className="hover:shadow-lg transition-all duration-300">
                     <CardContent className="p-6">
                       <div className="flex items-start space-x-4">
                         <Avatar className="h-12 w-12">
-                          <AvatarImage src={post.author.avatar || "/placeholder.svg"} alt={post.author.name} />
+                          <AvatarImage
+                            src={post.author.avatar || '/placeholder.svg'}
+                            alt={post.author.name}
+                          />
                           <AvatarFallback>{post.author.name.charAt(0)}</AvatarFallback>
                         </Avatar>
 
@@ -380,7 +394,7 @@ export default function CommunityPage() {
                       </div>
                     </CardContent>
                   </Card>
-                )
+                );
               })}
             </div>
           </div>
@@ -432,5 +446,5 @@ export default function CommunityPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -13,11 +13,13 @@
 **目的**: 数据驱动的AI模型持续优化
 
 **核心流程**:
+
 ```
 数据收集 → 质量评估 → 特征工程 → 模型训练 → 模型部署 → 性能监控 → 反馈收集 → 下一循环
 ```
 
 **快速使用**:
+
 ```typescript
 import { dataOptimizationLoop } from '@/packages/core-engine';
 
@@ -31,6 +33,7 @@ console.log('性能指标:', result.monitoring.performanceMetrics);
 ```
 
 **关键指标**:
+
 - 数据质量评分 (目标: >85)
 - 模型准确率 (目标: >88%)
 - 预测延迟 (目标: <500ms)
@@ -43,11 +46,13 @@ console.log('性能指标:', result.monitoring.performanceMetrics);
 **目的**: 用户体验持续改进
 
 **核心流程**:
+
 ```
 用户研究 → 设计迭代 → 可用性测试 → 设计验证 → 实施部署 → 影响测量 → 学习提取 → 下一循环
 ```
 
 **快速使用**:
+
 ```typescript
 import { uxOptimizationLoop } from '@/packages/core-engine';
 
@@ -62,6 +67,7 @@ console.log('成功模式:', result.learnings.successPatterns);
 ```
 
 **关键指标**:
+
 - 任务成功率 (目标: >85%)
 - NPS评分 (目标: >50)
 - 用户满意度 (目标: >80)
@@ -74,11 +80,13 @@ console.log('成功模式:', result.learnings.successPatterns);
 **目的**: 价值驱动的业务决策
 
 **核心流程**:
+
 ```
 价值发现 → 价值流定义 → 价值测量 → ROI分析 → 价值优化 → 规模化策略
 ```
 
 **快速使用**:
+
 ```typescript
 import { businessValueFramework } from '@/packages/core-engine';
 
@@ -93,6 +101,7 @@ console.log('决策:', result.roiAnalysis.recommendation.decision);
 ```
 
 **关键指标**:
+
 - ROI (目标: >50%)
 - NPV (目标: >$50K)
 - 回本期 (目标: <18月)
@@ -108,7 +117,7 @@ console.log('决策:', result.roiAnalysis.recommendation.decision);
 import {
   dataOptimizationLoop,
   uxOptimizationLoop,
-  businessValueFramework
+  businessValueFramework,
 } from '@/packages/core-engine';
 
 // 监听所有系统事件
@@ -120,13 +129,13 @@ businessValueFramework.on('cycle:completed', handleValueCycle);
 async function runIntegratedOptimization() {
   // 1. 数据优化
   const dataResult = await dataOptimizationLoop.executeOptimizationCycle();
-  
+
   // 2. UX优化
   const uxResult = await uxOptimizationLoop.executeUXOptimizationCycle();
-  
+
   // 3. 业务价值分析
   const valueResult = await businessValueFramework.executeBusinessValueCycle();
-  
+
   return {
     dataQuality: dataResult.dataCollection.qualityAssessment.overallScore,
     modelAccuracy: dataResult.modelTraining.validationMetrics.accuracy,
@@ -208,20 +217,20 @@ const framework = new BusinessValueFramework(config);
 
 ## 📊 关键指标速查表
 
-| 系统 | 核心指标 | 目标值 | 当前值 | 状态 |
-|------|---------|--------|--------|------|
-| **数据优化** | | | | |
-| 数据质量评分 | >85 | TBD | 🔄 |
-| 模型准确率 | >88% | TBD | 🔄 |
-| 预测延迟P99 | <500ms | TBD | 🔄 |
-| **UX优化** | | | | |
-| 任务成功率 | >85% | TBD | 🔄 |
-| NPS评分 | >50 | TBD | 🔄 |
-| 用户满意度 | >80 | TBD | 🔄 |
-| **业务价值** | | | | |
-| ROI | >50% | TBD | 🔄 |
-| NPV | >$50K | TBD | 🔄 |
-| 回本期 | <18月 | TBD | 🔄 |
+| 系统         | 核心指标 | 目标值 | 当前值 | 状态 |
+| ------------ | -------- | ------ | ------ | ---- |
+| **数据优化** |          |        |        |      |
+| 数据质量评分 | >85      | TBD    | 🔄     |
+| 模型准确率   | >88%     | TBD    | 🔄     |
+| 预测延迟P99  | <500ms   | TBD    | 🔄     |
+| **UX优化**   |          |        |        |      |
+| 任务成功率   | >85%     | TBD    | 🔄     |
+| NPS评分      | >50      | TBD    | 🔄     |
+| 用户满意度   | >80      | TBD    | 🔄     |
+| **业务价值** |          |        |        |      |
+| ROI          | >50%     | TBD    | 🔄     |
+| NPV          | >$50K    | TBD    | 🔄     |
+| 回本期       | <18月    | TBD    | 🔄     |
 
 ---
 
@@ -307,7 +316,7 @@ console.log('质量指标:', {
 });
 
 // 查看质量问题
-quality.issues.forEach(issue => {
+quality.issues.forEach((issue) => {
   console.log(`${issue.severity} - ${issue.description}`);
 });
 ```
@@ -326,7 +335,7 @@ console.log('可用性指标:', {
 });
 
 // 查看发现的问题
-testResults.findings.forEach(finding => {
+testResults.findings.forEach((finding) => {
   if (finding.type === 'issue') {
     console.log(`${finding.severity} - ${finding.title}`);
   }

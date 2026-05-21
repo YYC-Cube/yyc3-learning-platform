@@ -1,10 +1,10 @@
 /**
  * YYC³ 智能AI浮窗系统 - 用户行为分析追踪器
- * 
+ *
  * 核心定位：系统数据驱动的眼睛，用户行为与系统性能的洞察者
  * 设计原则：实时处理、隐私保护、多维分析、可扩展采集
  * 技术栈：事件采集 + 实时流处理 + 数据仓库 + 可视化
- * 
+ *
  * @author YYC³ AI Team
  * @version 1.0.0
  */
@@ -22,21 +22,21 @@ export enum EventType {
   BUSINESS_METRIC = 'business_metric',
   ERROR_EVENT = 'error_event',
   SECURITY_EVENT = 'security_event',
-  CUSTOM_EVENT = 'custom_event'
+  CUSTOM_EVENT = 'custom_event',
 }
 
 export enum EventPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 export enum AnonymizationLevel {
   NONE = 'none',
   PARTIAL = 'partial',
   FULL = 'full',
-  PSEUDONYM = 'pseudonym'
+  PSEUDONYM = 'pseudonym',
 }
 
 export interface RawEvent {
@@ -391,7 +391,7 @@ export class AnalyticsTracker extends EventEmitter {
 
   constructor(config: Partial<AnalyticsConfig> = {}) {
     super();
-    
+
     this.config = {
       maxBatchSize: 100,
       flushInterval: 5000,
@@ -407,7 +407,7 @@ export class AnalyticsTracker extends EventEmitter {
       enablePseudonymization: true,
       samplingRate: 1.0,
       compressionEnabled: true,
-      ...config
+      ...config,
     };
 
     this.enableResourceMonitoring = config.enableResourceMonitoring !== false;
@@ -430,7 +430,7 @@ export class AnalyticsTracker extends EventEmitter {
           eventId,
           timestamp: new Date(),
           processedIn: Date.now() - startTime,
-          queued: false
+          queued: false,
         };
       }
 
@@ -466,9 +466,8 @@ export class AnalyticsTracker extends EventEmitter {
         eventId,
         timestamp: new Date(),
         processedIn: Date.now() - startTime,
-        queued: true
+        queued: true,
       };
-
     } catch (error) {
       this.emit('event:error', { eventId, error });
       return {
@@ -476,7 +475,7 @@ export class AnalyticsTracker extends EventEmitter {
         eventId,
         timestamp: new Date(),
         processedIn: Date.now() - startTime,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -506,7 +505,7 @@ export class AnalyticsTracker extends EventEmitter {
         results,
         insights,
         timestamp: new Date(),
-        expiresAt: new Date(Date.now() + (query.cacheTtl || 60000))
+        expiresAt: new Date(Date.now() + (query.cacheTtl || 60000)),
       };
 
       // 5. 缓存结果
@@ -515,7 +514,6 @@ export class AnalyticsTracker extends EventEmitter {
       this.emit('analysis:completed', { query, results });
 
       return analysis;
-
     } catch (error) {
       this.emit('analysis:error', { query, error });
       throw error;
@@ -548,7 +546,7 @@ export class AnalyticsTracker extends EventEmitter {
         summary: this.generateSummary(metrics),
         data: metrics,
         visualizations,
-        insights
+        insights,
       };
 
       // 6. 格式化输出
@@ -567,13 +565,12 @@ export class AnalyticsTracker extends EventEmitter {
         dataRange: query.dateRange,
         metrics: query.metrics,
         report: formattedReport,
-        deliveryStatus
+        deliveryStatus,
       };
 
       this.emit('report:completed', { reportId, report: batchReport });
 
       return batchReport;
-
     } catch (error) {
       this.emit('report:error', { reportId, error });
       throw error;
@@ -608,9 +605,8 @@ export class AnalyticsTracker extends EventEmitter {
         segmentation,
         predictions,
         recommendations,
-        privacyLevel: this.config.anonymizationLevel
+        privacyLevel: this.config.anonymizationLevel,
       };
-
     } catch (error) {
       this.emit('behavior:analysis:error', { userId, error });
       throw error;
@@ -638,7 +634,7 @@ export class AnalyticsTracker extends EventEmitter {
       const recommendations = await this.generateTestRecommendations({
         significance,
         effectiveness,
-        confidenceIntervals
+        confidenceIntervals,
       });
 
       return {
@@ -649,9 +645,8 @@ export class AnalyticsTracker extends EventEmitter {
         confidenceIntervals,
         recommendations,
         sampleSize: testData.totalSamples,
-        duration: testData.duration
+        duration: testData.duration,
       };
-
     } catch (error) {
       this.emit('abtest:error', { testId, error });
       throw error;
@@ -745,7 +740,7 @@ export class AnalyticsTracker extends EventEmitter {
         enriched.properties = {
           ...enriched.properties,
           sessionDuration: Date.now() - session.startTime.getTime(),
-          sessionEventCount: session.eventCount + 1
+          sessionEventCount: session.eventCount + 1,
         };
       }
     }
@@ -757,8 +752,8 @@ export class AnalyticsTracker extends EventEmitter {
     // 检查队列大小
     if (this.eventQueue.length >= this.config.maxQueueSize) {
       // 移除低优先级事件
-      this.eventQueue = this.eventQueue.filter(e => 
-        (e.properties.priority as EventPriority) !== EventPriority.LOW
+      this.eventQueue = this.eventQueue.filter(
+        (e) => (e.properties.priority as EventPriority) !== EventPriority.LOW
       );
     }
 
@@ -797,9 +792,9 @@ export class AnalyticsTracker extends EventEmitter {
           cpu: 80,
           memory: 85,
           disk: 90,
-          network: 90
+          network: 90,
         },
-        enablePersistence: false
+        enablePersistence: false,
       });
 
       this.resourceMonitor.on('metrics:collected', (metrics: ResourceMetrics) => {
@@ -853,13 +848,13 @@ export class AnalyticsTracker extends EventEmitter {
         resourceType: alert.resourceType,
         currentValue: alert.currentValue,
         threshold: alert.threshold,
-        severity: alert.severity
-      }
+        severity: alert.severity,
+      },
     };
 
     this.trackEvent(alertEvent, {
       realtime: true,
-      priority: alert.severity === 'critical' ? EventPriority.CRITICAL : EventPriority.HIGH
+      priority: alert.severity === 'critical' ? EventPriority.CRITICAL : EventPriority.HIGH,
     });
 
     this.emit('resource:alert', alert);
@@ -894,22 +889,22 @@ export class AnalyticsTracker extends EventEmitter {
     return {
       cpu: {
         current: this.getAverageMetric('cpu.usage'),
-        trend: this.getMetricTrend('cpu.usage')
+        trend: this.getMetricTrend('cpu.usage'),
       },
       memory: {
         current: this.getAverageMetric('memory.usage'),
         used: this.getAverageMetric('memory.used'),
-        trend: this.getMetricTrend('memory.usage')
+        trend: this.getMetricTrend('memory.usage'),
       },
       disk: {
         current: this.getAverageMetric('disk.usage'),
-        trend: this.getMetricTrend('disk.usage')
+        trend: this.getMetricTrend('disk.usage'),
       },
       network: {
         bytesIn: this.getAverageMetric('network.bytesIn'),
         bytesOut: this.getAverageMetric('network.bytesOut'),
-        trend: this.getMetricTrend('network.bytesIn')
-      }
+        trend: this.getMetricTrend('network.bytesIn'),
+      },
     };
   }
 
@@ -952,12 +947,11 @@ export class AnalyticsTracker extends EventEmitter {
 
     try {
       const batch = this.eventQueue.splice(0, this.config.maxBatchSize);
-      
+
       // 处理批次
       await this.processBatch(batch);
 
       this.emit('batch:processed', { count: batch.length });
-
     } catch (error) {
       this.emit('batch:error', { error });
     } finally {
@@ -975,7 +969,7 @@ export class AnalyticsTracker extends EventEmitter {
   private parseRealtimeQuery(query: RealtimeQuery): any {
     return {
       ...query,
-      parsedAt: new Date()
+      parsedAt: new Date(),
     };
   }
 
@@ -1005,7 +999,7 @@ export class AnalyticsTracker extends EventEmitter {
         description: `分析了 ${results.length} 条记录`,
         confidence: 0.8,
         data: results,
-        actionable: false
+        actionable: false,
       });
     }
 
@@ -1042,7 +1036,7 @@ export class AnalyticsTracker extends EventEmitter {
   private generateSummary(metrics: any[]): Record<string, any> {
     return {
       totalRecords: metrics.length,
-      generatedAt: new Date()
+      generatedAt: new Date(),
     };
   }
 
@@ -1051,7 +1045,10 @@ export class AnalyticsTracker extends EventEmitter {
     return report;
   }
 
-  private async deliverReport(report: ReportData, delivery: DeliveryConfig): Promise<'delivered' | 'failed'> {
+  private async deliverReport(
+    report: ReportData,
+    delivery: DeliveryConfig
+  ): Promise<'delivered' | 'failed'> {
     try {
       // 报告分发逻辑
       return 'delivered';
@@ -1064,7 +1061,7 @@ export class AnalyticsTracker extends EventEmitter {
     return {
       events: [],
       sessions: [],
-      touchpoints: []
+      touchpoints: [],
     };
   }
 
@@ -1078,15 +1075,20 @@ export class AnalyticsTracker extends EventEmitter {
       name: 'Default Segment',
       characteristics: {},
       size: 1,
-      traits: []
+      traits: [],
     };
   }
 
-  private async predictUserBehavior(userId: string, patterns: BehaviorPattern[]): Promise<BehaviorPrediction[]> {
+  private async predictUserBehavior(
+    userId: string,
+    patterns: BehaviorPattern[]
+  ): Promise<BehaviorPrediction[]> {
     return [];
   }
 
-  private async generateRecommendations(predictions: BehaviorPrediction[]): Promise<Recommendation[]> {
+  private async generateRecommendations(
+    predictions: BehaviorPrediction[]
+  ): Promise<Recommendation[]> {
     return [];
   }
 
@@ -1094,7 +1096,7 @@ export class AnalyticsTracker extends EventEmitter {
     return {
       testId,
       totalSamples: 0,
-      duration: 0
+      duration: 0,
     };
   }
 
@@ -1104,7 +1106,7 @@ export class AnalyticsTracker extends EventEmitter {
       significant: false,
       confidenceLevel: 0.95,
       testStatistic: 0,
-      effectSize: 0
+      effectSize: 0,
     };
   }
 
@@ -1112,7 +1114,7 @@ export class AnalyticsTracker extends EventEmitter {
     return {
       improvement: 0,
       improvementPercent: 0,
-      metrics: {}
+      metrics: {},
     };
   }
 
@@ -1124,7 +1126,9 @@ export class AnalyticsTracker extends EventEmitter {
     return [];
   }
 
-  private determineTestStatus(significance: StatisticalSignificance): 'running' | 'completed' | 'inconclusive' {
+  private determineTestStatus(
+    significance: StatisticalSignificance
+  ): 'running' | 'completed' | 'inconclusive' {
     return significance.significant ? 'completed' : 'running';
   }
 

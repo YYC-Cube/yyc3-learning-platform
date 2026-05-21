@@ -18,7 +18,9 @@ interface LazyAIWidgetProps {
   onClose?: () => void;
 }
 
-const LazyAIWidget = React.lazy(() => import('./intelligent-ai-widget').then(module => ({ default: module.IntelligentAIWidget })));
+const LazyAIWidget = React.lazy(() =>
+  import('./intelligent-ai-widget').then((module) => ({ default: module.IntelligentAIWidget }))
+);
 
 const LazyAIWidgetWrapper: React.FC<LazyAIWidgetProps> = (props) => {
   return (

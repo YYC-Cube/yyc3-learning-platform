@@ -12,7 +12,7 @@ export enum LoadBalancingStrategy {
   IP_HASH = 'ip_hash',
   CONSISTENT_HASH = 'consistent_hash',
   LEAST_RESPONSE_TIME = 'least_response_time',
-  ADAPTIVE = 'adaptive'
+  ADAPTIVE = 'adaptive',
 }
 
 export interface ServiceLoadMetrics {
@@ -107,7 +107,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
       stickySessionTimeout: config.stickySessionTimeout || 1800000,
       maxConnectionsPerService: config.maxConnectionsPerService || 1000,
       connectionTimeout: config.connectionTimeout || 30000,
-      requestTimeout: config.requestTimeout || 60000
+      requestTimeout: config.requestTimeout || 60000,
     };
 
     this.metrics = this.initializeMetrics();
@@ -127,7 +127,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
       averageResponseTime: 0,
       circuitBreakerTrips: 0,
       retries: 0,
-      startTime: Date.now()
+      startTime: Date.now(),
     };
   }
 
@@ -146,11 +146,13 @@ export class IntelligentLoadBalancer extends EventEmitter {
     try {
       let services = await this.serviceDiscovery.discover({
         type: serviceType,
-        status: ServiceStatus.HEALTHY
+        status: ServiceStatus.HEALTHY,
       });
 
       if (options?.excludeServiceIds) {
-        services = services.filter((s: ServiceInstance) => !options.excludeServiceIds!.includes(s.id));
+        services = services.filter(
+          (s: ServiceInstance) => !options.excludeServiceIds!.includes(s.id)
+        );
       }
 
       if (services.length === 0) {
@@ -170,7 +172,11 @@ export class IntelligentLoadBalancer extends EventEmitter {
             if (!circuitBreaker || !circuitBreaker.isOpen) {
               selectedService = stickyService;
             } else {
-              selectedService = await this.selectServiceWithStrategy(services, serviceType, options);
+              selectedService = await this.selectServiceWithStrategy(
+                services,
+                serviceType,
+                options
+              );
             }
           } else {
             selectedService = await this.selectServiceWithStrategy(services, serviceType, options);
@@ -196,7 +202,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
         serviceId: selectedService.id,
         serviceType,
         strategy: this.config.strategy,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
 
       const selectionTime = Date.now() - startTime;
@@ -261,10 +267,18 @@ export class IntelligentLoadBalancer extends EventEmitter {
         if (Date.now() - circuitBreaker.lastStateChange > this.config.circuitBreakerTimeout) {
           this.resetCircuitBreaker(selectedService.id);
         } else {
-          logger.warn(`Circuit breaker open for service: ${selectedService.id}, trying alternative`);
-          const availableServices = services.filter((s: ServiceInstance) => s.id !== selectedService!.id);
+          logger.warn(
+            `Circuit breaker open for service: ${selectedService.id}, trying alternative`
+          );
+          const availableServices = services.filter(
+            (s: ServiceInstance) => s.id !== selectedService!.id
+          );
           if (availableServices.length > 0) {
-            selectedService = this.selectAlternativeService(availableServices, serviceType, options);
+            selectedService = this.selectAlternativeService(
+              availableServices,
+              serviceType,
+              options
+            );
           } else {
             logger.warn('No alternative services available');
             return null;
@@ -324,8 +338,11 @@ export class IntelligentLoadBalancer extends EventEmitter {
     });
   }
 
-  private weightedRoundRobinSelect(services: ServiceInstance[], serviceType: ServiceType): ServiceInstance {
-    const weights = services.map(service => {
+  private weightedRoundRobinSelect(
+    services: ServiceInstance[],
+    serviceType: ServiceType
+  ): ServiceInstance {
+    const weights = services.map((service) => {
       const metrics = this.loadMetrics.get(service.id);
       const score = this.calculateServiceScore(service, metrics);
       return { service, weight: Math.max(1, Math.floor(score * 10)) };
@@ -382,7 +399,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
   }
 
   private adaptiveSelect(services: ServiceInstance[]): ServiceInstance {
-    const scoredServices = services.map(service => {
+    const scoredServices = services.map((service) => {
       const metrics = this.loadMetrics.get(service.id);
       const score = this.calculateServiceScore(service, metrics);
       return { service, score };
@@ -391,13 +408,13 @@ export class IntelligentLoadBalancer extends EventEmitter {
     scoredServices.sort((a, b) => b.score - a.score);
 
     const threshold = scoredServices[0].score * this.config.adaptiveThreshold;
-    const eligibleServices = scoredServices.filter(s => s.score >= threshold);
+    const eligibleServices = scoredServices.filter((s) => s.score >= threshold);
 
     if (eligibleServices.length === 1) {
       return eligibleServices[0].service;
     }
 
-    return this.randomSelect(eligibleServices.map(s => s.service));
+    return this.randomSelect(eligibleServices.map((s) => s.service));
   }
 
   private calculateServiceScore(service: ServiceInstance, metrics?: ServiceLoadMetrics): number {
@@ -407,26 +424,24 @@ export class IntelligentLoadBalancer extends EventEmitter {
       return score;
     }
 
-    const connectionFactor = 1 - (metrics.activeConnections / this.config.maxConnectionsPerService);
+    const connectionFactor = 1 - metrics.activeConnections / this.config.maxConnectionsPerService;
     score *= Math.max(0.1, connectionFactor);
 
-    const successRate = metrics.totalRequests > 0
-      ? metrics.successfulRequests / metrics.totalRequests
-      : 1.0;
+    const successRate =
+      metrics.totalRequests > 0 ? metrics.successfulRequests / metrics.totalRequests : 1.0;
     score *= successRate;
 
-    const responseTimeFactor = metrics.averageResponseTime > 0
-      ? 1 / (1 + metrics.averageResponseTime / 1000)
-      : 1.0;
+    const responseTimeFactor =
+      metrics.averageResponseTime > 0 ? 1 / (1 + metrics.averageResponseTime / 1000) : 1.0;
     score *= responseTimeFactor;
 
     if (metrics.cpuUsage !== undefined) {
-      const cpuFactor = 1 - (metrics.cpuUsage / 100);
+      const cpuFactor = 1 - metrics.cpuUsage / 100;
       score *= Math.max(0.1, cpuFactor);
     }
 
     if (metrics.memoryUsage !== undefined) {
-      const memoryFactor = 1 - (metrics.memoryUsage / 100);
+      const memoryFactor = 1 - metrics.memoryUsage / 100;
       score *= Math.max(0.1, memoryFactor);
     }
 
@@ -437,7 +452,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
     return Math.abs(hash);
@@ -454,7 +469,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
         failedRequests: 0,
         averageResponseTime: 0,
         lastResponseTime: 0,
-        lastUpdated: Date.now()
+        lastUpdated: Date.now(),
       };
       this.loadMetrics.set(serviceId, metrics);
     }
@@ -506,7 +521,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
         isOpen: false,
         lastFailureTime: 0,
         failureCount: 0,
-        lastStateChange: 0
+        lastStateChange: 0,
       };
       this.circuitBreakers.set(serviceId, circuitBreaker);
     }
@@ -570,7 +585,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
       try {
         const result = await Promise.race([
           requestFn(service),
-          this.timeout(this.config.requestTimeout)
+          this.timeout(this.config.requestTimeout),
         ]);
 
         const responseTime = Date.now() - startTime;
@@ -599,7 +614,7 @@ export class IntelligentLoadBalancer extends EventEmitter {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   getLoadMetrics(serviceId: string): ServiceLoadMetrics | undefined {

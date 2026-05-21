@@ -5,9 +5,19 @@
  * @license MIT
  */
 
-"use client";
+'use client';
 
-import { BookOpen, Clock, FileText, FolderOpen, Plus, Search, Star, Tag, TrendingUp } from 'lucide-react';
+import {
+  BookOpen,
+  Clock,
+  FileText,
+  FolderOpen,
+  Plus,
+  Search,
+  Star,
+  Tag,
+  TrendingUp,
+} from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -62,7 +72,7 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
   onItemClick,
   onItemCreate,
   onItemUpdate,
-  onItemDelete: _onItemDelete
+  onItemDelete: _onItemDelete,
 }) => {
   const [items, setItems] = useState<KnowledgeItem[]>([]);
   const [categories, setCategories] = useState<KnowledgeCategory[]>([]);
@@ -82,7 +92,7 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
     try {
       const [loadedItems, loadedCategories] = await Promise.all([
         loadKnowledgeItems(),
-        loadKnowledgeCategories()
+        loadKnowledgeCategories(),
       ]);
 
       setItems(loadedItems);
@@ -98,19 +108,20 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
     let result = items;
 
     if (selectedCategory !== 'all') {
-      result = result.filter(item => item.category === selectedCategory);
+      result = result.filter((item) => item.category === selectedCategory);
     }
 
     if (selectedTag) {
-      result = result.filter(item => item.tags.includes(selectedTag));
+      result = result.filter((item) => item.tags.includes(selectedTag));
     }
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(item =>
-        item.title.toLowerCase().includes(query) ||
-        item.content.toLowerCase().includes(query) ||
-        item.tags.some(tag => tag.toLowerCase().includes(query))
+      result = result.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query) ||
+          item.content.toLowerCase().includes(query) ||
+          item.tags.some((tag) => tag.toLowerCase().includes(query))
       );
     }
 
@@ -123,21 +134,19 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
 
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();
-    items.forEach(item => item.tags.forEach(tag => tagSet.add(tag)));
+    items.forEach((item) => item.tags.forEach((tag) => tagSet.add(tag)));
     return Array.from(tagSet).sort();
   }, [items]);
 
   const popularItems = useMemo(() => {
     return items
-      .filter(item => item.views > 0)
+      .filter((item) => item.views > 0)
       .sort((a, b) => b.views - a.views)
       .slice(0, 6);
   }, [items]);
 
   const recentItems = useMemo(() => {
-    return items
-      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-      .slice(0, 6);
+    return items.sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()).slice(0, 6);
   }, [items]);
 
   const handleSearch = useCallback((query: string) => {
@@ -154,17 +163,25 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
     setSelectedCategory('all');
   }, []);
 
-  const handleItemClick = useCallback((item: KnowledgeItem) => {
-    onItemClick?.(item);
-  }, [onItemClick]);
+  const handleItemClick = useCallback(
+    (item: KnowledgeItem) => {
+      onItemClick?.(item);
+    },
+    [onItemClick]
+  );
 
-  const handleItemFavorite = useCallback((itemId: string, favorite: boolean) => {
-    const updatedItems = items.map(item =>
-      item.id === itemId ? { ...item, isFavorite: favorite, likes: favorite ? item.likes + 1 : item.likes - 1 } : item
-    );
-    setItems(updatedItems);
-    onItemUpdate?.(itemId, { isFavorite: favorite });
-  }, [items, onItemUpdate]);
+  const handleItemFavorite = useCallback(
+    (itemId: string, favorite: boolean) => {
+      const updatedItems = items.map((item) =>
+        item.id === itemId
+          ? { ...item, isFavorite: favorite, likes: favorite ? item.likes + 1 : item.likes - 1 }
+          : item
+      );
+      setItems(updatedItems);
+      onItemUpdate?.(itemId, { isFavorite: favorite });
+    },
+    [items, onItemUpdate]
+  );
 
   const handleItemCreate = useCallback(() => {
     const newItem: Partial<KnowledgeItem> = {
@@ -178,7 +195,7 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
       updatedAt: new Date(),
       views: 0,
       likes: 0,
-      isFavorite: false
+      isFavorite: false,
     };
 
     onItemCreate?.(newItem);
@@ -223,27 +240,32 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
         <div className="flex items-center space-x-2 overflow-x-auto pb-2">
           <button
             onClick={() => handleCategorySelect('all')}
-            className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${selectedCategory === 'all'
+            className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+              selectedCategory === 'all'
                 ? 'bg-indigo-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+            }`}
           >
             <BookOpen className="w-3 h-3" />
             <span>全部</span>
           </button>
-          {categories.map(category => (
+          {categories.map((category) => (
             <button
               key={category.id}
               onClick={() => handleCategorySelect(category.id)}
-              className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${selectedCategory === category.id
+              className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
+                selectedCategory === category.id
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+              }`}
             >
               <span>{category.icon}</span>
               <span>{category.name}</span>
-              <span className={`ml-1 px-1.5 py-0.5 rounded-full ${selectedCategory === category.id ? 'bg-white/20' : 'bg-gray-300'
-                }`}>
+              <span
+                className={`ml-1 px-1.5 py-0.5 rounded-full ${
+                  selectedCategory === category.id ? 'bg-white/20' : 'bg-gray-300'
+                }`}
+              >
                 {category.count}
               </span>
             </button>
@@ -254,14 +276,15 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
         {allTags.length > 0 && (
           <div className="flex items-center space-x-2 overflow-x-auto pb-2">
             <Tag className="w-3 h-3 text-gray-500" />
-            {allTags.slice(0, 8).map(tag => (
+            {allTags.slice(0, 8).map((tag) => (
               <button
                 key={tag}
                 onClick={() => handleTagSelect(tag)}
-                className={`px-2 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${selectedTag === tag
+                className={`px-2 py-1 rounded-full text-xs whitespace-nowrap transition-colors ${
+                  selectedTag === tag
                     ? 'bg-indigo-600 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
+                }`}
               >
                 {tag}
               </button>
@@ -279,7 +302,7 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
             </h4>
             {filteredItems.length > 0 ? (
               <div className={`grid gap-3 ${viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                {filteredItems.map(item => (
+                {filteredItems.map((item) => (
                   <KnowledgeCard
                     key={item.id}
                     item={item}
@@ -305,8 +328,10 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
                   <TrendingUp className="w-4 h-4 mr-2 text-orange-500" />
                   热门知识
                 </h4>
-                <div className={`grid gap-3 ${viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                  {popularItems.map(item => (
+                <div
+                  className={`grid gap-3 ${viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}
+                >
+                  {popularItems.map((item) => (
                     <KnowledgeCard
                       key={item.id}
                       item={item}
@@ -325,8 +350,10 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
                   <Clock className="w-4 h-4 mr-2 text-indigo-500" />
                   最新知识
                 </h4>
-                <div className={`grid gap-3 ${viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}>
-                  {recentItems.map(item => (
+                <div
+                  className={`grid gap-3 ${viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}
+                >
+                  {recentItems.map((item) => (
                     <KnowledgeCard
                       key={item.id}
                       item={item}
@@ -346,7 +373,7 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
                   分类浏览
                 </h4>
                 <div className="grid grid-cols-2 gap-3">
-                  {categories.map(category => (
+                  {categories.map((category) => (
                     <CategoryCard
                       key={category.id}
                       category={category}
@@ -365,76 +392,78 @@ export const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({
 
 KnowledgeBase.displayName = 'KnowledgeBase';
 
-const KnowledgeCard: React.FC<KnowledgeCardProps> = React.memo(({ item, onClick: _onClick, onFavorite }) => {
-  const typeIcons = {
-    article: '📄',
-    document: '📋',
-    note: '📝',
-    faq: '❓'
-  };
+const KnowledgeCard: React.FC<KnowledgeCardProps> = React.memo(
+  ({ item, onClick: _onClick, onFavorite }) => {
+    const typeIcons = {
+      article: '📄',
+      document: '📋',
+      note: '📝',
+      faq: '❓',
+    };
 
-  const typeLabels = {
-    article: '文章',
-    document: '文档',
-    note: '笔记',
-    faq: 'FAQ'
-  };
+    const typeLabels = {
+      article: '文章',
+      document: '文档',
+      note: '笔记',
+      faq: 'FAQ',
+    };
 
-  return (
-    <div className="p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer">
-      <div className="flex items-start justify-between mb-2">
-        <div className="flex items-center space-x-2">
-          <span className="text-2xl">{typeIcons[item.type]}</span>
-          <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
-            {typeLabels[item.type]}
-          </span>
+    return (
+      <div className="p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer">
+        <div className="flex items-start justify-between mb-2">
+          <div className="flex items-center space-x-2">
+            <span className="text-2xl">{typeIcons[item.type]}</span>
+            <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
+              {typeLabels[item.type]}
+            </span>
+          </div>
+          <button
+            type="button"
+            title={item.isFavorite ? '取消收藏' : '收藏'}
+            onClick={(e) => {
+              e.stopPropagation();
+              onFavorite(item.id, !item.isFavorite);
+            }}
+            className={`p-1 rounded transition-colors ${item.isFavorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'}`}
+          >
+            <Star className={`w-4 h-4 ${item.isFavorite ? 'fill-current' : ''}`} />
+          </button>
         </div>
-        <button
-          type="button"
-          title={item.isFavorite ? '取消收藏' : '收藏'}
-          onClick={(e) => {
-            e.stopPropagation();
-            onFavorite(item.id, !item.isFavorite);
-          }}
-          className={`p-1 rounded transition-colors ${item.isFavorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'}`}
-        >
-          <Star className={`w-4 h-4 ${item.isFavorite ? 'fill-current' : ''}`} />
-        </button>
-      </div>
 
-      <h5 className="font-semibold text-gray-900 mb-1">{item.title}</h5>
-      <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.content}</p>
+        <h5 className="font-semibold text-gray-900 mb-1">{item.title}</h5>
+        <p className="text-sm text-gray-600 mb-3 line-clamp-2">{item.content}</p>
 
-      <div className="flex flex-wrap gap-1 mb-3">
-        {item.tags.slice(0, 3).map(tag => (
-          <span key={tag} className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">
-            {tag}
-          </span>
-        ))}
-        {item.tags.length > 3 && (
-          <span className="text-xs text-gray-500">+{item.tags.length - 3}</span>
-        )}
-      </div>
+        <div className="flex flex-wrap gap-1 mb-3">
+          {item.tags.slice(0, 3).map((tag) => (
+            <span key={tag} className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded">
+              {tag}
+            </span>
+          ))}
+          {item.tags.length > 3 && (
+            <span className="text-xs text-gray-500">+{item.tags.length - 3}</span>
+          )}
+        </div>
 
-      <div className="flex items-center justify-between text-xs text-gray-500">
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-1">
-            <Clock className="w-3 h-3" />
-            <span>{formatRelativeTime(item.updatedAt)}</span>
+        <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-1">
+              <Clock className="w-3 h-3" />
+              <span>{formatRelativeTime(item.updatedAt)}</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <FileText className="w-3 h-3" />
+              <span>{item.views} 次浏览</span>
+            </div>
           </div>
           <div className="flex items-center space-x-1">
-            <FileText className="w-3 h-3" />
-            <span>{item.views} 次浏览</span>
+            <Star className="w-3 h-3" />
+            <span>{item.likes}</span>
           </div>
         </div>
-        <div className="flex items-center space-x-1">
-          <Star className="w-3 h-3" />
-          <span>{item.likes}</span>
-        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 KnowledgeCard.displayName = 'KnowledgeCard';
 
@@ -457,13 +486,14 @@ const CategoryCard: React.FC<CategoryCardProps> = React.memo(({ category, onClic
 CategoryCard.displayName = 'CategoryCard';
 
 async function loadKnowledgeItems(): Promise<KnowledgeItem[]> {
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   return [
     {
       id: 'kb-1',
       title: '如何使用AI助手',
-      content: 'AI助手可以帮助您完成各种任务，包括文本生成、数据分析、代码编写等。通过简单的对话界面，您可以快速获得所需帮助。',
+      content:
+        'AI助手可以帮助您完成各种任务，包括文本生成、数据分析、代码编写等。通过简单的对话界面，您可以快速获得所需帮助。',
       type: 'article',
       category: '使用指南',
       tags: ['AI', '助手', '使用'],
@@ -472,7 +502,7 @@ async function loadKnowledgeItems(): Promise<KnowledgeItem[]> {
       updatedAt: new Date(Date.now() - 86400000 * 7),
       views: 1256,
       likes: 89,
-      isFavorite: true
+      isFavorite: true,
     },
     {
       id: 'kb-2',
@@ -486,12 +516,13 @@ async function loadKnowledgeItems(): Promise<KnowledgeItem[]> {
       updatedAt: new Date(Date.now() - 86400000 * 5),
       views: 892,
       likes: 67,
-      isFavorite: false
+      isFavorite: false,
     },
     {
       id: 'kb-3',
       title: '工作流创建步骤',
-      content: '创建工作流需要遵循以下步骤：1. 定义目标 2. 设计流程 3. 配置节点 4. 测试执行 5. 部署上线。',
+      content:
+        '创建工作流需要遵循以下步骤：1. 定义目标 2. 设计流程 3. 配置节点 4. 测试执行 5. 部署上线。',
       type: 'document',
       category: '工作流',
       tags: ['工作流', '创建', '步骤'],
@@ -500,7 +531,7 @@ async function loadKnowledgeItems(): Promise<KnowledgeItem[]> {
       updatedAt: new Date(Date.now() - 86400000 * 3),
       views: 634,
       likes: 45,
-      isFavorite: true
+      isFavorite: true,
     },
     {
       id: 'kb-4',
@@ -514,12 +545,13 @@ async function loadKnowledgeItems(): Promise<KnowledgeItem[]> {
       updatedAt: new Date(Date.now() - 86400000 * 2),
       views: 521,
       likes: 38,
-      isFavorite: false
+      isFavorite: false,
     },
     {
       id: 'kb-5',
       title: '常见问题解答',
-      content: 'Q: 如何重置密码？A: 在设置页面点击重置密码按钮，按照提示操作即可。Q: 如何联系客服？A: 点击帮助按钮即可找到联系方式。',
+      content:
+        'Q: 如何重置密码？A: 在设置页面点击重置密码按钮，按照提示操作即可。Q: 如何联系客服？A: 点击帮助按钮即可找到联系方式。',
       type: 'faq',
       category: 'FAQ',
       tags: ['FAQ', '问题', '解答'],
@@ -528,12 +560,13 @@ async function loadKnowledgeItems(): Promise<KnowledgeItem[]> {
       updatedAt: new Date(Date.now() - 86400000),
       views: 1089,
       likes: 76,
-      isFavorite: true
+      isFavorite: true,
     },
     {
       id: 'kb-6',
       title: '快捷键大全',
-      content: 'Ctrl+K: 打开/关闭浮窗 Ctrl+Enter: 发送消息 Esc: 关闭浮窗 Arrow Up: 编辑上一条消息 Ctrl+1-6: 切换视图',
+      content:
+        'Ctrl+K: 打开/关闭浮窗 Ctrl+Enter: 发送消息 Esc: 关闭浮窗 Arrow Up: 编辑上一条消息 Ctrl+1-6: 切换视图',
       type: 'document',
       category: '快捷键',
       tags: ['快捷键', '操作', '效率'],
@@ -542,13 +575,13 @@ async function loadKnowledgeItems(): Promise<KnowledgeItem[]> {
       updatedAt: new Date(Date.now() - 86400000),
       views: 445,
       likes: 32,
-      isFavorite: false
-    }
+      isFavorite: false,
+    },
   ];
 }
 
 async function loadKnowledgeCategories(): Promise<KnowledgeCategory[]> {
-  await new Promise(resolve => setTimeout(resolve, 300));
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
   return [
     {
@@ -556,36 +589,36 @@ async function loadKnowledgeCategories(): Promise<KnowledgeCategory[]> {
       name: '使用指南',
       icon: '📖',
       count: 2,
-      description: '学习如何使用各项功能'
+      description: '学习如何使用各项功能',
     },
     {
       id: '工作流',
       name: '工作流',
       icon: '⚙️',
       count: 1,
-      description: '工作流创建和管理'
+      description: '工作流创建和管理',
     },
     {
       id: '数据分析',
       name: '数据分析',
       icon: '📊',
       count: 1,
-      description: '数据洞察和优化建议'
+      description: '数据洞察和优化建议',
     },
     {
       id: 'FAQ',
       name: 'FAQ',
       icon: '❓',
       count: 1,
-      description: '常见问题解答'
+      description: '常见问题解答',
     },
     {
       id: '快捷键',
       name: '快捷键',
       icon: '⌨️',
       count: 1,
-      description: '提高效率的快捷键'
-    }
+      description: '提高效率的快捷键',
+    },
   ];
 }
 

@@ -5,38 +5,38 @@
  * @license MIT
  */
 export interface Course {
-  _id: string
-  title: string
-  description: string
-  instructor: string
-  duration: string
-  level: string
-  students: number
-  rating: number
-  price: number
-  thumbnail: string
-  category: string
-  tags: string[]
-  lessons: number
-  certificate: boolean
+  _id: string;
+  title: string;
+  description: string;
+  instructor: string;
+  duration: string;
+  level: string;
+  students: number;
+  rating: number;
+  price: number;
+  thumbnail: string;
+  category: string;
+  tags: string[];
+  lessons: number;
+  certificate: boolean;
 }
 
 export async function getCourses(): Promise<Course[]> {
   // In production, this would fetch from an API
-  return []
+  return [];
 }
 
 export async function getCourseById(_id: string): Promise<Course | null> {
   // In production, this would fetch from an API
-  return null
+  return null;
 }
 
 export async function enrollCourse(_courseId: string, _userId: string): Promise<boolean> {
   // In production, this would call an API
-  return true
+  return true;
 }
 
 export async function getEnrolledCourses(_userId: string): Promise<Course[]> {
   // In production, this would fetch from an API
-  return []
+  return [];
 }

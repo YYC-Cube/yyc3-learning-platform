@@ -9,7 +9,7 @@ export enum MessagePriority {
   LOW = 0,
   NORMAL = 1,
   HIGH = 2,
-  CRITICAL = 3
+  CRITICAL = 3,
 }
 
 export interface MessageEnvelope {
@@ -73,11 +73,11 @@ export class MessageBus extends EventEmitter {
         maxRetries: 3,
         backoffFactor: 2,
         initialDelayMs: 100,
-        maxDelayMs: 5000
+        maxDelayMs: 5000,
       },
       enablePersistence: false,
       deadLetterQueueSize: 100,
-      ...config
+      ...config,
     };
 
     this.metrics = {
@@ -86,7 +86,7 @@ export class MessageBus extends EventEmitter {
       messagesProcessed: 0,
       messagesFailed: 0,
       averageProcessingTime: 0,
-      throughput: 0
+      throughput: 0,
     };
 
     this.startTime = Date.now();
@@ -119,7 +119,7 @@ export class MessageBus extends EventEmitter {
       expireAt: options.ttl ? Date.now() + options.ttl : undefined,
       retryCount: 0,
       maxRetries: this.config.retryPolicy.maxRetries,
-      metadata: options.metadata || {}
+      metadata: options.metadata || {},
     };
 
     // 检查队列容量
@@ -129,7 +129,7 @@ export class MessageBus extends EventEmitter {
 
     // 按优先级插入队列
     this.insertByPriority(message);
-    
+
     this.metrics.totalMessages++;
     this.metrics.messagesInQueue = this.messageQueue.length;
 
@@ -169,15 +169,11 @@ export class MessageBus extends EventEmitter {
   /**
    * 请求-响应模式
    */
-  async request<T = any>(
-    type: string,
-    payload: any,
-    timeoutMs: number = 5000
-  ): Promise<T> {
+  async request<T = any>(type: string, payload: any, timeoutMs: number = 5000): Promise<T> {
     return new Promise((resolve, reject) => {
       const correlationId = this.generateMessageId();
       const replyType = `${type}:reply`;
-      
+
       // 设置超时
       const timeout = setTimeout(() => {
         this.unsubscribe(replyType, responseHandler);
@@ -199,7 +195,7 @@ export class MessageBus extends EventEmitter {
       // 发送请求
       this.publish(type, payload, {
         correlationId,
-        replyTo: replyType
+        replyTo: replyType,
       }).catch(reject);
     });
   }
@@ -236,16 +232,16 @@ export class MessageBus extends EventEmitter {
 
     try {
       await this.deliverMessage(message);
-      
+
       const processingTime = Date.now() - startTime;
       this.updateMetrics(processingTime, true);
-      
+
       this.emit('message:processed', message);
     } catch (error: any) {
       logger.error(`[MessageBus] Failed to process message ${message.id}:`, error);
-      
+
       await this.handleFailedMessage(message, error);
-      
+
       this.updateMetrics(Date.now() - startTime, false);
       this.emit('message:failed', { message, error });
     } finally {
@@ -259,7 +255,7 @@ export class MessageBus extends EventEmitter {
   private async deliverMessage(message: MessageEnvelope): Promise<void> {
     const handlers = this.handlers.get(message.type) || [];
     const wildcardHandlers = this.handlers.get('*') || [];
-    
+
     const allHandlers = [...handlers, ...wildcardHandlers];
 
     if (allHandlers.length === 0) {
@@ -268,20 +264,13 @@ export class MessageBus extends EventEmitter {
     }
 
     // 并行执行所有处理器
-    await Promise.all(
-      allHandlers.map(handler => 
-        this.executeHandler(handler, message)
-      )
-    );
+    await Promise.all(allHandlers.map((handler) => this.executeHandler(handler, message)));
   }
 
   /**
    * 执行处理器
    */
-  private async executeHandler(
-    handler: MessageHandler,
-    message: MessageEnvelope
-  ): Promise<void> {
+  private async executeHandler(handler: MessageHandler, message: MessageEnvelope): Promise<void> {
     try {
       await handler(message);
     } catch (error: any) {
@@ -293,17 +282,14 @@ export class MessageBus extends EventEmitter {
   /**
    * 处理失败的消息
    */
-  private async handleFailedMessage(
-    message: MessageEnvelope,
-    error: Error
-  ): Promise<void> {
+  private async handleFailedMessage(message: MessageEnvelope, error: Error): Promise<void> {
     message.retryCount++;
 
     if (message.retryCount < message.maxRetries) {
       // 计算退避延迟
       const delay = Math.min(
-        this.config.retryPolicy.initialDelayMs * 
-        Math.pow(this.config.retryPolicy.backoffFactor, message.retryCount - 1),
+        this.config.retryPolicy.initialDelayMs *
+          Math.pow(this.config.retryPolicy.backoffFactor, message.retryCount - 1),
         this.config.retryPolicy.maxDelayMs
       );
 
@@ -321,17 +307,14 @@ export class MessageBus extends EventEmitter {
   /**
    * 移动到死信队列
    */
-  private moveToDeadLetterQueue(
-    message: MessageEnvelope,
-    error: Error
-  ): void {
+  private moveToDeadLetterQueue(message: MessageEnvelope, error: Error): void {
     this.deadLetterQueue.push({
       ...message,
       metadata: {
         ...message.metadata,
         error: error.message,
-        failedAt: Date.now()
-      }
+        failedAt: Date.now(),
+      },
     });
 
     // 限制死信队列大小
@@ -347,7 +330,7 @@ export class MessageBus extends EventEmitter {
    */
   private insertByPriority(message: MessageEnvelope): void {
     let inserted = false;
-    
+
     for (let i = 0; i < this.messageQueue.length; i++) {
       if (message.priority > this.messageQueue[i].priority) {
         this.messageQueue.splice(i, 0, message);
@@ -366,7 +349,7 @@ export class MessageBus extends EventEmitter {
    */
   private removeExpiredMessages(): void {
     const now = Date.now();
-    this.messageQueue = this.messageQueue.filter(msg => {
+    this.messageQueue = this.messageQueue.filter((msg) => {
       if (msg.expireAt && msg.expireAt < now) {
         this.emit('message:expired', msg);
         return false;
@@ -387,7 +370,7 @@ export class MessageBus extends EventEmitter {
 
     // 更新平均处理时间
     const total = this.metrics.messagesProcessed + this.metrics.messagesFailed;
-    this.metrics.averageProcessingTime = 
+    this.metrics.averageProcessingTime =
       (this.metrics.averageProcessingTime * (total - 1) + processingTime) / total;
 
     // 计算吞吐量（消息/秒）
@@ -436,7 +419,7 @@ export class MessageBus extends EventEmitter {
       size: this.messageQueue.length,
       processing: this.processing.size,
       capacity: this.config.maxQueueSize,
-      utilizationRate: this.messageQueue.length / this.config.maxQueueSize
+      utilizationRate: this.messageQueue.length / this.config.maxQueueSize,
     };
   }
 

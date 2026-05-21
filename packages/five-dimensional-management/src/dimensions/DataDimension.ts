@@ -11,7 +11,7 @@ import {
   DataAnalyticsMetrics,
   DataPipelineMetrics,
   Recommendation,
-  AlertLevel
+  AlertLevel,
 } from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 
@@ -89,7 +89,6 @@ export class DataDimension extends EventEmitter implements IDimension {
 
       this.emit('started', { timestamp: new Date() });
       this._logger.info('DataDimension started successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to start DataDimension', error);
@@ -111,7 +110,6 @@ export class DataDimension extends EventEmitter implements IDimension {
 
       this.emit('stopped', { timestamp: new Date() });
       this._logger.info('DataDimension stopped successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to stop DataDimension', error);
@@ -134,7 +132,7 @@ export class DataDimension extends EventEmitter implements IDimension {
         validity: 98,
         uniqueness: 99,
         overallScore: 96.5,
-        issues: []
+        issues: [],
       };
 
       const governance: DataGovernanceMetrics = {
@@ -143,7 +141,7 @@ export class DataDimension extends EventEmitter implements IDimension {
         dataLineage: 92,
         accessControlCompliance: 99,
         retentionPolicyCompliance: 97,
-        auditTrailCompleteness: 100
+        auditTrailCompleteness: 100,
       };
 
       const analytics: DataAnalyticsMetrics = {
@@ -154,10 +152,10 @@ export class DataDimension extends EventEmitter implements IDimension {
           accuracy: 0.94,
           precision: 0.92,
           recall: 0.89,
-          f1Score: 0.90,
+          f1Score: 0.9,
           aucRoc: 0.96,
           lastTrained: new Date(),
-          modelVersion: 'v2.1.0'
+          modelVersion: 'v2.1.0',
         },
         userAdoptionRate: 87,
         businessImpact: {
@@ -165,8 +163,8 @@ export class DataDimension extends EventEmitter implements IDimension {
           revenueIncrease: 180000,
           efficiencyGain: 15,
           riskReduction: 22,
-          customerSatisfaction: 8
-        }
+          customerSatisfaction: 8,
+        },
       };
 
       const pipeline: DataPipelineMetrics = {
@@ -177,7 +175,7 @@ export class DataDimension extends EventEmitter implements IDimension {
         dataFreshness: 5,
         pipelineHealth: 98,
         activePipelines: 12,
-        failedJobs: 1
+        failedJobs: 1,
       };
 
       this._currentMetrics = {
@@ -186,7 +184,7 @@ export class DataDimension extends EventEmitter implements IDimension {
         quality,
         governance,
         analytics,
-        pipeline
+        pipeline,
       };
 
       // Update health score
@@ -195,7 +193,6 @@ export class DataDimension extends EventEmitter implements IDimension {
       this.emit('metric-update', { metrics: this._currentMetrics, timestamp: new Date() });
 
       return this._currentMetrics;
-
     } catch (error) {
       this._logger.error('Failed to collect data metrics', error);
       throw error;
@@ -217,7 +214,8 @@ export class DataDimension extends EventEmitter implements IDimension {
         type: 'data',
         priority: 'high',
         title: 'Improve Data Quality',
-        description: 'Data quality score is below optimal threshold. Implement data quality improvements.',
+        description:
+          'Data quality score is below optimal threshold. Implement data quality improvements.',
         rationale: `Current data quality score: ${this._currentMetrics.quality.overallScore}%`,
         expectedImpact: 'Improved analytics accuracy and decision making',
         effort: 'medium',
@@ -225,7 +223,7 @@ export class DataDimension extends EventEmitter implements IDimension {
         dependencies: [],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
+        validUntil: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
       });
     }
 
@@ -244,7 +242,7 @@ export class DataDimension extends EventEmitter implements IDimension {
         dependencies: [],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
+        validUntil: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
       });
     }
 
@@ -267,7 +265,7 @@ export class DataDimension extends EventEmitter implements IDimension {
         validity: 100,
         uniqueness: 100,
         overallScore: 100,
-        issues: []
+        issues: [],
       },
       governance: {
         complianceScore: 100,
@@ -275,7 +273,7 @@ export class DataDimension extends EventEmitter implements IDimension {
         dataLineage: 100,
         accessControlCompliance: 100,
         retentionPolicyCompliance: 100,
-        auditTrailCompleteness: 100
+        auditTrailCompleteness: 100,
       },
       analytics: {
         insightsGenerated: 0,
@@ -288,7 +286,7 @@ export class DataDimension extends EventEmitter implements IDimension {
           f1Score: 1.0,
           aucRoc: 1.0,
           lastTrained: new Date(),
-          modelVersion: 'v1.0.0'
+          modelVersion: 'v1.0.0',
         },
         userAdoptionRate: 100,
         businessImpact: {
@@ -296,8 +294,8 @@ export class DataDimension extends EventEmitter implements IDimension {
           revenueIncrease: 0,
           efficiencyGain: 0,
           riskReduction: 0,
-          customerSatisfaction: 0
-        }
+          customerSatisfaction: 0,
+        },
       },
       pipeline: {
         throughput: 0,
@@ -307,8 +305,8 @@ export class DataDimension extends EventEmitter implements IDimension {
         dataFreshness: 0,
         pipelineHealth: 100,
         activePipelines: 0,
-        failedJobs: 0
-      }
+        failedJobs: 0,
+      },
     };
   }
 
@@ -317,21 +315,21 @@ export class DataDimension extends EventEmitter implements IDimension {
       quality: 0.3,
       governance: 0.25,
       analytics: 0.25,
-      pipeline: 0.2
+      pipeline: 0.2,
     };
 
     const scores = {
       quality: this._currentMetrics.quality.overallScore,
       governance: this._currentMetrics.governance.complianceScore,
       analytics: this._currentMetrics.analytics.accuracyRate,
-      pipeline: this._currentMetrics.pipeline.pipelineHealth
+      pipeline: this._currentMetrics.pipeline.pipelineHealth,
     };
 
     this._healthScore = Math.round(
       scores.quality * weights.quality +
-      scores.governance * weights.governance +
-      scores.analytics * weights.analytics +
-      scores.pipeline * weights.pipeline
+        scores.governance * weights.governance +
+        scores.analytics * weights.analytics +
+        scores.pipeline * weights.pipeline
     );
 
     this.emit('health-updated', { score: this._healthScore, timestamp: new Date() });

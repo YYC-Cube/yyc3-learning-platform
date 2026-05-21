@@ -12,52 +12,52 @@ metadata:
     component: configuration
 data:
   # Database Configuration
-  mongodb.url: "mongodb://mongodb:27017/yyc3-platform"
-  postgres.url: "postgresql://postgres:password@postgres:5432/yyc3-platform"
-  redis.url: "redis://redis:6379"
-  neo4j.url: "bolt://neo4j:7687"
-  influxdb.url: "http://influxdb:8086"
+  mongodb.url: 'mongodb://mongodb:27017/yyc3-platform'
+  postgres.url: 'postgresql://postgres:password@postgres:5432/yyc3-platform'
+  redis.url: 'redis://redis:6379'
+  neo4j.url: 'bolt://neo4j:7687'
+  influxdb.url: 'http://influxdb:8086'
 
   # Service URLs
-  autonomous-engine.url: "http://autonomous-engine:3000"
-  model-adapter.url: "http://model-adapter:3000"
-  learning-system.url: "http://learning-system:3000"
-  five-dimensional-management.url: "http://five-dimensional-management:3000"
-  enterprise-ai-widget.url: "http://enterprise-ai-widget:3000"
+  autonomous-engine.url: 'http://autonomous-engine:3000'
+  model-adapter.url: 'http://model-adapter:3000'
+  learning-system.url: 'http://learning-system:3000'
+  five-dimensional-management.url: 'http://five-dimensional-management:3000'
+  enterprise-ai-widget.url: 'http://enterprise-ai-widget:3000'
 
   # Message Queue Configuration
-  kafka.brokers: "kafka:9092"
-  zookeeper.url: "zookeeper:2181"
+  kafka.brokers: 'kafka:9092'
+  zookeeper.url: 'zookeeper:2181'
 
   # Monitoring Configuration
-  consul.url: "consul://consul:8500"
-  prometheus.url: "http://prometheus:9090"
-  grafana.url: "http://grafana:3000"
-  jaeger.url: "http://jaeger:14268/api/traces"
+  consul.url: 'consul://consul:8500'
+  prometheus.url: 'http://prometheus:9090'
+  grafana.url: 'http://grafana:3000'
+  jaeger.url: 'http://jaeger:14268/api/traces'
 
   # AI/ML Configuration
-  tensorflow-serving.url: "http://tensorflow-serving:8501"
-  ml.models.path: "/models"
+  tensorflow-serving.url: 'http://tensorflow-serving:8501'
+  ml.models.path: '/models'
 
   # Application Configuration
-  node.env: "production"
-  log.level: "info"
-  cors.origin: "*"
-  rate.limit.window: "15m"
-  rate.limit.max: "100"
+  node.env: 'production'
+  log.level: 'info'
+  cors.origin: '*'
+  rate.limit.window: '15m'
+  rate.limit.max: '100'
 
   # Security Configuration
-  jwt.secret: "yyc3-jwt-secret-change-in-production"
-  session.secret: "yyc3-session-secret-change-in-production"
-  encryption.key: "yyc3-encryption-key-change-in-production"
+  jwt.secret: 'yyc3-jwt-secret-change-in-production'
+  session.secret: 'yyc3-session-secret-change-in-production'
+  encryption.key: 'yyc3-encryption-key-change-in-production'
 
   # Business Configuration
-  organization.name: "YYC³ AI Platform"
-  organization.domain: "yyc3.0379.email"
-  support.email: "support@yyc3.0379.email"
-  max.users: "10000"
-  max.requests.minute: "1000"
-  session.timeout: "24h"
+  organization.name: 'YYC³ AI Platform'
+  organization.domain: 'yyc3.0379.email'
+  support.email: 'support@yyc3.0379.email'
+  max.users: '10000'
+  max.requests.minute: '1000'
+  session.timeout: '24h'
 
 ---
 # Service Discovery Configuration

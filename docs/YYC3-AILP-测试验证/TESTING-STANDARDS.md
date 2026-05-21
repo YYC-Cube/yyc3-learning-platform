@@ -55,6 +55,7 @@
 **定义**: 测试单个函数、类或组件
 
 **示例**:
+
 ```typescript
 // lib/utils.test.ts
 import { describe, it, expect } from 'vitest';
@@ -77,6 +78,7 @@ describe('formatDate', () => {
 **定义**: 测试React组件的渲染和交互
 
 **示例**:
+
 ```typescript
 // components/Button.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -106,6 +108,7 @@ describe('Button', () => {
 **定义**: 测试多个模块协同工作
 
 **示例**:
+
 ```typescript
 // __tests__/integration/auth.integration.test.ts
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
@@ -137,6 +140,7 @@ describe('Authentication Flow', () => {
 **定义**: 测试完整的用户流程
 
 **示例**:
+
 ```typescript
 // e2e/exam-flow.spec.ts
 import { test, expect } from '@playwright/test';
@@ -353,27 +357,30 @@ describe('AuthService', () => {
 
 ### 目标覆盖率
 
-| 类别 | 当前目标 | 最终目标 | 截止日期 |
-|------|----------|----------|----------|
-| **总体覆盖率** | 20% | 80% | 2026-09-30 |
-| **单元测试** | 30% | 90% | 2026-07-31 |
-| **集成测试** | 15% | 70% | 2026-08-31 |
-| **E2E测试** | 10% | 50% | 2026-09-30 |
+| 类别           | 当前目标 | 最终目标 | 截止日期   |
+| -------------- | -------- | -------- | ---------- |
+| **总体覆盖率** | 20%      | 80%      | 2026-09-30 |
+| **单元测试**   | 30%      | 90%      | 2026-07-31 |
+| **集成测试**   | 15%      | 70%      | 2026-08-31 |
+| **E2E测试**    | 10%      | 50%      | 2026-09-30 |
 
 ### 分层覆盖率要求
 
 #### 关键模块 (P0)
+
 - 认证授权: > 90%
 - 支付系统: > 90%
 - 数据持久化: > 85%
 - API路由: > 80%
 
 #### 重要模块 (P1)
+
 - 业务逻辑: > 70%
 - 组件库: > 75%
 - 工具函数: > 85%
 
 #### 一般模块 (P2)
+
 - UI组件: > 50%
 - 辅助功能: > 40%
 
@@ -509,11 +516,11 @@ describe('calculateScore', () => {
   });
 
   it('should handle perfect score', () => {
-    expect(calculateScore([1,1,1], [1,1,1])).toBe(100);
+    expect(calculateScore([1, 1, 1], [1, 1, 1])).toBe(100);
   });
 
   it('should handle zero score', () => {
-    expect(calculateScore([2,2,2], [1,1,1])).toBe(0);
+    expect(calculateScore([2, 2, 2], [1, 1, 1])).toBe(0);
   });
 });
 ```
@@ -590,9 +597,7 @@ jobs:
     "test:run": "vitest run"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "vitest related --run"
-    ]
+    "*.{ts,tsx}": ["vitest related --run"]
   }
 }
 ```

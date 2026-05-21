@@ -1,13 +1,13 @@
 /**
  * InsightsDashboard - 数据洞察仪表板组件
  * 提供实时、多维、交互式的数据可视化，支持深度分析和智能洞察
- * 
+ *
  * 设计理念：
  * - 实时性：流式数据处理，毫秒级刷新
  * - 交互性：下钻分析、动态过滤、关联探索
  * - 可定制性：拖拽布局、自定义部件、个性化视图
  * - 可操作性：智能洞察、行动建议、自动化触发
- * 
+ *
  * @module InsightsDashboard
  */
 
@@ -36,7 +36,7 @@ export enum DataSourceType {
   REST_API = 'rest_api',
   WEBSOCKET = 'websocket',
   FILE = 'file',
-  STREAM = 'stream'
+  STREAM = 'stream',
 }
 
 export interface DataSourceCredentials {
@@ -91,7 +91,7 @@ export enum WidgetType {
   SCATTER_PLOT = 'scatter_plot',
   GAUGE = 'gauge',
   MAP = 'map',
-  CUSTOM = 'custom'
+  CUSTOM = 'custom',
 }
 
 export interface WidgetConfig {
@@ -109,7 +109,7 @@ export enum AggregationType {
   COUNT = 'count',
   MIN = 'min',
   MAX = 'max',
-  MEDIAN = 'median'
+  MEDIAN = 'median',
 }
 
 export interface VisualizationOptions {
@@ -159,7 +159,7 @@ export enum FilterOperator {
   LESS_THAN = 'less_than',
   CONTAINS = 'contains',
   IN = 'in',
-  BETWEEN = 'between'
+  BETWEEN = 'between',
 }
 
 export interface Timeframe {
@@ -246,7 +246,7 @@ export enum ExportFormat {
   CSV = 'csv',
   EXCEL = 'excel',
   PDF = 'pdf',
-  PNG = 'png'
+  PNG = 'png',
 }
 
 export interface ExportedData {
@@ -277,7 +277,7 @@ export enum InsightType {
   CORRELATION = 'correlation',
   PATTERN = 'pattern',
   PREDICTION = 'prediction',
-  RECOMMENDATION = 'recommendation'
+  RECOMMENDATION = 'recommendation',
 }
 
 export interface ActionSuggestion {
@@ -431,7 +431,10 @@ class UICoordinator {
 }
 
 class DataSourceError extends Error {
-  constructor(message: string, public originalError?: Error) {
+  constructor(
+    message: string,
+    public originalError?: Error
+  ) {
     super(message);
     this.name = 'DataSourceError';
   }
@@ -454,30 +457,30 @@ export interface IInsightsDashboard {
   disconnectDataSource(sourceId: string): void;
   refreshData(): Promise<void>;
   getDataSummary(): DataSummary;
-  
+
   // 可视化控制
   addWidget(widget: WidgetDefinition): string;
   removeWidget(widgetId: string): void;
   updateWidget(widgetId: string, config: WidgetConfig): void;
   rearrangeWidgets(layout: WidgetLayout): void;
-  
+
   // 分析功能
   analyzeTrends(metric: string, timeframe: Timeframe): Promise<TrendAnalysis>;
   compareMetrics(metrics: string[], dimension: string): Promise<ComparisonResult>;
   detectAnomalies(config: AnomalyDetectionConfig): Promise<AnomalyReport>;
   forecastMetric(metric: string, horizon: number): Promise<ForecastResult>;
-  
+
   // 交互功能
   drillDown(dataPoint: DataPoint): Promise<DrillDownResult>;
   filterData(filters: Filter[]): void;
   exportVisualization(format: ExportFormat): Promise<ExportedData>;
   shareDashboard(recipients: string[]): Promise<void>;
-  
+
   // 智能洞察
   generateInsights(): Promise<Insight[]>;
   explainMetric(metric: string): Promise<MetricExplanation>;
   suggestActions(insight: Insight): Promise<ActionSuggestion[]>;
-  
+
   // 生命周期
   initialize(): Promise<void>;
   shutdown(): Promise<void>;
@@ -506,22 +509,22 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
 
     this.dataManager = new DataManager({
       cacheSize: config.cacheSize,
-      refreshInterval: config.refreshInterval
+      refreshInterval: config.refreshInterval,
     });
 
     this.visualizationEngine = new VisualizationEngine({
       chartLibrary: config.chartLibrary,
-      theme: config.theme
+      theme: config.theme,
     });
 
     this.analysisEngine = new AnalysisEngine({
       algorithms: config.analysisAlgorithms,
-      computeBudget: config.computeBudget
+      computeBudget: config.computeBudget,
     });
 
     this.insightGenerator = new InsightGenerator({
       minConfidence: config.minInsightConfidence,
-      maxInsights: config.maxInsights
+      maxInsights: config.maxInsights,
     });
 
     this.uiCoordinator = new UICoordinator(config.ui);
@@ -531,9 +534,9 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
     try {
       this.setupDefaultWidgets();
       this.startDataPolling();
-      
+
       this.status.initialized = true;
-      
+
       this.emit('initialized');
     } catch (error) {
       this.status.error = (error as Error).message;
@@ -545,10 +548,10 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
     if (this.pollingTimer) {
       clearInterval(this.pollingTimer);
     }
-    
+
     this.removeAllListeners();
     this.status.initialized = false;
-    
+
     this.emit('shutdown');
   }
 
@@ -581,7 +584,6 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
 
       // 7. 触发事件
       this.emit('data_source_connected', { sourceId: source.id });
-
     } catch (error) {
       throw new DataSourceError(`数据源连接失败: ${(error as Error).message}`, error as Error);
     }
@@ -604,7 +606,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       dataSources: this.status.connectedSources,
       widgets: this.status.activeWidgets,
       lastUpdate: new Date(),
-      metrics: {}
+      metrics: {},
     };
   }
 
@@ -629,7 +631,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       dataSourceId: widget.dataSourceId,
       config: widget.config,
       position: { x: 0, y: 0 },
-      size: { width: 4, height: 3 }
+      size: { width: 4, height: 3 },
     };
 
     // 4. 创建可视化配置
@@ -642,7 +644,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
     this.uiCoordinator.registerWidget({
       id: widgetId,
       component,
-      config: fullWidget
+      config: fullWidget,
     });
 
     // 7. 存储部件
@@ -689,7 +691,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       timeframe,
       trend: 'up',
       changePercent: 15.5,
-      dataPoints: []
+      dataPoints: [],
     };
 
     this.emit('trend_analyzed', { metric });
@@ -701,7 +703,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       metrics,
       dimension,
       data: [],
-      insights: []
+      insights: [],
     };
   }
 
@@ -710,8 +712,8 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       anomalies: [],
       summary: {
         total: 0,
-        severity: {}
-      }
+        severity: {},
+      },
     };
   }
 
@@ -721,7 +723,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       horizon,
       predictions: [],
       confidence: 0.85,
-      model: 'ARIMA'
+      model: 'ARIMA',
     };
   }
 
@@ -740,10 +742,10 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
         dataSourceId: 'default',
         config: {},
         position: { x: 0, y: 0 },
-        size: { width: 6, height: 4 }
+        size: { width: 6, height: 4 },
       },
       navigation: [],
-      suggestions: []
+      suggestions: [],
     };
   }
 
@@ -758,8 +760,8 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       metadata: {
         exportDate: new Date(),
         dashboardId: 'main',
-        widgetCount: this.widgets.size
-      }
+        widgetCount: this.widgets.size,
+      },
     };
   }
 
@@ -779,7 +781,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       this.analysisEngine.analyzeTrends(allData),
       this.analysisEngine.analyzeCorrelations(allData),
       this.analysisEngine.analyzeOutliers(allData),
-      this.analysisEngine.analyzePatterns(allData)
+      this.analysisEngine.analyzePatterns(allData),
     ]);
 
     // 3. 生成洞察
@@ -795,7 +797,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
       metric,
       definition: `${metric}的定义`,
       factors: [],
-      interpretation: '解释说明'
+      interpretation: '解释说明',
     };
   }
 
@@ -840,7 +842,7 @@ export class InsightsDashboard extends EventEmitter implements IInsightsDashboar
     return {
       type: widget.type,
       data: {},
-      options: widget.config.visualization || {}
+      options: widget.config.visualization || {},
     };
   }
 
@@ -875,7 +877,7 @@ export const insightsDashboard = new InsightsDashboard({
   ui: {
     theme: 'light',
     animations: true,
-    responsive: true
+    responsive: true,
   },
-  pollingInterval: 30000
+  pollingInterval: 30000,
 });

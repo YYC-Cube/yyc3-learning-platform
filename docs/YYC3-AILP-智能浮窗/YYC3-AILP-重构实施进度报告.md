@@ -1,10 +1,10 @@
 # YYC³ AILP 智能浮窗系统 - 重构实施进度报告
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ## 📋 文档信息
 
@@ -14,8 +14,8 @@
 | **文档版本** | v1.0.0                                    |
 | **创建时间** | 2026-01-20                                |
 | **实施阶段** | 核心功能重构完成                          |
-| **项目状态** | ✅ 已完成                                  |
-| **适用范围** | YYC³ AILP 智能浮窗系统核心功能模块            |
+| **项目状态** | ✅ 已完成                                 |
+| **适用范围** | YYC³ AILP 智能浮窗系统核心功能模块        |
 
 ---
 
@@ -56,13 +56,13 @@
 
 ### 1.2 实施范围
 
-| 模块名称     | 功能描述                                   | 实现状态 |
-| ------------ | ------------------------------------------ | -------- |
-| 浮窗缩小功能 | 最小化状态UI和交互优化               | ✅ 完成   |
-| 工具模块     | 工具管理、执行和推荐系统                 | ✅ 完成   |
-| 洞察模块     | 数据分析、可视化和智能建议                 | ✅ 完成   |
-| 工作流模块   | 工作流设计、执行和监控                 | ✅ 完成   |
-| 知识库模块   | 知识管理、检索和学习                   | ✅ 完成   |
+| 模块名称     | 功能描述                   | 实现状态 |
+| ------------ | -------------------------- | -------- |
+| 浮窗缩小功能 | 最小化状态UI和交互优化     | ✅ 完成  |
+| 工具模块     | 工具管理、执行和推荐系统   | ✅ 完成  |
+| 洞察模块     | 数据分析、可视化和智能建议 | ✅ 完成  |
+| 工作流模块   | 工作流设计、执行和监控     | ✅ 完成  |
+| 知识库模块   | 知识管理、检索和学习       | ✅ 完成  |
 
 ---
 
@@ -73,9 +73,11 @@
 #### 2.1.1 实施概述
 
 **文件位置**：
+
 - 主组件：`/components/intelligent-ai-widget/intelligent-ai-widget.tsx`
 
 **核心功能**：
+
 - 最小化状态视觉优化
 - 状态指示器动态更新
 - 快速操作按钮
@@ -144,9 +146,11 @@
 #### 2.2.1 实施概述
 
 **文件位置**：
+
 - 工具面板：`/components/intelligent-ai-widget/toolbox-panel.tsx`
 
 **核心功能**：
+
 - 工具注册与管理系统
 - 工具搜索和筛选
 - 工具执行引擎
@@ -209,42 +213,48 @@ export interface Tool {
 **代码示例**：
 
 ```typescript
-const handleToolExecute = useCallback(async (toolId: string, parameters?: Record<string, unknown>): Promise<ToolExecutionResult> => {
-  const startTime = Date.now();
+const handleToolExecute = useCallback(
+  async (toolId: string, parameters?: Record<string, unknown>): Promise<ToolExecutionResult> => {
+    const startTime = Date.now();
 
-  try {
-    const toolMessage: Message = {
-      id: Date.now().toString(),
-      role: 'system',
-      content: `正在执行工具: ${toolId}...`,
-      timestamp: Date.now(),
-      status: 'sending'
-    };
+    try {
+      const toolMessage: Message = {
+        id: Date.now().toString(),
+        role: 'system',
+        content: `正在执行工具: ${toolId}...`,
+        timestamp: Date.now(),
+        status: 'sending',
+      };
 
-    dispatch({ type: 'ADD_MESSAGE', payload: toolMessage });
+      dispatch({ type: 'ADD_MESSAGE', payload: toolMessage });
 
-    const response = await agentEngineRef.current?.processInput(input);
+      const response = await agentEngineRef.current?.processInput(input);
 
-    dispatch({
-      type: 'UPDATE_MESSAGE',
-      payload: { id: toolMessage.id, updates: { status: 'sent', content: response?.message || `工具 ${toolId} 执行完成` } }
-    });
+      dispatch({
+        type: 'UPDATE_MESSAGE',
+        payload: {
+          id: toolMessage.id,
+          updates: { status: 'sent', content: response?.message || `工具 ${toolId} 执行完成` },
+        },
+      });
 
-    return {
-      success: true,
-      output: response,
-      duration: Date.now() - startTime,
-      timestamp: new Date()
-    };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : '未知错误',
-      duration: Date.now() - startTime,
-      timestamp: new Date()
-    };
-  }
-}, [userId, messages]);
+      return {
+        success: true,
+        output: response,
+        duration: Date.now() - startTime,
+        timestamp: new Date(),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : '未知错误',
+        duration: Date.now() - startTime,
+        timestamp: new Date(),
+      };
+    }
+  },
+  [userId, messages]
+);
 ```
 
 #### 2.2.3 测试结果
@@ -263,9 +273,11 @@ const handleToolExecute = useCallback(async (toolId: string, parameters?: Record
 #### 2.3.1 实施概述
 
 **文件位置**：
+
 - 洞察仪表板：`/components/intelligent-ai-widget/insights-dashboard.tsx`
 
 **核心功能**：
+
 - 数据采集与分析
 - 数据可视化仪表板
 - 交互式图表
@@ -386,9 +398,11 @@ const ChartCard: React.FC<ChartCardProps> = React.memo(({ chart, height = 200 })
 #### 2.4.1 实施概述
 
 **文件位置**：
+
 - 工作流管理器：`/components/intelligent-ai-widget/workflow-manager.tsx`
 
 **核心功能**：
+
 - 工作流设计器
 - 工作流模板系统
 - 工作流执行引擎
@@ -521,9 +535,11 @@ const WorkflowCard: React.FC<WorkflowCardProps> = React.memo(({ workflow, onExec
 #### 2.5.1 实施概述
 
 **文件位置**：
+
 - 知识库：`/components/intelligent-ai-widget/knowledge-base.tsx`
 
 **核心功能**：
+
 - 知识管理系统
 - 智能检索
 - 知识分类
@@ -645,15 +661,15 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = React.memo(({ item, onClick,
 
 ### 3.1 功能测试
 
-| 测试项         | 测试内容                                   | 测试结果 |
-| -------------- | ------------------------------------------ | -------- |
-| 浮窗缩小功能 | 最小化/展开、状态同步、快速操作        | ✅ 通过   |
-| 工具模块     | 工具列表、搜索、执行、固定           | ✅ 通过   |
-| 洞察模块     | 指标显示、图表渲染、周期切换、建议     | ✅ 通过   |
-| 工作流模块   | 工作流管理、执行、模板、状态           | ✅ 通过   |
-| 知识库模块   | 知识列表、搜索、分类、收藏           | ✅ 通过   |
-| 消息发送     | 文本消息、文件上传、状态更新           | ✅ 通过   |
-| 快捷键       | 打开/关闭、发送、视图切换             | ✅ 通过   |
+| 测试项       | 测试内容                           | 测试结果 |
+| ------------ | ---------------------------------- | -------- |
+| 浮窗缩小功能 | 最小化/展开、状态同步、快速操作    | ✅ 通过  |
+| 工具模块     | 工具列表、搜索、执行、固定         | ✅ 通过  |
+| 洞察模块     | 指标显示、图表渲染、周期切换、建议 | ✅ 通过  |
+| 工作流模块   | 工作流管理、执行、模板、状态       | ✅ 通过  |
+| 知识库模块   | 知识列表、搜索、分类、收藏         | ✅ 通过  |
+| 消息发送     | 文本消息、文件上传、状态更新       | ✅ 通过  |
+| 快捷键       | 打开/关闭、发送、视图切换          | ✅ 通过  |
 
 ### 3.2 编译测试
 
@@ -795,18 +811,18 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = React.memo(({ item, onClick,
 
 ### 新增文件
 
-| 文件路径                                                     | 描述                   | 行数  |
-| ------------------------------------------------------------ | ---------------------- | ----- |
-| /components/intelligent-ai-widget/toolbox-panel.tsx           | 工具箱面板组件         | 450+  |
-| /components/intelligent-ai-widget/insights-dashboard.tsx       | 洞察仪表板组件       | 550+  |
-| /components/intelligent-ai-widget/workflow-manager.tsx           | 工作流管理器组件       | 600+  |
-| /components/intelligent-ai-widget/knowledge-base.tsx             | 知识库组件             | 650+  |
+| 文件路径                                                 | 描述             | 行数 |
+| -------------------------------------------------------- | ---------------- | ---- |
+| /components/intelligent-ai-widget/toolbox-panel.tsx      | 工具箱面板组件   | 450+ |
+| /components/intelligent-ai-widget/insights-dashboard.tsx | 洞察仪表板组件   | 550+ |
+| /components/intelligent-ai-widget/workflow-manager.tsx   | 工作流管理器组件 | 600+ |
+| /components/intelligent-ai-widget/knowledge-base.tsx     | 知识库组件       | 650+ |
 
 ### 修改文件
 
-| 文件路径                                                     | 修改内容               | 修改行数 |
-| ------------------------------------------------------------ | ---------------------- | --------- |
-| /components/intelligent-ai-widget/intelligent-ai-widget.tsx     | 浮窗缩小功能修复、模块集成 | 100+      |
+| 文件路径                                                    | 修改内容                   | 修改行数 |
+| ----------------------------------------------------------- | -------------------------- | -------- |
+| /components/intelligent-ai-widget/intelligent-ai-widget.tsx | 浮窗缩小功能修复、模块集成 | 100+     |
 
 ---
 
@@ -926,13 +942,13 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = React.memo(({ item, onClick,
 
 ### 10.1 已解决问题
 
-| 问题                     | 解决方案                                   | 状态   |
-| ------------------------ | ------------------------------------------ | ------ |
-| 浮窗缩小功能不完整     | 添加最小化状态UI和快速操作           | ✅ 已解决 |
-| 工具模块功能缺失       | 实现完整的工具管理系统                 | ✅ 已解决 |
-| 洞察模块功能缺失       | 实现数据可视化和智能建议               | ✅ 已解决 |
-| 工作流模块功能缺失     | 实现工作流管理和执行                   | ✅ 已解决 |
-| 知识库模块功能缺失     | 实现知识管理和检索                   | ✅ 已解决 |
+| 问题               | 解决方案                   | 状态      |
+| ------------------ | -------------------------- | --------- |
+| 浮窗缩小功能不完整 | 添加最小化状态UI和快速操作 | ✅ 已解决 |
+| 工具模块功能缺失   | 实现完整的工具管理系统     | ✅ 已解决 |
+| 洞察模块功能缺失   | 实现数据可视化和智能建议   | ✅ 已解决 |
+| 工作流模块功能缺失 | 实现工作流管理和执行       | ✅ 已解决 |
+| 知识库模块功能缺失 | 实现知识管理和检索         | ✅ 已解决 |
 
 ### 10.2 遗留问题
 
@@ -1049,7 +1065,7 @@ const KnowledgeCard: React.FC<KnowledgeCardProps> = React.memo(({ item, onClick,
 
 ---
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

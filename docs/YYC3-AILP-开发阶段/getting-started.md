@@ -19,7 +19,9 @@ cd ai-learning-platform
 
 \`\`\`bash
 pnpm install
+
 # 或
+
 npm install
 \`\`\`
 
@@ -34,7 +36,9 @@ cp .env.example .env.local
 编辑 \`.env.local\` 文件，填写必需的配置：
 
 \`\`\`bash
+
 # 数据库配置
+
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=yyc3_yy
@@ -42,9 +46,11 @@ DB_USER=yyc3_ls
 DB_PASS=yyc3_ls
 
 # JWT密钥（必须修改）
+
 JWT_SECRET=your-super-secret-key
 
 # 应用URL
+
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 \`\`\`
 
@@ -67,28 +73,37 @@ pnpm dev
 ## 开发命令
 
 \`\`\`bash
+
 # 开发模式
+
 pnpm dev
 
 # 生产构建
+
 pnpm build
 
 # 启动生产服务器
+
 pnpm start
 
 # 代码检查
+
 pnpm lint
 
 # 类型检查
+
 pnpm type-check
 
 # 数据库初始化
+
 pnpm db:init
 
 # 数据库测试
+
 pnpm db:test
 
 # 环境变量验证
+
 pnpm validate-env
 \`\`\`
 
@@ -96,20 +111,20 @@ pnpm validate-env
 
 \`\`\`
 ai-learning-platform/
-├── app/                    # Next.js应用目录
-│   ├── api/               # API路由
-│   ├── (pages)/           # 页面路由
-│   └── layout.tsx         # 根布局
-├── components/            # React组件
-│   ├── ui/               # UI基础组件
-│   └── ...               # 业务组件
-├── lib/                   # 工具函数库
-├── types/                 # TypeScript类型定义
-├── data/                  # 静态数据
-├── hooks/                 # 自定义Hooks
-├── docs/                  # 项目文档
-├── scripts/               # 脚本文件
-└── public/                # 静态资源
+├── app/ # Next.js应用目录
+│ ├── api/ # API路由
+│ ├── (pages)/ # 页面路由
+│ └── layout.tsx # 根布局
+├── components/ # React组件
+│ ├── ui/ # UI基础组件
+│ └── ... # 业务组件
+├── lib/ # 工具函数库
+├── types/ # TypeScript类型定义
+├── data/ # 静态数据
+├── hooks/ # 自定义Hooks
+├── docs/ # 项目文档
+├── scripts/ # 脚本文件
+└── public/ # 静态资源
 \`\`\`
 
 ## 下一步

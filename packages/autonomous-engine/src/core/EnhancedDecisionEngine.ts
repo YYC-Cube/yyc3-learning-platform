@@ -147,7 +147,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
       enableLearning: config.enableLearning ?? true,
       maxOptionsToEvaluate: config.maxOptionsToEvaluate ?? 10,
       decisionTimeout: config.decisionTimeout ?? 30000,
-      modelAdapterConfig: config.modelAdapterConfig
+      modelAdapterConfig: config.modelAdapterConfig,
     };
 
     if (this.config.enableAIAssistedDecision && this.config.modelAdapterConfig) {
@@ -166,10 +166,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
     this.on('decision:outcome', this.learnFromOutcome.bind(this));
   }
 
-  async makeDecision(
-    context: DecisionContext,
-    options: DecisionOption[]
-  ): Promise<DecisionResult> {
+  async makeDecision(context: DecisionContext, options: DecisionOption[]): Promise<DecisionResult> {
     const startTime = Date.now();
 
     try {
@@ -178,21 +175,21 @@ export class EnhancedDecisionEngine extends EventEmitter {
       const limitedOptions = options.slice(0, this.config.maxOptionsToEvaluate);
 
       const evaluations = await Promise.all(
-        limitedOptions.map(option => this.evaluateOption(option, context))
+        limitedOptions.map((option) => this.evaluateOption(option, context))
       );
 
       const selectedEvaluation = this.selectBestOption(evaluations, context);
-      const selectedOption = limitedOptions.find(o => o.id === selectedEvaluation.optionId)!;
+      const selectedOption = limitedOptions.find((o) => o.id === selectedEvaluation.optionId)!;
 
       const executionPlan = await this.generateExecutionPlan(selectedOption, context);
 
       const result: DecisionResult = {
         selectedOption,
         evaluation: selectedEvaluation,
-        alternativeOptions: evaluations.filter(e => e.optionId !== selectedEvaluation.optionId),
+        alternativeOptions: evaluations.filter((e) => e.optionId !== selectedEvaluation.optionId),
         confidence: this.calculateDecisionConfidence(selectedEvaluation, evaluations),
         timestamp: new Date(),
-        executionPlan
+        executionPlan,
       };
 
       this.emit('decision:made', { context, result, duration: Date.now() - startTime });
@@ -221,7 +218,13 @@ export class EnhancedDecisionEngine extends EventEmitter {
       utilityScore = aiEvaluation.utilityScore;
       reasoning = aiEvaluation.reasoning;
     } else {
-      utilityScore = this.calculateUtilityScore(costScore, timeScore, qualityScore, riskScore, context);
+      utilityScore = this.calculateUtilityScore(
+        costScore,
+        timeScore,
+        qualityScore,
+        riskScore,
+        context
+      );
       reasoning = this.generateReasoning(option, costScore, timeScore, qualityScore, riskScore);
     }
 
@@ -242,7 +245,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
       qualityScore,
       riskScore,
       overallScore,
-      reasoning
+      reasoning,
     };
   }
 
@@ -263,7 +266,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
   private evaluateRisk(option: DecisionOption, context: DecisionContext): number {
     const riskToleranceMap = { low: 0.2, medium: 0.5, high: 0.8 };
     const tolerance = riskToleranceMap[context.preferences.riskTolerance];
-    return Math.max(0, 1 - (option.riskLevel / tolerance));
+    return Math.max(0, 1 - option.riskLevel / tolerance);
   }
 
   private async evaluateWithAI(
@@ -281,14 +284,14 @@ export class EnhancedDecisionEngine extends EventEmitter {
           role: 'system',
           content: '你是一个智能决策评估助手，负责评估决策选项的效用并给出评分和理由。',
           timestamp: Date.now(),
-          metadata: {}
+          metadata: {},
         },
         {
           role: 'user',
           content: prompt,
           timestamp: Date.now(),
-          metadata: {}
-        }
+          metadata: {},
+        },
       ],
       systemPrompt: '你是一个智能决策评估助手，负责评估决策选项的效用并给出评分和理由。',
       temperature: 0.3,
@@ -298,13 +301,14 @@ export class EnhancedDecisionEngine extends EventEmitter {
         userId: context.goalId,
         sessionId: context.taskId,
         priority: 'normal',
-        requestId: `decision_eval_${Date.now()}`
-      }
+        requestId: `decision_eval_${Date.now()}`,
+      },
     };
 
     try {
       const response: ModelResponse = await this.modelAdapter!.processRequest(request);
-      const content = typeof response.content === 'string' ? response.content : JSON.stringify(response.content);
+      const content =
+        typeof response.content === 'string' ? response.content : JSON.stringify(response.content);
       const result = this.parseAIEvaluationResponse(content);
       return result;
     } catch (error) {
@@ -317,7 +321,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
           this.evaluateRisk(option, context),
           context
         ),
-        reasoning: 'AI评估失败，使用传统方法'
+        reasoning: 'AI评估失败，使用传统方法',
       };
     }
   }
@@ -358,7 +362,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
         const parsed = JSON.parse(jsonMatch[0]);
         return {
           utilityScore: Math.min(1, Math.max(0, parsed.utilityScore || 0.5)),
-          reasoning: parsed.reasoning || '未提供理由'
+          reasoning: parsed.reasoning || '未提供理由',
         };
       }
     } catch (error) {
@@ -367,7 +371,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
 
     return {
       utilityScore: 0.5,
-      reasoning: '无法解析AI响应'
+      reasoning: '无法解析AI响应',
     };
   }
 
@@ -382,7 +386,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
       cost: context.preferences.prioritizeCost ? 0.4 : 0.2,
       time: context.preferences.prioritizeSpeed ? 0.4 : 0.2,
       quality: context.preferences.prioritizeQuality ? 0.3 : 0.15,
-      risk: 0.2
+      risk: 0.2,
     };
 
     return (
@@ -416,7 +420,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
     riskScore: number,
     context: DecisionContext
   ): number {
-    return utilityScore * 0.5 + (costScore + timeScore + qualityScore + riskScore) / 4 * 0.5;
+    return utilityScore * 0.5 + ((costScore + timeScore + qualityScore + riskScore) / 4) * 0.5;
   }
 
   private selectBestOption(
@@ -432,10 +436,14 @@ export class EnhancedDecisionEngine extends EventEmitter {
     selected: DecisionEvaluation,
     all: DecisionEvaluation[]
   ): number {
-    const scores = all.map(e => e.overallScore);
+    const scores = all.map((e) => e.overallScore);
     const mean = scores.reduce((a, b) => a + b, 0) / scores.length;
-    const stdDev = Math.sqrt(scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length);
-    return stdDev > 0 ? Math.min(1, (selected.overallScore - mean) / stdDev) : selected.overallScore;
+    const stdDev = Math.sqrt(
+      scores.reduce((sum, score) => sum + Math.pow(score - mean, 2), 0) / scores.length
+    );
+    return stdDev > 0
+      ? Math.min(1, (selected.overallScore - mean) / stdDev)
+      : selected.overallScore;
   }
 
   private async generateExecutionPlan(
@@ -448,11 +456,11 @@ export class EnhancedDecisionEngine extends EventEmitter {
       order: index,
       dependencies: action.dependencies,
       estimatedDuration: this.estimateActionDuration(action),
-      resourceRequirements: this.estimateActionResources(action)
+      resourceRequirements: this.estimateActionResources(action),
     }));
 
     const dependencies = new Map<string, string[]>();
-    steps.forEach(step => {
+    steps.forEach((step) => {
       dependencies.set(step.id, step.dependencies);
     });
 
@@ -466,7 +474,7 @@ export class EnhancedDecisionEngine extends EventEmitter {
       dependencies,
       estimatedDuration,
       estimatedCost,
-      resourceAllocation
+      resourceAllocation,
     };
   }
 
@@ -479,45 +487,59 @@ export class EnhancedDecisionEngine extends EventEmitter {
       cpu: 0.1 + Math.random() * 0.2,
       memory: 128 + Math.random() * 256,
       storage: 0,
-      network: 1 + Math.random() * 5
+      network: 1 + Math.random() * 5,
     };
   }
 
-  private allocateResources(steps: ExecutionStep[], context: DecisionContext): ResourceAllocation[] {
+  private allocateResources(
+    steps: ExecutionStep[],
+    context: DecisionContext
+  ): ResourceAllocation[] {
     let currentTime = 0;
-    return steps.map(step => {
+    return steps.map((step) => {
       const allocation: ResourceAllocation = {
         stepId: step.id,
         resources: step.resourceRequirements,
         startTime: currentTime,
-        endTime: currentTime + step.estimatedDuration
+        endTime: currentTime + step.estimatedDuration,
       };
       currentTime += step.estimatedDuration;
       return allocation;
     });
   }
 
-  private recordDecision(data: { context: DecisionContext; result: DecisionResult; duration: number }): void {
+  private recordDecision(data: {
+    context: DecisionContext;
+    result: DecisionResult;
+    duration: number;
+  }): void {
     if (!this.config.enableLearning) return;
 
     const learningData: DecisionLearningData = {
       context: data.context,
-      options: [data.result.selectedOption, ...data.result.alternativeOptions.map(eo =>
-        data.result.alternativeOptions.find(o => o.optionId === eo.optionId)!
-      )].filter(Boolean) as DecisionOption[],
+      options: [
+        data.result.selectedOption,
+        ...data.result.alternativeOptions.map(
+          (eo) => data.result.alternativeOptions.find((o) => o.optionId === eo.optionId)!
+        ),
+      ].filter(Boolean) as DecisionOption[],
       selectedOption: data.result.selectedOption,
       actualOutcome: {},
       success: false,
       executionTime: data.duration,
       actualCost: data.result.evaluation.costScore,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     this.decisionHistory.push(learningData);
     this.updatePerformanceMetrics(learningData);
   }
 
-  private learnFromOutcome(data: { context: DecisionContext; outcome: Record<string, any>; success: boolean }): void {
+  private learnFromOutcome(data: {
+    context: DecisionContext;
+    outcome: Record<string, any>;
+    success: boolean;
+  }): void {
     if (!this.config.enableLearning) return;
 
     const lastDecision = this.decisionHistory[this.decisionHistory.length - 1];
@@ -554,13 +576,17 @@ export class EnhancedDecisionEngine extends EventEmitter {
 
   async start(): Promise<void> {
     if (this.status === 'active') return;
-    
+
     this.status = 'initializing';
-    
-    if (this.config.enableAIAssistedDecision && this.config.modelAdapterConfig && !this.modelAdapter) {
+
+    if (
+      this.config.enableAIAssistedDecision &&
+      this.config.modelAdapterConfig &&
+      !this.modelAdapter
+    ) {
       this.initializeModelAdapter();
     }
-    
+
     this.status = 'active';
     this.emit('decision:started', { timestamp: new Date() });
   }
@@ -576,10 +602,14 @@ export class EnhancedDecisionEngine extends EventEmitter {
   async reconfigure(newConfig: Partial<DecisionEngineConfig>): Promise<void> {
     this.config = {
       ...this.config,
-      ...newConfig
+      ...newConfig,
     };
 
-    if (this.config.enableAIAssistedDecision && this.config.modelAdapterConfig && !this.modelAdapter) {
+    if (
+      this.config.enableAIAssistedDecision &&
+      this.config.modelAdapterConfig &&
+      !this.modelAdapter
+    ) {
       this.initializeModelAdapter();
     }
   }

@@ -4,7 +4,7 @@
  * @version 1.0.0
  * @license MIT
  */
-'use client'
+'use client';
 
 /**
  * @fileoverview 宽高比容器组件
@@ -12,8 +12,8 @@
  * @version 1.0.0
  * @license MIT */
 
-import * as AspectRatioPrimitive from '@radix-ui/react-aspect-ratio'
+import * as AspectRatioPrimitive from '@radix-ui/react-aspect-ratio';
 
-const AspectRatio = AspectRatioPrimitive.Root
+const AspectRatio = AspectRatioPrimitive.Root;
 
-export { AspectRatio }
+export { AspectRatio };

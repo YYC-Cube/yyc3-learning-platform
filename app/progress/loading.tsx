@@ -37,5 +37,5 @@ export default function ProgressLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

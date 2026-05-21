@@ -4,43 +4,49 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ResponsiveLayout } from "@/components/responsive-layout"
-import { LearningPath } from "@/components/learning-path"
-import { courseModules, getLearningPath } from "@/data/course-recommendations"
-import { Target, TrendingUp, BookOpen, Award, ArrowRight } from "lucide-react"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ResponsiveLayout } from '@/components/responsive-layout';
+import { LearningPath } from '@/components/learning-path';
+import { courseModules, getLearningPath } from '@/data/course-recommendations';
+import { Target, TrendingUp, BookOpen, Award, ArrowRight } from 'lucide-react';
 
 export default function LearningPathPage() {
-  const [selectedCategory, setSelectedCategory] = useState("全部")
-  const [currentLevel, setCurrentLevel] = useState("初级")
-  const [targetLevel, setTargetLevel] = useState("高级")
+  const [selectedCategory, setSelectedCategory] = useState('全部');
+  const [currentLevel, setCurrentLevel] = useState('初级');
+  const [targetLevel, setTargetLevel] = useState('高级');
 
-  const categories = ["全部", "认证课程", "实战开发", "通识认知", "专项技术", "行业应用"]
-  const levels = ["初级", "中级", "高级", "专家"]
+  const categories = ['全部', '认证课程', '实战开发', '通识认知', '专项技术', '行业应用'];
+  const levels = ['初级', '中级', '高级', '专家'];
 
   const filteredCourses = courseModules.filter(
-    (course) => selectedCategory === "全部" || course.category === selectedCategory,
-  )
+    (course) => selectedCategory === '全部' || course.category === selectedCategory
+  );
 
-  const recommendedPath = getLearningPath(currentLevel, targetLevel)
+  const recommendedPath = getLearningPath(currentLevel, targetLevel);
 
   const pathStats = {
     totalCourses: recommendedPath.length,
     totalHours: recommendedPath.reduce((sum, course) => sum + Number.parseInt(course.duration), 0),
     categories: [...new Set(recommendedPath.map((course) => course.category))].length,
-  }
+  };
 
   return (
     <ResponsiveLayout
       title="学习路径"
-      user={{ name: "张同学", avatar: "/placeholder.svg?height=40&width=40", level: "中级工程师" }}
+      user={{ name: '张同学', avatar: '/placeholder.svg?height=40&width=40', level: '中级工程师' }}
     >
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">AI学习路径规划</h1>
@@ -126,7 +132,7 @@ export default function LearningPathPage() {
             {categories.map((category) => (
               <Button
                 key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
+                variant={selectedCategory === category ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
                 className="whitespace-nowrap"
@@ -164,7 +170,9 @@ export default function LearningPathPage() {
                     </div>
 
                     <div className="pt-2 border-t">
-                      <p className="text-xs text-blue-600 mb-2">🔍 下一步：{course.nextRecommendations.primary}</p>
+                      <p className="text-xs text-blue-600 mb-2">
+                        🔍 下一步：{course.nextRecommendations.primary}
+                      </p>
                       <Button size="sm" className="w-full">
                         <BookOpen className="h-4 w-4 mr-2" />
                         开始学习
@@ -276,5 +284,5 @@ export default function LearningPathPage() {
         </TabsContent>
       </Tabs>
     </ResponsiveLayout>
-  )
+  );
 }

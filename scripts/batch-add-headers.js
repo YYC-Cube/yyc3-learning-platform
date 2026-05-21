@@ -2,16 +2,16 @@ const fs = require('fs');
 const path = require('path');
 
 const DESCRIPTIONS = {
-  'page': '页面组件',
-  'route': 'API路由',
-  'loading': '加载状态组件',
-  'layout': '布局组件',
-  'provider': 'Context Provider',
-  'component': 'UI组件',
-  'util': '工具函数/库',
-  'hook': '自定义Hook',
-  'config': '配置文件',
-  'test': '测试文件',
+  page: '页面组件',
+  route: 'API路由',
+  loading: '加载状态组件',
+  layout: '布局组件',
+  provider: 'Context Provider',
+  component: 'UI组件',
+  util: '工具函数/库',
+  hook: '自定义Hook',
+  config: '配置文件',
+  test: '测试文件',
 };
 
 function detectType(filePath) {
@@ -28,7 +28,7 @@ function detectType(filePath) {
 }
 
 function generateHeader(filePath) {
-  const relPath = filePath.replace(process.cwd() + '/','');
+  const relPath = filePath.replace(process.cwd() + '/', '');
   const name = path.basename(filePath);
   const type = detectType(filePath);
   const desc = DESCRIPTIONS[type] || '源代码文件';
@@ -57,13 +57,15 @@ function walk(dir) {
 
       if (stat.isDirectory()) {
         walk(full);
-      } else if ((item.endsWith('.ts') || item.endsWith('.tsx')) &&
-                 !item.match(/\.(test|spec)\./) &&
-                 item !== 'next-env.d.ts') {
-
+      } else if (
+        (item.endsWith('.ts') || item.endsWith('.tsx')) &&
+        !item.match(/\.(test|spec)\./) &&
+        item !== 'next-env.d.ts'
+      ) {
         // Only process files in target directories
         const relPath = full.replace(process.cwd() + path.sep, '');
-        if (!TARGET_DIRS.some(d => relPath.startsWith(d + '/') || relPath.startsWith(d + '\\'))) continue;
+        if (!TARGET_DIRS.some((d) => relPath.startsWith(d + '/') || relPath.startsWith(d + '\\')))
+          continue;
 
         try {
           const content = fs.readFileSync(full, 'utf8');
@@ -88,12 +90,12 @@ function walk(dir) {
           fs.writeFileSync(full, header + body, 'utf8');
           updated++;
           console.log(`  ✅ ${relPath}`);
-        } catch(e) {}
+        } catch (e) {}
       }
     }
-  } catch(e) {}
+  } catch (e) {}
 }
 
 console.log('🔧 YYC³ 标准文件头批量添加\n');
-TARGET_DIRS.forEach(d => walk(path.join(process.cwd(), d)));
+TARGET_DIRS.forEach((d) => walk(path.join(process.cwd(), d)));
 console.log(`\n📊 结果: 更新 ${updated} | 跳过 ${skipped}`);

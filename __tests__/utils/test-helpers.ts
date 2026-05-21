@@ -10,10 +10,7 @@ import { vi } from 'vitest';
 /**
  * 自定义渲染函数，包含默认的Providers
  */
-export function renderWithProviders(
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) {
+export function renderWithProviders(ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) {
   // TODO: 添加必要的Providers (Theme, Auth等)
   return render(ui, options);
 }

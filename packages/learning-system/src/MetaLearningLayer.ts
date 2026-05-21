@@ -80,7 +80,7 @@ export class MetaLearningLayer {
       batchSize: 32,
       bufferSize: 10000,
       updateFrequency: 10,
-      ...config
+      ...config,
     };
 
     this.initializeDefaultPolicy();
@@ -111,7 +111,7 @@ export class MetaLearningLayer {
    * 批量记录经验
    */
   public recordExperiencesBatch(experiences: Experience[]): void {
-    experiences.forEach(exp => this.recordExperience(exp));
+    experiences.forEach((exp) => this.recordExperience(exp));
   }
 
   /**
@@ -167,13 +167,13 @@ export class MetaLearningLayer {
     for (const [key, weight] of this.currentPolicy.weights) {
       const parts = key.split('_');
       if (parts.length < 2 || !parts[1]) continue;
-      
+
       const featureIndex = parseInt(parts[1]);
       if (isNaN(featureIndex) || featureIndex < 0 || featureIndex >= features.length) continue;
-      
+
       const featureValue = features[featureIndex];
       if (featureValue === undefined || featureValue === null) continue;
-      
+
       value += weight * featureValue;
     }
 
@@ -200,14 +200,14 @@ export class MetaLearningLayer {
     adaptationRate: number = 0.5
   ): Promise<ModelTransfer> {
     const sourcePolicy = this.policies.get(sourceTask);
-    
+
     if (!sourcePolicy) {
       throw new Error(`Source policy "${sourceTask}" not found`);
     }
 
     // 创建新策略并迁移权重
     const transferredWeights = new Map<string, number>();
-    
+
     for (const [key, weight] of sourcePolicy.weights) {
       // 应用适应率
       transferredWeights.set(key, weight * adaptationRate);
@@ -223,10 +223,10 @@ export class MetaLearningLayer {
         averageReward: 0,
         successRate: 0,
         totalExecutions: 0,
-        improvementRate: 0
+        improvementRate: 0,
       },
       createdAt: Date.now(),
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     };
 
     this.policies.set(targetTask, newPolicy);
@@ -235,7 +235,7 @@ export class MetaLearningLayer {
       sourceTask,
       targetTask,
       transferredWeights,
-      adaptationRate
+      adaptationRate,
     };
   }
 
@@ -285,10 +285,10 @@ export class MetaLearningLayer {
         averageReward: 0,
         successRate: 0,
         totalExecutions: 0,
-        improvementRate: 0
+        improvementRate: 0,
       },
       createdAt: Date.now(),
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     };
 
     // 初始化随机权重
@@ -336,7 +336,10 @@ export class MetaLearningLayer {
   /**
    * 比较策略
    */
-  public comparePolicies(policyId1: string, policyId2: string): {
+  public comparePolicies(
+    policyId1: string,
+    policyId2: string
+  ): {
     winner: string;
     comparison: Record<string, any>;
   } {
@@ -351,20 +354,24 @@ export class MetaLearningLayer {
       averageReward: {
         policy1: policy1.performance.averageReward,
         policy2: policy2.performance.averageReward,
-        winner: policy1.performance.averageReward > policy2.performance.averageReward ? policyId1 : policyId2
+        winner:
+          policy1.performance.averageReward > policy2.performance.averageReward
+            ? policyId1
+            : policyId2,
       },
       successRate: {
         policy1: policy1.performance.successRate,
         policy2: policy2.performance.successRate,
-        winner: policy1.performance.successRate > policy2.performance.successRate ? policyId1 : policyId2
+        winner:
+          policy1.performance.successRate > policy2.performance.successRate ? policyId1 : policyId2,
       },
       totalExecutions: {
         policy1: policy1.performance.totalExecutions,
-        policy2: policy2.performance.totalExecutions
-      }
+        policy2: policy2.performance.totalExecutions,
+      },
     };
 
-    const winner = 
+    const winner =
       policy1.performance.averageReward * policy1.performance.successRate >
       policy2.performance.averageReward * policy2.performance.successRate
         ? policyId1
@@ -388,7 +395,7 @@ export class MetaLearningLayer {
 
     return {
       type: randomType,
-      parameters: {}
+      parameters: {},
     };
   }
 
@@ -403,7 +410,7 @@ export class MetaLearningLayer {
     for (const type of actionTypes) {
       const action: Action = { type, parameters: {} };
       const value = this.predictActionValue(state, action);
-      
+
       if (value > bestValue) {
         bestValue = value;
         bestAction = action;
@@ -470,12 +477,12 @@ export class MetaLearningLayer {
 
     // 否则从状态中提取特征
     const features: number[] = [];
-    
+
     // 添加上下文长度特征
     features.push(state.context.length / 1000);
 
     // 添加环境特征
-    Object.values(state.environment).forEach(value => {
+    Object.values(state.environment).forEach((value) => {
       if (typeof value === 'number') {
         features.push(value);
       } else if (typeof value === 'boolean') {
@@ -497,7 +504,7 @@ export class MetaLearningLayer {
       search: 0.1,
       analyze: 0.15,
       generate: 0.2,
-      transform: 0.1
+      transform: 0.1,
     };
 
     return bonuses[action.type] || 0;
@@ -507,7 +514,7 @@ export class MetaLearningLayer {
     if (!this.currentPolicy) return;
 
     const recentExperiences = this.experienceBuffer.slice(-100);
-    const successfulExperiences = recentExperiences.filter(exp => exp.reward > 0);
+    const successfulExperiences = recentExperiences.filter((exp) => exp.reward > 0);
 
     const metrics = this.currentPolicy.performance;
     metrics.totalExecutions = this.experienceBuffer.length;
@@ -518,7 +525,8 @@ export class MetaLearningLayer {
     // 计算改进率
     if (this.episodeCount > 10) {
       const oldAvg = metrics.averageReward;
-      const newAvg = recentExperiences.reduce((sum, exp) => sum + exp.reward, 0) / recentExperiences.length;
+      const newAvg =
+        recentExperiences.reduce((sum, exp) => sum + exp.reward, 0) / recentExperiences.length;
       metrics.improvementRate = ((newAvg - oldAvg) / Math.abs(oldAvg)) * 100;
     }
   }
@@ -539,9 +547,9 @@ export class MetaLearningLayer {
         ? {
             id: this.currentPolicy.id,
             name: this.currentPolicy.name,
-            performance: this.currentPolicy.performance
+            performance: this.currentPolicy.performance,
           }
-        : null
+        : null,
     };
   }
 
@@ -554,7 +562,7 @@ export class MetaLearningLayer {
 
     return {
       ...policy,
-      weights: new Map(policy.weights)
+      weights: new Map(policy.weights),
     };
   }
 

@@ -22,7 +22,11 @@ export interface HealthCheckResult {
 /**
  * Check database connectivity
  */
-async function checkDatabase(): Promise<{ status: 'pass' | 'fail'; responseTime: number; message?: string }> {
+async function checkDatabase(): Promise<{
+  status: 'pass' | 'fail';
+  responseTime: number;
+  message?: string;
+}> {
   const startTime = Date.now();
 
   try {
@@ -45,7 +49,11 @@ async function checkDatabase(): Promise<{ status: 'pass' | 'fail'; responseTime:
 /**
  * Check Redis connectivity (if configured)
  */
-async function checkRedis(): Promise<{ status: 'pass' | 'fail' | 'warn'; responseTime: number; message?: string }> {
+async function checkRedis(): Promise<{
+  status: 'pass' | 'fail' | 'warn';
+  responseTime: number;
+  message?: string;
+}> {
   const startTime = Date.now();
 
   if (!process.env.REDIS_URL) {
@@ -73,7 +81,9 @@ async function checkRedis(): Promise<{ status: 'pass' | 'fail' | 'warn'; respons
 /**
  * Check external API connectivity
  */
-async function checkExternalAPI(url: string): Promise<{ status: 'pass' | 'fail'; responseTime: number; message?: string }> {
+async function checkExternalAPI(
+  url: string
+): Promise<{ status: 'pass' | 'fail'; responseTime: number; message?: string }> {
   const startTime = Date.now();
 
   try {

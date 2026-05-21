@@ -4,22 +4,22 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Clock, Target, ChevronUp, ChevronDown } from "lucide-react"
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Menu, Clock, Target, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface MobileExamOptimizationProps {
-  questions: any[]
-  currentQuestionIndex: number
-  answers: Record<number, any>
-  timeRemaining: number
-  onQuestionChange: (index: number) => void
+  questions: any[];
+  currentQuestionIndex: number;
+  answers: Record<number, any>;
+  timeRemaining: number;
+  onQuestionChange: (index: number) => void;
 }
 
 export function MobileExamOptimization({
@@ -29,34 +29,36 @@ export function MobileExamOptimization({
   timeRemaining,
   onQuestionChange,
 }: MobileExamOptimizationProps) {
-  const [isMobile, setIsMobile] = useState(false)
-  const [showMobileNav, setShowMobileNav] = useState(false)
-  const [collapsedSections, setCollapsedSections] = useState<string[]>([])
+  const [isMobile, setIsMobile] = useState(false);
+  const [showMobileNav, setShowMobileNav] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState<string[]>([]);
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768)
-    }
+      setIsMobile(window.innerWidth < 768);
+    };
 
-    checkMobile()
-    window.addEventListener("resize", checkMobile)
-    return () => window.removeEventListener("resize", checkMobile)
-  }, [])
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
-  const answeredCount = Object.keys(answers).length
-  const progressPercentage = (answeredCount / questions.length) * 100
+  const answeredCount = Object.keys(answers).length;
+  const progressPercentage = (answeredCount / questions.length) * 100;
 
   const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const toggleSection = (section: string) => {
-    setCollapsedSections((prev) => (prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]))
-  }
+    setCollapsedSections((prev) =>
+      prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]
+    );
+  };
 
-  if (!isMobile) return null
+  if (!isMobile) return null;
 
   return (
     <>
@@ -101,7 +103,9 @@ export function MobileExamOptimization({
                             <div className="text-blue-700">当前</div>
                           </div>
                           <div className="text-center p-2 bg-gray-50 rounded">
-                            <div className="font-bold text-gray-600">{questions.length - answeredCount - 1}</div>
+                            <div className="font-bold text-gray-600">
+                              {questions.length - answeredCount - 1}
+                            </div>
                             <div className="text-gray-700">未答</div>
                           </div>
                         </div>
@@ -115,8 +119,13 @@ export function MobileExamOptimization({
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">题目列表</span>
-                          <Button variant="ghost" size="sm" onClick={() => toggleSection("questions")} className="p-1">
-                            {collapsedSections.includes("questions") ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => toggleSection('questions')}
+                            className="p-1"
+                          >
+                            {collapsedSections.includes('questions') ? (
                               <ChevronDown className="h-4 w-4" />
                             ) : (
                               <ChevronUp className="h-4 w-4" />
@@ -124,11 +133,11 @@ export function MobileExamOptimization({
                           </Button>
                         </div>
 
-                        {!collapsedSections.includes("questions") && (
+                        {!collapsedSections.includes('questions') && (
                           <div className="grid grid-cols-5 gap-1">
                             {questions.map((_, index) => {
-                              const isAnswered = answers[index] !== undefined
-                              const isCurrent = index === currentQuestionIndex
+                              const isAnswered = answers[index] !== undefined;
+                              const isCurrent = index === currentQuestionIndex;
 
                               return (
                                 <Button
@@ -136,20 +145,20 @@ export function MobileExamOptimization({
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => {
-                                    onQuestionChange(index)
-                                    setShowMobileNav(false)
+                                    onQuestionChange(index);
+                                    setShowMobileNav(false);
                                   }}
                                   className={`h-8 w-8 p-0 text-xs ${
                                     isCurrent
-                                      ? "bg-blue-500 text-white"
+                                      ? 'bg-blue-500 text-white'
                                       : isAnswered
-                                        ? "bg-green-100 text-green-800"
-                                        : "hover:bg-gray-100"
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'hover:bg-gray-100'
                                   }`}
                                 >
                                   {index + 1}
                                 </Button>
-                              )
+                              );
                             })}
                           </div>
                         )}
@@ -168,7 +177,7 @@ export function MobileExamOptimization({
           <div className="flex items-center space-x-2">
             <div
               className={`flex items-center space-x-1 px-2 py-1 rounded text-xs ${
-                timeRemaining <= 600 ? "bg-red-100 text-red-700" : "bg-orange-100 text-orange-700"
+                timeRemaining <= 600 ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
               }`}
             >
               <Clock className="h-3 w-3" />
@@ -200,28 +209,34 @@ export function MobileExamOptimization({
             {[currentQuestionIndex - 1, currentQuestionIndex, currentQuestionIndex + 1]
               .filter((index) => index >= 0 && index < questions.length)
               .map((index) => {
-                const isAnswered = answers[index] !== undefined
-                const isCurrent = index === currentQuestionIndex
+                const isAnswered = answers[index] !== undefined;
+                const isCurrent = index === currentQuestionIndex;
 
                 return (
                   <Button
                     key={index}
-                    variant={isCurrent ? "default" : "ghost"}
+                    variant={isCurrent ? 'default' : 'ghost'}
                     size="sm"
                     onClick={() => onQuestionChange(index)}
                     className={`w-8 h-8 p-0 text-xs ${
-                      isCurrent ? "bg-blue-500 text-white" : isAnswered ? "bg-green-100 text-green-700" : ""
+                      isCurrent
+                        ? 'bg-blue-500 text-white'
+                        : isAnswered
+                          ? 'bg-green-100 text-green-700'
+                          : ''
                     }`}
                   >
                     {index + 1}
                   </Button>
-                )
+                );
               })}
           </div>
 
           <Button
             size="sm"
-            onClick={() => onQuestionChange(Math.min(questions.length - 1, currentQuestionIndex + 1))}
+            onClick={() =>
+              onQuestionChange(Math.min(questions.length - 1, currentQuestionIndex + 1))
+            }
             disabled={currentQuestionIndex === questions.length - 1}
             className="flex-1 ml-2 bg-indigo-500 hover:bg-indigo-600 text-white"
           >
@@ -237,7 +252,7 @@ export function MobileExamOptimization({
             padding-top: 120px !important;
             padding-bottom: 80px !important;
           }
-          
+
           .mobile-question-card {
             margin: 0 !important;
             border-radius: 0 !important;
@@ -248,5 +263,5 @@ export function MobileExamOptimization({
         }
       `}</style>
     </>
-  )
+  );
 }

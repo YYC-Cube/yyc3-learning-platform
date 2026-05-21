@@ -357,7 +357,7 @@ const toolDefinition: ToolDefinition = {
   execute: async (input, context) => {
     // 工具执行逻辑
     return result;
-  }
+  },
 };
 
 await toolRegistry.registerTool(toolDefinition);

@@ -12,7 +12,7 @@ import { OllamaProvider } from './src/ai-providers/OllamaProvider';
 const simpleTestConfig = {
   baseUrl: 'http://localhost:11434',
   timeout: 30000, // 减少超时时间
-  retryAttempts: 1  // 减少重试次数
+  retryAttempts: 1, // 减少重试次数
 };
 
 interface SimpleTestResult {
@@ -71,8 +71,12 @@ class SimplePerformanceTester {
         requestsPerWorker,
         testPrompt,
         responseTimes,
-        () => { failedRequests++; },
-        () => { successfulRequests++; }
+        () => {
+          failedRequests++;
+        },
+        () => {
+          successfulRequests++;
+        }
       );
       promises.push(workerPromise);
     }
@@ -92,7 +96,7 @@ class SimplePerformanceTester {
       avgResponseTime: this.calculateAverage(responseTimes),
       minResponseTime: responseTimes.length > 0 ? Math.min(...responseTimes) : 0,
       maxResponseTime: responseTimes.length > 0 ? Math.max(...responseTimes) : 0,
-      testDuration
+      testDuration,
     };
 
     console.log(`✅ 测试完成: ${testName}`);
@@ -118,7 +122,7 @@ class SimplePerformanceTester {
         await this.provider.chat({
           messages: [{ role: 'user', content: testPrompt }],
           temperature: 0.7,
-          maxTokens: 200
+          maxTokens: 200,
         });
 
         const responseTime = Date.now() - startTime;
@@ -127,7 +131,6 @@ class SimplePerformanceTester {
 
         // 添加小延迟避免过度负载
         await this.sleep(100);
-
       } catch (error) {
         console.warn(`请求失败: ${error.message}`);
         onError();
@@ -146,20 +149,20 @@ class SimplePerformanceTester {
         name: '基础并发测试',
         concurrency: 5,
         requestsPerWorker: 3,
-        prompt: '你好，请简单介绍一下自己。'
+        prompt: '你好，请简单介绍一下自己。',
       },
       {
         name: '中等负载测试',
         concurrency: 10,
         requestsPerWorker: 5,
-        prompt: '请分析一下人工智能在企业中的应用前景。'
+        prompt: '请分析一下人工智能在企业中的应用前景。',
       },
       {
         name: '代码生成测试',
         concurrency: 5,
         requestsPerWorker: 3,
-        prompt: '请写一个Python函数实现斐波那契数列。'
-      }
+        prompt: '请写一个Python函数实现斐波那契数列。',
+      },
     ];
 
     for (const scenario of testScenarios) {
@@ -174,7 +177,6 @@ class SimplePerformanceTester {
 
         // 测试间隔
         await this.sleep(2000);
-
       } catch (error) {
         console.error(`❌ 测试失败: ${scenario.name}`, error);
       }
@@ -199,7 +201,9 @@ class SimplePerformanceTester {
       console.log(`   并发数: ${result.concurrency}`);
       console.log(`   总请求: ${result.totalRequests}`);
       console.log(`   成功: ${result.successfulRequests}, 失败: ${result.failedRequests}`);
-      console.log(`   成功率: ${((result.successfulRequests / result.totalRequests) * 100).toFixed(1)}%`);
+      console.log(
+        `   成功率: ${((result.successfulRequests / result.totalRequests) * 100).toFixed(1)}%`
+      );
       console.log(`   平均响应时间: ${result.avgResponseTime.toFixed(0)}ms`);
       console.log(`   响应时间范围: ${result.minResponseTime}ms - ${result.maxResponseTime}ms`);
       console.log(`   测试耗时: ${(result.testDuration / 1000).toFixed(1)}s`);
@@ -229,13 +233,14 @@ class SimplePerformanceTester {
     // 基本性能要求
     const basicRequirements = {
       minSuccessRate: 80, // 80%成功率
-      maxAvgResponseTime: 10000 // 10秒平均响应时间
+      maxAvgResponseTime: 10000, // 10秒平均响应时间
     };
 
-    const overallSuccessRate = this.results.reduce(
-      (sum, r) => sum + (r.successfulRequests / r.totalRequests) * 100, 0) / this.results.length;
-    const overallAvgResponseTime = this.results.reduce(
-      (sum, r) => sum + r.avgResponseTime, 0) / this.results.length;
+    const overallSuccessRate =
+      this.results.reduce((sum, r) => sum + (r.successfulRequests / r.totalRequests) * 100, 0) /
+      this.results.length;
+    const overallAvgResponseTime =
+      this.results.reduce((sum, r) => sum + r.avgResponseTime, 0) / this.results.length;
 
     console.log(`总体成功率: ${overallSuccessRate.toFixed(1)}%`);
     console.log(`总体平均响应时间: ${overallAvgResponseTime.toFixed(0)}ms`);
@@ -243,8 +248,12 @@ class SimplePerformanceTester {
     const successRatePass = overallSuccessRate >= basicRequirements.minSuccessRate;
     const responseTimePass = overallAvgResponseTime <= basicRequirements.maxAvgResponseTime;
 
-    console.log(`✅ 成功率要求: ${successRatePass ? '通过' : '失败'} (目标: ≥${basicRequirements.minSuccessRate}%)`);
-    console.log(`✅ 响应时间要求: ${responseTimePass ? '通过' : '失败'} (目标: ≤${basicRequirements.maxAvgResponseTime}ms)`);
+    console.log(
+      `✅ 成功率要求: ${successRatePass ? '通过' : '失败'} (目标: ≥${basicRequirements.minSuccessRate}%)`
+    );
+    console.log(
+      `✅ 响应时间要求: ${responseTimePass ? '通过' : '失败'} (目标: ≤${basicRequirements.maxAvgResponseTime}ms)`
+    );
 
     const allPassed = successRatePass && responseTimePass;
     console.log(`\n🏆 基础性能测试: ${allPassed ? '✅ 通过' : '❌ 需要优化'}`);
@@ -264,7 +273,9 @@ class SimplePerformanceTester {
     console.log(`   🔄 总请求数: ${result.totalRequests}`);
     console.log(`   ✅ 成功请求: ${result.successfulRequests}`);
     console.log(`   ❌ 失败请求: ${result.failedRequests}`);
-    console.log(`   📊 成功率: ${((result.successfulRequests / result.totalRequests) * 100).toFixed(1)}%`);
+    console.log(
+      `   📊 成功率: ${((result.successfulRequests / result.totalRequests) * 100).toFixed(1)}%`
+    );
     console.log(`   ⚡ 平均响应时间: ${result.avgResponseTime.toFixed(0)}ms`);
     console.log(`   📏 响应时间范围: ${result.minResponseTime}ms - ${result.maxResponseTime}ms`);
   }
@@ -277,7 +288,7 @@ class SimplePerformanceTester {
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -295,10 +306,10 @@ class SimplePerformanceTester {
  */
 async function main(): Promise<void> {
   console.log('🚀 YYC³ AI智能协作平台 - 简化性能测试');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
   console.log('测试目标: 基础并发性能验证');
   console.log('测试场景: 轻量级并发测试');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
 
   const tester = new SimplePerformanceTester();
 
@@ -308,7 +319,6 @@ async function main(): Promise<void> {
 
     // 执行性能测试
     await tester.runAllTests();
-
   } catch (error) {
     console.error('💥 测试执行失败:', error);
   } finally {
@@ -319,7 +329,7 @@ async function main(): Promise<void> {
 
 // 运行测试
 if (import.meta.main) {
-  main().catch(error => {
+  main().catch((error) => {
     console.error('💥 未捕获的错误:', error);
     process.exit(1);
   });

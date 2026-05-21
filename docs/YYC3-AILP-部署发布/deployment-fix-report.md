@@ -41,18 +41,17 @@ Next.js 在构建时尝试预渲染页面，但某些页面缺少 `"use client"`
 import { ResponsiveLayout } from "@/components/responsive-layout"
 
 export default function ExamPage() {
-  return (
-    <ResponsiveLayout
-      title="练习测试"
-      user={{
+return (
+<ResponsiveLayout
+title="练习测试"
+user={{
         name: "张同学",
         avatar: "/placeholder.svg?height=40&width=40",
         level: "中级工程师",
-      }}
-    >
-      {/*...*/}
-    </ResponsiveLayout>
-  )
+      }} >
+{/_..._/}
+</ResponsiveLayout>
+)
 }
 \`\`\`
 
@@ -97,9 +96,9 @@ export default function ExamPage() {
 
 \`\`\`json
 {
-  "rules": {
-    "next/no-client-import-in-server-component": "error"
-  }
+"rules": {
+"next/no-client-import-in-server-component": "error"
+}
 }
 \`\`\`
 
@@ -187,4 +186,4 @@ npm run build
 
 ---
 
-*此文档记录了部署错误的完整修复过程，供团队参考和学习。*
+_此文档记录了部署错误的完整修复过程，供团队参考和学习。_

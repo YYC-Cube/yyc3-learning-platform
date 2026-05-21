@@ -6,15 +6,15 @@ metadata:
   labels:
     app: yyc3-learning
   annotations:
-    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-type: 'nlb'
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
 spec:
   type: ClusterIP
   ports:
-  - name: http
-    port: 80
-    targetPort: 3000
-    protocol: TCP
+    - name: http
+      port: 80
+      targetPort: 3000
+      protocol: TCP
   selector:
     app: yyc3-learning
   sessionAffinity: ClientIP
@@ -32,9 +32,9 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - name: metrics
-    port: 3000
-    targetPort: 3000
-    protocol: TCP
+    - name: metrics
+      port: 3000
+      targetPort: 3000
+      protocol: TCP
   selector:
     app: yyc3-learning

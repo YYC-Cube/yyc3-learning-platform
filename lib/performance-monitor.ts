@@ -7,26 +7,31 @@
  * @license MIT
  */
 
-import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals'
-import { evaluatePerformanceMetric, generatePerformanceReport, formatPerformanceReport, type PerformanceMetric } from './performance.config'
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
+import {
+  evaluatePerformanceMetric,
+  generatePerformanceReport,
+  formatPerformanceReport,
+  type PerformanceMetric,
+} from './performance.config';
 
 interface PerformanceData {
-  timestamp: number
-  url: string
-  metrics: PerformanceMetric[]
+  timestamp: number;
+  url: string;
+  metrics: PerformanceMetric[];
 }
 
 interface PerformanceObserverOptions {
-  reportUrl?: string
-  enableConsoleLog?: boolean
-  sampleRate?: number
+  reportUrl?: string;
+  enableConsoleLog?: boolean;
+  sampleRate?: number;
 }
 
 class PerformanceMonitor {
-  private metrics: Map<string, number> = new Map()
-  private options: PerformanceObserverOptions
-  private reportQueue: PerformanceData[] = []
-  private isInitialized = false
+  private metrics: Map<string, number> = new Map();
+  private options: PerformanceObserverOptions;
+  private reportQueue: PerformanceData[] = [];
+  private isInitialized = false;
 
   constructor(options: PerformanceObserverOptions = {}) {
     this.options = {
@@ -34,225 +39,239 @@ class PerformanceMonitor {
       enableConsoleLog: process.env.NODE_ENV === 'development',
       sampleRate: 1,
       ...options,
-    }
+    };
   }
 
   initialize() {
     if (this.isInitialized) {
-      console.warn('PerformanceMonitor already initialized')
-      return
+      console.warn('PerformanceMonitor already initialized');
+      return;
     }
 
     if (typeof window === 'undefined') {
-      return
+      return;
     }
 
-    this.observeWebVitals()
-    this.observeCustomMetrics()
-    this.setupPerformanceObserver()
+    this.observeWebVitals();
+    this.observeCustomMetrics();
+    this.setupPerformanceObserver();
 
-    this.isInitialized = true
+    this.isInitialized = true;
 
     if (this.options.enableConsoleLog) {
-      console.warn('🚀 PerformanceMonitor initialized')
+      console.warn('🚀 PerformanceMonitor initialized');
     }
   }
 
   private observeWebVitals() {
     onCLS((metric) => {
-      this.recordMetric('cumulativeLayoutShift', metric.value)
-    })
+      this.recordMetric('cumulativeLayoutShift', metric.value);
+    });
 
     onFCP((metric) => {
-      this.recordMetric('firstContentfulPaint', metric.value)
-    })
+      this.recordMetric('firstContentfulPaint', metric.value);
+    });
 
     onINP((metric) => {
-      this.recordMetric('interactionToNextPaint', metric.value)
-    })
+      this.recordMetric('interactionToNextPaint', metric.value);
+    });
 
     onLCP((metric) => {
-      this.recordMetric('largestContentfulPaint', metric.value)
-    })
+      this.recordMetric('largestContentfulPaint', metric.value);
+    });
 
     onTTFB((metric) => {
-      this.recordMetric('timeToFirstByte', metric.value)
-    })
+      this.recordMetric('timeToFirstByte', metric.value);
+    });
   }
 
   private observeCustomMetrics() {
     if (typeof window === 'undefined') {
-      return
+      return;
     }
 
     window.addEventListener('load', () => {
       setTimeout(() => {
-        const perfData = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
+        const perfData = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming;
 
         if (perfData) {
-          this.recordMetric('domContentLoaded', perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart)
-          this.recordMetric('loadComplete', perfData.loadEventEnd - perfData.loadEventStart)
-          this.recordMetric('timeToInteractive', perfData.domInteractive - perfData.fetchStart)
-          this.recordMetric('totalBlockingTime', this.calculateTotalBlockingTime(perfData))
+          this.recordMetric(
+            'domContentLoaded',
+            perfData.domContentLoadedEventEnd - perfData.domContentLoadedEventStart
+          );
+          this.recordMetric('loadComplete', perfData.loadEventEnd - perfData.loadEventStart);
+          this.recordMetric('timeToInteractive', perfData.domInteractive - perfData.fetchStart);
+          this.recordMetric('totalBlockingTime', this.calculateTotalBlockingTime(perfData));
         }
-      }, 0)
-    })
+      }, 0);
+    });
   }
 
   private calculateTotalBlockingTime(perfData: PerformanceNavigationTiming): number {
-    const entries = performance.getEntriesByType('longtask') as PerformanceEntry[]
-    let totalBlockingTime = 0
+    const entries = performance.getEntriesByType('longtask') as PerformanceEntry[];
+    let totalBlockingTime = 0;
 
     entries.forEach((entry) => {
       if (entry.startTime >= perfData.domContentLoadedEventEnd) {
-        totalBlockingTime += entry.duration - 50
+        totalBlockingTime += entry.duration - 50;
       }
-    })
+    });
 
-    return totalBlockingTime
+    return totalBlockingTime;
   }
 
   private setupPerformanceObserver() {
     if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
-      return
+      return;
     }
 
     const observer = new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         if (entry.entryType === 'measure') {
-          const measure = entry as PerformanceMeasure
-          this.recordMetric(measure.name, measure.duration)
+          const measure = entry as PerformanceMeasure;
+          this.recordMetric(measure.name, measure.duration);
         }
       }
-    })
+    });
 
-    observer.observe({ entryTypes: ['measure'] })
+    observer.observe({ entryTypes: ['measure'] });
   }
 
   recordMetric(name: string, value: number) {
-    const metric = evaluatePerformanceMetric(name, value)
-    this.metrics.set(name, metric.value)
+    const metric = evaluatePerformanceMetric(name, value);
+    this.metrics.set(name, metric.value);
 
     if (this.options.enableConsoleLog) {
-      const statusIcon = metric.status === 'pass' ? '✅' : metric.status === 'warning' ? '⚡' : '❌'
-      console.warn(`${statusIcon} ${name}: ${metric.value}${metric.unit} (阈值: ${metric.threshold}${metric.unit})`)
+      const statusIcon =
+        metric.status === 'pass' ? '✅' : metric.status === 'warning' ? '⚡' : '❌';
+      console.warn(
+        `${statusIcon} ${name}: ${metric.value}${metric.unit} (阈值: ${metric.threshold}${metric.unit})`
+      );
     }
   }
 
   measureComponentRender(componentName: string, renderFn: () => void) {
-    const startMark = `${componentName}-render-start`
-    const endMark = `${componentName}-render-end`
-    const measureName = `${componentName}RenderTime`
+    const startMark = `${componentName}-render-start`;
+    const endMark = `${componentName}-render-end`;
+    const measureName = `${componentName}RenderTime`;
 
-    performance.mark(startMark)
+    performance.mark(startMark);
 
-    renderFn()
+    renderFn();
 
-    performance.mark(endMark)
-    performance.measure(measureName, startMark, endMark)
+    performance.mark(endMark);
+    performance.measure(measureName, startMark, endMark);
 
-    const measure = performance.getEntriesByName(measureName, 'measure')[0] as PerformanceMeasure
+    const measure = performance.getEntriesByName(measureName, 'measure')[0] as PerformanceMeasure;
     if (measure) {
-      this.recordMetric('componentRenderTime', measure.duration)
+      this.recordMetric('componentRenderTime', measure.duration);
     }
 
-    performance.clearMarks(startMark)
-    performance.clearMarks(endMark)
-    performance.clearMeasures(measureName)
+    performance.clearMarks(startMark);
+    performance.clearMarks(endMark);
+    performance.clearMeasures(measureName);
   }
 
   measureDatabaseQuery(queryName: string, queryFn: () => Promise<any>): Promise<any> {
-    const startMark = `${queryName}-query-start`
-    const endMark = `${queryName}-query-end`
-    const measureName = `${queryName}QueryTime`
+    const startMark = `${queryName}-query-start`;
+    const endMark = `${queryName}-query-end`;
+    const measureName = `${queryName}QueryTime`;
 
-    performance.mark(startMark)
+    performance.mark(startMark);
 
     return queryFn()
       .then((result) => {
-        performance.mark(endMark)
-        performance.measure(measureName, startMark, endMark)
+        performance.mark(endMark);
+        performance.measure(measureName, startMark, endMark);
 
-        const measure = performance.getEntriesByName(measureName, 'measure')[0] as PerformanceMeasure
+        const measure = performance.getEntriesByName(
+          measureName,
+          'measure'
+        )[0] as PerformanceMeasure;
         if (measure) {
-          this.recordMetric('databaseQueryTime', measure.duration)
+          this.recordMetric('databaseQueryTime', measure.duration);
         }
 
-        performance.clearMarks(startMark)
-        performance.clearMarks(endMark)
-        performance.clearMeasures(measureName)
+        performance.clearMarks(startMark);
+        performance.clearMarks(endMark);
+        performance.clearMeasures(measureName);
 
-        return result
+        return result;
       })
       .catch((error) => {
-        performance.clearMarks(startMark)
-        performance.clearMarks(endMark)
-        throw error
-      })
+        performance.clearMarks(startMark);
+        performance.clearMarks(endMark);
+        throw error;
+      });
   }
 
   measureApiCall(apiName: string, apiFn: () => Promise<any>): Promise<any> {
-    const startMark = `${apiName}-call-start`
-    const endMark = `${apiName}-call-end`
-    const measureName = `${apiName}ResponseTime`
+    const startMark = `${apiName}-call-start`;
+    const endMark = `${apiName}-call-end`;
+    const measureName = `${apiName}ResponseTime`;
 
-    performance.mark(startMark)
+    performance.mark(startMark);
 
     return apiFn()
       .then((result) => {
-        performance.mark(endMark)
-        performance.measure(measureName, startMark, endMark)
+        performance.mark(endMark);
+        performance.measure(measureName, startMark, endMark);
 
-        const measure = performance.getEntriesByName(measureName, 'measure')[0] as PerformanceMeasure
+        const measure = performance.getEntriesByName(
+          measureName,
+          'measure'
+        )[0] as PerformanceMeasure;
         if (measure) {
-          this.recordMetric('apiResponseTime', measure.duration)
+          this.recordMetric('apiResponseTime', measure.duration);
         }
 
-        performance.clearMarks(startMark)
-        performance.clearMarks(endMark)
-        performance.clearMeasures(measureName)
+        performance.clearMarks(startMark);
+        performance.clearMarks(endMark);
+        performance.clearMeasures(measureName);
 
-        return result
+        return result;
       })
       .catch((error) => {
-        performance.clearMarks(startMark)
-        performance.clearMarks(endMark)
-        throw error
-      })
+        performance.clearMarks(startMark);
+        performance.clearMarks(endMark);
+        throw error;
+      });
   }
 
   recordCacheHitRate(hits: number, total: number) {
-    const hitRate = total > 0 ? (hits / total) * 100 : 0
-    this.recordMetric('cacheHitRate', hitRate)
+    const hitRate = total > 0 ? (hits / total) * 100 : 0;
+    this.recordMetric('cacheHitRate', hitRate);
   }
 
   getMetrics(): PerformanceMetric[] {
     return Array.from(this.metrics.entries()).map(([name, value]) =>
       evaluatePerformanceMetric(name, value)
-    )
+    );
   }
 
   generateReport() {
-    const metrics = this.getMetrics()
-    const report = generatePerformanceReport(metrics)
+    const metrics = this.getMetrics();
+    const report = generatePerformanceReport(metrics);
 
     if (this.options.enableConsoleLog) {
-      console.warn(formatPerformanceReport(report))
+      console.warn(formatPerformanceReport(report));
     }
 
-    return report
+    return report;
   }
 
   async sendReport() {
     if (!this.options.reportUrl) {
-      return
+      return;
     }
 
     if (Math.random() > this.options.sampleRate!) {
-      return
+      return;
     }
 
-    const report = this.generateReport()
+    const report = this.generateReport();
 
     try {
       await fetch(this.options.reportUrl, {
@@ -261,18 +280,18 @@ class PerformanceMonitor {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(report),
-      })
+      });
     } catch (error) {
-      console.error('Failed to send performance report:', error)
+      console.error('Failed to send performance report:', error);
     }
   }
 
   clearMetrics() {
-    this.metrics.clear()
+    this.metrics.clear();
   }
 }
 
-export const performanceMonitor = new PerformanceMonitor()
+export const performanceMonitor = new PerformanceMonitor();
 
 export function usePerformanceMonitor() {
   return {
@@ -289,7 +308,7 @@ export function usePerformanceMonitor() {
     generateReport: () => performanceMonitor.generateReport(),
     sendReport: () => performanceMonitor.sendReport(),
     clearMetrics: () => performanceMonitor.clearMetrics(),
-  }
+  };
 }
 
-export default performanceMonitor
+export default performanceMonitor;

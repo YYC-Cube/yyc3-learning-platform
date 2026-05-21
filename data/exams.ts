@@ -1,15 +1,15 @@
-import { Exam } from '../app/types.d'
+import { Exam } from '../app/types.d';
 
-export const exams: Exam[] = []
+export const exams: Exam[] = [];
 
 export function getExamById(id: string): Exam | undefined {
-  return exams.find(exam => exam.id === id)
+  return exams.find((exam) => exam.id === id);
 }
 
 export function getAllExams(): Exam[] {
-  return exams
+  return exams;
 }
 
 export function getExamsByCategory(category: string): Exam[] {
-  return exams.filter(exam => exam.category === category)
+  return exams.filter((exam) => exam.category === category);
 }

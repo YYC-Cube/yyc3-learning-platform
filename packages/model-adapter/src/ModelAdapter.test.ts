@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { ModelAdapter } from './ModelAdapter';
-import { ModelAdapterConfig, ModelConfig, ModelProvider, ModelRequest, ModelResponse, TaskType } from './IModelAdapter';
+import {
+  ModelAdapterConfig,
+  ModelConfig,
+  ModelProvider,
+  ModelRequest,
+  ModelResponse,
+  TaskType,
+} from './IModelAdapter';
 
 describe('ModelAdapter', () => {
   let modelAdapter: ModelAdapter;
@@ -19,9 +26,9 @@ describe('ModelAdapter', () => {
           retryDelay: 1000,
           exponentialBackoff: true,
           alternativeModels: ['gpt-3.5-turbo'],
-          fallbackOnErrors: ['rate_limit', 'server_error']
+          fallbackOnErrors: ['rate_limit', 'server_error'],
         },
-        ...partialConfig?.routing
+        ...partialConfig?.routing,
       },
       loadBalancing: {
         strategy: 'round_robin' as const,
@@ -29,7 +36,7 @@ describe('ModelAdapter', () => {
         healthCheckInterval: 60000,
         unhealthyThreshold: 3,
         healthyThreshold: 2,
-        ...partialConfig?.loadBalancing
+        ...partialConfig?.loadBalancing,
       },
       cache: {
         enabled: true,
@@ -38,7 +45,7 @@ describe('ModelAdapter', () => {
         strategy: 'lru' as const,
         compressionEnabled: false,
         encryptionEnabled: false,
-        ...partialConfig?.cache
+        ...partialConfig?.cache,
       },
       monitoring: {
         enabled: true,
@@ -49,10 +56,10 @@ describe('ModelAdapter', () => {
           latency: 5000,
           cost: 100,
           queueDepth: 100,
-          resourceUsage: 0.9
+          resourceUsage: 0.9,
         },
         retentionPeriod: 86400000,
-        ...partialConfig?.monitoring
+        ...partialConfig?.monitoring,
       },
       security: {
         encryptionEnabled: true,
@@ -64,11 +71,11 @@ describe('ModelAdapter', () => {
           rbacEnabled: true,
           defaultPermissions: [],
           adminRoles: ['admin'],
-          userRoles: ['user']
+          userRoles: ['user'],
         },
-        ...partialConfig?.security
+        ...partialConfig?.security,
       },
-      ...partialConfig
+      ...partialConfig,
     };
   };
 
@@ -90,9 +97,9 @@ describe('ModelAdapter', () => {
         codeGeneration: true,
         reasoning: true,
         multilingual: true,
-        customInstructions: true
+        customInstructions: true,
       },
-      ...partialConfig
+      ...partialConfig,
     };
   };
 
@@ -102,14 +109,16 @@ describe('ModelAdapter', () => {
       id: 'test-request',
       taskType: 'conversation' as TaskType,
       prompt: 'Test prompt',
-      messages: [{ 
-        role: 'user', 
-        content: 'Test prompt',
-        timestamp: Date.now()
-      }],
+      messages: [
+        {
+          role: 'user',
+          content: 'Test prompt',
+          timestamp: Date.now(),
+        },
+      ],
       temperature: 0.7,
       maxTokens: 1000,
-      ...partialRequest
+      ...partialRequest,
     };
   };
 
@@ -124,7 +133,7 @@ describe('ModelAdapter', () => {
       usage: {
         inputTokens: 10,
         outputTokens: 20,
-        totalTokens: 30
+        totalTokens: 30,
       },
       metadata: {
         model: 'gpt-4',
@@ -132,9 +141,9 @@ describe('ModelAdapter', () => {
         timestamp: Date.now(),
         requestId: 'test-request',
         processingTime: 100,
-        latency: 100
+        latency: 100,
       },
-      ...partialResponse
+      ...partialResponse,
     };
   };
 
@@ -145,7 +154,7 @@ describe('ModelAdapter', () => {
       processRequest: jest.fn(),
       processStreamingRequest: jest.fn(),
       healthCheck: jest.fn(),
-      cleanup: jest.fn().mockResolvedValue(true)
+      cleanup: jest.fn().mockResolvedValue(true),
     };
   });
 
@@ -193,7 +202,7 @@ describe('ModelAdapter', () => {
         name: 'GPT-4',
         provider: 'openai' as ModelProvider,
         model: 'gpt-4',
-        credentials: { apiKey: 'test-key' }
+        credentials: { apiKey: 'test-key' },
       });
 
       jest.spyOn(modelAdapter as any, 'createProvider').mockReturnValue(mockProvider);
@@ -205,7 +214,7 @@ describe('ModelAdapter', () => {
     it('should throw error for invalid model configuration', async () => {
       const config = {
         id: 'gpt-4',
-        name: 'GPT-4'
+        name: 'GPT-4',
       } as any;
 
       await expect(modelAdapter.addModel(config)).rejects.toThrow('Invalid model configuration');
@@ -217,7 +226,7 @@ describe('ModelAdapter', () => {
         name: 'GPT-4',
         provider: 'openai' as ModelProvider,
         model: 'gpt-4',
-        credentials: {}
+        credentials: {},
       } as any;
 
       await expect(modelAdapter.addModel(config)).rejects.toThrow('Invalid model configuration');
@@ -233,7 +242,7 @@ describe('ModelAdapter', () => {
         name: 'GPT-4',
         provider: 'openai' as ModelProvider,
         model: 'gpt-4',
-        credentials: { apiKey: 'test-key' }
+        credentials: { apiKey: 'test-key' },
       });
 
       jest.spyOn(modelAdapter as any, 'createProvider').mockReturnValue(mockProvider);
@@ -266,7 +275,7 @@ describe('ModelAdapter', () => {
         model: 'gpt-4',
         credentials: { apiKey: 'test-key' },
         maxTokens: 1000,
-        temperature: 0.7
+        temperature: 0.7,
       });
 
       jest.spyOn(modelAdapter as any, 'createProvider').mockReturnValue(mockProvider);
@@ -276,7 +285,7 @@ describe('ModelAdapter', () => {
     it('should update model configuration successfully', async () => {
       const updates: Partial<ModelConfig> = {
         maxTokens: 2000,
-        temperature: 0.8
+        temperature: 0.8,
       };
 
       await expect(modelAdapter.updateModel('gpt-4', updates)).resolves.not.toThrow();
@@ -287,7 +296,9 @@ describe('ModelAdapter', () => {
     });
 
     it('should throw error when updating non-existent model', async () => {
-      await expect(modelAdapter.updateModel('non-existent', { maxTokens: 2000 })).rejects.toThrow('Model not found');
+      await expect(modelAdapter.updateModel('non-existent', { maxTokens: 2000 })).rejects.toThrow(
+        'Model not found'
+      );
     });
   });
 
@@ -300,7 +311,7 @@ describe('ModelAdapter', () => {
         name: 'GPT-4',
         provider: 'openai' as ModelProvider,
         model: 'gpt-4',
-        credentials: { apiKey: 'test-key' }
+        credentials: { apiKey: 'test-key' },
       });
 
       jest.spyOn(modelAdapter as any, 'createProvider').mockReturnValue(mockProvider);
@@ -329,15 +340,15 @@ describe('ModelAdapter', () => {
           name: 'GPT-4',
           provider: 'openai' as ModelProvider,
           model: 'gpt-4',
-          credentials: { apiKey: 'test-key-1' }
+          credentials: { apiKey: 'test-key-1' },
         }),
         generateTestModelConfig({
           id: 'claude-3',
           name: 'Claude 3',
           provider: 'anthropic' as ModelProvider,
           model: 'claude-3-opus-20240229',
-          credentials: { apiKey: 'test-key-2' }
-        })
+          credentials: { apiKey: 'test-key-2' },
+        }),
       ];
 
       jest.spyOn(modelAdapter as any, 'createProvider').mockReturnValue(mockProvider);
@@ -371,7 +382,7 @@ describe('ModelAdapter', () => {
         name: 'GPT-4',
         provider: 'openai' as ModelProvider,
         model: 'gpt-4',
-        credentials: { apiKey: 'test-key' }
+        credentials: { apiKey: 'test-key' },
       });
 
       jest.spyOn(modelAdapter as any, 'createProvider').mockReturnValue(mockProvider);
@@ -393,10 +404,12 @@ describe('ModelAdapter', () => {
 
     it('should throw error when no models available for task type', async () => {
       const request = generateTestModelRequest({
-        taskType: 'analysis' as TaskType
+        taskType: 'analysis' as TaskType,
       });
 
-      await expect(modelAdapter.processRequest(request)).rejects.toThrow('No available models for task type');
+      await expect(modelAdapter.processRequest(request)).rejects.toThrow(
+        'No available models for task type'
+      );
     });
 
     it('should emit request and response events', async () => {
@@ -427,7 +440,7 @@ describe('ModelAdapter', () => {
         name: 'GPT-4',
         provider: 'openai' as ModelProvider,
         model: 'gpt-4',
-        credentials: { apiKey: 'test-key' }
+        credentials: { apiKey: 'test-key' },
       });
 
       jest.spyOn(modelAdapter as any, 'createProvider').mockReturnValue(mockProvider);
@@ -441,7 +454,7 @@ describe('ModelAdapter', () => {
         responseTime: 100,
         lastCheck: Date.now(),
         errorRate: 0,
-        uptime: 100
+        uptime: 100,
       });
 
       const healthChecks = await modelAdapter.healthCheck();

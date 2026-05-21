@@ -24,40 +24,40 @@ async function advancedFeaturesExample() {
       resourceLimits: {
         maxMemory: 1024 * 1024 * 1024,
         maxCPU: 80,
-        maxNetwork: 1000
+        maxNetwork: 1000,
       },
       learningConfig: {
         enabled: true,
         adaptationRate: 0.1,
-        knowledgeRetention: 0.9
+        knowledgeRetention: 0.9,
       },
       decisionMakingConfig: {
         timeout: 30000,
-        confidenceThreshold: 0.7
+        confidenceThreshold: 0.7,
       },
       collaborationConfig: {
         enabled: true,
-        maxCollaborators: 5
+        maxCollaborators: 5,
       },
       monitoringConfig: {
         enabled: true,
-        metricsInterval: 60000
+        metricsInterval: 60000,
       },
       securityConfig: {
         level: 'standard',
         accessControl: true,
         encryptionEnabled: true,
-        auditLog: true
+        auditLog: true,
       },
       integrationConfig: {
         enabled: true,
-        endpoints: []
+        endpoints: [],
       },
       modelAdapterConfig: {
         apiKey,
         model: 'gpt-4',
-        provider: 'openai'
-      }
+        provider: 'openai',
+      },
     });
 
     console.log('✅ 自主AI引擎初始化成功');
@@ -66,10 +66,13 @@ async function advancedFeaturesExample() {
 
     console.log('✅ 模型适配器初始化成功（流式模式）');
 
-    const rateLimiter = new RateLimiter({
-      maxRequests: 100,
-      windowMs: 60000
-    }, RateLimitStrategy.TOKEN_BUCKET);
+    const rateLimiter = new RateLimiter(
+      {
+        maxRequests: 100,
+        windowMs: 60000,
+      },
+      RateLimitStrategy.TOKEN_BUCKET
+    );
 
     console.log('✅ 速率限制器初始化成功（令牌桶策略）');
 
@@ -100,13 +103,13 @@ async function advancedFeaturesExample() {
       console.log(`\n📊 请求 ${i + 1}:`, {
         allowed: result.allowed,
         remaining: result.remaining,
-        resetTime: new Date(result.resetTime).toISOString()
+        resetTime: new Date(result.resetTime).toISOString(),
       });
     }
 
     const streamResponse = modelAdapter.generateStream({
       prompt: '请用三句话介绍人工智能的发展历程',
-      maxTokens: 300
+      maxTokens: 300,
     });
 
     console.log('\n🌊 流式生成结果:');
@@ -122,13 +125,12 @@ async function advancedFeaturesExample() {
       options: {
         depth: 'deep',
         timeout: 60000,
-        includeAlternatives: true
-      }
+        includeAlternatives: true,
+      },
     });
 
     console.log('\n🧠 深度推理结果:');
     console.log(JSON.stringify(complexReasoning, null, 2));
-
   } catch (error) {
     console.error('❌ 错误:', error);
   }

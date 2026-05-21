@@ -11,7 +11,7 @@ import {
   Risk,
   Recommendation,
   Priority,
-  AlertLevel
+  AlertLevel,
 } from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 import { GoalAnalyticsEngine } from '../core/GoalAnalyticsEngine';
@@ -76,14 +76,15 @@ export class GoalDimension extends EventEmitter implements IDimension {
   get metrics(): any {
     return {
       totalGoals: this._goals.size,
-      activeGoals: Array.from(this._goals.values()).filter(g => g.status === 'active').length,
-      completedGoals: Array.from(this._goals.values()).filter(g => g.status === 'completed').length,
-      atRiskGoals: Array.from(this._goals.values()).filter(g => this.isGoalAtRisk(g)).length,
+      activeGoals: Array.from(this._goals.values()).filter((g) => g.status === 'active').length,
+      completedGoals: Array.from(this._goals.values()).filter((g) => g.status === 'completed')
+        .length,
+      atRiskGoals: Array.from(this._goals.values()).filter((g) => this.isGoalAtRisk(g)).length,
       overallProgress: this.calculateOverallProgress(),
       healthScore: this._healthScore,
       kpiCount: this._kpis.size,
       milestoneCount: this._milestones.size,
-      riskCount: this._risks.size
+      riskCount: this._risks.size,
     };
   }
 
@@ -104,7 +105,6 @@ export class GoalDimension extends EventEmitter implements IDimension {
 
       this._status = 'active';
       this._logger.info('GoalDimension initialized successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to initialize GoalDimension', error);
@@ -135,7 +135,6 @@ export class GoalDimension extends EventEmitter implements IDimension {
 
       this.emit('started', { timestamp: new Date() });
       this._logger.info('GoalDimension started successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to start GoalDimension', error);
@@ -163,7 +162,6 @@ export class GoalDimension extends EventEmitter implements IDimension {
 
       this.emit('stopped', { timestamp: new Date() });
       this._logger.info('GoalDimension stopped successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to stop GoalDimension', error);
@@ -175,7 +173,9 @@ export class GoalDimension extends EventEmitter implements IDimension {
   // Goal Management
   // ========================================================================
 
-  async createGoal(goalData: Omit<StrategicGoal, 'id' | 'createdAt' | 'updatedAt' | 'lastReviewed'>): Promise<StrategicGoal> {
+  async createGoal(
+    goalData: Omit<StrategicGoal, 'id' | 'createdAt' | 'updatedAt' | 'lastReviewed'>
+  ): Promise<StrategicGoal> {
     // Validate goal data
     await this._validator.validateGoal(goalData);
 
@@ -184,7 +184,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
       id: uuidv4(),
       createdAt: new Date(),
       updatedAt: new Date(),
-      lastReviewed: new Date()
+      lastReviewed: new Date(),
     };
 
     // Store goal
@@ -280,15 +280,15 @@ export class GoalDimension extends EventEmitter implements IDimension {
   }
 
   getActiveGoals(): StrategicGoal[] {
-    return Array.from(this._goals.values()).filter(goal => goal.status === 'active');
+    return Array.from(this._goals.values()).filter((goal) => goal.status === 'active');
   }
 
   getGoalsByCategory(category: string): StrategicGoal[] {
-    return Array.from(this._goals.values()).filter(goal => goal.category === category);
+    return Array.from(this._goals.values()).filter((goal) => goal.category === category);
   }
 
   getGoalsByOwner(owner: string): StrategicGoal[] {
-    return Array.from(this._goals.values()).filter(goal => goal.owner === owner);
+    return Array.from(this._goals.values()).filter((goal) => goal.owner === owner);
   }
 
   // ========================================================================
@@ -346,7 +346,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
   }
 
   getKPIsByStatus(status: KPI['status']): KPI[] {
-    return Array.from(this._kpis.values()).filter(kpi => kpi.status === status);
+    return Array.from(this._kpis.values()).filter((kpi) => kpi.status === status);
   }
 
   // ========================================================================
@@ -390,10 +390,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
     cutoffDate.setDate(cutoffDate.getDate() + days);
 
     return Array.from(this._milestones.values())
-      .filter(milestone =>
-        milestone.status !== 'completed' &&
-        milestone.dueDate <= cutoffDate
-      )
+      .filter((milestone) => milestone.status !== 'completed' && milestone.dueDate <= cutoffDate)
       .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
   }
 
@@ -404,7 +401,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
   async createRisk(riskData: Omit<Risk, 'id'>): Promise<Risk> {
     const risk: Risk = {
       ...riskData,
-      id: uuidv4()
+      id: uuidv4(),
     };
 
     this._risks.set(risk.id, risk);
@@ -439,12 +436,12 @@ export class GoalDimension extends EventEmitter implements IDimension {
   }
 
   getHighImpactRisks(): Risk[] {
-    return Array.from(this._risks.values())
-      .filter(risk =>
+    return Array.from(this._risks.values()).filter(
+      (risk) =>
         risk.impact === 'high' ||
         risk.impact === 'critical' ||
         (risk.probability === 'high' && risk.impact !== 'low')
-      );
+    );
   }
 
   // ========================================================================
@@ -465,7 +462,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
     return {
       ...metrics,
       analytics,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -510,39 +507,45 @@ export class GoalDimension extends EventEmitter implements IDimension {
       progress: 65,
       owner: 'customer-success-team',
       stakeholders: ['product-team', 'support-team', 'engineering-team'],
-      kpis: [{
-        id: uuidv4(),
-        name: 'CSAT Score',
-        description: 'Customer Satisfaction Survey Score',
-        target: 90,
-        current: 78,
-        unit: 'score',
-        trend: 'increasing',
-        weight: 0.4,
-        status: 'on-track',
-        lastUpdated: new Date()
-      }],
-      milestones: [{
-        id: uuidv4(),
-        title: 'Implement Feedback System',
-        description: 'Deploy automated customer feedback collection',
-        dueDate: new Date('2024-11-15'),
-        status: 'in-progress',
-        completionPercentage: 75,
-        deliverables: ['Feedback forms', 'Analytics dashboard'],
-        assignee: 'product-team'
-      }],
+      kpis: [
+        {
+          id: uuidv4(),
+          name: 'CSAT Score',
+          description: 'Customer Satisfaction Survey Score',
+          target: 90,
+          current: 78,
+          unit: 'score',
+          trend: 'increasing',
+          weight: 0.4,
+          status: 'on-track',
+          lastUpdated: new Date(),
+        },
+      ],
+      milestones: [
+        {
+          id: uuidv4(),
+          title: 'Implement Feedback System',
+          description: 'Deploy automated customer feedback collection',
+          dueDate: new Date('2024-11-15'),
+          status: 'in-progress',
+          completionPercentage: 75,
+          deliverables: ['Feedback forms', 'Analytics dashboard'],
+          assignee: 'product-team',
+        },
+      ],
       dependencies: [],
-      risks: [{
-        id: uuidv4(),
-        title: 'Low response rate',
-        description: 'Customers may not respond to satisfaction surveys',
-        probability: 'medium',
-        impact: 'medium',
-        status: 'identified',
-        mitigationPlan: 'Offer incentives for survey completion',
-        owner: 'customer-success-team'
-      }]
+      risks: [
+        {
+          id: uuidv4(),
+          title: 'Low response rate',
+          description: 'Customers may not respond to satisfaction surveys',
+          probability: 'medium',
+          impact: 'medium',
+          status: 'identified',
+          mitigationPlan: 'Offer incentives for survey completion',
+          owner: 'customer-success-team',
+        },
+      ],
     });
 
     this._logger.info('Sample goals created for demonstration');
@@ -624,10 +627,18 @@ export class GoalDimension extends EventEmitter implements IDimension {
     let totalScore = 0;
     for (const kpi of kpis) {
       switch (kpi.status) {
-        case 'exceeded': totalScore += 100; break;
-        case 'on-track': totalScore += 85; break;
-        case 'at-risk': totalScore += 60; break;
-        case 'off-track': totalScore += 30; break;
+        case 'exceeded':
+          totalScore += 100;
+          break;
+        case 'on-track':
+          totalScore += 85;
+          break;
+        case 'at-risk':
+          totalScore += 60;
+          break;
+        case 'off-track':
+          totalScore += 30;
+          break;
       }
     }
 
@@ -651,11 +662,16 @@ export class GoalDimension extends EventEmitter implements IDimension {
 
   private getPriorityWeight(priority: Priority): number {
     switch (priority) {
-      case 'critical': return 3;
-      case 'high': return 2;
-      case 'medium': return 1.5;
-      case 'low': return 1;
-      default: return 1;
+      case 'critical':
+        return 3;
+      case 'high':
+        return 2;
+      case 'medium':
+        return 1.5;
+      case 'low':
+        return 1;
+      default:
+        return 1;
     }
   }
 
@@ -666,14 +682,16 @@ export class GoalDimension extends EventEmitter implements IDimension {
     }
 
     // Check KPI status
-    const atRiskKPIs = goal.kpis.filter(kpi => kpi.status === 'at-risk' || kpi.status === 'off-track');
+    const atRiskKPIs = goal.kpis.filter(
+      (kpi) => kpi.status === 'at-risk' || kpi.status === 'off-track'
+    );
     if (atRiskKPIs.length > goal.kpis.length / 2) {
       return true;
     }
 
     // Check for high-impact risks
-    const highImpactRisks = goal.risks.filter(risk =>
-      risk.impact === 'high' || risk.impact === 'critical'
+    const highImpactRisks = goal.risks.filter(
+      (risk) => risk.impact === 'high' || risk.impact === 'critical'
     );
     if (highImpactRisks.length > 0) {
       return true;
@@ -689,7 +707,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
   }
 
   private calculateOverallProgress(): number {
-    const activeGoals = Array.from(this._goals.values()).filter(goal => goal.status === 'active');
+    const activeGoals = Array.from(this._goals.values()).filter((goal) => goal.status === 'active');
 
     if (activeGoals.length === 0) return 0;
 
@@ -700,13 +718,13 @@ export class GoalDimension extends EventEmitter implements IDimension {
   private async updateGoalProgress(kpiId: string): Promise<void> {
     // Find goal containing this KPI
     for (const goal of this._goals.values()) {
-      const kpi = goal.kpis.find(k => k.id === kpiId);
+      const kpi = goal.kpis.find((k) => k.id === kpiId);
       if (kpi) {
         // Recalculate goal progress based on KPIs
         const totalWeight = goal.kpis.reduce((sum, k) => sum + k.weight, 0);
         const weightedProgress = goal.kpis.reduce((sum, k) => {
           const progress = Math.min((k.current / k.target) * 100, 100);
-          return sum + (progress * k.weight);
+          return sum + progress * k.weight;
         }, 0);
 
         goal.progress = Math.round(weightedProgress / totalWeight);
@@ -721,16 +739,16 @@ export class GoalDimension extends EventEmitter implements IDimension {
   private async updateGoalProgressFromMilestones(milestoneId: string): Promise<void> {
     // Find goal containing this milestone
     for (const goal of this._goals.values()) {
-      const milestone = goal.milestones.find(m => m.id === milestoneId);
+      const milestone = goal.milestones.find((m) => m.id === milestoneId);
       if (milestone) {
         // Recalculate milestone completion percentage
-        const completedMilestones = goal.milestones.filter(m => m.status === 'completed').length;
+        const completedMilestones = goal.milestones.filter((m) => m.status === 'completed').length;
         const totalMilestones = goal.milestones.length;
 
         if (totalMilestones > 0) {
           const milestoneProgress = (completedMilestones / totalMilestones) * 100;
           // Weight milestone progress at 30% of total goal progress
-          goal.progress = Math.round((goal.progress * 0.7) + (milestoneProgress * 0.3));
+          goal.progress = Math.round(goal.progress * 0.7 + milestoneProgress * 0.3);
           goal.updatedAt = new Date();
         }
 
@@ -769,7 +787,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
     if (upcomingDeadlines.length > 0) {
       this.emit('upcoming-deadlines', {
         milestones: upcomingDeadlines,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     }
   }
@@ -801,7 +819,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
           title: `Goal at Risk: ${goal.title}`,
           description: `Goal ${goal.title} is showing risk indicators and may need attention`,
           source: 'GoalDimension',
-          metadata: { goalId: goal.id, goal }
+          metadata: { goalId: goal.id, goal },
         });
       }
     }
@@ -815,15 +833,15 @@ export class GoalDimension extends EventEmitter implements IDimension {
           title: `KPI Off Track: ${kpi.name}`,
           description: `KPI ${kpi.name} is significantly off target`,
           source: 'GoalDimension',
-          metadata: { kpiId: kpi.id, kpi }
+          metadata: { kpiId: kpi.id, kpi },
         });
       }
     }
 
     // Check for risk-related alerts
-    const criticalRisks = risks.filter(risk =>
-      (risk.impact === 'critical' && risk.probability === 'high') ||
-      risk.status === 'mitigated'
+    const criticalRisks = risks.filter(
+      (risk) =>
+        (risk.impact === 'critical' && risk.probability === 'high') || risk.status === 'mitigated'
     );
 
     for (const risk of criticalRisks) {
@@ -833,7 +851,7 @@ export class GoalDimension extends EventEmitter implements IDimension {
         title: `Critical Risk: ${risk.title}`,
         description: risk.description,
         source: 'GoalDimension',
-        metadata: { riskId: risk.id, risk }
+        metadata: { riskId: risk.id, risk },
       });
     }
   }

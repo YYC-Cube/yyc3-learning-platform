@@ -4,45 +4,45 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { CheckCircle, Circle, ArrowDown, Target, BookOpen } from "lucide-react"
-import Link from "next/link"
-import type { CourseModule } from "@/data/course-recommendations"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { CheckCircle, Circle, ArrowDown, Target, BookOpen } from 'lucide-react';
+import Link from 'next/link';
+import type { CourseModule } from '@/data/course-recommendations';
 
 interface LearningPathProps {
-  courses: CourseModule[]
-  currentCourseId?: string
-  className?: string
+  courses: CourseModule[];
+  currentCourseId?: string;
+  className?: string;
 }
 
 export function LearningPath({ courses, currentCourseId, className }: LearningPathProps) {
   const getLevelColor = (level: string) => {
     switch (level) {
-      case "初级":
-        return "bg-green-100 text-green-800 border-green-300"
-      case "中级":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300"
-      case "高级":
-        return "bg-red-100 text-red-800 border-red-300"
-      case "专家":
-        return "bg-purple-100 text-purple-800 border-purple-300"
+      case '初级':
+        return 'bg-green-100 text-green-800 border-green-300';
+      case '中级':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case '高级':
+        return 'bg-red-100 text-red-800 border-red-300';
+      case '专家':
+        return 'bg-purple-100 text-purple-800 border-purple-300';
       default:
-        return "bg-gray-100 text-gray-800 border-gray-300"
+        return 'bg-gray-100 text-gray-800 border-gray-300';
     }
-  }
+  };
 
   const isCompleted = (_courseId: string) => {
     // 这里可以根据实际的学习进度数据来判断
-    return false
-  }
+    return false;
+  };
 
   const isCurrent = (courseId: string) => {
-    return courseId === currentCourseId
-  }
+    return courseId === currentCourseId;
+  };
 
   return (
     <div className={className}>
@@ -61,10 +61,10 @@ export function LearningPath({ courses, currentCourseId, className }: LearningPa
                 <div
                   className={`p-4 rounded-lg border-2 transition-all duration-300 ${
                     isCurrent(course.id)
-                      ? "border-indigo-400 bg-indigo-50 shadow-md"
+                      ? 'border-indigo-400 bg-indigo-50 shadow-md'
                       : isCompleted(course.id)
-                        ? "border-green-400 bg-green-50"
-                        : "border-gray-200 bg-gray-50 hover:border-gray-300"
+                        ? 'border-green-400 bg-green-50'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -81,7 +81,9 @@ export function LearningPath({ courses, currentCourseId, className }: LearningPa
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-gray-900 text-sm sm:text-base">{course.title}</h4>
+                        <h4 className="font-semibold text-gray-900 text-sm sm:text-base">
+                          {course.title}
+                        </h4>
                         <Badge className={getLevelColor(course.level)} variant="outline">
                           {course.level}
                         </Badge>
@@ -94,13 +96,16 @@ export function LearningPath({ courses, currentCourseId, className }: LearningPa
                         </div>
                         <Button
                           size="sm"
-                          variant={isCurrent(course.id) ? "default" : "outline"}
+                          variant={isCurrent(course.id) ? 'default' : 'outline'}
                           className="text-xs"
                           asChild
                         >
-                          <Link href={`/courses/${course.id}`} className="inline-flex items-center justify-center">
+                          <Link
+                            href={`/courses/${course.id}`}
+                            className="inline-flex items-center justify-center"
+                          >
                             <BookOpen className="h-3 w-3 mr-1" />
-                            {isCurrent(course.id) ? "继续学习" : "开始学习"}
+                            {isCurrent(course.id) ? '继续学习' : '开始学习'}
                           </Link>
                         </Button>
                       </div>
@@ -108,7 +113,9 @@ export function LearningPath({ courses, currentCourseId, className }: LearningPa
                       {/* 推荐路径 */}
                       {course.nextRecommendations && (
                         <div className="mt-3 p-2 bg-blue-50 rounded text-xs">
-                          <span className="text-blue-700">🔍 下一步：{course.nextRecommendations.primary}</span>
+                          <span className="text-blue-700">
+                            🔍 下一步：{course.nextRecommendations.primary}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -135,5 +142,5 @@ export function LearningPath({ courses, currentCourseId, className }: LearningPa
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

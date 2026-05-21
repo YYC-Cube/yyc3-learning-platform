@@ -1,10 +1,10 @@
 # YYC³ 学习平台 - 第二周总结报告
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -24,8 +24,8 @@
 
 ### 整体完成情况
 
-| 维度           | 目标 | 实际完成 | 完成率 | 状态   |
-| -------------- | ---- | -------- | ------ | ------ |
+| 维度           | 目标 | 实际完成 | 完成率 | 状态    |
+| -------------- | ---- | -------- | ------ | ------- |
 | 任务数量       | 21   | 21       | 100%   | ✅ 优秀 |
 | 测试覆盖率     | 75%  | 75%      | 100%   | ✅ 达成 |
 | TypeScript错误 | <100 | 12       | 88%    | ✅ 优秀 |
@@ -196,13 +196,13 @@
 - ✅ 修复components/accessibility/screen-reader-only.tsx中的Props类型
 - ✅ 修复components/advanced-exam.tsx中的函数声明顺序错误
 - ✅ 修复app/lib/hooks/useUser.tsx中的updateUser返回类型
-- ✅ 修复__tests__/types/test-types.ts中的vi导入
-- ✅ 修复__tests__/utils/test-helpers.ts中的vi导入
+- ✅ 修复**tests**/types/test-types.ts中的vi导入
+- ✅ 修复**tests**/utils/test-helpers.ts中的vi导入
 - ✅ 修复app/api/courses/route.test.ts中的Request类型
 - ✅ 修复app/api/user/route.test.ts中的Request类型
-- ✅ 修复__tests__/env.test.ts中的process.env只读属性错误
-- ✅ 修复__tests__/lib/logger.test.ts中的process.env只读属性错误
-- ✅ 修复__tests__/lib/cn.test.ts中的类型比较错误
+- ✅ 修复**tests**/env.test.ts中的process.env只读属性错误
+- ✅ 修复**tests**/lib/logger.test.ts中的process.env只读属性错误
+- ✅ 修复**tests**/lib/cn.test.ts中的类型比较错误
 
 **测试文件类型错误修复**：
 
@@ -352,20 +352,20 @@
 
 ### 关键性能指标对比
 
-| 指标             | 第一周结束 | 第二周结束 | 改善幅度 | 目标 | 状态   |
-| ---------------- | ---------- | ---------- | -------- | ---- | ------ |
-| 测试覆盖率       | 65%        | 75%        | ⬆️ 10%    | ≥75% | ✅ 达成 |
-| TypeScript错误数 | 579        | 12         | ⬇️ 98%    | <100 | ✅ 达成 |
+| 指标             | 第一周结束 | 第二周结束 | 改善幅度 | 目标 | 状态    |
+| ---------------- | ---------- | ---------- | -------- | ---- | ------- |
+| 测试覆盖率       | 65%        | 75%        | ⬆️ 10%   | ≥75% | ✅ 达成 |
+| TypeScript错误数 | 579        | 12         | ⬇️ 98%   | <100 | ✅ 达成 |
 | 测试用例总数     | 0          | 135+       | -        | ≥100 | ✅ 达成 |
-| 性能监控覆盖率   | 0%         | 80%        | ⬆️ 80%    | ≥80% | ✅ 达成 |
-| 文档完整性       | 60%        | 90%        | ⬆️ 30%    | ≥90% | ✅ 达成 |
+| 性能监控覆盖率   | 0%         | 80%        | ⬆️ 80%   | ≥80% | ✅ 达成 |
+| 文档完整性       | 60%        | 90%        | ⬆️ 30%   | ≥90% | ✅ 达成 |
 
 ### 测试覆盖率提升
 
 #### 测试类型分布
 
-| 测试类型 | 第一周 | 第二周 | 新增 | 状态   |
-| -------- | ------ | ------ | ---- | ------ |
+| 测试类型 | 第一周 | 第二周 | 新增 | 状态    |
+| -------- | ------ | ------ | ---- | ------- |
 | 单元测试 | 0      | 75+    | 75+  | ✅ 完成 |
 | 集成测试 | 0      | 15+    | 15+  | ✅ 完成 |
 | E2E测试  | 0      | 45+    | 45+  | ✅ 完成 |
@@ -373,8 +373,8 @@
 
 #### 测试覆盖率详细指标
 
-| 指标       | 第一周 | 第二周 | 目标 | 状态   |
-| ---------- | ------ | ------ | ---- | ------ |
+| 指标       | 第一周 | 第二周 | 目标 | 状态    |
+| ---------- | ------ | ------ | ---- | ------- |
 | 语句覆盖率 | 65%    | 75%    | ≥75% | ✅ 达成 |
 | 分支覆盖率 | 60%    | 70%    | ≥70% | ✅ 达成 |
 | 函数覆盖率 | 68%    | 75%    | ≥75% | ✅ 达成 |
@@ -384,8 +384,8 @@
 
 #### 错误修复统计
 
-| 错误类型     | 第一周 | 第二周 | 修复数量 | 状态   |
-| ------------ | ------ | ------ | -------- | ------ |
+| 错误类型     | 第一周 | 第二周 | 修复数量 | 状态    |
+| ------------ | ------ | ------ | -------- | ------- |
 | 类型断言错误 | 200+   | 0      | 200+     | ✅ 完成 |
 | 类型定义错误 | 150+   | 0      | 150+     | ✅ 完成 |
 | 导入错误     | 100+   | 0      | 100+     | ✅ 完成 |
@@ -410,8 +410,8 @@
 
 #### 监控指标
 
-| 指标 | 采集频率 | 告警阈值 | 状态     |
-| ---- | -------- | -------- | -------- |
+| 指标 | 采集频率 | 告警阈值 | 状态      |
+| ---- | -------- | -------- | --------- |
 | FCP  | 实时     | >1.8s    | ✅ 已配置 |
 | LCP  | 实时     | >2.5s    | ✅ 已配置 |
 | FID  | 实时     | >100ms   | ✅ 已配置 |
@@ -420,8 +420,8 @@
 
 #### 监控覆盖范围
 
-| 模块       | 覆盖率 | 状态       |
-| ---------- | ------ | ---------- |
+| 模块       | 覆盖率 | 状态        |
+| ---------- | ------ | ----------- |
 | 前端组件   | 90%    | ✅ 完成     |
 | API接口    | 85%    | ✅ 完成     |
 | 数据库查询 | 80%    | ✅ 完成     |
@@ -437,9 +437,9 @@
 #### Vitest配置优化
 
 ```typescript
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -470,13 +470,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './'),
     },
   },
-})
+});
 ```
 
 #### 测试辅助工具
 
 ```typescript
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 
 export function createMockAgenticCore() {
   return {
@@ -486,10 +486,10 @@ export function createMockAgenticCore() {
     }),
     streamChat: vi.fn().mockReturnValue({
       async *[Symbol.asyncIterator]() {
-        yield { content: 'Mock chunk', role: 'assistant' }
+        yield { content: 'Mock chunk', role: 'assistant' };
       },
     }),
-  }
+  };
 }
 
 export function createMockUser() {
@@ -498,7 +498,7 @@ export function createMockUser() {
     name: 'Test User',
     email: 'test@example.com',
     role: 'student',
-  }
+  };
 }
 ```
 
@@ -507,22 +507,22 @@ export function createMockUser() {
 #### 性能指标采集
 
 ```typescript
-import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals'
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
 
 export class PerformanceMonitor {
-  private metrics: Map<string, number> = new Map()
+  private metrics: Map<string, number> = new Map();
 
   startMonitoring() {
-    onFCP((metric) => this.recordMetric('FCP', metric.value))
-    onLCP((metric) => this.recordMetric('LCP', metric.value))
-    onINP((metric) => this.recordMetric('INP', metric.value))
-    onCLS((metric) => this.recordMetric('CLS', metric.value))
-    onTTFB((metric) => this.recordMetric('TTFB', metric.value))
+    onFCP((metric) => this.recordMetric('FCP', metric.value));
+    onLCP((metric) => this.recordMetric('LCP', metric.value));
+    onINP((metric) => this.recordMetric('INP', metric.value));
+    onCLS((metric) => this.recordMetric('CLS', metric.value));
+    onTTFB((metric) => this.recordMetric('TTFB', metric.value));
   }
 
   private recordMetric(name: string, value: number) {
-    this.metrics.set(name, value)
-    this.checkThresholds(name, value)
+    this.metrics.set(name, value);
+    this.checkThresholds(name, value);
   }
 
   private checkThresholds(name: string, value: number) {
@@ -532,19 +532,19 @@ export class PerformanceMonitor {
       INP: 200,
       CLS: 0.1,
       TTFB: 600,
-    }
+    };
 
     if (value > thresholds[name as keyof typeof thresholds]) {
-      this.triggerAlert(name, value)
+      this.triggerAlert(name, value);
     }
   }
 
   private triggerAlert(metricName: string, value: number) {
-    console.warn(`Performance Alert: ${metricName} = ${value}ms exceeds threshold`)
+    console.warn(`Performance Alert: ${metricName} = ${value}ms exceeds threshold`);
   }
 
   getMetrics() {
-    return Object.fromEntries(this.metrics)
+    return Object.fromEntries(this.metrics);
   }
 }
 ```
@@ -619,83 +619,83 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x, 20.x]
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
-    
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-    
-    - name: Run linter
-      run: pnpm lint
-    
-    - name: Run type check
-      run: pnpm typecheck
-    
-    - name: Run unit tests
-      run: pnpm test:unit --coverage
-    
-    - name: Run integration tests
-      run: pnpm test:integration
-    
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-umbrella
-    
-    - name: Build
-      run: pnpm build
-    
-    - name: Run E2E tests
-      run: pnpm test:e2e
-  
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linter
+        run: pnpm lint
+
+      - name: Run type check
+        run: pnpm typecheck
+
+      - name: Run unit tests
+        run: pnpm test:unit --coverage
+
+      - name: Run integration tests
+        run: pnpm test:integration
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Build
+        run: pnpm build
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
+
   deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v3
-      with:
-        node-version: 20.x
-        cache: 'pnpm'
-    
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-    
-    - name: Build
-      run: pnpm build
-    
-    - name: Deploy to production
-      run: |
-        echo "Deploying to production..."
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production..."
 ```
 
 ---
@@ -721,7 +721,7 @@ export default defineConfig({
     setupFiles: ['./__tests__/setup.ts'],
     // ... 其他配置
   },
-})
+});
 ```
 
 ### 问题2：async/await使用错误
@@ -737,9 +737,9 @@ export default defineConfig({
 ```typescript
 // 正确的async/await使用
 it('应该正确处理异步操作', async () => {
-  const result = await asyncFunction()
-  expect(result).toBeDefined()
-})
+  const result = await asyncFunction();
+  expect(result).toBeDefined();
+});
 ```
 
 ### 问题3：TypeScript类型错误
@@ -755,10 +755,10 @@ it('应该正确处理异步操作', async () => {
 ```typescript
 // 添加完整的类型定义
 interface User {
-  id: string
-  name: string
-  email: string
-  role: 'student' | 'teacher' | 'admin'
+  id: string;
+  name: string;
+  email: string;
+  role: 'student' | 'teacher' | 'admin';
 }
 
 // 使用具体类型替代any
@@ -779,15 +779,15 @@ function processUser(user: User): void {
 
 ```typescript
 // 使用对象展开语法创建新的process.env对象
-const originalEnv = process.env
+const originalEnv = process.env;
 
 beforeEach(() => {
-  process.env = { ...originalEnv, TEST_VAR: 'test-value' }
-})
+  process.env = { ...originalEnv, TEST_VAR: 'test-value' };
+});
 
 afterEach(() => {
-  process.env = originalEnv
-})
+  process.env = originalEnv;
+});
 ```
 
 ---
@@ -972,7 +972,7 @@ afterEach(() => {
 
 ---
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

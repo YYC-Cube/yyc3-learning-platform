@@ -47,7 +47,16 @@ export class ValidationUtility {
     return ValidationUtility.instance;
   }
 
-  validateString(value: any, options: { required?: boolean; minLength?: number; maxLength?: number; pattern?: RegExp; trim?: boolean } = {}): ValidationResult {
+  validateString(
+    value: any,
+    options: {
+      required?: boolean;
+      minLength?: number;
+      maxLength?: number;
+      pattern?: RegExp;
+      trim?: boolean;
+    } = {}
+  ): ValidationResult {
     const errors: string[] = [];
     let sanitized = value;
 
@@ -84,11 +93,14 @@ export class ValidationUtility {
     return {
       isValid: errors.length === 0,
       errors,
-      sanitized
+      sanitized,
     };
   }
 
-  validateNumber(value: any, options: { required?: boolean; min?: number; max?: number; integer?: boolean } = {}): ValidationResult {
+  validateNumber(
+    value: any,
+    options: { required?: boolean; min?: number; max?: number; integer?: boolean } = {}
+  ): ValidationResult {
     const errors: string[] = [];
 
     if (options.required && (value === null || value === undefined)) {
@@ -122,7 +134,7 @@ export class ValidationUtility {
     return {
       isValid: errors.length === 0,
       errors,
-      sanitized: num
+      sanitized: num,
     };
   }
 
@@ -147,11 +159,14 @@ export class ValidationUtility {
     return {
       isValid: true,
       errors: [],
-      sanitized: value.toLowerCase().trim()
+      sanitized: value.toLowerCase().trim(),
     };
   }
 
-  validateURL(value: any, options: { required?: boolean; allowRelative?: boolean } = {}): ValidationResult {
+  validateURL(
+    value: any,
+    options: { required?: boolean; allowRelative?: boolean } = {}
+  ): ValidationResult {
     const errors: string[] = [];
 
     if (options.required && (value === null || value === undefined || value === '')) {
@@ -178,11 +193,14 @@ export class ValidationUtility {
     return {
       isValid: true,
       errors: [],
-      sanitized: value.trim()
+      sanitized: value.trim(),
     };
   }
 
-  validatePhone(value: any, options: { required?: boolean; countryCode?: string } = {}): ValidationResult {
+  validatePhone(
+    value: any,
+    options: { required?: boolean; countryCode?: string } = {}
+  ): ValidationResult {
     const errors: string[] = [];
 
     if (options.required && (value === null || value === undefined || value === '')) {
@@ -204,11 +222,14 @@ export class ValidationUtility {
     return {
       isValid: true,
       errors: [],
-      sanitized: cleaned
+      sanitized: cleaned,
     };
   }
 
-  validateDate(value: any, options: { required?: boolean; minDate?: Date; maxDate?: Date } = {}): ValidationResult {
+  validateDate(
+    value: any,
+    options: { required?: boolean; minDate?: Date; maxDate?: Date } = {}
+  ): ValidationResult {
     const errors: string[] = [];
 
     if (options.required && (value === null || value === undefined)) {
@@ -247,11 +268,19 @@ export class ValidationUtility {
     return {
       isValid: errors.length === 0,
       errors,
-      sanitized: date
+      sanitized: date,
     };
   }
 
-  validateArray(value: any, options: { required?: boolean; minLength?: number; maxLength?: number; itemValidator?: (item: any) => ValidationResult } = {}): ValidationResult {
+  validateArray(
+    value: any,
+    options: {
+      required?: boolean;
+      minLength?: number;
+      maxLength?: number;
+      itemValidator?: (item: any) => ValidationResult;
+    } = {}
+  ): ValidationResult {
     const errors: string[] = [];
 
     if (options.required && (value === null || value === undefined)) {
@@ -295,7 +324,7 @@ export class ValidationUtility {
     return {
       isValid: errors.length === 0,
       errors,
-      sanitized
+      sanitized,
     };
   }
 
@@ -331,14 +360,14 @@ export class ValidationUtility {
             required: rule.required,
             minLength: rule.minLength,
             maxLength: rule.maxLength,
-            pattern: rule.pattern
+            pattern: rule.pattern,
           });
           break;
         case 'number':
           result = this.validateNumber(fieldValue, {
             required: rule.required,
             min: rule.min,
-            max: rule.max
+            max: rule.max,
           });
           break;
         case 'email':
@@ -387,7 +416,9 @@ export class ValidationUtility {
       if (rule.customValidator) {
         const customResult = rule.customValidator(sanitized[key]);
         if (customResult !== true) {
-          errors.push(`${key}: ${typeof customResult === 'string' ? customResult : 'Custom validation failed'}`);
+          errors.push(
+            `${key}: ${typeof customResult === 'string' ? customResult : 'Custom validation failed'}`
+          );
         }
       }
     }
@@ -395,7 +426,7 @@ export class ValidationUtility {
     return {
       isValid: errors.length === 0,
       errors,
-      sanitized
+      sanitized,
     };
   }
 
@@ -424,7 +455,10 @@ export class ValidationUtility {
     return sanitized;
   }
 
-  sanitizeInput(input: any, options: { xss?: boolean; sqlInjection?: boolean; trim?: boolean } = {}): any {
+  sanitizeInput(
+    input: any,
+    options: { xss?: boolean; sqlInjection?: boolean; trim?: boolean } = {}
+  ): any {
     const { xss = true, sqlInjection = true, trim = true } = options;
 
     if (typeof input === 'string') {
@@ -446,7 +480,7 @@ export class ValidationUtility {
     }
 
     if (Array.isArray(input)) {
-      return input.map(item => this.sanitizeInput(item, options));
+      return input.map((item) => this.sanitizeInput(item, options));
     }
 
     if (typeof input === 'object' && input !== null) {
@@ -506,7 +540,8 @@ export class ValidationUtility {
       return { isValid: true, errors: [], sanitized: null };
     }
 
-    const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidPattern.test(value)) {
       errors.push('Invalid UUID format');
       return { isValid: false, errors };
@@ -515,11 +550,21 @@ export class ValidationUtility {
     return {
       isValid: true,
       errors: [],
-      sanitized: value.toLowerCase()
+      sanitized: value.toLowerCase(),
     };
   }
 
-  validatePassword(value: any, options: { required?: boolean; minLength?: number; requireUppercase?: boolean; requireLowercase?: boolean; requireNumbers?: boolean; requireSpecialChars?: boolean } = {}): ValidationResult {
+  validatePassword(
+    value: any,
+    options: {
+      required?: boolean;
+      minLength?: number;
+      requireUppercase?: boolean;
+      requireLowercase?: boolean;
+      requireNumbers?: boolean;
+      requireSpecialChars?: boolean;
+    } = {}
+  ): ValidationResult {
     const errors: string[] = [];
 
     if (options.required && (value === null || value === undefined || value === '')) {
@@ -561,7 +606,7 @@ export class ValidationUtility {
     return {
       isValid: errors.length === 0,
       errors,
-      sanitized: value
+      sanitized: value,
     };
   }
 }

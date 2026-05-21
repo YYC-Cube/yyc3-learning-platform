@@ -7,7 +7,7 @@ describe('ResourceMonitor', () => {
     collectInterval: 100,
     historySize: 10,
     enableAlerts: true,
-    enableOptimization: true
+    enableOptimization: true,
   };
 
   beforeEach(() => {
@@ -45,7 +45,7 @@ describe('ResourceMonitor', () => {
     test('should collect metrics on interval', async () => {
       await monitor.start();
 
-      await new Promise(resolve => setTimeout(resolve, 250));
+      await new Promise((resolve) => setTimeout(resolve, 250));
 
       const latestMetrics = monitor.getLatestMetrics();
       expect(latestMetrics).toBeDefined();
@@ -56,7 +56,7 @@ describe('ResourceMonitor', () => {
 
     test('should collect memory metrics', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const metrics = monitor.getLatestMetrics();
       expect(metrics?.memory).toBeDefined();
@@ -71,7 +71,7 @@ describe('ResourceMonitor', () => {
 
     test('should collect CPU metrics', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const metrics = monitor.getLatestMetrics();
       expect(metrics?.cpu).toBeDefined();
@@ -90,7 +90,7 @@ describe('ResourceMonitor', () => {
       monitor.recordNetworkResponse(100, false);
       monitor.recordNetworkResponse(200, true);
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const metrics = monitor.getLatestMetrics();
       expect(metrics?.network).toBeDefined();
@@ -105,7 +105,7 @@ describe('ResourceMonitor', () => {
 
     test('should collect system metrics', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const metrics = monitor.getLatestMetrics();
       expect(metrics?.system).toBeDefined();
@@ -144,7 +144,7 @@ describe('ResourceMonitor', () => {
       monitor.recordNetworkResponse(200, true);
       monitor.recordNetworkResponse(150, true);
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const metrics = monitor.getLatestMetrics();
       expect(metrics?.network.errorCount).toBe(2);
@@ -160,7 +160,7 @@ describe('ResourceMonitor', () => {
       monitor.recordNetworkResponse(200, false);
       monitor.recordNetworkResponse(300, false);
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const metrics = monitor.getLatestMetrics();
       expect(metrics?.network.averageLatency).toBe(200);
@@ -173,7 +173,7 @@ describe('ResourceMonitor', () => {
     test('should maintain metrics history', async () => {
       await monitor.start();
 
-      await new Promise(resolve => setTimeout(resolve, 350));
+      await new Promise((resolve) => setTimeout(resolve, 350));
 
       const history = monitor.getMetricsHistory();
       expect(history.length).toBeGreaterThan(0);
@@ -185,18 +185,18 @@ describe('ResourceMonitor', () => {
     test('should filter metrics by time range', async () => {
       await monitor.start();
 
-      await new Promise(resolve => setTimeout(resolve, 350));
+      await new Promise((resolve) => setTimeout(resolve, 350));
 
       const now = new Date();
       const fiveSecondsAgo = new Date(now.getTime() - 5000);
 
       const filteredHistory = monitor.getMetricsHistory({
         start: fiveSecondsAgo,
-        end: now
+        end: now,
       });
 
       expect(filteredHistory.length).toBeGreaterThan(0);
-      filteredHistory.forEach(metrics => {
+      filteredHistory.forEach((metrics) => {
         expect(metrics.timestamp.getTime()).toBeGreaterThanOrEqual(fiveSecondsAgo.getTime());
         expect(metrics.timestamp.getTime()).toBeLessThanOrEqual(now.getTime());
       });
@@ -207,12 +207,12 @@ describe('ResourceMonitor', () => {
     test('should limit history size', async () => {
       const smallConfig: ResourceMonitorConfig = {
         collectInterval: 50,
-        historySize: 5
+        historySize: 5,
       };
       const smallMonitor = new ResourceMonitor(smallConfig);
 
       await smallMonitor.start();
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       const history = smallMonitor.getMetricsHistory();
       expect(history.length).toBeLessThanOrEqual(5);
@@ -225,7 +225,7 @@ describe('ResourceMonitor', () => {
     test('should calculate average metrics', async () => {
       await monitor.start();
 
-      await new Promise(resolve => setTimeout(resolve, 350));
+      await new Promise((resolve) => setTimeout(resolve, 350));
 
       const averageMetrics = monitor.getAverageMetrics(300);
       expect(averageMetrics).toBeDefined();
@@ -256,13 +256,13 @@ describe('ResourceMonitor', () => {
             warningLatency: 10000,
             criticalLatency: 20000,
             warningErrorRate: 1,
-            criticalErrorRate: 1
-          }
-        }
+            criticalErrorRate: 1,
+          },
+        },
       });
 
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(alertSpy).toHaveBeenCalled();
       const alert = alertSpy.mock.calls[0][0];
@@ -284,13 +284,13 @@ describe('ResourceMonitor', () => {
             warningLatency: 10000,
             criticalLatency: 20000,
             warningErrorRate: 1,
-            criticalErrorRate: 1
-          }
-        }
+            criticalErrorRate: 1,
+          },
+        },
       });
 
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(alertSpy).toHaveBeenCalled();
       const alert = alertSpy.mock.calls[0][0];
@@ -312,9 +312,9 @@ describe('ResourceMonitor', () => {
             warningLatency: 50,
             criticalLatency: 100,
             warningErrorRate: 1,
-            criticalErrorRate: 1
-          }
-        }
+            criticalErrorRate: 1,
+          },
+        },
       });
 
       await monitor.start();
@@ -323,7 +323,7 @@ describe('ResourceMonitor', () => {
       monitor.recordNetworkResponse(200, false);
       monitor.recordNetworkResponse(300, false);
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(alertSpy).toHaveBeenCalled();
       const alert = alertSpy.mock.calls.find((call: any) => call[0].type === 'network');
@@ -344,9 +344,9 @@ describe('ResourceMonitor', () => {
             warningLatency: 10000,
             criticalLatency: 20000,
             warningErrorRate: 0,
-            criticalErrorRate: 0
-          }
-        }
+            criticalErrorRate: 0,
+          },
+        },
       });
 
       await monitor.start();
@@ -355,7 +355,7 @@ describe('ResourceMonitor', () => {
       monitor.recordNetworkResponse(100, true);
       monitor.recordNetworkResponse(200, true);
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(alertSpy).toHaveBeenCalled();
       const alert = alertSpy.mock.calls.find((call: any) => call[0].type === 'network');
@@ -377,13 +377,13 @@ describe('ResourceMonitor', () => {
             warningLatency: 10000,
             criticalLatency: 20000,
             warningErrorRate: 1,
-            criticalErrorRate: 1
-          }
-        }
+            criticalErrorRate: 1,
+          },
+        },
       });
 
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(alertSpy).not.toHaveBeenCalled();
 
@@ -401,16 +401,16 @@ describe('ResourceMonitor', () => {
             warningLatency: 10000,
             criticalLatency: 20000,
             warningErrorRate: 1,
-            criticalErrorRate: 1
-          }
-        }
+            criticalErrorRate: 1,
+          },
+        },
       });
 
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const recommendations = monitor.generateOptimizationRecommendations();
-      const memoryRec = recommendations.find(r => r.type === 'memory');
+      const memoryRec = recommendations.find((r) => r.type === 'memory');
       expect(memoryRec).toBeDefined();
       expect(memoryRec?.recommendation).toContain('内存');
 
@@ -426,16 +426,16 @@ describe('ResourceMonitor', () => {
             warningLatency: 10000,
             criticalLatency: 20000,
             warningErrorRate: 1,
-            criticalErrorRate: 1
-          }
-        }
+            criticalErrorRate: 1,
+          },
+        },
       });
 
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const recommendations = monitor.generateOptimizationRecommendations();
-      const cpuRec = recommendations.find(r => r.type === 'cpu');
+      const cpuRec = recommendations.find((r) => r.type === 'cpu');
       expect(cpuRec).toBeDefined();
       expect(cpuRec?.recommendation).toContain('CPU');
 
@@ -451,9 +451,9 @@ describe('ResourceMonitor', () => {
             warningLatency: 50,
             criticalLatency: 100,
             warningErrorRate: 1,
-            criticalErrorRate: 1
-          }
-        }
+            criticalErrorRate: 1,
+          },
+        },
       });
 
       await monitor.start();
@@ -462,10 +462,10 @@ describe('ResourceMonitor', () => {
       monitor.recordNetworkResponse(200, false);
       monitor.recordNetworkResponse(300, false);
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const recommendations = monitor.generateOptimizationRecommendations();
-      const networkRec = recommendations.find(r => r.type === 'network');
+      const networkRec = recommendations.find((r) => r.type === 'network');
       expect(networkRec).toBeDefined();
 
       await monitor.stop();
@@ -473,7 +473,7 @@ describe('ResourceMonitor', () => {
 
     test('should return empty recommendations when no thresholds exceeded', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const recommendations = monitor.generateOptimizationRecommendations();
       expect(recommendations).toHaveLength(0);
@@ -485,7 +485,7 @@ describe('ResourceMonitor', () => {
   describe('Resource Report', () => {
     test('should generate resource report', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const report = monitor.getResourceReport();
       expect(report).toBeDefined();
@@ -500,7 +500,7 @@ describe('ResourceMonitor', () => {
 
     test('should have correct status in report', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const report = monitor.getResourceReport();
       expect(['healthy', 'warning', 'critical']).toContain(report.summary.status);
@@ -516,7 +516,7 @@ describe('ResourceMonitor', () => {
   describe('Trend Calculation', () => {
     test('should calculate stable trends when insufficient data', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const report = monitor.getResourceReport();
       expect(report.trends.memory).toBe('stable');
@@ -529,7 +529,7 @@ describe('ResourceMonitor', () => {
     test('should calculate trends over time', async () => {
       await monitor.start();
 
-      await new Promise(resolve => setTimeout(resolve, 350));
+      await new Promise((resolve) => setTimeout(resolve, 350));
 
       const report = monitor.getResourceReport();
       expect(['increasing', 'decreasing', 'stable']).toContain(report.trends.memory);
@@ -565,9 +565,9 @@ describe('ResourceMonitor', () => {
             warningLatency: 500,
             criticalLatency: 1000,
             warningErrorRate: 0.05,
-            criticalErrorRate: 0.1
-          }
-        }
+            criticalErrorRate: 0.1,
+          },
+        },
       });
 
       expect(monitor['config'].thresholds.memory.warning).toBe(80);
@@ -594,7 +594,7 @@ describe('ResourceMonitor', () => {
   describe('Cleanup', () => {
     test('should cleanup monitor', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       await monitor.cleanup();
 
@@ -607,7 +607,7 @@ describe('ResourceMonitor', () => {
       monitor.on('alert', alertSpy);
 
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       await monitor.cleanup();
 
@@ -622,7 +622,7 @@ describe('ResourceMonitor', () => {
       monitor.on('metrics:collected', metricsSpy);
 
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(metricsSpy).toHaveBeenCalled();
       const metrics = metricsSpy.mock.calls[0][0];
@@ -638,7 +638,7 @@ describe('ResourceMonitor', () => {
       await monitor.start();
       await monitor.start();
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       expect(monitor.getLatestMetrics()).not.toBeNull();
 
@@ -655,7 +655,7 @@ describe('ResourceMonitor', () => {
 
     test('should handle network metrics with no data', async () => {
       await monitor.start();
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const metrics = monitor.getLatestMetrics();
       expect(metrics?.network.requestCount).toBe(0);
@@ -670,11 +670,11 @@ describe('ResourceMonitor', () => {
       monitor.recordNetworkRequest(1024, 512);
       monitor.recordNetworkResponse(100, false);
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       monitor.resetNetworkMetrics();
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const metrics = monitor.getLatestMetrics();
       expect(metrics?.network.requestCount).toBe(0);

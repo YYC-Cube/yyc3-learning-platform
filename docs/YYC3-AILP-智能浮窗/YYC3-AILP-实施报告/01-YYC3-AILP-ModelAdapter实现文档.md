@@ -15,24 +15,28 @@
 ## 🎯 核心功能概述
 
 ### 1. 统一模型接口
+
 - **多提供商支持**: OpenAI、Anthropic、Google、Azure、本地模型
 - **标准化API**: 统一的请求/响应格式
 - **类型安全**: 100% TypeScript覆盖
 - **配置驱动**: 灵活的模型配置管理
 
 ### 2. 智能路由系统
+
 - **多策略路由**: 快速、低成本、高质量、智能路由
 - **负载均衡**: 轮询、权重、最少连接、响应时间策略
 - **故障转移**: 自动降级和重试机制
 - **健康检查**: 实时模型状态监控
 
 ### 3. 性能优化
+
 - **智能缓存**: LRU/LFU缓存策略，支持压缩和加密
 - **流式支持**: 实时响应和增量处理
 - **并发控制**: 请求限流和资源管理
 - **成本控制**: 自动成本估算和预算管理
 
 ### 4. 企业级特性
+
 - **监控告警**: 全面的性能指标和异常监控
 - **安全合规**: 数据加密、审计日志、访问控制
 - **可观测性**: 详细的日志、指标和追踪
@@ -265,19 +269,15 @@ class SmartModelRouter implements IModelRouter {
 
   private selectSmartModel(request: ModelRequest, models: ModelConfig[]): ModelConfig {
     // 多因子评分算法
-    const scoredModels = models.map(model => {
+    const scoredModels = models.map((model) => {
       const latencyScore = this.calculateLatencyScore(model);
       const costScore = this.calculateCostScore(model, request);
       const qualityScore = this.calculateQualityScore(model, request.taskType);
       const availabilityScore = this.calculateAvailabilityScore(model);
 
       // 加权综合评分
-      const totalScore = (
-        latencyScore * 0.3 +
-        costScore * 0.2 +
-        qualityScore * 0.4 +
-        availabilityScore * 0.1
-      );
+      const totalScore =
+        latencyScore * 0.3 + costScore * 0.2 + qualityScore * 0.4 + availabilityScore * 0.1;
 
       return { model, score: totalScore };
     });
@@ -334,7 +334,7 @@ class ModelCache implements IModelCache {
     this.cache.set(key, {
       compressedData,
       expiresAt,
-      size: this.calculateSize(compressedData)
+      size: this.calculateSize(compressedData),
     });
 
     this.updateAccessStats(key);
@@ -404,14 +404,14 @@ class ModelMonitor implements IModelMonitor {
       this.emitAlert('latency_high', {
         value: response.metadata.latency,
         threshold: this.alertThresholds.latency,
-        modelId: response.modelId
+        modelId: response.modelId,
       });
     }
 
     if (this.metrics.errorRate > this.alertThresholds.errorRate) {
       this.emitAlert('error_rate_high', {
         value: this.metrics.errorRate,
-        threshold: this.alertThresholds.errorRate
+        threshold: this.alertThresholds.errorRate,
       });
     }
   }
@@ -459,7 +459,7 @@ class SecurityManager {
       resource: event.resource,
       action: event.action,
       result: event.result,
-      metadata: event.metadata
+      metadata: event.metadata,
     });
   }
 
@@ -481,12 +481,12 @@ class SecurityManager {
 
 | 指标类别     | 指标名称         | 目标值  | 当前值  | 状态 |
 | ------------ | ---------------- | ------- | ------- | ---- |
-| **响应时间** | 平均延迟         | < 100ms | ~50ms   | ✅    |
-| **吞吐量**   | QPS              | > 1000  | ~1200   | ✅    |
-| **可用性**   | 系统可用性       | 99.9%   | 99.95%  | ✅    |
-| **缓存**     | 命中率           | > 80%   | ~85%    | ✅    |
-| **错误率**   | 请求错误率       | < 1%    | ~0.5%   | ✅    |
-| **成本效率** | 平均每次请求成本 | < $0.01 | ~$0.008 | ✅    |
+| **响应时间** | 平均延迟         | < 100ms | ~50ms   | ✅   |
+| **吞吐量**   | QPS              | > 1000  | ~1200   | ✅   |
+| **可用性**   | 系统可用性       | 99.9%   | 99.95%  | ✅   |
+| **缓存**     | 命中率           | > 80%   | ~85%    | ✅   |
+| **错误率**   | 请求错误率       | < 1%    | ~0.5%   | ✅   |
+| **成本效率** | 平均每次请求成本 | < $0.01 | ~$0.008 | ✅   |
 
 ### 模型提供商性能对比
 
@@ -519,14 +519,14 @@ await adapter.initialize({
     fallback: {
       enabled: true,
       maxRetries: 3,
-      alternativeModels: ['claude-3-opus']
-    }
+      alternativeModels: ['claude-3-opus'],
+    },
   },
   cache: {
     enabled: true,
     ttl: 300000,
-    strategy: 'lru'
-  }
+    strategy: 'lru',
+  },
 });
 
 // 添加模型配置
@@ -536,13 +536,13 @@ await adapter.addModel({
   provider: 'openai',
   model: 'gpt-4',
   credentials: {
-    apiKey: process.env.OPENAI_API_KEY
+    apiKey: process.env.OPENAI_API_KEY,
   },
   capabilities: {
     maxTokens: 8192,
     streamingSupport: true,
-    functionCalling: true
-  }
+    functionCalling: true,
+  },
 });
 
 // 处理请求
@@ -551,7 +551,7 @@ const response = await adapter.processRequest({
   taskType: 'conversation',
   prompt: '你好，请介绍一下YYC³系统',
   temperature: 0.7,
-  maxTokens: 1000
+  maxTokens: 1000,
 });
 ```
 
@@ -565,22 +565,22 @@ const models = [
     provider: 'openai',
     model: 'gpt-4',
     credentials: { apiKey: 'openai-key' },
-    capabilities: { maxTokens: 8192, reasoning: true }
+    capabilities: { maxTokens: 8192, reasoning: true },
   },
   {
     id: 'claude-3',
     provider: 'anthropic',
     model: 'claude-3-opus',
     credentials: { apiKey: 'anthropic-key' },
-    capabilities: { maxTokens: 200000, visionSupport: true }
+    capabilities: { maxTokens: 200000, visionSupport: true },
   },
   {
     id: 'local-llama',
     provider: 'local',
     model: 'llama-2-70b',
     credentials: { baseURL: 'http://localhost:8080' },
-    capabilities: { maxTokens: 4096, codeGeneration: true }
-  }
+    capabilities: { maxTokens: 4096, codeGeneration: true },
+  },
 ];
 
 // 批量添加模型
@@ -596,29 +596,29 @@ await adapter.updateConfig({
       {
         condition: {
           taskType: ['code'],
-          maxCost: 0.01
+          maxCost: 0.01,
         },
         action: {
           selectModel: ['local-llama'],
-          preferProvider: 'local'
+          preferProvider: 'local',
         },
         priority: 1,
-        enabled: true
+        enabled: true,
       },
       {
         condition: {
           taskType: ['reasoning'],
-          complexity: 'complex'
+          complexity: 'complex',
         },
         action: {
           selectModel: ['gpt-4', 'claude-3'],
-          preferProvider: 'openai'
+          preferProvider: 'openai',
         },
         priority: 2,
-        enabled: true
-      }
-    ]
-  }
+        enabled: true,
+      },
+    ],
+  },
 });
 ```
 
@@ -626,19 +626,22 @@ await adapter.updateConfig({
 
 ```typescript
 // 流式请求处理
-await adapter.processStreamingRequest({
-  id: 'stream-001',
-  taskType: 'generation',
-  prompt: '写一首关于AI的诗',
-  stream: true,
-  temperature: 0.8
-}, (chunk) => {
-  console.log('收到流式响应:', chunk.content);
+await adapter.processStreamingRequest(
+  {
+    id: 'stream-001',
+    taskType: 'generation',
+    prompt: '写一首关于AI的诗',
+    stream: true,
+    temperature: 0.8,
+  },
+  (chunk) => {
+    console.log('收到流式响应:', chunk.content);
 
-  if (chunk.finishReason === 'stop') {
-    console.log('流式响应完成');
+    if (chunk.finishReason === 'stop') {
+      console.log('流式响应完成');
+    }
   }
-});
+);
 ```
 
 ### 监控和分析
@@ -716,7 +719,7 @@ services:
   model-adapter:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379
@@ -728,7 +731,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
   postgres:
     image: postgres:15-alpine
@@ -737,7 +740,7 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=pass
     ports:
-      - "5432:5432"
+      - '5432:5432'
 ```
 
 ### Kubernetes部署
@@ -759,25 +762,25 @@ spec:
         app: model-adapter
     spec:
       containers:
-      - name: model-adapter
-        image: yyc3/model-adapter:latest
-        ports:
-        - containerPort: 3000
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: REDIS_URL
-          valueFrom:
-            secretKeyRef:
-              name: model-adapter-secrets
-              key: redis-url
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+        - name: model-adapter
+          image: yyc3/model-adapter:latest
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: model-adapter-secrets
+                  key: redis-url
+          resources:
+            requests:
+              memory: '256Mi'
+              cpu: '250m'
+            limits:
+              memory: '512Mi'
+              cpu: '500m'
 ---
 apiVersion: v1
 kind: Service
@@ -787,8 +790,8 @@ spec:
   selector:
     app: model-adapter
   ports:
-  - port: 80
-    targetPort: 3000
+    - port: 80
+      targetPort: 3000
   type: LoadBalancer
 ```
 

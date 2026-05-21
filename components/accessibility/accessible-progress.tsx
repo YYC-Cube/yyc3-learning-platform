@@ -4,19 +4,19 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { ColoredProgress } from "../colored-progress"
-import { ScreenReaderOnly } from "./screen-reader-only"
+import { ColoredProgress } from '../colored-progress';
+import { ScreenReaderOnly } from './screen-reader-only';
 
 interface AccessibleProgressProps {
-  value: number
-  max?: number
-  label: string
-  description?: string
-  color?: string
-  size?: "sm" | "md" | "lg"
-  showPercentage?: boolean
+  value: number;
+  max?: number;
+  label: string;
+  description?: string;
+  color?: string;
+  size?: 'sm' | 'md' | 'lg';
+  showPercentage?: boolean;
 }
 
 export function AccessibleProgress({
@@ -25,10 +25,10 @@ export function AccessibleProgress({
   label,
   description,
   color,
-  size = "md",
+  size = 'md',
   showPercentage = true,
 }: AccessibleProgressProps) {
-  const percentage = Math.min(Math.max((value / max) * 100, 0), 100)
+  const percentage = Math.min(Math.max((value / max) * 100, 0), 100);
 
   return (
     <div className="w-full">
@@ -54,7 +54,9 @@ export function AccessibleProgress({
         aria-describedby={description ? `${label}-description` : undefined}
       />
 
-      {description && <ScreenReaderOnly id={`${label}-description`}>{description}</ScreenReaderOnly>}
+      {description && (
+        <ScreenReaderOnly id={`${label}-description`}>{description}</ScreenReaderOnly>
+      )}
     </div>
-  )
+  );
 }

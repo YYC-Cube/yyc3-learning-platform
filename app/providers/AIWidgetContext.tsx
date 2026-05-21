@@ -4,7 +4,7 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client";
+'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { logger } from '@/lib/logger';

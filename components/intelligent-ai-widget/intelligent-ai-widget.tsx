@@ -5,10 +5,22 @@
  * @license MIT
  */
 
-"use client";
+'use client';
 
 import { logger } from '@/lib/logger';
-import { BarChart3, BookOpen, Loader2, Maximize2, MessageSquare, Minimize2, Minus, Send, Workflow, Wrench, X } from 'lucide-react';
+import {
+  BarChart3,
+  BookOpen,
+  Loader2,
+  Maximize2,
+  MessageSquare,
+  Minimize2,
+  Minus,
+  Send,
+  Workflow,
+  Wrench,
+  X,
+} from 'lucide-react';
 import * as React from 'react';
 import { CSSProperties, useCallback, useEffect, useMemo, useRef } from 'react';
 import FileUpload, { UploadedFile } from './file-upload';
@@ -42,11 +54,17 @@ interface AgenticCoreResponse {
 }
 
 class AgenticCore {
-  constructor(_config?: Record<string, unknown>) { }
-  initialize(): Promise<void> { return Promise.resolve(); }
-  processInput(_input: UserInput): Promise<AgenticCoreResponse> { return Promise.resolve({ message: '' }); }
-  getState(): string { return 'idle'; }
-  reset(): void { }
+  constructor(_config?: Record<string, unknown>) {}
+  initialize(): Promise<void> {
+    return Promise.resolve();
+  }
+  processInput(_input: UserInput): Promise<AgenticCoreResponse> {
+    return Promise.resolve({ message: '' });
+  }
+  getState(): string {
+    return 'idle';
+  }
+  reset(): void {}
 }
 
 export interface ToolExecutionResult {
@@ -157,15 +175,15 @@ export const initialState: AppState = {
     mode: 'floating',
     position: { x: 0, y: 0, width: 400, height: 600 },
     isDragging: false,
-    isResizing: false
+    isResizing: false,
   },
   messages: [
     {
       id: '1',
       role: 'assistant',
       content: '你好！我是YYC³智能助手，有什么可以帮助你的吗？',
-      timestamp: Date.now()
-    }
+      timestamp: Date.now(),
+    },
   ],
   inputValue: '',
   isProcessing: false,
@@ -177,66 +195,64 @@ export function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_WIDGET_STATE':
       return {
         ...state,
-        widget: { ...state.widget, ...action.payload }
+        widget: { ...state.widget, ...action.payload },
       };
 
     case 'SET_MESSAGES':
       return {
         ...state,
-        messages: action.payload
+        messages: action.payload,
       };
 
     case 'ADD_MESSAGE':
       return {
         ...state,
-        messages: [...state.messages, action.payload]
+        messages: [...state.messages, action.payload],
       };
 
     case 'UPDATE_MESSAGE':
       return {
         ...state,
-        messages: state.messages.map(msg =>
-          msg.id === action.payload.id
-            ? { ...msg, ...action.payload.updates }
-            : msg
-        )
+        messages: state.messages.map((msg) =>
+          msg.id === action.payload.id ? { ...msg, ...action.payload.updates } : msg
+        ),
       };
 
     case 'SET_INPUT_VALUE':
       return {
         ...state,
-        inputValue: action.payload
+        inputValue: action.payload,
       };
 
     case 'SET_PROCESSING':
       return {
         ...state,
-        isProcessing: action.payload
+        isProcessing: action.payload,
       };
 
     case 'RESET_INPUT':
       return {
         ...state,
         inputValue: '',
-        selectedFiles: []
+        selectedFiles: [],
       };
 
     case 'SET_SELECTED_FILES':
       return {
         ...state,
-        selectedFiles: action.payload
+        selectedFiles: action.payload,
       };
 
     case 'ADD_SELECTED_FILE':
       return {
         ...state,
-        selectedFiles: [...state.selectedFiles, action.payload]
+        selectedFiles: [...state.selectedFiles, action.payload],
       };
 
     case 'REMOVE_SELECTED_FILE':
       return {
         ...state,
-        selectedFiles: state.selectedFiles.filter(file => file.id !== action.payload)
+        selectedFiles: state.selectedFiles.filter((file) => file.id !== action.payload),
       };
 
     default:
@@ -249,7 +265,7 @@ export function appReducer(state: AppState, action: AppAction): AppState {
 export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
   userId,
   initialPosition = 'bottom-right',
-  onClose
+  onClose,
 }) => {
   const [state, dispatch] = React.useReducer(appReducer, initialState);
   const { widget, messages, inputValue, isProcessing, selectedFiles } = state;
@@ -257,7 +273,9 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
   // Refs
   const widgetRef = useRef<HTMLDivElement>(null);
   const dragStartPos = useRef<{ x: number; y: number } | null>(null);
-  const resizeStartPos = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
+  const resizeStartPos = useRef<{ x: number; y: number; width: number; height: number } | null>(
+    null
+  );
   const agentEngineRef = useRef<AgenticCore | null>(null);
 
   // 初始化智能引擎和位置
@@ -265,7 +283,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
     agentEngineRef.current = new AgenticCore({
       maxConcurrentTasks: 5,
       enableLearning: true,
-      logLevel: 'info'
+      logLevel: 'info',
     });
 
     // 初始化消息存储
@@ -286,38 +304,44 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
 
   // ==================== 拖拽处理 ====================
 
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (widget.isFullscreen || widget.isMinimized) return;
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (widget.isFullscreen || widget.isMinimized) return;
 
-    dragStartPos.current = {
-      x: e.clientX - widget.position.x,
-      y: e.clientY - widget.position.y
-    };
+      dragStartPos.current = {
+        x: e.clientX - widget.position.x,
+        y: e.clientY - widget.position.y,
+      };
 
-    dispatch({ type: 'SET_WIDGET_STATE', payload: { isDragging: true } });
-  }, [widget.isFullscreen, widget.isMinimized, widget.position]);
+      dispatch({ type: 'SET_WIDGET_STATE', payload: { isDragging: true } });
+    },
+    [widget.isFullscreen, widget.isMinimized, widget.position]
+  );
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!widget.isDragging || !dragStartPos.current) return;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!widget.isDragging || !dragStartPos.current) return;
 
-    const newX = e.clientX - dragStartPos.current.x;
-    const newY = e.clientY - dragStartPos.current.y;
+      const newX = e.clientX - dragStartPos.current.x;
+      const newY = e.clientY - dragStartPos.current.y;
 
-    // 边界检查
-    const maxX = window.innerWidth - widget.position.width;
-    const maxY = window.innerHeight - widget.position.height;
+      // 边界检查
+      const maxX = window.innerWidth - widget.position.width;
+      const maxY = window.innerHeight - widget.position.height;
 
-    dispatch({
-      type: 'SET_WIDGET_STATE',
-      payload: {
-        position: {
-          ...widget.position,
-          x: Math.max(0, Math.min(newX, maxX)),
-          y: Math.max(0, Math.min(newY, maxY))
-        }
-      }
-    });
-  }, [widget.isDragging, widget.position]);
+      dispatch({
+        type: 'SET_WIDGET_STATE',
+        payload: {
+          position: {
+            ...widget.position,
+            x: Math.max(0, Math.min(newX, maxX)),
+            y: Math.max(0, Math.min(newY, maxY)),
+          },
+        },
+      });
+    },
+    [widget.isDragging, widget.position]
+  );
 
   const handleMouseUp = useCallback((_e: MouseEvent) => {
     dispatch({ type: 'SET_WIDGET_STATE', payload: { isDragging: false } });
@@ -326,42 +350,48 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
 
   // ==================== 调整大小处理 ====================
 
-  const handleResizeMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (widget.isFullscreen || widget.isMinimized) return;
+  const handleResizeMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (widget.isFullscreen || widget.isMinimized) return;
 
-    e.preventDefault();
-    e.stopPropagation();
+      e.preventDefault();
+      e.stopPropagation();
 
-    resizeStartPos.current = {
-      x: e.clientX,
-      y: e.clientY,
-      width: widget.position.width,
-      height: widget.position.height
-    };
+      resizeStartPos.current = {
+        x: e.clientX,
+        y: e.clientY,
+        width: widget.position.width,
+        height: widget.position.height,
+      };
 
-    dispatch({ type: 'SET_WIDGET_STATE', payload: { isResizing: true } });
-  }, [widget.isFullscreen, widget.isMinimized, widget.position]);
+      dispatch({ type: 'SET_WIDGET_STATE', payload: { isResizing: true } });
+    },
+    [widget.isFullscreen, widget.isMinimized, widget.position]
+  );
 
-  const handleResizeMouseMove = useCallback((e: MouseEvent) => {
-    if (!widget.isResizing || !resizeStartPos.current) return;
+  const handleResizeMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!widget.isResizing || !resizeStartPos.current) return;
 
-    const deltaX = e.clientX - resizeStartPos.current.x;
-    const deltaY = e.clientY - resizeStartPos.current.y;
+      const deltaX = e.clientX - resizeStartPos.current.x;
+      const deltaY = e.clientY - resizeStartPos.current.y;
 
-    const newWidth = Math.max(300, Math.min(800, resizeStartPos.current.width + deltaX));
-    const newHeight = Math.max(400, Math.min(900, resizeStartPos.current.height + deltaY));
+      const newWidth = Math.max(300, Math.min(800, resizeStartPos.current.width + deltaX));
+      const newHeight = Math.max(400, Math.min(900, resizeStartPos.current.height + deltaY));
 
-    dispatch({
-      type: 'SET_WIDGET_STATE',
-      payload: {
-        position: {
-          ...widget.position,
-          width: newWidth,
-          height: newHeight
-        }
-      }
-    });
-  }, [widget.isResizing, widget.position]);
+      dispatch({
+        type: 'SET_WIDGET_STATE',
+        payload: {
+          position: {
+            ...widget.position,
+            width: newWidth,
+            height: newHeight,
+          },
+        },
+      });
+    },
+    [widget.isResizing, widget.position]
+  );
 
   const handleResizeMouseUp = useCallback((_e: MouseEvent) => {
     dispatch({ type: 'SET_WIDGET_STATE', payload: { isResizing: false } });
@@ -375,7 +405,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
       const positionData = {
         position: widget.position,
         isMinimized: widget.isMinimized,
-        isFullscreen: widget.isFullscreen
+        isFullscreen: widget.isFullscreen,
       };
       localStorage.setItem('yyc3-widget-position', JSON.stringify(positionData));
     }
@@ -444,7 +474,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
       type: file.file.type,
       size: file.file.size,
       url: file.url,
-      status: file.status === 'completed' ? 'uploaded' : 'uploading'
+      status: file.status === 'completed' ? 'uploaded' : 'uploading',
     }));
 
     dispatch({ type: 'SET_SELECTED_FILES', payload: [...selectedFiles, ...newFiles] });
@@ -469,7 +499,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
       timestamp: msg.timestamp,
       status: msg.status,
       files: msg.files,
-      avatar: msg.avatar
+      avatar: msg.avatar,
     }));
 
     dispatch({ type: 'SET_MESSAGES', payload: convertedMessages });
@@ -478,84 +508,90 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
 
   // ==================== 工具处理 ====================
 
-  const handleToolExecute = useCallback(async (toolId: string, parameters?: Record<string, unknown>): Promise<ToolExecutionResult> => {
-    const startTime = Date.now();
+  const handleToolExecute = useCallback(
+    async (toolId: string, parameters?: Record<string, unknown>): Promise<ToolExecutionResult> => {
+      const startTime = Date.now();
 
-    try {
-      const toolMessage: Message = {
-        id: Date.now().toString(),
-        role: 'system',
-        content: `正在执行工具: ${toolId}...`,
-        timestamp: Date.now(),
-        status: 'sending'
-      };
+      try {
+        const toolMessage: Message = {
+          id: Date.now().toString(),
+          role: 'system',
+          content: `正在执行工具: ${toolId}...`,
+          timestamp: Date.now(),
+          status: 'sending',
+        };
 
-      dispatch({ type: 'ADD_MESSAGE', payload: toolMessage });
+        dispatch({ type: 'ADD_MESSAGE', payload: toolMessage });
 
-      const context: AgentContext = {
-        sessionId: `session_${userId}_${Date.now()}`,
-        userId,
-        environment: 'web',
-        permissions: ['read', 'write', 'execute'],
-        conversationHistory: messages,
-        workingMemory: {
-          toolId,
-          parameters
-        }
-      };
+        const context: AgentContext = {
+          sessionId: `session_${userId}_${Date.now()}`,
+          userId,
+          environment: 'web',
+          permissions: ['read', 'write', 'execute'],
+          conversationHistory: messages,
+          workingMemory: {
+            toolId,
+            parameters,
+          },
+        };
 
-      const input: UserInput = {
-        text: `执行工具: ${toolId}`,
-        context
-      };
+        const input: UserInput = {
+          text: `执行工具: ${toolId}`,
+          context,
+        };
 
-      const response = await agentEngineRef.current?.processInput(input);
+        const response = await agentEngineRef.current?.processInput(input);
 
-      dispatch({
-        type: 'UPDATE_MESSAGE',
-        payload: { id: toolMessage.id, updates: { status: 'sent', content: response?.message || `工具 ${toolId} 执行完成` } }
-      });
+        dispatch({
+          type: 'UPDATE_MESSAGE',
+          payload: {
+            id: toolMessage.id,
+            updates: { status: 'sent', content: response?.message || `工具 ${toolId} 执行完成` },
+          },
+        });
 
-      const resultMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response?.message || `工具 ${toolId} 执行成功`,
-        timestamp: Date.now()
-      };
+        const resultMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: response?.message || `工具 ${toolId} 执行成功`,
+          timestamp: Date.now(),
+        };
 
-      dispatch({ type: 'ADD_MESSAGE', payload: resultMessage });
+        dispatch({ type: 'ADD_MESSAGE', payload: resultMessage });
 
-      await messageStorage.addMessage(toolMessage);
-      await messageStorage.addMessage(resultMessage);
+        await messageStorage.addMessage(toolMessage);
+        await messageStorage.addMessage(resultMessage);
 
-      return {
-        success: true,
-        output: response,
-        duration: Date.now() - startTime,
-        timestamp: new Date()
-      };
-    } catch (error) {
-      logger.error('工具执行失败', error);
+        return {
+          success: true,
+          output: response,
+          duration: Date.now() - startTime,
+          timestamp: new Date(),
+        };
+      } catch (error) {
+        logger.error('工具执行失败', error);
 
-      const errorMessage: Message = {
-        id: Date.now().toString(),
-        role: 'system',
-        content: `工具 ${toolId} 执行失败: ${error instanceof Error ? error.message : '未知错误'}`,
-        timestamp: Date.now(),
-        status: 'error'
-      };
+        const errorMessage: Message = {
+          id: Date.now().toString(),
+          role: 'system',
+          content: `工具 ${toolId} 执行失败: ${error instanceof Error ? error.message : '未知错误'}`,
+          timestamp: Date.now(),
+          status: 'error',
+        };
 
-      dispatch({ type: 'ADD_MESSAGE', payload: errorMessage });
-      await messageStorage.addMessage(errorMessage);
+        dispatch({ type: 'ADD_MESSAGE', payload: errorMessage });
+        await messageStorage.addMessage(errorMessage);
 
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : '未知错误',
-        duration: Date.now() - startTime,
-        timestamp: new Date()
-      };
-    }
-  }, [userId, messages]);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : '未知错误',
+          duration: Date.now() - startTime,
+          timestamp: new Date(),
+        };
+      }
+    },
+    [userId, messages]
+  );
 
   const handleToolPin = useCallback((toolId: string, pinned: boolean) => {
     console.warn(`工具 ${toolId} ${pinned ? '已固定' : '已取消固定'}`);
@@ -572,7 +608,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
       content: inputValue,
       timestamp: Date.now(),
       status: 'sending',
-      files: selectedFiles
+      files: selectedFiles,
     };
 
     dispatch({ type: 'ADD_MESSAGE', payload: userMessage });
@@ -593,12 +629,12 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
         environment: 'web',
         permissions: ['read', 'write'],
         conversationHistory: messages,
-        workingMemory: {}
+        workingMemory: {},
       };
 
       const input: UserInput = {
         text: inputValue,
-        context
+        context,
       };
 
       const response = await agentEngineRef.current?.processInput(input);
@@ -606,7 +642,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
       // 更新用户消息状态
       dispatch({
         type: 'UPDATE_MESSAGE',
-        payload: { id: userMessage.id, updates: { status: 'sent' } }
+        payload: { id: userMessage.id, updates: { status: 'sent' } },
       });
 
       // 添加助手回复
@@ -614,7 +650,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
         id: Date.now().toString(),
         role: 'assistant',
         content: response?.message || '收到了你的消息，正在处理中...',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       dispatch({ type: 'ADD_MESSAGE', payload: assistantMessage });
@@ -632,7 +668,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
           id: (Date.now() + 1).toString(),
           role: 'system',
           content: `建议: ${response.suggestions.join(', ')}`,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
         dispatch({ type: 'ADD_MESSAGE', payload: suggestionsMessage });
 
@@ -643,12 +679,11 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
           console.error('保存消息失败:', error);
         }
       }
-
     } catch (error: unknown) {
       logger.error('发送消息失败', error);
       dispatch({
         type: 'UPDATE_MESSAGE',
-        payload: { id: userMessage.id, updates: { status: 'error' } }
+        payload: { id: userMessage.id, updates: { status: 'error' } },
       });
     } finally {
       dispatch({ type: 'SET_PROCESSING', payload: false });
@@ -657,76 +692,83 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
 
   // ==================== 键盘快捷键 ====================
 
-  const handleKeyPress = useCallback((e: KeyboardEvent) => {
-    // 打开/关闭浮窗
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-      e.preventDefault();
-      dispatch({ type: 'SET_WIDGET_STATE', payload: { isVisible: !widget.isVisible } });
-    }
-
-    // 如果浮窗不可见或最小化，不处理其他快捷键
-    if (!widget.isVisible || widget.isMinimized) return;
-
-    // 发送消息
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      handleSendMessage();
-    }
-
-    // 关闭浮窗
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      dispatch({ type: 'SET_WIDGET_STATE', payload: { isVisible: false } });
-    }
-
-    // 编辑上一条消息
-    if (e.key === 'ArrowUp' && !inputValue.trim()) {
-      e.preventDefault();
-      const lastUserMessage = messages
-        .filter(m => m.role === 'user')
-        .pop();
-
-      if (lastUserMessage) {
-        dispatch({ type: 'SET_INPUT_VALUE', payload: lastUserMessage.content });
+  const handleKeyPress = useCallback(
+    (e: KeyboardEvent) => {
+      // 打开/关闭浮窗
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        dispatch({ type: 'SET_WIDGET_STATE', payload: { isVisible: !widget.isVisible } });
       }
-    }
 
-    // 切换视图
-    if ((e.ctrlKey || e.metaKey) && ['1', '2', '3', '4', '5', '6'].includes(e.key)) {
-      e.preventDefault();
-      const viewIndex = parseInt(e.key) - 1;
-      const views: Array<'chat' | 'tools' | 'insights' | 'workflow' | 'knowledge' | 'history'> =
-        ['chat', 'tools', 'insights', 'workflow', 'knowledge', 'history'];
+      // 如果浮窗不可见或最小化，不处理其他快捷键
+      if (!widget.isVisible || widget.isMinimized) return;
 
-      if (viewIndex < views.length) {
-        dispatch({ type: 'SET_WIDGET_STATE', payload: { currentView: views[viewIndex] } });
+      // 发送消息
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleSendMessage();
       }
-    }
 
-    // 快速切换到聊天视图
-    if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
-      e.preventDefault();
-      dispatch({ type: 'SET_WIDGET_STATE', payload: { currentView: 'chat' } });
-    }
+      // 关闭浮窗
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        dispatch({ type: 'SET_WIDGET_STATE', payload: { isVisible: false } });
+      }
 
-    // 快速切换到历史视图
-    if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
-      e.preventDefault();
-      dispatch({ type: 'SET_WIDGET_STATE', payload: { currentView: 'history' } });
-    }
+      // 编辑上一条消息
+      if (e.key === 'ArrowUp' && !inputValue.trim()) {
+        e.preventDefault();
+        const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
 
-    // 最小化/恢复
-    if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
-      e.preventDefault();
-      dispatch({ type: 'SET_WIDGET_STATE', payload: { isMinimized: !widget.isMinimized } });
-    }
+        if (lastUserMessage) {
+          dispatch({ type: 'SET_INPUT_VALUE', payload: lastUserMessage.content });
+        }
+      }
 
-    // 全屏/恢复
-    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-      e.preventDefault();
-      dispatch({ type: 'SET_WIDGET_STATE', payload: { isFullscreen: !widget.isFullscreen } });
-    }
-  }, [widget.isVisible, widget.isMinimized, inputValue, messages, handleSendMessage]);
+      // 切换视图
+      if ((e.ctrlKey || e.metaKey) && ['1', '2', '3', '4', '5', '6'].includes(e.key)) {
+        e.preventDefault();
+        const viewIndex = parseInt(e.key) - 1;
+        const views: Array<'chat' | 'tools' | 'insights' | 'workflow' | 'knowledge' | 'history'> = [
+          'chat',
+          'tools',
+          'insights',
+          'workflow',
+          'knowledge',
+          'history',
+        ];
+
+        if (viewIndex < views.length) {
+          dispatch({ type: 'SET_WIDGET_STATE', payload: { currentView: views[viewIndex] } });
+        }
+      }
+
+      // 快速切换到聊天视图
+      if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+        e.preventDefault();
+        dispatch({ type: 'SET_WIDGET_STATE', payload: { currentView: 'chat' } });
+      }
+
+      // 快速切换到历史视图
+      if ((e.ctrlKey || e.metaKey) && e.key === 'h') {
+        e.preventDefault();
+        dispatch({ type: 'SET_WIDGET_STATE', payload: { currentView: 'history' } });
+      }
+
+      // 最小化/恢复
+      if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+        e.preventDefault();
+        dispatch({ type: 'SET_WIDGET_STATE', payload: { isMinimized: !widget.isMinimized } });
+      }
+
+      // 全屏/恢复
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        dispatch({ type: 'SET_WIDGET_STATE', payload: { isFullscreen: !widget.isFullscreen } });
+      }
+    },
+    [widget.isVisible, widget.isMinimized, inputValue, messages, handleSendMessage]
+  );
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -754,22 +796,31 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
 
   // ==================== 渲染 ====================
 
-  const widgetClasses = useMemo(() => `
+  const widgetClasses = useMemo(
+    () => `
     fixed bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300
     ${widget.isDragging ? 'cursor-grabbing' : 'cursor-default'}
     ${widget.isFullscreen ? 'inset-4' : ''}
     ${widget.isMinimized ? 'h-14' : ''}
-  `, [widget.isDragging, widget.isFullscreen, widget.isMinimized]);
+  `,
+    [widget.isDragging, widget.isFullscreen, widget.isMinimized]
+  );
 
-  const widgetStyle = useMemo((): CSSProperties => widget.isFullscreen
-    ? { zIndex: 9999 }
-    : {
-      left: widget.position.x,
-      top: widget.position.y,
-      width: widget.isMinimized ? Math.max(widget.position.width, 300) : widget.position.width,
-      height: widget.isMinimized ? 56 : widget.position.height,
-      zIndex: 9999
-    }, [widget.isFullscreen, widget.position]);
+  const widgetStyle = useMemo(
+    (): CSSProperties =>
+      widget.isFullscreen
+        ? { zIndex: 9999 }
+        : {
+            left: widget.position.x,
+            top: widget.position.y,
+            width: widget.isMinimized
+              ? Math.max(widget.position.width, 300)
+              : widget.position.width,
+            height: widget.isMinimized ? 56 : widget.position.height,
+            zIndex: 9999,
+          },
+    [widget.isFullscreen, widget.position]
+  );
 
   if (!widget.isVisible) return null;
 
@@ -786,13 +837,13 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
         onMouseDown={handleMouseDown}
       >
         <div className="flex items-center space-x-2">
-          <div className={`w-2 h-2 rounded-full ${isProcessing ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`}></div>
-          <span className="font-semibold">
-            {widget.isMinimized ? 'YYC³' : 'YYC³ 智能助手'}
-          </span>
+          <div
+            className={`w-2 h-2 rounded-full ${isProcessing ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`}
+          ></div>
+          <span className="font-semibold">{widget.isMinimized ? 'YYC³' : 'YYC³ 智能助手'}</span>
           {!widget.isMinimized && messages.length > 0 && (
             <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
-              {messages.filter(m => m.role === 'user').length} 条消息
+              {messages.filter((m) => m.role === 'user').length} 条消息
             </span>
           )}
         </div>
@@ -810,7 +861,11 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
             className="hover:bg-white/20 p-1 rounded transition-colors"
             title={widget.isFullscreen ? '退出全屏' : '全屏'}
           >
-            {widget.isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {widget.isFullscreen ? (
+              <Minimize2 className="w-4 h-4" />
+            ) : (
+              <Maximize2 className="w-4 h-4" />
+            )}
           </button>
           <button
             onClick={closeWidget}
@@ -893,7 +948,11 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
           </div>
 
           {/* 内容区 */}
-          <div className="flex-1 overflow-hidden flex flex-col" style={{ height: 'calc(100% - 112px)' }} data-testid="widget-content">
+          <div
+            className="flex-1 overflow-hidden flex flex-col"
+            style={{ height: 'calc(100% - 112px)' }}
+            data-testid="widget-content"
+          >
             {widget.currentView === 'chat' && (
               <>
                 {/* 虚拟化消息列表 */}
@@ -913,8 +972,12 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
                     <input
                       type="text"
                       value={inputValue}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => dispatch({ type: 'SET_INPUT_VALUE', payload: e.target.value })}
-                      onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSendMessage()}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        dispatch({ type: 'SET_INPUT_VALUE', payload: e.target.value })
+                      }
+                      onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                        e.key === 'Enter' && handleSendMessage()
+                      }
                       placeholder="输入消息..."
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       disabled={isProcessing}
@@ -938,10 +1001,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
             )}
 
             {widget.currentView === 'tools' && (
-              <ToolboxPanel
-                onToolExecute={handleToolExecute}
-                onToolPin={handleToolPin}
-              />
+              <ToolboxPanel onToolExecute={handleToolExecute} onToolPin={handleToolPin} />
             )}
 
             {widget.currentView === 'insights' && (
@@ -1004,7 +1064,7 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
           onMouseDown={handleResizeMouseDown}
           className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize hover:bg-secondary/20 rounded-bl-lg"
           style={{
-            background: 'linear-gradient(135deg, transparent 50%, hsl(var(--secondary)) 50%)'
+            background: 'linear-gradient(135deg, transparent 50%, hsl(var(--secondary)) 50%)',
           }}
         />
       )}
@@ -1025,9 +1085,10 @@ const NavTab: React.FC<NavTabProps> = React.memo(({ icon, label, active, onClick
     onClick={onClick}
     className={`
       flex-1 flex items-center justify-center space-x-2 py-3 text-sm font-medium transition-colors
-      ${active
-        ? 'text-indigo-600 border-b-2 border-indigo-600 bg-white'
-        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+      ${
+        active
+          ? 'text-indigo-600 border-b-2 border-indigo-600 bg-white'
+          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
       }
     `}
   >
@@ -1075,35 +1136,35 @@ function getInitialPosition(position: string): WidgetPosition {
         x: window.innerWidth - width - padding,
         y: window.innerHeight - height - padding,
         width,
-        height
+        height,
       };
     case 'bottom-left':
       return {
         x: padding,
         y: window.innerHeight - height - padding,
         width,
-        height
+        height,
       };
     case 'top-right':
       return {
         x: window.innerWidth - width - padding,
         y: padding,
         width,
-        height
+        height,
       };
     case 'top-left':
       return {
         x: padding,
         y: padding,
         width,
-        height
+        height,
       };
     default:
       return {
         x: window.innerWidth - width - padding,
         y: window.innerHeight - height - padding,
         width,
-        height
+        height,
       };
   }
 }

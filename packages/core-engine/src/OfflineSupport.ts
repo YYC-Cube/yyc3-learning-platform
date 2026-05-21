@@ -1,10 +1,10 @@
 /**
  * YYC³ 智能AI浮窗系统 - 离线功能支持系统
- * 
+ *
  * 核心定位：确保用户在网络中断时仍能使用核心功能
  * 设计原则：数据同步、冲突解决、用户体验优先、存储优化
  * 技术栈：Service Worker + IndexedDB + 数据同步 + 冲突解决
- * 
+ *
  * @author YYC³ AI Team
  * @version 1.0.0
  */
@@ -32,14 +32,14 @@ export enum OperationType {
   UPDATE = 'update',
   DELETE = 'delete',
   SYNC = 'sync',
-  CUSTOM = 'custom'
+  CUSTOM = 'custom',
 }
 
 export enum OperationPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 export interface OfflineOperationResult {
@@ -67,7 +67,7 @@ export enum ConnectionType {
   CELLULAR = 'cellular',
   BLUETOOTH = 'bluetooth',
   NONE = 'none',
-  UNKNOWN = 'unknown'
+  UNKNOWN = 'unknown',
 }
 
 export enum EffectiveConnectionType {
@@ -75,7 +75,7 @@ export enum EffectiveConnectionType {
   TWO_G = '2g',
   THREE_G = '3g',
   FOUR_G = '4g',
-  FIVE_G = '5g'
+  FIVE_G = '5g',
 }
 
 export interface SyncResult {
@@ -118,7 +118,7 @@ export enum ConflictStrategy {
   MERGE = 'merge',
   MANUAL = 'manual',
   TIMESTAMP = 'timestamp',
-  CUSTOM = 'custom'
+  CUSTOM = 'custom',
 }
 
 export interface StorageOptimizationReport {
@@ -166,7 +166,7 @@ export enum PreloadStrategy {
   AGGRESSIVE = 'aggressive',
   BALANCED = 'balanced',
   CONSERVATIVE = 'conservative',
-  ADAPTIVE = 'adaptive'
+  ADAPTIVE = 'adaptive',
 }
 
 export interface PreloadItem {
@@ -182,20 +182,20 @@ export interface OfflineConfig {
   databaseVersion: number;
   storageQuota: number;
   autoCompaction: boolean;
-  
+
   // 同步配置
   syncStrategy: SyncStrategy;
   syncBatchSize: number;
   retryPolicy: RetryPolicy;
   syncPriority: OperationPriority[];
-  
+
   // 网络配置
   networkCheckInterval: number;
   networkTestEndpoints: string[];
-  
+
   // 冲突解决
   defaultConflictStrategy: ConflictStrategy;
-  
+
   // 其他配置
   compressionEnabled: boolean;
   encryptionEnabled: boolean;
@@ -205,7 +205,7 @@ export enum SyncStrategy {
   IMMEDIATE = 'immediate',
   PERIODIC = 'periodic',
   ON_CONNECT = 'on_connect',
-  MANUAL = 'manual'
+  MANUAL = 'manual',
 }
 
 export interface RetryPolicy {
@@ -237,7 +237,7 @@ export class OfflineSupportSystem extends EventEmitter {
 
   constructor(config: Partial<OfflineConfig> = {}) {
     super();
-    
+
     this.config = {
       databaseName: 'yyc3_offline_db',
       databaseVersion: 1,
@@ -249,20 +249,20 @@ export class OfflineSupportSystem extends EventEmitter {
         maxRetries: 3,
         backoffMultiplier: 2,
         initialDelay: 1000,
-        maxDelay: 30000
+        maxDelay: 30000,
       },
       syncPriority: [
         OperationPriority.CRITICAL,
         OperationPriority.HIGH,
         OperationPriority.MEDIUM,
-        OperationPriority.LOW
+        OperationPriority.LOW,
       ],
       networkCheckInterval: 30000, // 30秒
       networkTestEndpoints: ['/api/health'],
       defaultConflictStrategy: ConflictStrategy.TIMESTAMP,
       compressionEnabled: true,
       encryptionEnabled: false,
-      ...config
+      ...config,
     };
 
     this.networkStatus = {
@@ -271,7 +271,7 @@ export class OfflineSupportSystem extends EventEmitter {
       effectiveType: EffectiveConnectionType.FOUR_G,
       downlink: 10,
       rtt: 100,
-      saveData: false
+      saveData: false,
     };
 
     this.setupNetworkMonitoring();
@@ -283,7 +283,7 @@ export class OfflineSupportSystem extends EventEmitter {
    */
   async processOfflineOperation(operation: OfflineOperation): Promise<OfflineOperationResult> {
     const operationId = operation.id || this.generateOperationId();
-    
+
     try {
       // 检查网络状态
       const status = await this.getNetworkStatus();
@@ -295,12 +295,12 @@ export class OfflineSupportSystem extends EventEmitter {
           success: true,
           operationId,
           status: 'completed',
-          localData: result
+          localData: result,
         };
       } else {
         // 离线模式：加入队列
         await this.queueOperation(operation, operationId);
-        
+
         this.emit('operation:queued', { operationId, operation });
 
         return {
@@ -309,17 +309,16 @@ export class OfflineSupportSystem extends EventEmitter {
           status: 'queued',
           queuedAt: new Date(),
           estimatedSyncTime: await this.estimateSyncTime(),
-          localData: await this.saveToLocalCache(operation)
+          localData: await this.saveToLocalCache(operation),
         };
       }
-
     } catch (error) {
       this.emit('operation:error', { operationId, error });
       return {
         success: false,
         operationId,
         status: 'failed',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -339,7 +338,7 @@ export class OfflineSupportSystem extends EventEmitter {
         conflictsResolved: 0,
         errors: [],
         bandwidthUsed: 0,
-        reason: 'Sync already in progress'
+        reason: 'Sync already in progress',
       };
     }
 
@@ -362,7 +361,7 @@ export class OfflineSupportSystem extends EventEmitter {
           errors: [],
           bandwidthUsed: 0,
           reason: 'Network unavailable',
-          attemptedAt: new Date()
+          attemptedAt: new Date(),
         };
       }
 
@@ -396,13 +395,12 @@ export class OfflineSupportSystem extends EventEmitter {
         conflictsResolved: conflicts.length,
         errors: [],
         bandwidthUsed: await this.calculateBandwidthUsed(syncResults),
-        nextSync: await this.scheduleNextSync()
+        nextSync: await this.scheduleNextSync(),
       };
 
       this.emit('sync:completed', result);
 
       return result;
-
     } catch (error) {
       this.emit('sync:error', { syncId, error });
       return {
@@ -413,15 +411,16 @@ export class OfflineSupportSystem extends EventEmitter {
         duration: Date.now() - startTime,
         operationsSynced: 0,
         conflictsResolved: 0,
-        errors: [{
-          operationId: '',
-          error: error instanceof Error ? error.message : 'Unknown error',
-          timestamp: new Date(),
-          retryable: true
-        }],
-        bandwidthUsed: 0
+        errors: [
+          {
+            operationId: '',
+            error: error instanceof Error ? error.message : 'Unknown error',
+            timestamp: new Date(),
+            retryable: true,
+          },
+        ],
+        bandwidthUsed: 0,
       };
-
     } finally {
       this.syncInProgress = false;
     }
@@ -479,9 +478,8 @@ export class OfflineSupportSystem extends EventEmitter {
         resolvedVersion,
         resolved,
         requiresManualResolution: requiresManual,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-
     } catch (error) {
       return {
         conflictId,
@@ -492,7 +490,7 @@ export class OfflineSupportSystem extends EventEmitter {
         resolvedVersion: null,
         resolved: false,
         requiresManualResolution: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -532,16 +530,15 @@ export class OfflineSupportSystem extends EventEmitter {
         initialUsage,
         finalUsage,
         freedSpace: initialUsage - finalUsage,
-        optimizationsApplied: optimizations.filter(o => o.success).length,
+        optimizationsApplied: optimizations.filter((o) => o.success).length,
         optimizationDetails: optimizations,
         verification: {
           finalUsage,
           integrityCheck: true,
-          performanceImpact: 0
+          performanceImpact: 0,
         },
-        recommendations: await this.generateStorageRecommendations(finalUsage)
+        recommendations: await this.generateStorageRecommendations(finalUsage),
       };
-
     } catch (error) {
       this.emit('storage:optimization:error', { error });
       throw error;
@@ -554,7 +551,7 @@ export class OfflineSupportSystem extends EventEmitter {
   async preloadOfflineData(predictions?: string[]): Promise<PreloadResult> {
     try {
       // 1. 预测需要的资源
-      const predictedResources = predictions || await this.predictNeededResources();
+      const predictedResources = predictions || (await this.predictNeededResources());
 
       // 2. 选择预加载策略
       const strategy = await this.selectPreloadStrategy();
@@ -569,9 +566,8 @@ export class OfflineSupportSystem extends EventEmitter {
         predictions: predictedResources,
         strategy,
         results,
-        storageUsed
+        storageUsed,
       };
-
     } catch (error) {
       this.emit('preload:error', { error });
       throw error;
@@ -624,12 +620,12 @@ export class OfflineSupportSystem extends EventEmitter {
     const queued: QueuedOperation = {
       operation: { ...operation, id: operationId },
       queuedAt: new Date(),
-      attempts: 0
+      attempts: 0,
     };
 
     // 根据优先级插入
     const insertIndex = this.operationQueue.findIndex(
-      q => this.getPriorityValue(q.operation.priority) < this.getPriorityValue(operation.priority)
+      (q) => this.getPriorityValue(q.operation.priority) < this.getPriorityValue(operation.priority)
     );
 
     if (insertIndex === -1) {
@@ -644,7 +640,7 @@ export class OfflineSupportSystem extends EventEmitter {
       [OperationPriority.CRITICAL]: 4,
       [OperationPriority.HIGH]: 3,
       [OperationPriority.MEDIUM]: 2,
-      [OperationPriority.LOW]: 1
+      [OperationPriority.LOW]: 1,
     };
     return priorities[priority] || 0;
   }
@@ -704,7 +700,7 @@ export class OfflineSupportSystem extends EventEmitter {
       // 更新进度
       this.emit('sync:progress', {
         current: results.length,
-        total: groups.flat().length
+        total: groups.flat().length,
       });
     }
 
@@ -716,10 +712,7 @@ export class OfflineSupportSystem extends EventEmitter {
 
     for (const result of syncResults) {
       if (result.conflict) {
-        const resolution = await this.resolveConflict(
-          result.localVersion,
-          result.remoteVersion
-        );
+        const resolution = await this.resolveConflict(result.localVersion, result.remoteVersion);
         conflicts.push(resolution);
       }
     }
@@ -736,13 +729,9 @@ export class OfflineSupportSystem extends EventEmitter {
   }
 
   private async cleanupSyncedOperations(syncResults: any[]): Promise<void> {
-    const syncedIds = syncResults
-      .filter(r => r.success)
-      .map(r => r.operation.id);
+    const syncedIds = syncResults.filter((r) => r.success).map((r) => r.operation.id);
 
-    this.operationQueue = this.operationQueue.filter(
-      q => !syncedIds.includes(q.operation.id)
-    );
+    this.operationQueue = this.operationQueue.filter((q) => !syncedIds.includes(q.operation.id));
   }
 
   private async calculateBandwidthUsed(syncResults: any[]): Promise<number> {
@@ -769,7 +758,7 @@ export class OfflineSupportSystem extends EventEmitter {
       ...remoteVersion,
       ...localVersion,
       _merged: true,
-      _mergedAt: Date.now()
+      _mergedAt: Date.now(),
     };
   }
 
@@ -783,7 +772,7 @@ export class OfflineSupportSystem extends EventEmitter {
       const expirationTime = 7 * 24 * 60 * 60 * 1000; // 7天
 
       const beforeSize = this.operationQueue.length;
-      this.operationQueue = this.operationQueue.filter(q => {
+      this.operationQueue = this.operationQueue.filter((q) => {
         const age = now - q.queuedAt.getTime();
         return age < expirationTime;
       });
@@ -796,7 +785,7 @@ export class OfflineSupportSystem extends EventEmitter {
         target: 'operation_queue',
         spaceSaved,
         duration: Date.now() - startTime,
-        success: true
+        success: true,
       };
     } catch {
       return {
@@ -804,7 +793,7 @@ export class OfflineSupportSystem extends EventEmitter {
         target: 'operation_queue',
         spaceSaved: 0,
         duration: Date.now() - startTime,
-        success: false
+        success: false,
       };
     }
   }
@@ -815,7 +804,7 @@ export class OfflineSupportSystem extends EventEmitter {
       target: 'cache',
       spaceSaved: 0,
       duration: 0,
-      success: true
+      success: true,
     };
   }
 
@@ -825,7 +814,7 @@ export class OfflineSupportSystem extends EventEmitter {
       target: 'cache',
       spaceSaved: 0,
       duration: 0,
-      success: true
+      success: true,
     };
   }
 
@@ -849,7 +838,7 @@ export class OfflineSupportSystem extends EventEmitter {
       target: 'local_cache',
       spaceSaved,
       duration: Date.now() - startTime,
-      success: true
+      success: true,
     };
   }
 
@@ -890,7 +879,10 @@ export class OfflineSupportSystem extends EventEmitter {
     return PreloadStrategy.BALANCED;
   }
 
-  private async executePreload(resources: string[], strategy: PreloadStrategy): Promise<PreloadItem[]> {
+  private async executePreload(
+    resources: string[],
+    strategy: PreloadStrategy
+  ): Promise<PreloadItem[]> {
     const results: PreloadItem[] = [];
 
     for (const resource of resources) {
@@ -898,7 +890,7 @@ export class OfflineSupportSystem extends EventEmitter {
         resource,
         size: 1024,
         cached: true,
-        priority: 1
+        priority: 1,
       });
     }
 
@@ -910,7 +902,7 @@ export class OfflineSupportSystem extends EventEmitter {
     window.addEventListener('online', () => {
       this.networkStatus.isOnline = true;
       this.emit('network:online');
-      
+
       // 自动同步
       if (this.config.syncStrategy === SyncStrategy.ON_CONNECT) {
         this.syncData();

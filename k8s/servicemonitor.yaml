@@ -11,7 +11,7 @@ spec:
     matchLabels:
       app: yyc3-learning
   endpoints:
-  - port: http
-    path: /metrics
-    interval: 15s
-    scrapeTimeout: 10s
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s

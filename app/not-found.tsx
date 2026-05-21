@@ -4,12 +4,12 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Search, Home, ArrowLeft } from "lucide-react"
-import Link from "next/link"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Search, Home, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -36,7 +36,11 @@ export default function NotFound() {
               </Link>
             </Button>
 
-            <Button variant="outline" className="w-full bg-transparent" onClick={() => window.history.back()}>
+            <Button
+              variant="outline"
+              className="w-full bg-transparent"
+              onClick={() => window.history.back()}
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               返回上一页
             </Button>
@@ -48,5 +52,5 @@ export default function NotFound() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

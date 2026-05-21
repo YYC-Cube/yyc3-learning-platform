@@ -18,11 +18,17 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
         protocol: 'http' as const,
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-east-1', environment: 'development' as const },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['ai', 'engine'],
         version: '1.0.0',
         registeredAt: Date.now(),
-        lastHeartbeat: Date.now()
+        lastHeartbeat: Date.now(),
       },
       {
         id: 'service-2',
@@ -33,11 +39,17 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
         protocol: 'http' as const,
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-west-1', environment: 'development' as const },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['ai', 'engine'],
         version: '1.0.0',
         registeredAt: Date.now(),
-        lastHeartbeat: Date.now()
+        lastHeartbeat: Date.now(),
       },
       {
         id: 'service-3',
@@ -48,16 +60,22 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
         protocol: 'http' as const,
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'eu-west-1', environment: 'development' as const },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['ai', 'engine'],
         version: '1.0.0',
         registeredAt: Date.now(),
-        lastHeartbeat: Date.now()
-      }
+        lastHeartbeat: Date.now(),
+      },
     ] as ServiceInstance[];
 
     mockServiceDiscovery = {
-      discover: jest.fn().mockImplementation(() => Promise.resolve(mockServices))
+      discover: jest.fn().mockImplementation(() => Promise.resolve(mockServices)),
     } as any;
 
     loadBalancer = new IntelligentLoadBalancer(mockServiceDiscovery, {
@@ -69,7 +87,7 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
       circuitBreakerThreshold: 3,
       stickySessionEnabled: true,
       maxConnectionsPerService: 100,
-      requestTimeout: 3000
+      requestTimeout: 3000,
     });
   });
 
@@ -130,9 +148,15 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
     it('should select a service using ip_hash strategy', async () => {
       loadBalancer.updateStrategy(LoadBalancingStrategy.IP_HASH);
 
-      const service1 = await loadBalancer.selectService(ServiceType.AI_ENGINE, { clientIp: '192.168.1.1' });
-      const service2 = await loadBalancer.selectService(ServiceType.AI_ENGINE, { clientIp: '192.168.1.1' });
-      const service3 = await loadBalancer.selectService(ServiceType.AI_ENGINE, { clientIp: '192.168.1.2' });
+      const service1 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
+        clientIp: '192.168.1.1',
+      });
+      const service2 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
+        clientIp: '192.168.1.1',
+      });
+      const service3 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
+        clientIp: '192.168.1.2',
+      });
 
       expect(service1).toBeDefined();
       expect(service2).toBeDefined();
@@ -145,9 +169,15 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
     it('should select a service using consistent_hash strategy', async () => {
       loadBalancer.updateStrategy(LoadBalancingStrategy.CONSISTENT_HASH);
 
-      const service1 = await loadBalancer.selectService(ServiceType.AI_ENGINE, { requestId: 'request-1' });
-      const service2 = await loadBalancer.selectService(ServiceType.AI_ENGINE, { requestId: 'request-1' });
-      const service3 = await loadBalancer.selectService(ServiceType.AI_ENGINE, { requestId: 'request-2' });
+      const service1 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
+        requestId: 'request-1',
+      });
+      const service2 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
+        requestId: 'request-1',
+      });
+      const service3 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
+        requestId: 'request-2',
+      });
 
       expect(service1).toBeDefined();
       expect(service2).toBeDefined();
@@ -191,7 +221,7 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
 
     it('should exclude specified service IDs', async () => {
       const service = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
-        excludeServiceIds: ['service-1']
+        excludeServiceIds: ['service-1'],
       });
 
       expect(service).toBeDefined();
@@ -247,7 +277,7 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
       const circuitBreakerState = loadBalancer.getCircuitBreakerState(service!.id);
       expect(circuitBreakerState?.isOpen).toBe(true);
 
-      await new Promise(resolve => setTimeout(resolve, 70000));
+      await new Promise((resolve) => setTimeout(resolve, 70000));
 
       const nextService = await loadBalancer.selectService(ServiceType.AI_ENGINE);
       expect(nextService).toBeDefined();
@@ -257,11 +287,11 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
   describe('Sticky Sessions', () => {
     it('should route same session to same service', async () => {
       const service1 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
-        sessionId: 'session-1'
+        sessionId: 'session-1',
       });
 
       const service2 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
-        sessionId: 'session-1'
+        sessionId: 'session-1',
       });
 
       expect(service1).toBeDefined();
@@ -271,11 +301,11 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
 
     it('should route different sessions to potentially different services', async () => {
       const service1 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
-        sessionId: 'session-1'
+        sessionId: 'session-1',
       });
 
       const service2 = await loadBalancer.selectService(ServiceType.AI_ENGINE, {
-        sessionId: 'session-2'
+        sessionId: 'session-2',
       });
 
       expect(service1).toBeDefined();
@@ -399,40 +429,37 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
 
   describe('Request Execution', () => {
     it('should execute request successfully', async () => {
-      const requestFn = jest.fn<(service: ServiceInstance) => Promise<{ result: string }>>()
+      const requestFn = jest
+        .fn<(service: ServiceInstance) => Promise<{ result: string }>>()
         .mockResolvedValue({ result: 'success' });
 
-      const result = await loadBalancer.executeRequest(
-        ServiceType.AI_ENGINE,
-        requestFn
-      );
+      const result = await loadBalancer.executeRequest(ServiceType.AI_ENGINE, requestFn);
 
       expect(result).toEqual({ result: 'success' });
       expect(requestFn).toHaveBeenCalledTimes(1);
     });
 
     it('should retry on failure', async () => {
-      const requestFn = jest.fn<(service: ServiceInstance) => Promise<{ result: string }>>()
+      const requestFn = jest
+        .fn<(service: ServiceInstance) => Promise<{ result: string }>>()
         .mockRejectedValueOnce(new Error('Network error'))
         .mockRejectedValueOnce(new Error('Network error'))
         .mockResolvedValue({ result: 'success' });
 
-      const result = await loadBalancer.executeRequest(
-        ServiceType.AI_ENGINE,
-        requestFn
-      );
+      const result = await loadBalancer.executeRequest(ServiceType.AI_ENGINE, requestFn);
 
       expect(result).toEqual({ result: 'success' });
       expect(requestFn).toHaveBeenCalledTimes(3);
     });
 
     it('should throw error after max retries', async () => {
-      const requestFn = jest.fn<(service: ServiceInstance) => Promise<{ result: string }>>()
+      const requestFn = jest
+        .fn<(service: ServiceInstance) => Promise<{ result: string }>>()
         .mockRejectedValue(new Error('Network error'));
 
-      await expect(
-        loadBalancer.executeRequest(ServiceType.AI_ENGINE, requestFn)
-      ).rejects.toThrow('Network error');
+      await expect(loadBalancer.executeRequest(ServiceType.AI_ENGINE, requestFn)).rejects.toThrow(
+        'Network error'
+      );
 
       expect(requestFn).toHaveBeenCalledTimes(4);
     }, 10000);
@@ -447,13 +474,12 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
         stickySessionEnabled: false,
         maxConnectionsPerService: 100,
         requestTimeout: 100,
-        maxRetries: 0
+        maxRetries: 0,
       });
 
-      const requestFn = jest.fn<(service: ServiceInstance) => Promise<{ result: string }>>()
-        .mockImplementation(
-          () => new Promise(() => { })
-        );
+      const requestFn = jest
+        .fn<(service: ServiceInstance) => Promise<{ result: string }>>()
+        .mockImplementation(() => new Promise(() => {}));
 
       await expect(
         loadBalancerWithTimeout.executeRequest(ServiceType.AI_ENGINE, requestFn)
@@ -472,7 +498,7 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
 
       expect(eventSpy).toHaveBeenCalledWith({
         strategy: LoadBalancingStrategy.RANDOM,
-        timestamp: expect.any(Number)
+        timestamp: expect.any(Number),
       });
     });
   });
@@ -488,7 +514,7 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
         serviceId: expect.any(String),
         serviceType: ServiceType.AI_ENGINE,
         strategy: expect.any(String),
-        timestamp: expect.any(Number)
+        timestamp: expect.any(Number),
       });
     });
 
@@ -504,7 +530,7 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
 
       expect(eventSpy).toHaveBeenCalledWith({
         serviceId: service!.id,
-        timestamp: expect.any(Number)
+        timestamp: expect.any(Number),
       });
     });
 
@@ -518,7 +544,7 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
         loadBalancer.recordResponse(service!.id, false, 100);
       }
 
-      await new Promise(resolve => setTimeout(resolve, 70000));
+      await new Promise((resolve) => setTimeout(resolve, 70000));
 
       await loadBalancer.selectService(ServiceType.AI_ENGINE);
 
@@ -529,7 +555,7 @@ describe('IntelligentLoadBalancer Integration Tests', () => {
       const eventSpy = jest.fn();
       loadBalancer.on('metrics:updated', eventSpy);
 
-      await new Promise(resolve => setTimeout(resolve, 65000));
+      await new Promise((resolve) => setTimeout(resolve, 65000));
 
       expect(eventSpy).toHaveBeenCalled();
     }, 75000);

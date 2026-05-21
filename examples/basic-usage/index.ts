@@ -23,40 +23,40 @@ async function basicUsageExample() {
       resourceLimits: {
         maxMemory: 1024 * 1024 * 1024,
         maxCPU: 80,
-        maxNetwork: 1000
+        maxNetwork: 1000,
       },
       learningConfig: {
         enabled: true,
         adaptationRate: 0.1,
-        knowledgeRetention: 0.9
+        knowledgeRetention: 0.9,
       },
       decisionMakingConfig: {
         timeout: 30000,
-        confidenceThreshold: 0.7
+        confidenceThreshold: 0.7,
       },
       collaborationConfig: {
         enabled: true,
-        maxCollaborators: 5
+        maxCollaborators: 5,
       },
       monitoringConfig: {
         enabled: true,
-        metricsInterval: 60000
+        metricsInterval: 60000,
       },
       securityConfig: {
         level: 'standard',
         accessControl: true,
         encryptionEnabled: true,
-        auditLog: true
+        auditLog: true,
       },
       integrationConfig: {
         enabled: true,
-        endpoints: []
+        endpoints: [],
       },
       modelAdapterConfig: {
         apiKey,
         model: 'gpt-4',
-        provider: 'openai'
-      }
+        provider: 'openai',
+      },
     });
 
     console.log('✅ 自主AI引擎初始化成功');
@@ -74,8 +74,8 @@ async function basicUsageExample() {
         technology: { enabled: true, priority: 2 },
         data: { enabled: true, priority: 3 },
         ux: { enabled: true, priority: 4 },
-        value: { enabled: true, priority: 5 }
-      }
+        value: { enabled: true, priority: 5 },
+      },
     });
 
     console.log('✅ 五维管理系统初始化成功');
@@ -84,7 +84,7 @@ async function basicUsageExample() {
       behavioralLayer: { enabled: true },
       knowledgeLayer: { enabled: true },
       strategicLayer: { enabled: true },
-      metaLayer: { enabled: true }
+      metaLayer: { enabled: true },
     });
 
     console.log('✅ 学习系统初始化成功');
@@ -92,7 +92,7 @@ async function basicUsageExample() {
     const response = await aiEngine.reason({
       context: '用户需要优化项目开发流程',
       constraints: ['时间限制', '预算限制'],
-      objectives: ['效率提升', '质量保证']
+      objectives: ['效率提升', '质量保证'],
     });
 
     console.log('\n📊 AI推理结果:');
@@ -100,7 +100,7 @@ async function basicUsageExample() {
 
     const modelResponse = await modelAdapter.generate({
       prompt: '请简述敏捷开发的核心原则',
-      maxTokens: 500
+      maxTokens: 500,
     });
 
     console.log('\n🤖 模型生成结果:');
@@ -113,7 +113,6 @@ async function basicUsageExample() {
     const learningData = learningSystem.getLearningData();
     console.log('\n🧠 学习系统数据:');
     console.log(JSON.stringify(learningData, null, 2));
-
   } catch (error) {
     console.error('❌ 错误:', error);
   }

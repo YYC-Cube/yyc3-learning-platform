@@ -55,7 +55,7 @@ const system = new LearningSystem();
 await system.initialize({
   behavioral: { enabled: true, modelType: 'classification' },
   strategic: { enabled: true, planningHorizon: 90 },
-  knowledge: { enabled: true, graphSize: 100000 }
+  knowledge: { enabled: true, graphSize: 100000 },
 });
 
 // Start learning
@@ -67,19 +67,19 @@ await system.learn({
     environment: { state: 'production' },
     objectives: [],
     constraints: [],
-    availableResources: []
+    availableResources: [],
   },
   actions: [{ type: 'adjust', parameters: { learningRate: 0.01 } }],
   outcomes: [{ success: true, effectiveness: 0.85 }],
   feedback: { satisfaction: 0.9, effectiveness: 0.85 },
-  metadata: { source: 'production', version: '1.0' }
+  metadata: { source: 'production', version: '1.0' },
 });
 
 // Predict behavior
 const prediction = await system.predict({
   situation: { type: 'user_session' },
   environment: { state: 'active' },
-  actor: { id: 'user_001', type: 'human' }
+  actor: { id: 'user_001', type: 'human' },
 });
 
 console.log('Prediction:', prediction.predictedBehavior);
@@ -138,27 +138,33 @@ graph TB
 ### Layers
 
 #### 1. Behavioral Learning Layer
+
 Captures, analyzes, and predicts behavioral patterns.
 
 **Key capabilities:**
+
 - Real-time behavior recording
 - Pattern discovery and analysis
 - Predictive modeling
 - Adaptive feedback optimization
 
 #### 2. Strategic Learning Layer
+
 Manages goals, decisions, and resources.
 
 **Key capabilities:**
+
 - Strategic goal planning
 - Decision framework
 - Resource optimization
 - Risk assessment
 
 #### 3. Knowledge Learning Layer
+
 Manages knowledge representation and reasoning.
 
 **Key capabilities:**
+
 - Knowledge graph management
 - Logical reasoning
 - Knowledge generalization
@@ -202,18 +208,18 @@ bun run docs
 
 ### Scripts
 
-| Script | Description |
-|--------|-------------|
-| `dev` | Run in development mode with watch |
-| `build` | Build the package |
-| `test` | Run tests |
-| `test:coverage` | Run tests with coverage |
-| `lint` | Lint code |
-| `lint:fix` | Fix linting issues |
-| `type-check` | Run TypeScript type checking |
-| `format` | Format code with Prettier |
-| `clean` | Clean build artifacts |
-| `docs` | Generate API documentation |
+| Script          | Description                        |
+| --------------- | ---------------------------------- |
+| `dev`           | Run in development mode with watch |
+| `build`         | Build the package                  |
+| `test`          | Run tests                          |
+| `test:coverage` | Run tests with coverage            |
+| `lint`          | Lint code                          |
+| `lint:fix`      | Fix linting issues                 |
+| `type-check`    | Run TypeScript type checking       |
+| `format`        | Format code with Prettier          |
+| `clean`         | Clean build artifacts              |
+| `docs`          | Generate API documentation         |
 
 ---
 

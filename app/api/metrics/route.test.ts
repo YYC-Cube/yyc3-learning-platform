@@ -8,19 +8,19 @@ import { GET } from './route';
 
 // Mock monitoring functions
 vi.mock('@/lib/monitoring/metrics', () => ({
-  formatPrometheusMetrics: vi.fn(() => `
+  formatPrometheusMetrics: vi.fn(
+    () => `
 # HELP system_uptime_seconds System uptime in seconds
 # TYPE system_uptime_seconds gauge
 system_uptime_seconds 3600
-`),
+`
+  ),
   getAllMetrics: vi.fn(() => ({
     http_request_duration_ms: [
       { name: 'http_request_duration_ms', value: 100, timestamp: Date.now() },
     ],
   })),
-  getAllCounters: vi.fn(() => [
-    { name: 'http_requests_2xx', count: 100, timestamp: Date.now() },
-  ]),
+  getAllCounters: vi.fn(() => [{ name: 'http_requests_2xx', count: 100, timestamp: Date.now() }]),
   getSystemMetrics: vi.fn(() => ({
     uptime: 3600,
     memory: { heapUsed: 12345678, heapTotal: 24680135 },

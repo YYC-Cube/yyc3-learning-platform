@@ -68,11 +68,11 @@ graph TB
 ```typescript
 // 精简技术栈
 const aiEngineTech = {
-  runtime: "Bun",
-  database: "PostgreSQL",
-  cache: "Redis",
-  ai: ["OpenAI", "Anthropic", "本地LLM"],
-  deployment: "Docker"
+  runtime: 'Bun',
+  database: 'PostgreSQL',
+  cache: 'Redis',
+  ai: ['OpenAI', 'Anthropic', '本地LLM'],
+  deployment: 'Docker',
 };
 ```
 
@@ -109,16 +109,16 @@ const aiEngineTech = {
 ```yaml
 # 移除
 removed:
-  - Neo4j      # 图数据库（过度复杂）
-  - InfluxDB   # 时序数据库（可用PostgreSQL替代）
-  - MongoDB    # 文档数据库（PostgreSQL已足够）
+  - Neo4j # 图数据库（过度复杂）
+  - InfluxDB # 时序数据库（可用PostgreSQL替代）
+  - MongoDB # 文档数据库（PostgreSQL已足够）
   - Elasticsearch # 搜索引擎（PostgreSQL全文搜索足够）
 
 # 保留
 kept:
   - PostgreSQL # 主数据库
-  - Redis      # 缓存和会话
-  - MinIO      # 文件存储（S3兼容）
+  - Redis # 缓存和会话
+  - MinIO # 文件存储（S3兼容）
 ```
 
 ### 监控简化
@@ -156,7 +156,7 @@ interface UnifiedData {
 const migration = {
   from: ['mongodb', 'neo4j', 'influxdb'],
   to: 'postgresql',
-  strategy: 'incremental-migration'
+  strategy: 'incremental-migration',
 };
 ```
 
@@ -191,21 +191,21 @@ const aiIntegration = {
   openai: {
     apiKey: process.env.OPENAI_API_KEY,
     models: ['gpt-4', 'gpt-3.5-turbo'],
-    maxTokens: 4000
+    maxTokens: 4000,
   },
   anthropic: {
     apiKey: process.env.ANTHROPIC_API_KEY,
     models: ['claude-3-opus', 'claude-3-sonnet'],
-    maxTokens: 100000
-  }
+    maxTokens: 100000,
+  },
 };
 
 // 真实AI调用
 async function realAIResponse(prompt: string, context: any) {
   const response = await openai.chat.completions.create({
-    model: "gpt-4",
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.7
+    model: 'gpt-4',
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.7,
   });
   return response.choices[0].message.content;
 }
@@ -217,13 +217,13 @@ async function realAIResponse(prompt: string, context: any) {
 // 本地LLM集成
 const localModels = {
   ollama: {
-    endpoint: "http://localhost:11434",
-    models: ["llama2", "mistral", "codellama"]
+    endpoint: 'http://localhost:11434',
+    models: ['llama2', 'mistral', 'codellama'],
   },
   custom: {
-    modelPath: "./models/",
-    inference: "local"
-  }
+    modelPath: './models/',
+    inference: 'local',
+  },
 };
 ```
 
@@ -248,18 +248,8 @@ interface AIAssistantConfig {
 
 // 一键部署配置
 const quickDeploy = {
-  templates: [
-    "客服助手",
-    "销售顾问",
-    "知识问答",
-    "数据分析"
-  ],
-  industries: [
-    "电商",
-    "教育",
-    "金融",
-    "制造"
-  ]
+  templates: ['客服助手', '销售顾问', '知识问答', '数据分析'],
+  industries: ['电商', '教育', '金融', '制造'],
 };
 ```
 
@@ -267,22 +257,22 @@ const quickDeploy = {
 
 ### 部署复杂度
 
-| 指标 | 简化前 | 简化后 | 改善 |
-|------|--------|--------|------|
-| 服务数量 | 7个 | 3个 | ↓57% |
-| 数据库类型 | 5种 | 3种 | ↓40% |
-| 部署时间 | 2-3小时 | 15分钟 | ↓90% |
-| 内存占用 | 8GB+ | 2GB | ↓75% |
-| 配置项 | 50+ | 10 | ↓80% |
+| 指标       | 简化前  | 简化后 | 改善 |
+| ---------- | ------- | ------ | ---- |
+| 服务数量   | 7个     | 3个    | ↓57% |
+| 数据库类型 | 5种     | 3种    | ↓40% |
+| 部署时间   | 2-3小时 | 15分钟 | ↓90% |
+| 内存占用   | 8GB+    | 2GB    | ↓75% |
+| 配置项     | 50+     | 10     | ↓80% |
 
 ### 维护成本
 
-| 成本项目 | 简化前 | 简化后 | 节省 |
-|----------|--------|--------|------|
-| 开发人员 | 5-7人 | 2-3人 | 50%+ |
-| 运维复杂度 | 高 | 中 | 显著降低 |
-| 学习成本 | 高 | 低 | 大幅降低 |
-| 故障排查 | 困难 | 简单 | 显著改善 |
+| 成本项目   | 简化前 | 简化后 | 节省     |
+| ---------- | ------ | ------ | -------- |
+| 开发人员   | 5-7人  | 2-3人  | 50%+     |
+| 运维复杂度 | 高     | 中     | 显著降低 |
+| 学习成本   | 高     | 低     | 大幅降低 |
+| 故障排查   | 困难   | 简单   | 显著改善 |
 
 ## 🎯 核心价值聚焦
 

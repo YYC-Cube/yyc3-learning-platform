@@ -4,9 +4,9 @@
  * @version 1.0.0
  * @license MIT
  */
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Shield, Eye, Lock, Users, Mail, Phone } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Shield, Eye, Lock, Users, Mail, Phone } from 'lucide-react';
 
 export default function PrivacyPage() {
   return (
@@ -170,7 +170,9 @@ export default function PrivacyPage() {
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">删除权</h4>
-                  <p className="text-sm text-gray-600">在特定情况下，您有权要求我们删除您的个人信息</p>
+                  <p className="text-sm text-gray-600">
+                    在特定情况下，您有权要求我们删除您的个人信息
+                  </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">撤回同意</h4>
@@ -245,10 +247,12 @@ export default function PrivacyPage() {
               本隐私政策的解释权归YanYu Smart Cloud³ Learning
               Hub所有。我们保留随时修改本政策的权利，任何重大变更将通过网站公告或邮件通知您。
             </p>
-            <p className="text-xs text-gray-500">继续使用我们的服务即表示您同意本隐私政策的条款。</p>
+            <p className="text-xs text-gray-500">
+              继续使用我们的服务即表示您同意本隐私政策的条款。
+            </p>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

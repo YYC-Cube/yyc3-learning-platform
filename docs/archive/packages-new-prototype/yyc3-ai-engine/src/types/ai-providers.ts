@@ -12,7 +12,7 @@ export interface IChatProvider {
 
 // 请求和响应接口
 export interface ChatRequest {
-  messages?: Array<{role: string; content: string}>;
+  messages?: Array<{ role: string; content: string }>;
   content?: string;
   model?: string;
   temperature?: number;
@@ -51,7 +51,7 @@ export interface ModelInfo {
   provider: string;
   capabilities: string[];
   contextWindow: number;
-  inputCost: number;  // 每千tokens成本
+  inputCost: number; // 每千tokens成本
   outputCost: number; // 每千tokens成本
   maxTokens: number;
   metrics: ModelMetrics;

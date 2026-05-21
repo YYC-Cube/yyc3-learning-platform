@@ -21,7 +21,7 @@ export class HRProvider {
     const jobAnalysis = await this.aiEngine.analyze({
       type: 'job-analysis',
       content: jobDescription,
-      extract: ['skills', 'qualifications', 'responsibilities']
+      extract: ['skills', 'qualifications', 'responsibilities'],
     });
 
     // AI简历筛选和评分
@@ -31,7 +31,7 @@ export class HRProvider {
           type: 'resume-matching',
           jobRequirements: jobAnalysis,
           candidateProfile: resume,
-          criteria: criteria
+          criteria: criteria,
         });
 
         return {
@@ -39,7 +39,7 @@ export class HRProvider {
           score: matchScore.score,
           strengths: matchScore.strengths,
           gaps: matchScore.gaps,
-          recommendation: matchScore.recommendation
+          recommendation: matchScore.recommendation,
         };
       })
     );
@@ -48,14 +48,14 @@ export class HRProvider {
     const interviewQuestions = await this.aiEngine.generate({
       type: 'interview-questions',
       jobAnalysis: jobAnalysis,
-      topCandidates: candidateRanking.slice(0, 5)
+      topCandidates: candidateRanking.slice(0, 5),
     });
 
     return {
       jobAnalysis,
       candidateRanking: candidateRanking.sort((a: any, b: any) => b.score - a.score),
       interviewQuestions,
-      recommendations: this.generateRecruitmentRecommendations(candidateRanking)
+      recommendations: this.generateRecruitmentRecommendations(candidateRanking),
     };
   }
 
@@ -67,7 +67,7 @@ export class HRProvider {
     const relevantPolicies = await this.knowledgeBase.search({
       query: query,
       category: ['policy', 'procedure', 'benefits'],
-      context: { employeeId, category }
+      context: { employeeId, category },
     });
 
     // AI生成个性化回答
@@ -76,9 +76,9 @@ export class HRProvider {
       context: {
         employeeProfile: await this.getEmployeeProfile(employeeId),
         relevantPolicies: relevantPolicies,
-        category: category
+        category: category,
       },
-      systemPrompt: `你是HR助手，为员工提供准确、贴心的服务。请基于公司政策和员工具体情况回答问题。`
+      systemPrompt: `你是HR助手，为员工提供准确、贴心的服务。请基于公司政策和员工具体情况回答问题。`,
     });
 
     // 生成后续建议
@@ -89,7 +89,7 @@ export class HRProvider {
       sources: relevantPolicies.map((p: any) => p.title),
       suggestions,
       escalation: this.checkEscalationNeeded(query, response),
-      followUpActions: this.generateFollowUpActions(category, query)
+      followUpActions: this.generateFollowUpActions(category, query),
     };
   }
 
@@ -121,29 +121,29 @@ export class HRProvider {
       type: 'performance-analysis',
       data: performanceData,
       metrics: metrics,
-      period: period
+      period: period,
     });
 
     // 生成改进建议
     const recommendations = await this.aiEngine.recommend({
       type: 'performance-improvement',
       analysis: analysis,
-      employeeProfile: await this.getEmployeeProfile(employeeId)
+      employeeProfile: await this.getEmployeeProfile(employeeId),
     });
 
     return {
       analysis,
       recommendations,
       actionPlan: this.generateActionPlan(recommendations),
-      benchmarks: await this.getBenchmarks(employeeId, metrics)
+      benchmarks: await this.getBenchmarks(employeeId, metrics),
     };
   }
 
   private generateRecruitmentRecommendations(candidateRanking: any[]): string[] {
     const recommendations: string[] = [];
 
-    const topCandidates = candidateRanking.filter(c => c.score > 0.8);
-    const goodCandidates = candidateRanking.filter(c => c.score > 0.6 && c.score <= 0.8);
+    const topCandidates = candidateRanking.filter((c) => c.score > 0.8);
+    const goodCandidates = candidateRanking.filter((c) => c.score > 0.6 && c.score <= 0.8);
 
     if (topCandidates.length >= 3) {
       recommendations.push('有3名以上高度匹配的候选人，建议快速推进面试流程');
@@ -156,19 +156,24 @@ export class HRProvider {
     return recommendations;
   }
 
-  private async generateServiceSuggestions(query: string, response: any, employeeId: string): Promise<string[]> {
+  private async generateServiceSuggestions(
+    query: string,
+    response: any,
+    employeeId: string
+  ): Promise<string[]> {
     return await this.aiEngine.recommend({
       type: 'follow-up-suggestions',
       query: query,
       response: response.content,
-      employeeContext: await this.getEmployeeProfile(employeeId)
+      employeeContext: await this.getEmployeeProfile(employeeId),
     });
   }
 
   private checkEscalationNeeded(query: string, response: any): boolean {
     const escalationKeywords = ['投诉', '纠纷', '法律', '紧急', '严重'];
-    return escalationKeywords.some(keyword => query.includes(keyword)) ||
-           response.confidence < 0.7;
+    return (
+      escalationKeywords.some((keyword) => query.includes(keyword)) || response.confidence < 0.7
+    );
   }
 
   private generateFollowUpActions(category: string, query: string): string[] {
@@ -176,7 +181,7 @@ export class HRProvider {
       benefits: ['查看详细福利政策', '联系福利专员', '申请福利变更'],
       leave: ['提交请假申请', '查看剩余假期', '下载请假表格'],
       payroll: ['查看工资条', '更新银行信息', '咨询税务问题'],
-      policy: ['阅读完整政策文档', '参加政策培训', '联系HR部门']
+      policy: ['阅读完整政策文档', '参加政策培训', '联系HR部门'],
     };
 
     return actionMap[category] || ['联系HR部门获得更多帮助'];
@@ -190,7 +195,7 @@ export class HRProvider {
       type: 'training-recommendation',
       employeeProfile: employeeProfile,
       departmentNeeds: departmentNeeds,
-      availableCourses: await this.getAvailableCourses()
+      availableCourses: await this.getAvailableCourses(),
     });
   }
 
@@ -201,7 +206,7 @@ export class HRProvider {
       completedCourses: progress.completed,
       inProgressCourses: progress.inProgress,
       recommendations: await this.recommendNextCourses(progress),
-      achievements: progress.achievements
+      achievements: progress.achievements,
     };
   }
 
@@ -210,7 +215,7 @@ export class HRProvider {
       type: 'training-assessment',
       courseId: data.courseId,
       employeeResponses: data.responses,
-      learningObjectives: data.objectives
+      learningObjectives: data.objectives,
     });
   }
 
@@ -283,7 +288,7 @@ export class ProcessEngine {
     return {
       status: 'approved',
       nextStep: 'notify-stakeholders',
-      automatedReasons: ['within-policy-limit', 'no-conflict-detected']
+      automatedReasons: ['within-policy-limit', 'no-conflict-detected'],
     };
   }
 
@@ -293,7 +298,7 @@ export class ProcessEngine {
       processed: true,
       extractedData: {},
       classifications: [],
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -302,7 +307,7 @@ export class ProcessEngine {
     return {
       completed: true,
       results: {},
-      nextSteps: []
+      nextSteps: [],
     };
   }
 }
@@ -328,7 +333,7 @@ export class KnowledgeEngine {
       answer: response.content,
       sources: searchResults,
       confidence: response.confidence,
-      relatedTopics: response.relatedTopics
+      relatedTopics: response.relatedTopics,
     };
   }
 
@@ -342,7 +347,7 @@ export class KnowledgeEngine {
     return {
       content: '',
       confidence: 0.8,
-      relatedTopics: []
+      relatedTopics: [],
     };
   }
 }
@@ -375,7 +380,7 @@ export class AnalyticsEngine {
     return {
       reports: [],
       summary: {},
-      trends: []
+      trends: [],
     };
   }
 
@@ -384,7 +389,7 @@ export class AnalyticsEngine {
     return {
       insights: [],
       recommendations: [],
-      keyMetrics: {}
+      keyMetrics: {},
     };
   }
 
@@ -393,7 +398,7 @@ export class AnalyticsEngine {
     return {
       predictions: [],
       confidence: 0.7,
-      factors: []
+      factors: [],
     };
   }
 }
@@ -420,7 +425,7 @@ export class OpenAIProvider implements AIProvider {
     // 企业优化版OpenAI聊天实现
     return {
       content: 'Enterprise AI response',
-      confidence: 0.9
+      confidence: 0.9,
     };
   }
 
@@ -456,7 +461,7 @@ export class ClaudeProvider implements AIProvider {
     // 企业优化版Claude聊天实现
     return {
       content: 'Enterprise AI response via Claude',
-      confidence: 0.85
+      confidence: 0.85,
     };
   }
 
@@ -489,7 +494,7 @@ export class LocalLLMProvider implements AIProvider {
     // 本地模型聊天实现
     return {
       content: 'Local AI response',
-      confidence: 0.75
+      confidence: 0.75,
     };
   }
 

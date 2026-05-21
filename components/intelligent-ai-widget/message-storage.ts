@@ -55,7 +55,7 @@ class MessageStorageService {
   private readonly STORE_NAME = 'messages';
   private readonly SYNC_STORE_NAME = 'sync';
 
-  private constructor() { }
+  private constructor() {}
 
   public static getInstance(): MessageStorageService {
     if (!MessageStorageService.instance) {
@@ -221,22 +221,20 @@ class MessageStorageService {
         const filter = options.filter;
         if (filter) {
           if (filter.role) {
-            allMessages = allMessages.filter(m => m.role === filter.role);
+            allMessages = allMessages.filter((m) => m.role === filter.role);
           }
 
           if (filter.startDate) {
-            allMessages = allMessages.filter(m => m.timestamp >= filter.startDate!);
+            allMessages = allMessages.filter((m) => m.timestamp >= filter.startDate!);
           }
 
           if (filter.endDate) {
-            allMessages = allMessages.filter(m => m.timestamp <= filter.endDate!);
+            allMessages = allMessages.filter((m) => m.timestamp <= filter.endDate!);
           }
 
           if (filter.keyword) {
             const keyword = filter.keyword.toLowerCase();
-            allMessages = allMessages.filter(m =>
-              m.content.toLowerCase().includes(keyword)
-            );
+            allMessages = allMessages.filter((m) => m.content.toLowerCase().includes(keyword));
           }
         }
 
@@ -255,7 +253,7 @@ class MessageStorageService {
           total,
           page: options.page,
           pageSize: options.pageSize,
-          hasMore: endIndex < total
+          hasMore: endIndex < total,
         });
       };
 
@@ -280,7 +278,7 @@ class MessageStorageService {
         const lowerKeyword = keyword.toLowerCase();
 
         const filteredMessages = allMessages
-          .filter(m => m.content.toLowerCase().includes(lowerKeyword))
+          .filter((m) => m.content.toLowerCase().includes(lowerKeyword))
           .sort((a, b) => b.timestamp - a.timestamp)
           .slice(0, limit);
 
@@ -291,10 +289,7 @@ class MessageStorageService {
     });
   }
 
-  async getMessagesByTimeRange(
-    startDate: number,
-    endDate: number
-  ): Promise<StoredMessage[]> {
+  async getMessagesByTimeRange(startDate: number, endDate: number): Promise<StoredMessage[]> {
     if (!this.db) {
       await this.initialize();
     }
@@ -310,7 +305,7 @@ class MessageStorageService {
         const allMessages = getAllRequest.result as StoredMessage[];
 
         const filteredMessages = allMessages
-          .filter(m => m.timestamp >= startDate && m.timestamp <= endDate)
+          .filter((m) => m.timestamp >= startDate && m.timestamp <= endDate)
           .sort((a, b) => b.timestamp - a.timestamp);
 
         resolve(filteredMessages);
@@ -362,7 +357,7 @@ class MessageStorageService {
       const store = transaction.objectStore(this.SYNC_STORE_NAME);
       const request = store.put({
         key: 'lastSync',
-        lastSyncTime: timestamp
+        lastSyncTime: timestamp,
       });
 
       request.onsuccess = () => resolve();

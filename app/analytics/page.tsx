@@ -4,14 +4,12 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   ArrowLeft,
-  ArrowRight // 补充缺失的导入
-  ,
-
+  ArrowRight, // 补充缺失的导入
   ArrowUpRight,
   BarChart2,
   BookOpen,
@@ -21,10 +19,10 @@ import {
   Filter,
   RefreshCw,
   Star,
-  TrendingUp
-} from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+  TrendingUp,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState('30d');
@@ -239,9 +237,15 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-800">学习时长趋势</h2>
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm">日</Button>
-              <Button variant="default" size="sm">周</Button>
-              <Button variant="outline" size="sm">月</Button>
+              <Button variant="outline" size="sm">
+                日
+              </Button>
+              <Button variant="default" size="sm">
+                周
+              </Button>
+              <Button variant="outline" size="sm">
+                月
+              </Button>
             </div>
           </div>
           <div className="h-80">
@@ -252,10 +256,24 @@ export default function AnalyticsPage() {
                 <line x1="50" y1="50" x2="50" y2="250" stroke="#e5e7eb" strokeWidth="2" />
 
                 {/* Y轴刻度 */}
-                {[0, 1, 2, 3, 4, 5].map(hour => (
+                {[0, 1, 2, 3, 4, 5].map((hour) => (
                   <g key={hour}>
-                    <line x1="45" y1={250 - hour * 40} x2="50" y2={250 - hour * 40} stroke="#e5e7eb" />
-                    <text x="40" y={250 - hour * 40 + 4} fontSize="10" fill="#9ca3af" textAnchor="end">{hour}h</text>
+                    <line
+                      x1="45"
+                      y1={250 - hour * 40}
+                      x2="50"
+                      y2={250 - hour * 40}
+                      stroke="#e5e7eb"
+                    />
+                    <text
+                      x="40"
+                      y={250 - hour * 40 + 4}
+                      fontSize="10"
+                      fill="#9ca3af"
+                      textAnchor="end"
+                    >
+                      {hour}h
+                    </text>
                   </g>
                 ))}
 
@@ -266,10 +284,20 @@ export default function AnalyticsPage() {
                   return (
                     <g key={index}>
                       <line x1={x} y1={250} x2={x} y2={255} stroke="#e5e7eb" />
-                      <text x={x} y={270} fontSize="10" fill="#9ca3af" textAnchor="middle">{data.date}</text>
+                      <text x={x} y={270} fontSize="10" fill="#9ca3af" textAnchor="middle">
+                        {data.date}
+                      </text>
 
                       {/* 柱状图 */}
-                      <rect x={x - 10} y={y} width={20} height={250 - y} fill="#3b82f6" rx="2" opacity="0.7" />
+                      <rect
+                        x={x - 10}
+                        y={y}
+                        width={20}
+                        height={250 - y}
+                        fill="#3b82f6"
+                        rx="2"
+                        opacity="0.7"
+                      />
                       <circle cx={x} cy={y} r={4} fill="#3b82f6" />
                     </g>
                   );
@@ -277,7 +305,9 @@ export default function AnalyticsPage() {
 
                 {/* 趋势线 */}
                 <path
-                  d={studyTimeData.map((data, index) => `M${50 + index * 35},${250 - data.hours * 40}`).join(' L')}
+                  d={studyTimeData
+                    .map((data, index) => `M${50 + index * 35},${250 - data.hours * 40}`)
+                    .join(' L')}
                   stroke="#3b82f6"
                   strokeWidth="2"
                   fill="none"
@@ -335,15 +365,17 @@ export default function AnalyticsPage() {
               <svg viewBox="0 0 240 240" className="w-full h-64">
                 {/* 技能圆环图 */}
                 {skillDistributionData.map((skill, index) => {
-                  const startAngle = index === 0
-                    ? 0
-                    : skillDistributionData.slice(0, index).reduce((sum, s) => sum + s.value, 0) * 3.6;
+                  const startAngle =
+                    index === 0
+                      ? 0
+                      : skillDistributionData.slice(0, index).reduce((sum, s) => sum + s.value, 0) *
+                        3.6;
                   const endAngle = startAngle + skill.value * 3.6;
 
-                  const startX = 120 + 80 * Math.cos((startAngle - 90) * Math.PI / 180);
-                  const startY = 120 + 80 * Math.sin((startAngle - 90) * Math.PI / 180);
-                  const endX = 120 + 80 * Math.cos((endAngle - 90) * Math.PI / 180);
-                  const endY = 120 + 80 * Math.sin((endAngle - 90) * Math.PI / 180);
+                  const startX = 120 + 80 * Math.cos(((startAngle - 90) * Math.PI) / 180);
+                  const startY = 120 + 80 * Math.sin(((startAngle - 90) * Math.PI) / 180);
+                  const endX = 120 + 80 * Math.cos(((endAngle - 90) * Math.PI) / 180);
+                  const endY = 120 + 80 * Math.sin(((endAngle - 90) * Math.PI) / 180);
 
                   const largeArcFlag = skill.value > 50 ? 1 : 0;
 
@@ -360,14 +392,35 @@ export default function AnalyticsPage() {
                 })}
 
                 {/* 技能圆环中心文字 */}
-                <text x="120" y="110" fontSize="18" fontWeight="bold" textAnchor="middle" fill="#334155">技能水平</text>
-                <text x="120" y="135" fontSize="24" fontWeight="bold" textAnchor="middle" fill="#1e40af">中级</text>
+                <text
+                  x="120"
+                  y="110"
+                  fontSize="18"
+                  fontWeight="bold"
+                  textAnchor="middle"
+                  fill="#334155"
+                >
+                  技能水平
+                </text>
+                <text
+                  x="120"
+                  y="135"
+                  fontSize="24"
+                  fontWeight="bold"
+                  textAnchor="middle"
+                  fill="#1e40af"
+                >
+                  中级
+                </text>
               </svg>
             </div>
             <div className="grid grid-cols-2 gap-4 mt-6">
               {skillDistributionData.map((skill, index) => (
                 <div key={index} className="flex items-center">
-                  <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: skill.color }}></div>
+                  <div
+                    className="w-3 h-3 rounded-full mr-2"
+                    style={{ backgroundColor: skill.color }}
+                  ></div>
                   <span className="text-sm text-gray-700">{skill.name}</span>
                   <span className="ml-auto text-sm font-medium text-gray-900">{skill.value}</span>
                 </div>
@@ -381,20 +434,51 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-800">学习效率分析</h2>
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm">周</Button>
-              <Button variant="default" size="sm">月</Button>
-              <Button variant="outline" size="sm">季度</Button>
+              <Button variant="outline" size="sm">
+                周
+              </Button>
+              <Button variant="default" size="sm">
+                月
+              </Button>
+              <Button variant="outline" size="sm">
+                季度
+              </Button>
             </div>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">周期</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">效率指数</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">专注度</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">知识保留率</th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    周期
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    效率指数
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    专注度
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    知识保留率
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    状态
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -406,15 +490,23 @@ export default function AnalyticsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-full bg-gray-200 rounded-full h-2 mr-3">
-                          <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${week.efficiency}%` }}></div>
+                          <div
+                            className="bg-blue-600 h-2 rounded-full"
+                            style={{ width: `${week.efficiency}%` }}
+                          ></div>
                         </div>
-                        <span className="text-sm font-medium text-gray-900">{week.efficiency}%</span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {week.efficiency}%
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-full bg-gray-200 rounded-full h-2 mr-3">
-                          <div className="bg-green-600 h-2 rounded-full" style={{ width: `${week.focus}%` }}></div>
+                          <div
+                            className="bg-green-600 h-2 rounded-full"
+                            style={{ width: `${week.focus}%` }}
+                          ></div>
                         </div>
                         <span className="text-sm font-medium text-gray-900">{week.focus}%</span>
                       </div>
@@ -422,16 +514,24 @@ export default function AnalyticsPage() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-full bg-gray-200 rounded-full h-2 mr-3">
-                          <div className="bg-purple-600 h-2 rounded-full" style={{ width: `${week.retention}%` }}></div>
+                          <div
+                            className="bg-purple-600 h-2 rounded-full"
+                            style={{ width: `${week.retention}%` }}
+                          ></div>
                         </div>
                         <span className="text-sm font-medium text-gray-900">{week.retention}%</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${week.efficiency > 80 ? 'bg-green-100 text-green-800' :
-                        week.efficiency > 60 ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          week.efficiency > 80
+                            ? 'bg-green-100 text-green-800'
+                            : week.efficiency > 60
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {week.efficiency > 80 ? '优秀' : week.efficiency > 60 ? '良好' : '需提高'}
                       </span>
                     </td>
@@ -459,8 +559,13 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="ml-4">
                   <h3 className="text-sm font-medium text-blue-800">深入学习</h3>
-                  <p className="mt-1 text-sm text-blue-700">根据您的技能分布，建议深入学习深度学习相关课程</p>
-                  <a href="#" className="mt-2 inline-flex items-center text-sm font-medium text-blue-600">
+                  <p className="mt-1 text-sm text-blue-700">
+                    根据您的技能分布，建议深入学习深度学习相关课程
+                  </p>
+                  <a
+                    href="#"
+                    className="mt-2 inline-flex items-center text-sm font-medium text-blue-600"
+                  >
                     查看推荐课程
                     <ArrowRight className="ml-1.5 h-3 w-3" />
                   </a>
@@ -476,8 +581,13 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="ml-4">
                   <h3 className="text-sm font-medium text-green-800">保持良好状态</h3>
-                  <p className="mt-1 text-sm text-green-700">您的学习效率持续提升，继续保持当前学习节奏</p>
-                  <a href="#" className="mt-2 inline-flex items-center text-sm font-medium text-green-600">
+                  <p className="mt-1 text-sm text-green-700">
+                    您的学习效率持续提升，继续保持当前学习节奏
+                  </p>
+                  <a
+                    href="#"
+                    className="mt-2 inline-flex items-center text-sm font-medium text-green-600"
+                  >
                     查看学习计划
                     <ArrowRight className="ml-1.5 h-3 w-3" />
                   </a>
@@ -493,8 +603,13 @@ export default function AnalyticsPage() {
                 </div>
                 <div className="ml-4">
                   <h3 className="text-sm font-medium text-purple-800">技能突破</h3>
-                  <p className="mt-1 text-sm text-purple-700">AI伦理技能点较低，建议完成相关理论课程</p>
-                  <a href="#" className="mt-2 inline-flex items-center text-sm font-medium text-purple-600">
+                  <p className="mt-1 text-sm text-purple-700">
+                    AI伦理技能点较低，建议完成相关理论课程
+                  </p>
+                  <a
+                    href="#"
+                    className="mt-2 inline-flex items-center text-sm font-medium text-purple-600"
+                  >
                     推荐理论课程
                     <ArrowRight className="ml-1.5 h-3 w-3" />
                   </a>

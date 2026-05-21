@@ -1,6 +1,6 @@
 /**
  * 用户体验优化循环系统 (UX Optimization Loop)
- * 
+ *
  * 实现用户体验持续优化闭环，包括：
  * - 用户研究与需求洞察
  * - 可用性测试与验证
@@ -8,7 +8,7 @@
  * - A/B测试与实验
  * - 反馈收集与分析
  * - 体验迭代与改进
- * 
+ *
  * @module UXOptimizationLoop
  */
 
@@ -730,7 +730,7 @@ export interface UXOptimizationLoopConfig {
 
 /**
  * 用户体验优化循环系统
- * 
+ *
  * 实现完整的UX优化闭环
  */
 export class UXOptimizationLoop extends EventEmitter {
@@ -771,7 +771,11 @@ export class UXOptimizationLoop extends EventEmitter {
       },
       measurement: {
         trackingInterval: config.measurement?.trackingInterval || 3600000, // 1小时
-        metricsToTrack: config.measurement?.metricsToTrack || ['satisfaction', 'engagement', 'efficiency'],
+        metricsToTrack: config.measurement?.metricsToTrack || [
+          'satisfaction',
+          'engagement',
+          'efficiency',
+        ],
         comparisonPeriod: config.measurement?.comparisonPeriod || 14,
         significanceLevel: config.measurement?.significanceLevel || 0.05,
       },
@@ -870,11 +874,15 @@ export class UXOptimizationLoop extends EventEmitter {
         demographics: {
           ageRange: ['18-25', '26-35', '36-45', '46-55', '56+'][Math.floor(Math.random() * 5)],
           location: ['urban', 'suburban', 'rural'][Math.floor(Math.random() * 3)],
-          occupation: ['student', 'professional', 'freelancer', 'entrepreneur'][Math.floor(Math.random() * 4)],
+          occupation: ['student', 'professional', 'freelancer', 'entrepreneur'][
+            Math.floor(Math.random() * 4)
+          ],
           techSavviness: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] as any,
         },
         behaviors: {
-          usageFrequency: ['daily', 'weekly', 'monthly', 'rarely'][Math.floor(Math.random() * 4)] as any,
+          usageFrequency: ['daily', 'weekly', 'monthly', 'rarely'][
+            Math.floor(Math.random() * 4)
+          ] as any,
           primaryTasks: ['learning', 'practicing', 'reviewing'],
           preferences: { theme: 'light', language: 'zh-CN' },
         },
@@ -1009,7 +1017,7 @@ export class UXOptimizationLoop extends EventEmitter {
           },
         ],
         rationale: `基于用户研究第${i + 1}轮迭代`,
-        targetedPainPoints: insights.painPoints.slice(0, 2).map(p => p.id),
+        targetedPainPoints: insights.painPoints.slice(0, 2).map((p) => p.id),
         expectedImprovements: [
           {
             metric: 'task_success_rate',
@@ -1039,7 +1047,9 @@ export class UXOptimizationLoop extends EventEmitter {
   /**
    * 进行可用性测试
    */
-  private async conductUsabilityTests(iterations: DesignIteration[]): Promise<UsabilityTestResults[]> {
+  private async conductUsabilityTests(
+    iterations: DesignIteration[]
+  ): Promise<UsabilityTestResults[]> {
     return iterations.map((iteration, index) => {
       const tasks: TestTask[] = Array.from({ length: this.config.testing.taskCount }, (_, i) => ({
         id: `task-${i + 1}`,
@@ -1122,7 +1132,8 @@ export class UXOptimizationLoop extends EventEmitter {
    */
   private async validateDesigns(testResults: UsabilityTestResults[]): Promise<ValidatedDesign[]> {
     return testResults.map((result, index) => {
-      const meetsThreshold = result.metrics.overallSuccessRate >= this.config.testing.successThreshold;
+      const meetsThreshold =
+        result.metrics.overallSuccessRate >= this.config.testing.successThreshold;
 
       return {
         designId: `validated-${index + 1}`,
@@ -1159,7 +1170,7 @@ export class UXOptimizationLoop extends EventEmitter {
    * 实施设计
    */
   private async implementDesigns(designs: ValidatedDesign[]): Promise<ImplementationResult> {
-    const readyDesign = designs.find(d => d.readyForImplementation);
+    const readyDesign = designs.find((d) => d.readyForImplementation);
     if (!readyDesign) {
       throw new Error('没有就绪的设计可供实施');
     }
@@ -1232,7 +1243,9 @@ export class UXOptimizationLoop extends EventEmitter {
   /**
    * 测量UX影响
    */
-  private async measureUXImpact(implementation: ImplementationResult): Promise<UXImpactMeasurement> {
+  private async measureUXImpact(
+    implementation: ImplementationResult
+  ): Promise<UXImpactMeasurement> {
     const previousCycle = this.cycleHistory[this.cycleHistory.length - 1];
 
     return {
@@ -1383,7 +1396,7 @@ export class UXOptimizationLoop extends EventEmitter {
         title: `UX优化循环${this.currentCycle}案例`,
         content: JSON.stringify(impact),
         tags: ['ux', 'navigation', 'optimization'],
-        relatedPatterns: successPatterns.map(p => p.id),
+        relatedPatterns: successPatterns.map((p) => p.id),
         confidence: 0.85,
         sources: [`cycle-${this.currentCycle}`],
       });
@@ -1425,7 +1438,12 @@ export class UXOptimizationLoop extends EventEmitter {
           name: '底部导航栏测试',
           hypothesis: '底部导航栏能提升移动端操作效率',
           variables: [
-            { name: 'navigation_position', type: 'independent', values: ['top', 'bottom'], measurement: 'position' },
+            {
+              name: 'navigation_position',
+              type: 'independent',
+              values: ['top', 'bottom'],
+              measurement: 'position',
+            },
             { name: 'task_completion_time', type: 'dependent', values: [], measurement: 'seconds' },
           ],
           methodology: 'A/B测试',
@@ -1436,9 +1454,24 @@ export class UXOptimizationLoop extends EventEmitter {
       ],
       resources: {
         team: [
-          { role: 'UX研究员', allocation: 0.5, duration: 14, responsibilities: ['用户研究', '测试设计'] },
-          { role: 'UI设计师', allocation: 1, duration: 14, responsibilities: ['设计方案', '原型制作'] },
-          { role: '前端开发', allocation: 1, duration: 14, responsibilities: ['原型实现', '数据采集'] },
+          {
+            role: 'UX研究员',
+            allocation: 0.5,
+            duration: 14,
+            responsibilities: ['用户研究', '测试设计'],
+          },
+          {
+            role: 'UI设计师',
+            allocation: 1,
+            duration: 14,
+            responsibilities: ['设计方案', '原型制作'],
+          },
+          {
+            role: '前端开发',
+            allocation: 1,
+            duration: 14,
+            responsibilities: ['原型实现', '数据采集'],
+          },
         ],
         budget: {
           research: 5000,
@@ -1509,7 +1542,8 @@ export class UXOptimizationLoop extends EventEmitter {
       issuesResolved: Math.floor(research.painPoints.length * 0.7),
       improvements: {
         satisfaction: previousCycle
-          ? impact.metrics.satisfaction.sus - previousCycle.impactMeasurement.metrics.satisfaction.sus
+          ? impact.metrics.satisfaction.sus -
+            previousCycle.impactMeasurement.metrics.satisfaction.sus
           : impact.metrics.satisfaction.sus,
         usability: 12,
         efficiency: 18,

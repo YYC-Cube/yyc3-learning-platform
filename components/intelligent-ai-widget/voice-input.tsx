@@ -27,10 +27,7 @@ interface VoiceInputProps {
 
 const MAX_RECORDING_DURATION = 60; // 最大录制时长（秒）
 
-export const VoiceInput: React.FC<VoiceInputProps> = ({
-  onVoiceRecorded,
-  className = ''
-}) => {
+export const VoiceInput: React.FC<VoiceInputProps> = ({ onVoiceRecorded, className = '' }) => {
   const [isRecording, setIsRecording] = React.useState(false);
   const [recordingTime, setRecordingTime] = React.useState(0);
   const [audioLevel, setAudioLevel] = React.useState(0);
@@ -56,14 +53,14 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      
+
       const audioContext = new AudioContext();
       const analyser = audioContext.createAnalyser();
       const source = audioContext.createMediaStreamSource(stream);
-      
+
       source.connect(analyser);
       analyser.fftSize = 256;
-      
+
       audioContextRef.current = audioContext;
       analyserRef.current = analyser;
 
@@ -78,23 +75,23 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
       mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         const audioUrl = URL.createObjectURL(audioBlob);
-        
+
         const voiceMessage: VoiceMessage = {
           id: Date.now().toString(),
           audioBlob,
           audioUrl,
           duration: recordingTime,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         };
 
         setRecordedAudio(voiceMessage);
-        
+
         if (onVoiceRecorded) {
           onVoiceRecorded(voiceMessage);
         }
 
         // 停止所有音频轨道
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       };
 
       mediaRecorder.start();
@@ -104,7 +101,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
 
       // 开始计时
       recordingTimerRef.current = window.setInterval(() => {
-        setRecordingTime(prev => {
+        setRecordingTime((prev) => {
           if (prev >= MAX_RECORDING_DURATION) {
             stopRecording();
             return MAX_RECORDING_DURATION;
@@ -115,7 +112,6 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
 
       // 开始音频可视化
       visualizeAudio();
-
     } catch (error) {
       console.error('无法访问麦克风:', error);
       alert('无法访问麦克风，请检查权限设置');
@@ -126,7 +122,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       mediaRecorderRef.current.stop();
     }
-    
+
     if (recordingTimerRef.current) {
       clearInterval(recordingTimerRef.current);
       recordingTimerRef.current = null;
@@ -155,7 +151,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
       if (!isRecording) return;
 
       analyserRef.current!.getByteFrequencyData(dataArray);
-      
+
       // 计算平均音量
       const average = dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
       setAudioLevel(average / 255);
@@ -255,9 +251,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
           )}
         </div>
 
-        <div className="text-2xl font-mono text-gray-700">
-          {formatTime(recordingTime)}
-        </div>
+        <div className="text-2xl font-mono text-gray-700">{formatTime(recordingTime)}</div>
       </div>
 
       {/* 音频可视化 */}
@@ -270,7 +264,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
                 className="flex-1 bg-indigo-500 rounded-full transition-all duration-75"
                 style={{
                   height: `${Math.max(4, audioLevel * 100 * Math.random())}%`,
-                  opacity: 0.7 + audioLevel * 0.3
+                  opacity: 0.7 + audioLevel * 0.3,
                 }}
               />
             ))}
@@ -299,11 +293,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
               onClick={handlePlayPause}
               className="flex items-center justify-center w-12 h-12 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition-colors"
             >
-              {isPlaying ? (
-                <Pause className="w-6 h-6" />
-              ) : (
-                <Play className="w-6 h-6 ml-1" />
-              )}
+              {isPlaying ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6 ml-1" />}
             </button>
 
             <div className="flex-1">
@@ -315,9 +305,7 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
                     style={{ width: `${playbackProgress}%` }}
                   />
                 </div>
-                <span className="text-sm text-gray-600">
-                  {formatTime(recordedAudio.duration)}
-                </span>
+                <span className="text-sm text-gray-600">{formatTime(recordedAudio.duration)}</span>
               </div>
             </div>
           </div>
@@ -342,8 +330,8 @@ export const VoiceInput: React.FC<VoiceInputProps> = ({
 
           {/* 音频信息 */}
           <div className="text-sm text-gray-500">
-            录制时长: {formatTime(recordedAudio.duration)} | 
-            文件大小: {(recordedAudio.audioBlob.size / 1024).toFixed(1)} KB
+            录制时长: {formatTime(recordedAudio.duration)} | 文件大小:{' '}
+            {(recordedAudio.audioBlob.size / 1024).toFixed(1)} KB
           </div>
         </div>
       )}

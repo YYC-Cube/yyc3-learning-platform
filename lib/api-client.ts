@@ -5,66 +5,66 @@
  * @version 1.0.0
  * @license MIT
  */
-import { env } from "./env"
-import { logger } from "./logger"
+import { env } from './env';
+import { logger } from './logger';
 
 class ApiClient {
-  private baseURL: string
+  private baseURL: string;
 
   constructor() {
-    this.baseURL = env.NEXT_PUBLIC_API_URL || "/api"
+    this.baseURL = env.NEXT_PUBLIC_API_URL || '/api';
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`
+    const url = `${this.baseURL}${endpoint}`;
 
     const config: RequestInit = {
       ...options,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...options.headers,
       },
-    }
+    };
 
     try {
-      const response = await fetch(url, config)
+      const response = await fetch(url, config);
 
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || "Request failed")
+        const error = await response.json();
+        throw new Error(error.message || 'Request failed');
       }
 
-      const data = await response.json()
-      return data
+      const data = await response.json();
+      return data;
     } catch (error) {
-      logger.error("API request failed", error)
-      throw error
+      logger.error('API request failed', error);
+      throw error;
     }
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: "GET" })
+    return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
   async post<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
-      method: "POST",
+      method: 'POST',
       body: JSON.stringify(data),
-    })
+    });
   }
 
   async put<T>(endpoint: string, data?: unknown, options?: RequestInit): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify(data),
-    })
+    });
   }
 
   async delete<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: "DELETE" })
+    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
 }
 
-export const apiClient = new ApiClient()
+export const apiClient = new ApiClient();

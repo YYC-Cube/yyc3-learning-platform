@@ -111,18 +111,18 @@ await system.initialize({
     enabled: true,
     modelType: 'classification',
     updateFrequency: 1000,
-    maxHistorySize: 10000
+    maxHistorySize: 10000,
   },
   strategic: {
     enabled: true,
     planningHorizon: 90,
-    optimizationFrequency: 3600000
+    optimizationFrequency: 3600000,
   },
   knowledge: {
     enabled: true,
     graphSize: 100000,
-    reasoningDepth: 5
-  }
+    reasoningDepth: 5,
+  },
 });
 
 // 3. 启动系统
@@ -138,26 +138,30 @@ const experience: LearningExperience = {
     environment: { state: 'production' },
     objectives: [{ id: 'obj_1', description: 'Optimize response' }],
     constraints: [],
-    availableResources: []
+    availableResources: [],
   },
-  actions: [{
-    type: 'adjust_parameters',
-    parameters: { learningRate: 0.01 }
-  }],
-  outcomes: [{
-    success: true,
-    effectiveness: 0.85,
-    sideEffects: [],
-    measurements: []
-  }],
+  actions: [
+    {
+      type: 'adjust_parameters',
+      parameters: { learningRate: 0.01 },
+    },
+  ],
+  outcomes: [
+    {
+      success: true,
+      effectiveness: 0.85,
+      sideEffects: [],
+      measurements: [],
+    },
+  ],
   feedback: {
     satisfaction: 0.9,
-    effectiveness: 0.85
+    effectiveness: 0.85,
   },
   metadata: {
     source: 'production',
-    version: '1.0'
-  }
+    version: '1.0',
+  },
 };
 
 const result = await system.learn(experience);
@@ -167,7 +171,7 @@ console.log('Learning result:', result.success);
 const context: BehaviorContext = {
   situation: { type: 'user_session' },
   environment: { state: 'active' },
-  actor: { id: 'user_001', type: 'human' }
+  actor: { id: 'user_001', type: 'human' },
 };
 
 const prediction = await system.predict(context);
@@ -228,18 +232,21 @@ graph TB
 ```
 
 #### 行为学习层 (Behavioral Learning Layer)
+
 - **职责**: 捕获和分析行为模式
 - **输入**: 行为记录 (BehaviorRecord)
 - **输出**: 行为预测 (BehaviorPrediction)
 - **使用场景**: 用户行为分析、系统监控、异常检测
 
 #### 策略学习层 (Strategic Learning Layer)
+
 - **职责**: 制定和优化战略决策
 - **输入**: 决策上下文 (DecisionContext)
 - **输出**: 战略决策 (StrategicDecision)
 - **使用场景**: 资源分配、目标规划、风险评估
 
 #### 知识学习层 (Knowledge Learning Layer)
+
 - **职责**: 知识管理和推理
 - **输入**: 知识项 (KnowledgeItem)
 - **输出**: 推理结果 (ReasoningResult)
@@ -308,14 +315,14 @@ await system.behavioralLayer.recordBehavior(
     actor: { id: 'user_123', type: 'human' },
     action: { type: 'click', parameters: { element: 'buy_button' } },
     context: { situation: { type: 'purchase_flow' } },
-    outcome: { result: { success: true }, effectiveness: 1.0 }
+    outcome: { result: { success: true }, effectiveness: 1.0 },
   })
 );
 
 // 分析用户行为模式
 const patterns = await system.behavioralLayer.analyzePatterns({
   start: Date.now() - 7 * 24 * 3600 * 1000, // 最近7天
-  end: Date.now()
+  end: Date.now(),
 });
 
 console.log('Discovered patterns:', patterns.length);
@@ -333,8 +340,8 @@ await system.strategicLayer.setGoals([
     priority: 'high',
     targetValue: 0.05,
     currentValue: 0.03,
-    deadline: Date.now() + 90 * 24 * 3600 * 1000
-  }
+    deadline: Date.now() + 90 * 24 * 3600 * 1000,
+  },
 ]);
 
 // 制定决策
@@ -344,8 +351,8 @@ const decision = await system.strategicLayer.makeDecision({
   constraints: ['budget_limit'],
   availableOptions: [
     { id: 'opt_1', description: 'Increase ad spend', cost: 5000 },
-    { id: 'opt_2', description: 'Optimize landing page', cost: 2000 }
-  ]
+    { id: 'opt_2', description: 'Optimize landing page', cost: 2000 },
+  ],
 });
 
 console.log('Recommended action:', decision.selectedOption);
@@ -362,21 +369,21 @@ await system.knowledgeLayer.acquireKnowledge({
     id: 'content_001',
     type: 'rule',
     content: 'If user spends > 5 minutes, show recommendation',
-    format: 'text'
+    format: 'text',
   },
   source: { id: 'expert', type: 'human', name: 'Business Expert', reliability: 0.9 },
   confidence: 0.95,
   validity: {
     start: Date.now(),
     end: null,
-    confidence: 0.9
+    confidence: 0.9,
   },
   relationships: [],
   metadata: {
     tags: ['recommendation', 'engagement'],
     source: 'expert',
-    version: '1.0'
-  }
+    version: '1.0',
+  },
 });
 
 // 推理查询
@@ -385,7 +392,7 @@ const result = await system.knowledgeLayer.reason({
   type: 'inference',
   query: 'What should I do for long session users?',
   context: { domain: 'user_engagement' },
-  constraints: { maxResults: 3, confidence: 0.8 }
+  constraints: { maxResults: 3, confidence: 0.8 },
 });
 
 console.log('Recommendation:', result.conclusion);
@@ -403,51 +410,51 @@ await system.initialize({
   behavioral: {
     enabled: true,
     modelType: 'classification', // 'classification' | 'regression' | 'clustering'
-    updateFrequency: 1000,        // 毫秒
-    maxHistorySize: 10000,        // 最大历史记录数
-    optimizationThreshold: 0.8,   // 优化阈值
-    adaptationRate: 0.1           // 适应率
+    updateFrequency: 1000, // 毫秒
+    maxHistorySize: 10000, // 最大历史记录数
+    optimizationThreshold: 0.8, // 优化阈值
+    adaptationRate: 0.1, // 适应率
   },
 
   // 策略层配置
   strategic: {
     enabled: true,
-    planningHorizon: 90,          // 规划周期（天）
+    planningHorizon: 90, // 规划周期（天）
     optimizationFrequency: 3600000, // 优化频率（毫秒）
-    riskTolerance: 'medium',       // 风险容忍度
-    decisionFramework: 'utility'   // 决策框架
+    riskTolerance: 'medium', // 风险容忍度
+    decisionFramework: 'utility', // 决策框架
   },
 
   // 知识层配置
   knowledge: {
     enabled: true,
-    graphSize: 100000,            // 知识图谱大小
-    reasoningDepth: 5,            // 推理深度
-    validationThreshold: 0.7,     // 验证阈值
-    generalizationEnabled: true,  // 启用泛化
-    pruningEnabled: true          // 启用剪枝
+    graphSize: 100000, // 知识图谱大小
+    reasoningDepth: 5, // 推理深度
+    validationThreshold: 0.7, // 验证阈值
+    generalizationEnabled: true, // 启用泛化
+    pruningEnabled: true, // 启用剪枝
   },
 
   // 集成配置
   integration: {
-    syncFrequency: 60000,         // 层间同步频率
-    insightQueueSize: 1000,       // 洞察队列大小
-    crossLayerLearning: true      // 跨层学习
+    syncFrequency: 60000, // 层间同步频率
+    insightQueueSize: 1000, // 洞察队列大小
+    crossLayerLearning: true, // 跨层学习
   },
 
   // 监控配置
   monitoring: {
-    metricsCollection: true,      // 指标收集
-    logLevel: 'info',             // 日志级别
-    performanceTracking: true     // 性能跟踪
+    metricsCollection: true, // 指标收集
+    logLevel: 'info', // 日志级别
+    performanceTracking: true, // 性能跟踪
   },
 
   // 安全配置
   security: {
-    encryption: true,             // 加密
-    accessControl: true,          // 访问控制
-    auditLogging: true            // 审计日志
-  }
+    encryption: true, // 加密
+    accessControl: true, // 访问控制
+    auditLogging: true, // 审计日志
+  },
 });
 ```
 
@@ -476,6 +483,7 @@ await system.initialize({
    - 定期调用 `optimize()` 进行系统优化
 
 2. **错误处理**
+
    ```typescript
    try {
      await system.learn(experience);
@@ -486,6 +494,7 @@ await system.initialize({
    ```
 
 3. **资源管理**
+
    ```typescript
    // 启动系统
    await system.start();
@@ -508,13 +517,14 @@ await system.initialize({
 const batchSize = 100;
 for (let i = 0; i < experiences.length; i += batchSize) {
   const batch = experiences.slice(i, i + batchSize);
-  await Promise.all(batch.map(exp => system.learn(exp)));
+  await Promise.all(batch.map((exp) => system.learn(exp)));
 }
 ```
 
 ### Q2: 如何提高预测准确率？
 
 **A**:
+
 1. 提供更多高质量的学习数据
 2. 定期优化系统：`await system.optimize()`
 3. 调整模型参数和配置
@@ -522,6 +532,7 @@ for (let i = 0; i < experiences.length; i += batchSize) {
 ### Q3: 系统资源占用如何？
 
 **A**: 系统资源占用主要取决于：
+
 - 历史数据大小 (`maxHistorySize`)
 - 知识图谱大小 (`graphSize`)
 - 更新频率 (`updateFrequency`)

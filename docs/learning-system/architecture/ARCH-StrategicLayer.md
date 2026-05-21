@@ -82,20 +82,23 @@ graph TB
 ### 模块职责
 
 #### 1. StrategicGoalManager (战略目标管理器)
+
 **职责**: 管理战略目标的完整生命周期
 
 **核心功能**:
+
 - 目标设定和分解
 - 目标进度追踪
 - 目标依赖管理
 - 目标冲突解决
 
 **数据结构**:
+
 ```typescript
 interface GoalManager {
   goals: Map<string, StrategicGoal>;
   goalHierarchy: Map<string, string[]>; // parent -> children
-  dependencies: Map<string, string[]>;   // goal -> dependencies
+  dependencies: Map<string, string[]>; // goal -> dependencies
   milestones: Map<string, Milestone[]>;
 }
 ```
@@ -103,15 +106,18 @@ interface GoalManager {
 ---
 
 #### 2. StrategicDecisionMaker (战略决策制定器)
+
 **职责**: 在复杂场景下制定决策
 
 **核心功能**:
+
 - 场景分析和建模
 - 决策方案生成
 - 多准则决策评估
 - 决策推理记录
 
 **数据结构**:
+
 ```typescript
 interface DecisionMaker {
   decisionFrameworks: Map<string, DecisionFramework>;
@@ -124,15 +130,18 @@ interface DecisionMaker {
 ---
 
 #### 3. ResourceAllocationManager (资源分配管理器)
+
 **职责**: 优化资源分配
 
 **核心功能**:
+
 - 资源需求预测
 - 分配方案生成
 - 分配效果评估
 - 动态调整优化
 
 **数据结构**:
+
 ```typescript
 interface AllocationManager {
   resources: Map<string, ResourceDefinition>;
@@ -145,15 +154,18 @@ interface AllocationManager {
 ---
 
 #### 4. RiskManagementModule (风险管理模块)
+
 **职责**: 识别和评估决策风险
 
 **核心功能**:
+
 - 风险因素识别
 - 风险概率评估
 - 风险影响分析
 - 风险缓解策略
 
 **数据结构**:
+
 ```typescript
 interface RiskManager {
   riskFactors: Map<string, RiskFactor>;
@@ -166,15 +178,18 @@ interface RiskManager {
 ---
 
 #### 5. StrategicPerformanceMonitor (战略性能监控器)
+
 **职责**: 监控战略执行效果
 
 **核心功能**:
+
 - KPI 指标追踪
 - 性能趋势分析
 - 偏差检测
 - 改进建议生成
 
 **数据结构**:
+
 ```typescript
 interface PerformanceMonitor {
   kpis: Map<string, KPIDefinition>;
@@ -237,24 +252,24 @@ interface DecisionFramework {
 
   // 评估准则
   criteria: {
-    objective: string;          // 目标
-    weight: number;             // 权重
-    measurement: string;        // 测量方法
-    threshold: number;          // 阈值
+    objective: string; // 目标
+    weight: number; // 权重
+    measurement: string; // 测量方法
+    threshold: number; // 阈值
   }[];
 
   // 决策规则
   rules: {
-    if: string;                // 条件
-    then: string;              // 结果
-    priority: number;          // 优先级
+    if: string; // 条件
+    then: string; // 结果
+    priority: number; // 优先级
   }[];
 
   // 敏感性分析
   sensitivity: {
-    factor: string;            // 影响因素
-    range: [number, number];   // 变化范围
-    impact: number;            // 影响程度
+    factor: string; // 影响因素
+    range: [number, number]; // 变化范围
+    impact: number; // 影响程度
   }[];
 }
 ```
@@ -267,12 +282,12 @@ interface DecisionFramework {
 
 ```typescript
 enum GoalType {
-  Performance = 'performance',     // 性能目标
-  Efficiency = 'efficiency',       // 效率目标
-  Quality = 'quality',             // 质量目标
-  Cost = 'cost',                   // 成本目标
-  Time = 'time',                   // 时间目标
-  Strategic = 'strategic'          // 战略目标
+  Performance = 'performance', // 性能目标
+  Efficiency = 'efficiency', // 效率目标
+  Quality = 'quality', // 质量目标
+  Cost = 'cost', // 成本目标
+  Time = 'time', // 时间目标
+  Strategic = 'strategic', // 战略目标
 }
 ```
 
@@ -289,7 +304,7 @@ interface StrategicGoal {
   // 目标值
   targetValue: TargetValue;
   currentValue: number;
-  progress: number;              // 0-1
+  progress: number; // 0-1
 
   // 时间规划
   deadline: number;
@@ -297,9 +312,9 @@ interface StrategicGoal {
   timeline: PlanTimeline;
 
   // 依赖关系
-  dependencies: string[];        // 依赖的其他目标
-  constraints: Constraint[];     // 约束条件
-  resources: Resource[];         // 所需资源
+  dependencies: string[]; // 依赖的其他目标
+  constraints: Constraint[]; // 约束条件
+  resources: Resource[]; // 所需资源
 
   // 状态
   status: GoalStatus;
@@ -342,12 +357,12 @@ graph TD
 
 ```typescript
 enum ResourceType {
-  Compute = 'compute',           // 计算资源
-  Storage = 'storage',           // 存储资源
-  Network = 'network',           // 网络资源
-  Human = 'human',               // 人力资源
-  Financial = 'financial',       // 财务资源
-  Time = 'time'                  // 时间资源
+  Compute = 'compute', // 计算资源
+  Storage = 'storage', // 存储资源
+  Network = 'network', // 网络资源
+  Human = 'human', // 人力资源
+  Financial = 'financial', // 财务资源
+  Time = 'time', // 时间资源
 }
 ```
 
@@ -421,7 +436,7 @@ interface RiskAssessment {
     description: string;
 
     // 概率和影响
-    probability: number;        // 发生概率
+    probability: number; // 发生概率
     impact: {
       severity: 'low' | 'medium' | 'high' | 'critical';
       financial: number;
@@ -449,13 +464,13 @@ interface RiskAssessment {
 
 ```typescript
 enum RiskType {
-  Financial = 'financial',         // 财务风险
-  Operational = 'operational',     // 运营风险
-  Strategic = 'strategic',         // 战略风险
-  Technical = 'technical',         // 技术风险
-  Market = 'market',              // 市场风险
-  Regulatory = 'regulatory',       // 监管风险
-  Reputational = 'reputational'    // 声誉风险
+  Financial = 'financial', // 财务风险
+  Operational = 'operational', // 运营风险
+  Strategic = 'strategic', // 战略风险
+  Technical = 'technical', // 技术风险
+  Market = 'market', // 市场风险
+  Regulatory = 'regulatory', // 监管风险
+  Reputational = 'reputational', // 声誉风险
 }
 ```
 
@@ -508,8 +523,8 @@ interface PerformanceAnalysis {
     goalId: string;
     targetValue: number;
     currentValue: number;
-    achievement: number;         // 达成率
-    variance: number;            // 偏差
+    achievement: number; // 达成率
+    variance: number; // 偏差
     trend: 'improving' | 'stable' | 'declining';
   }[];
 
@@ -597,8 +612,8 @@ interface IStrategicLearningLayer extends EventEmitter {
 ```typescript
 interface StrategicLayerConfig {
   enabled: boolean;
-  planningHorizon: number;            // 规划周期 (天)
-  optimizationFrequency: number;       // 优化频率 (ms)
+  planningHorizon: number; // 规划周期 (天)
+  optimizationFrequency: number; // 优化频率 (ms)
   riskTolerance: 'low' | 'medium' | 'high';
 
   // 决策配置
@@ -660,11 +675,13 @@ interface StrategicLayerConfig {
 ## 📚 相关文档
 
 ### 架构文档
+
 - [ARCH-LearningSystem-Overview.md](../ARCH-LearningSystem-Overview.md) - 系统架构概览
 - [ARCH-BehavioralLayer.md](../ARCH-BehavioralLayer.md) - 行为层架构
 - [ARCH-KnowledgeLayer.md](../ARCH-KnowledgeLayer.md) - 知识层架构
 
 ### API 文档
+
 - [API-StrategicLayer.md](../api/API-StrategicLayer.md) - 策略层 API
 
 ---

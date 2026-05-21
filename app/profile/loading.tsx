@@ -37,5 +37,5 @@ export default function ProfileLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

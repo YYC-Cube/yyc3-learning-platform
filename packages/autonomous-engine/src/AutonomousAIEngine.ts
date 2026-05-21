@@ -13,7 +13,11 @@
 import { EventEmitter } from 'eventemitter3';
 import { EnhancedDecisionEngine, DecisionEngineConfig } from './core/EnhancedDecisionEngine';
 import { EnhancedLearningSystem, LearningSystemConfig } from './core/EnhancedLearningSystem';
-import { EnhancedMessageBus, MessageType, MessagePriority } from '../../core-engine/src/EnhancedMessageBus';
+import {
+  EnhancedMessageBus,
+  MessageType,
+  MessagePriority,
+} from '../../core-engine/src/EnhancedMessageBus';
 import { Logger } from '../../five-dimensional-management/src/utils/Logger';
 
 const logger = new Logger('AutonomousAIEngine');
@@ -45,16 +49,16 @@ import type {
   Strategy,
   Task,
   TaskResult,
-  TaskStatus
+  TaskStatus,
 } from './IAutonomousAIEngine';
 
 // 使用浏览器兼容的 performance API
 const performance = globalThis.performance || {
   now: () => Date.now(),
-  mark: () => { },
-  measure: () => { },
-  clearMarks: () => { },
-  clearMeasures: () => { }
+  mark: () => {},
+  measure: () => {},
+  clearMarks: () => {},
+  clearMeasures: () => {},
 };
 
 export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEngine {
@@ -105,10 +109,46 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       supportedResourceTypes: ['cpu', 'memory', 'storage', 'network', 'gpu'],
       decisionMakingModels: ['utility_based', 'learning_based', 'hybrid'],
       integrationPoints: [
-        { name: 'rest_api', type: 'rest_api', capabilities: ['crud', 'search'], requirements: { cpu: { min: 0.1, unit: 'cores' }, memory: { min: 128, unit: 'MB' }, storage: { min: 0, unit: 'GB' }, network: { min: 0, unit: 'Mbps' }, specialized: [] }, configuration: {} },
-        { name: 'websocket', type: 'websocket', capabilities: ['real_time', 'streaming'], requirements: { cpu: { min: 0.1, unit: 'cores' }, memory: { min: 128, unit: 'MB' }, storage: { min: 0, unit: 'GB' }, network: { min: 0, unit: 'Mbps' }, specialized: [] }, configuration: {} },
-        { name: 'message_queue', type: 'message_queue', capabilities: ['async', 'broadcast'], requirements: { cpu: { min: 0.1, unit: 'cores' }, memory: { min: 256, unit: 'MB' }, storage: { min: 0, unit: 'GB' }, network: { min: 0, unit: 'Mbps' }, specialized: [] }, configuration: {} }
-      ]
+        {
+          name: 'rest_api',
+          type: 'rest_api',
+          capabilities: ['crud', 'search'],
+          requirements: {
+            cpu: { min: 0.1, unit: 'cores' },
+            memory: { min: 128, unit: 'MB' },
+            storage: { min: 0, unit: 'GB' },
+            network: { min: 0, unit: 'Mbps' },
+            specialized: [],
+          },
+          configuration: {},
+        },
+        {
+          name: 'websocket',
+          type: 'websocket',
+          capabilities: ['real_time', 'streaming'],
+          requirements: {
+            cpu: { min: 0.1, unit: 'cores' },
+            memory: { min: 128, unit: 'MB' },
+            storage: { min: 0, unit: 'GB' },
+            network: { min: 0, unit: 'Mbps' },
+            specialized: [],
+          },
+          configuration: {},
+        },
+        {
+          name: 'message_queue',
+          type: 'message_queue',
+          capabilities: ['async', 'broadcast'],
+          requirements: {
+            cpu: { min: 0.1, unit: 'cores' },
+            memory: { min: 256, unit: 'MB' },
+            storage: { min: 0, unit: 'GB' },
+            network: { min: 0, unit: 'Mbps' },
+            specialized: [],
+          },
+          configuration: {},
+        },
+      ],
     };
 
     // 初始化指标
@@ -157,7 +197,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
 
       this.emit('engine.started', {
         timestamp: new Date(),
-        capabilities: this._capabilities
+        capabilities: this._capabilities,
       });
     } catch (error) {
       this._status = 'error';
@@ -186,7 +226,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       this.emit('engine.stopped', {
         timestamp: new Date(),
         uptime: Date.now() - this.startTime,
-        finalMetrics: this._metrics
+        finalMetrics: this._metrics,
       });
     } catch (error) {
       this._status = 'error';
@@ -199,7 +239,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
 
   async restart(): Promise<void> {
     await this.stop();
-    await new Promise(resolve => setTimeout(resolve, 1000)); // 短暂等待
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // 短暂等待
     await this.start();
   }
 
@@ -211,7 +251,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     this.emit('configuration.updated', {
       oldConfig,
       newConfig: this._configuration,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     // 重新配置子系统
@@ -232,7 +272,11 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     const result = super.emit(event, ...args);
 
     // 通过消息总线广播事件（仅发布MessageType枚举中的事件）
-    if (this.messageBus && typeof event === 'string' && Object.values(MessageType).includes(event as MessageType)) {
+    if (
+      this.messageBus &&
+      typeof event === 'string' &&
+      Object.values(MessageType).includes(event as MessageType)
+    ) {
       this.messageBus.publish(event as MessageType, args[0]);
     }
 
@@ -259,7 +303,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
 
   getActiveGoals(): readonly Goal[] {
     return Array.from(this._goals.values())
-      .filter(goal => goal.status === 'active')
+      .filter((goal) => goal.status === 'active')
       .sort((a, b) => this.getPriorityValue(b.priority) - this.getPriorityValue(a.priority));
   }
 
@@ -278,9 +322,9 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     (goal as any).progress = progress;
 
     // 更新关键结果进度
-    goal.keyResults = goal.keyResults.map(kr => ({
+    goal.keyResults = goal.keyResults.map((kr) => ({
       ...kr,
-      current: kr.target * (progress / 100)
+      current: kr.target * (progress / 100),
     }));
 
     // 发送进度更新事件
@@ -310,37 +354,41 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         constraints: goal.constraints,
         resources: this.resourceManager.getResourceUtilization(),
         environment: { type: 'production', load: 0, conditions: {}, externalFactors: [] },
-        stakeholders: []
+        stakeholders: [],
       },
       situation: {
         description: `Goal completed: ${goal.name}`,
         complexity: 'complicated',
         uncertainty: 'low',
         novelty: 'familiar',
-        criticality: this.getGoalCriticality(goal)
+        criticality: this.getGoalCriticality(goal),
       },
-      actions: [{
-        id: this.generateId('action'),
-        type: 'execution',
-        description: 'Execute goal completion',
-        parameters: { goalId, result },
-        reasoning: 'Goal objectives successfully met'
-      }],
-      outcomes: [{
-        id: this.generateId('outcome'),
-        type: 'success',
-        value: result,
-        quality: 'excellent',
-        duration: Date.now() - this.startTime,
-        resourceUsage: this.resourceManager.getCurrentUsage()
-      }],
+      actions: [
+        {
+          id: this.generateId('action'),
+          type: 'execution',
+          description: 'Execute goal completion',
+          parameters: { goalId, result },
+          reasoning: 'Goal objectives successfully met',
+        },
+      ],
+      outcomes: [
+        {
+          id: this.generateId('outcome'),
+          type: 'success',
+          value: result,
+          quality: 'excellent',
+          duration: Date.now() - this.startTime,
+          resourceUsage: this.resourceManager.getCurrentUsage(),
+        },
+      ],
       feedback: {
         source: 'system',
         type: 'performance',
         content: 'Goal completed successfully',
         sentiment: 'very_positive',
         confidence: 1.0,
-        actionability: 'immediate'
+        actionability: 'immediate',
       },
       timestamp: new Date(),
       metadata: {
@@ -348,8 +396,8 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         category: 'performance',
         importance: 'high',
         applicability: [goal.type],
-        sharingConsent: true
-      }
+        sharingConsent: true,
+      },
     };
 
     await this.learningSystem.learnFromExperience(this.convertExperienceToLearningData(experience));
@@ -359,34 +407,49 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
   }
 
   // 将 Experience 转换为 LearningData 格式
-  private convertExperienceToLearningData(experience: Experience): import('./core/EnhancedLearningSystem').LearningData {
+  private convertExperienceToLearningData(
+    experience: Experience
+  ): import('./core/EnhancedLearningSystem').LearningData {
     return {
       id: experience.id,
-      type: experience.type === 'success' ? 'success' : experience.type === 'failure' ? 'failure' : 'partial',
+      type:
+        experience.type === 'success'
+          ? 'success'
+          : experience.type === 'failure'
+            ? 'failure'
+            : 'partial',
       context: {
         goals: experience.context.goals,
         constraints: experience.context.constraints,
         resources: experience.context.resources,
         environment: experience.context.environment,
-        stakeholders: experience.context.stakeholders
+        stakeholders: experience.context.stakeholders,
       },
       situation: {
         description: experience.situation.description,
         complexity: experience.situation.complexity,
-        uncertainty: experience.situation.uncertainty === 'extreme' ? 'high' : experience.situation.uncertainty,
-        novelty: experience.situation.novelty === 'known' ? 'familiar' : 
-                  experience.situation.novelty === 'new' ? 'novel' : 
-                  experience.situation.novelty === 'unknown' ? 'emerging' : experience.situation.novelty,
-        criticality: experience.situation.criticality
+        uncertainty:
+          experience.situation.uncertainty === 'extreme'
+            ? 'high'
+            : experience.situation.uncertainty,
+        novelty:
+          experience.situation.novelty === 'known'
+            ? 'familiar'
+            : experience.situation.novelty === 'new'
+              ? 'novel'
+              : experience.situation.novelty === 'unknown'
+                ? 'emerging'
+                : experience.situation.novelty,
+        criticality: experience.situation.criticality,
       },
-      actions: experience.actions.map(action => ({
+      actions: experience.actions.map((action) => ({
         id: action.id,
         type: action.type,
         description: action.description,
         parameters: action.parameters,
-        reasoning: action.reasoning
+        reasoning: action.reasoning,
       })),
-      outcomes: experience.outcomes.map(outcome => ({
+      outcomes: experience.outcomes.map((outcome) => ({
         id: outcome.id,
         type: outcome.type,
         value: outcome.value,
@@ -397,8 +460,8 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           memory: outcome.resourceUsage.memory,
           storage: outcome.resourceUsage.storage,
           network: outcome.resourceUsage.network,
-          ...outcome.resourceUsage.specialized
-        }
+          ...outcome.resourceUsage.specialized,
+        },
       })),
       feedback: {
         source: experience.feedback.source,
@@ -406,16 +469,20 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         content: experience.feedback.content,
         sentiment: experience.feedback.sentiment,
         confidence: experience.feedback.confidence,
-        actionability: experience.feedback.actionability === 'strategic' ? 'long_term' : experience.feedback.actionability
+        actionability:
+          experience.feedback.actionability === 'strategic'
+            ? 'long_term'
+            : experience.feedback.actionability,
       },
       timestamp: experience.timestamp,
       metadata: {
         tags: Array.from(experience.metadata.tags),
         category: experience.metadata.category,
-        importance: experience.metadata.importance === 'critical' ? 'high' : experience.metadata.importance,
+        importance:
+          experience.metadata.importance === 'critical' ? 'high' : experience.metadata.importance,
         applicability: Array.from(experience.metadata.applicability),
-        sharingConsent: experience.metadata.sharingConsent
-      }
+        sharingConsent: experience.metadata.sharingConsent,
+      },
     };
   }
 
@@ -451,21 +518,28 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           resourceUsage: this.resourceManager.getUsage(allocation.id),
           quality: this.calculateTaskQuality(stepResults),
           errors: [],
-          warnings: []
+          warnings: [],
         },
         metrics: {
           duration: Date.now() - (task.startedAt?.getTime() || Date.now()),
           resourceUtilization: this.resourceManager.getResourceUtilization(),
-          stepMetrics: (stepResults as { stepId: string, duration: number, resourceUsage: ResourceUsage, result: unknown }[]).map(step => ({
+          stepMetrics: (
+            stepResults as {
+              stepId: string;
+              duration: number;
+              resourceUsage: ResourceUsage;
+              result: unknown;
+            }[]
+          ).map((step) => ({
             stepId: step.stepId,
             duration: step.duration,
             status: 'completed' as const,
             resourceUsage: step.resourceUsage,
-            result: step.result
+            result: step.result,
           })),
-          performance: this.calculatePerformanceMetrics(stepResults)
+          performance: this.calculatePerformanceMetrics(stepResults),
         },
-        artifacts: this.generateTaskArtifacts(task, stepResults)
+        artifacts: this.generateTaskArtifacts(task, stepResults),
       };
 
       // 释放资源
@@ -483,7 +557,6 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       this.emit('task.completed', { task, result, timestamp: new Date() });
 
       return result;
-
     } catch (error) {
       task.status = 'failed';
       task.completedAt = new Date();
@@ -559,8 +632,10 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
   }
 
   // 将 DecisionOption 转换为 EnhancedDecisionEngine 的 DecisionOption
-  private convertDecisionOptions(options: DecisionOption[]): import('./core/EnhancedDecisionEngine').DecisionOption[] {
-    return options.map(option => ({
+  private convertDecisionOptions(
+    options: DecisionOption[]
+  ): import('./core/EnhancedDecisionEngine').DecisionOption[] {
+    return options.map((option) => ({
       id: option.id,
       description: option.description,
       actions: [],
@@ -570,25 +645,37 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         cpu: 0,
         memory: 0,
         storage: 0,
-        network: 0
+        network: 0,
       },
-      riskLevel: option.risks.reduce((acc, risk) => {
-        const impactValue = risk.impact === 'critical' ? 4 : 
-                           risk.impact === 'high' ? 3 : 
-                           risk.impact === 'medium' ? 2 : 
-                           risk.impact === 'low' ? 1 : 0;
-        return acc + (risk.probability * impactValue);
-      }, 0) / (option.risks.length || 1),
+      riskLevel:
+        option.risks.reduce((acc, risk) => {
+          const impactValue =
+            risk.impact === 'critical'
+              ? 4
+              : risk.impact === 'high'
+                ? 3
+                : risk.impact === 'medium'
+                  ? 2
+                  : risk.impact === 'low'
+                    ? 1
+                    : 0;
+          return acc + risk.probability * impactValue;
+        }, 0) / (option.risks.length || 1),
       confidence: option.confidence,
-      expectedOutcome: option.expectedOutcomes.reduce((acc, outcome) => {
-        acc[outcome.metric] = outcome.value;
-        return acc;
-      }, {} as Record<string, any>)
+      expectedOutcome: option.expectedOutcomes.reduce(
+        (acc, outcome) => {
+          acc[outcome.metric] = outcome.value;
+          return acc;
+        },
+        {} as Record<string, any>
+      ),
     }));
   }
 
   // 将 DecisionContext 转换为 EnhancedDecisionEngine 的 DecisionContext
-  private convertDecisionContext(context: DecisionContext): import('./core/EnhancedDecisionEngine').DecisionContext {
+  private convertDecisionContext(
+    context: DecisionContext
+  ): import('./core/EnhancedDecisionEngine').DecisionContext {
     return {
       goalId: context.id,
       taskId: context.id,
@@ -598,16 +685,21 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       constraints: {
         maxCost: Number.MAX_VALUE,
         maxTime: context.deadline ? context.deadline.getTime() - Date.now() : Number.MAX_VALUE,
-        maxResources: { cpu: Number.MAX_VALUE, memory: Number.MAX_VALUE, storage: Number.MAX_VALUE, network: Number.MAX_VALUE },
+        maxResources: {
+          cpu: Number.MAX_VALUE,
+          memory: Number.MAX_VALUE,
+          storage: Number.MAX_VALUE,
+          network: Number.MAX_VALUE,
+        },
         securityLevel: 'medium',
-        compliance: []
+        compliance: [],
       },
       preferences: {
         prioritizeSpeed: context.priority === 'high' || context.priority === 'critical',
         prioritizeCost: false,
         prioritizeQuality: context.priority === 'critical',
-        riskTolerance: context.priority === 'critical' ? 'low' : 'medium'
-      }
+        riskTolerance: context.priority === 'critical' ? 'low' : 'medium',
+      },
     };
   }
 
@@ -619,56 +711,61 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     const now = new Date();
     const duration = decisionResult.executionPlan.estimatedDuration;
     const endDate = new Date(now.getTime() + duration);
-    
+
     return {
       id: this.generateId('decision'),
       contextId: context.id,
       selectedOption: decisionResult.selectedOption.id,
       reasoning: {
-        criteria: context.objectives.map(obj => obj.name),
+        criteria: context.objectives.map((obj) => obj.name),
         weights: {},
         scores: {},
         methodology: 'multi_criteria_decision',
-        assumptions: []
+        assumptions: [],
       },
       confidence: decisionResult.confidence,
-      alternatives: decisionResult.alternativeOptions.map(alt => alt.optionId),
+      alternatives: decisionResult.alternativeOptions.map((alt) => alt.optionId),
       expectedValue: decisionResult.evaluation.overallScore,
       riskAssessment: {
-        overall: decisionResult.confidence > 0.8 ? 'low' : decisionResult.confidence > 0.5 ? 'medium' : 'high',
+        overall:
+          decisionResult.confidence > 0.8
+            ? 'low'
+            : decisionResult.confidence > 0.5
+              ? 'medium'
+              : 'high',
         factors: [],
         mitigation: [],
-        contingencyPlans: []
+        contingencyPlans: [],
       },
       implementationPlan: {
-        phases: decisionResult.executionPlan.steps.map(step => ({
+        phases: decisionResult.executionPlan.steps.map((step) => ({
           id: step.id,
           name: step.action.type || 'Action',
           description: '',
           duration: step.estimatedDuration,
           dependencies: step.dependencies,
           deliverables: [],
-          risks: []
+          risks: [],
         })),
         resources: {
           cpu: { min: 0, max: 0, unit: 'cores' },
           memory: { min: 0, max: 0, unit: 'MB' },
           storage: { min: 0, max: 0, unit: 'GB' },
           network: { min: 0, max: 0, unit: 'Mbps' },
-          specialized: []
+          specialized: [],
         },
         timeline: {
           start: now,
           end: endDate,
           milestones: [],
-          criticalPath: []
+          criticalPath: [],
         },
-        dependencies: Array.from(decisionResult.executionPlan.dependencies.entries()).flatMap(([key, values]) => 
-          values.map(v => `${key}->${v}`)
+        dependencies: Array.from(decisionResult.executionPlan.dependencies.entries()).flatMap(
+          ([key, values]) => values.map((v) => `${key}->${v}`)
         ),
-        milestones: []
+        milestones: [],
       },
-      timestamp: decisionResult.timestamp
+      timestamp: decisionResult.timestamp,
     };
   }
 
@@ -677,7 +774,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     if (!decision) {
       throw new Error(`Decision not found: ${decisionId}`);
     }
-    
+
     return {
       decisionId,
       actualOutcomes: [],
@@ -686,10 +783,10 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         efficiency: 0,
         stakeholderSatisfaction: 0,
         innovation: 0,
-        adaptability: 0
+        adaptability: 0,
       },
       lessons: [],
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -718,20 +815,20 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         description: _params.context,
         parameters: {
           context: _params.context,
-          depth: _params.options?.depth || 'deep'
+          depth: _params.options?.depth || 'deep',
         },
-        constraints: _params.constraints.map(c => ({
+        constraints: _params.constraints.map((c) => ({
           type: 'quality' as const,
           description: c,
           parameters: {},
-          severity: 'warning' as const
+          severity: 'warning' as const,
         })),
-        objectives: _params.objectives.map(o => ({
+        objectives: _params.objectives.map((o) => ({
           name: o,
           weight: 1.0,
           target: 1.0,
           unit: 'score',
-          optimization: 'maximize' as const
+          optimization: 'maximize' as const,
         })),
         stakeholders: ['system'],
         deadline: new Date(Date.now() + timeout),
@@ -740,8 +837,8 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           category: 'ai-reasoning',
           tags: ['reasoning', _params.options?.depth || 'deep'],
           historicalData: false,
-          requiredConfidence: 0.7
-        }
+          requiredConfidence: 0.7,
+        },
       };
 
       const options: DecisionOption[] = [
@@ -752,15 +849,15 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           parameters: {
             context: _params.context,
             constraints: _params.constraints,
-            objectives: _params.objectives
+            objectives: _params.objectives,
           },
           expectedOutcomes: [
             {
               metric: 'success_rate',
               value: 0.85,
               probability: 0.9,
-              timeHorizon: 1
-            }
+              timeHorizon: 1,
+            },
           ],
           risks: [
             {
@@ -768,23 +865,23 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
               description: 'Reasoning uncertainty',
               probability: 0.15,
               impact: 'low',
-              mitigation: 'Multiple reasoning strategies'
-            }
+              mitigation: 'Multiple reasoning strategies',
+            },
           ],
           costs: {
             computational: 0.5,
             financial: 0.1,
             time: 0.3,
-            opportunity: 0.1
+            opportunity: 0.1,
           },
           benefits: {
             efficiency: 0.8,
             quality: 0.85,
             innovation: 0.9,
-            collaboration: 0.7
+            collaboration: 0.7,
           },
-          confidence: 0.85
-        }
+          confidence: 0.85,
+        },
       ];
 
       const decision = await this.makeDecision(context, options);
@@ -795,14 +892,14 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         confidence: number;
       } = {
         reasoning: decision.reasoning.methodology || 'Multi-objective optimization reasoning',
-        confidence: decision.confidence
+        confidence: decision.confidence,
       };
 
       if (_params.options?.includeAlternatives) {
         result.alternatives = [
           'Alternative approach: Focus on primary objective',
           'Alternative approach: Balance all objectives',
-          'Alternative approach: Prioritize constraints'
+          'Alternative approach: Prioritize constraints',
         ];
       }
 
@@ -811,7 +908,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       logger.error('Reasoning failed:', error instanceof Error ? error : undefined);
       return {
         reasoning: `Reasoning failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        confidence: 0
+        confidence: 0,
       };
     }
   }
@@ -851,7 +948,10 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     return messages;
   }
 
-  async collaborateWith(otherEngines: readonly string[], task: CollaborativeTask): Promise<CollaborativeResult> {
+  async collaborateWith(
+    otherEngines: readonly string[],
+    task: CollaborativeTask
+  ): Promise<CollaborativeResult> {
     this._collaborations.set(task.id, task);
 
     this.emit('collaboration.started', { task, otherEngines, timestamp: new Date() });
@@ -896,7 +996,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         memory: { hard: 80, soft: 70, unit: '%' },
         storage: { hard: 90, soft: 80, unit: '%' },
         network: { hard: 80, soft: 70, unit: '%' },
-        specialized: []
+        specialized: [],
       },
       learningConfig: {
         enableLearning: true,
@@ -913,9 +1013,9 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
             aggregation: 'weighted_average',
             filtering: 'outlier_removal',
             validation: 'cross_validation',
-            integration: 'incremental'
-          }
-        }
+            integration: 'incremental',
+          },
+        },
       },
       decisionMakingConfig: {
         enableDecisionMaking: true,
@@ -924,7 +1024,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         riskTolerance: 0.3,
         timeHorizon: 30 * 24 * 60 * 60 * 1000, // 30 days
         stakeholderWeights: {},
-        evaluationCriteria: []
+        evaluationCriteria: [],
       },
       collaborationConfig: {
         enableCollaboration: true,
@@ -937,8 +1037,8 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
             format: 'json',
             frequency: 'continuous',
             retention: 90 * 24 * 60 * 60 * 1000,
-            accessibility: 'internal'
-          }
+            accessibility: 'internal',
+          },
         },
         coordinationStrategy: {
           type: 'adaptive',
@@ -948,7 +1048,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
             type: 'consensus',
             participants: [],
             rules: [],
-            voting: { type: 'simple', threshold: 0.5, deadline: 3600000 }
+            voting: { type: 'simple', threshold: 0.5, deadline: 3600000 },
           },
           conflictResolution: {
             type: 'negotiation',
@@ -956,10 +1056,10 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
             escalation: {
               triggers: [],
               levels: [],
-              final: { method: 'hierarchical', authority: 'system', binding: true }
+              final: { method: 'hierarchical', authority: 'system', binding: true },
             },
-            prevention: []
-          }
+            prevention: [],
+          },
         },
         trustManagement: {
           enableTrustScoring: true,
@@ -967,8 +1067,8 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           trustDecay: 0.01,
           rewardMultiplier: 1.2,
           penaltyMultiplier: 0.8,
-          reputationWeighting: { performance: 0.4, reliability: 0.3, collaboration: 0.3 }
-        }
+          reputationWeighting: { performance: 0.4, reliability: 0.3, collaboration: 0.3 },
+        },
       },
       monitoringConfig: {
         enableMonitoring: true,
@@ -978,14 +1078,14 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           aggregation: {
             enabled: true,
             methods: ['average', 'sum', 'min', 'max'],
-            intervals: [60000, 300000, 900000]
+            intervals: [60000, 300000, 900000],
           },
           export: {
             enabled: false,
             formats: ['json', 'prometheus'],
             destinations: [],
-            schedule: 'hourly'
-          }
+            schedule: 'hourly',
+          },
         },
         alerting: {
           enabled: true,
@@ -993,17 +1093,22 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
             performance: { responseTime: 5000, throughput: 1000, errorRate: 0.01, latency: 1000 },
             availability: { uptime: 99.9, downtime: 300, incidentRate: 1, recoveryTime: 300 },
             resources: { cpu: 80, memory: 80, disk: 90, network: 80 },
-            security: { failedLogins: 5, suspiciousActivity: 10, dataBreaches: 0, complianceViolations: 0 }
+            security: {
+              failedLogins: 5,
+              suspiciousActivity: 10,
+              dataBreaches: 0,
+              complianceViolations: 0,
+            },
           },
           routing: {
             rules: [],
-            channels: []
+            channels: [],
           },
           escalation: {
             enabled: true,
             levels: [],
-            autoEscalate: true
-          }
+            autoEscalate: true,
+          },
         },
         logging: {
           level: 'info',
@@ -1013,15 +1118,15 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
             enabled: true,
             maxSize: 100 * 1024 * 1024,
             maxFiles: 10,
-            compress: true
-          }
+            compress: true,
+          },
         },
         healthChecks: {
           enabled: true,
           interval: 30000,
           timeout: 5000,
-          endpoints: []
-        }
+          endpoints: [],
+        },
       },
       securityConfig: {
         enableSecurity: true,
@@ -1037,14 +1142,14 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
             requireNumbers: true,
             requireSymbols: false,
             maxAge: 7776000000,
-            historyCount: 5
-          }
+            historyCount: 5,
+          },
         },
         authorization: {
           enabled: true,
           model: { type: 'rbac', configuration: {} },
           roles: [],
-          permissions: []
+          permissions: [],
         },
         encryption: {
           enabled: true,
@@ -1052,25 +1157,30 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           keyManagement: {
             type: 'internal',
             rotation: { enabled: true, interval: 7776000000, algorithm: 'AES-256-GCM' },
-            storage: { type: 'file', configuration: {} }
+            storage: { type: 'file', configuration: {} },
           },
-          dataEncryption: { inTransit: true, atRest: true, inMemory: false, algorithm: 'AES-256-GCM' }
+          dataEncryption: {
+            inTransit: true,
+            atRest: true,
+            inMemory: false,
+            algorithm: 'AES-256-GCM',
+          },
         },
         audit: {
           enabled: true,
           events: [],
           retention: 365 * 24 * 60 * 60 * 1000,
           format: 'json',
-          storage: { type: 'file', configuration: {} }
-        }
+          storage: { type: 'file', configuration: {} },
+        },
       },
       integrationConfig: {
         enableIntegration: true,
         endpoints: [],
         dataFormats: [],
         protocols: [],
-        middlewares: []
-      }
+        middlewares: [],
+      },
     };
 
     return { ...defaults, ...config };
@@ -1088,7 +1198,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         memory: { allocated: 0, used: 0, available: 100, percentage: 0 },
         storage: { allocated: 0, used: 0, available: 100, percentage: 0 },
         network: { allocated: 0, used: 0, available: 100, percentage: 0 },
-        specialized: []
+        specialized: [],
       },
       decisionAccuracy: 0.8,
       learningRate: 0.1,
@@ -1097,7 +1207,12 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       throughput: 0,
       latency: { p50: 0, p95: 0, p99: 0, average: 0, max: 0, min: 0 },
       memory: { total: 0, used: 0, free: 0, cached: 0, heap: { total: 0, used: 0, limit: 0 } },
-      performance: { throughput: 0, latency: { p50: 0, p95: 0, p99: 0, average: 0, max: 0, min: 0 }, memory: { total: 0, used: 0, free: 0, cached: 0, heap: { total: 0, used: 0, limit: 0 } }, cpu: { utilization: 0, loadAverage: [0, 0, 0] } }
+      performance: {
+        throughput: 0,
+        latency: { p50: 0, p95: 0, p99: 0, average: 0, max: 0, min: 0 },
+        memory: { total: 0, used: 0, free: 0, cached: 0, heap: { total: 0, used: 0, limit: 0 } },
+        cpu: { utilization: 0, loadAverage: [0, 0, 0] },
+      },
     };
   }
 
@@ -1110,14 +1225,14 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         backoffFactor: 2,
         initialDelayMs: 100,
         maxDelayMs: 5000,
-        retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED']
+        retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED'],
       },
       enablePersistence: true,
       deadLetterQueueSize: 100,
       enableMetrics: true,
       enableTracing: true,
       maxProcessingTime: 30000,
-      maxConcurrentMessages: 10
+      maxConcurrentMessages: 10,
     });
     this.taskScheduler = new TaskScheduler(this._configuration.maxConcurrentTasks);
     this.stateManager = new StateManager();
@@ -1129,8 +1244,8 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       modelAdapterConfig: {
         provider: 'openai',
         apiKey: this._configuration.modelAdapterConfig?.apiKey,
-        model: this._configuration.modelAdapterConfig?.model
-      }
+        model: this._configuration.modelAdapterConfig?.model,
+      },
     });
     this.learningSystem = new EnhancedLearningSystem({
       enableLearning: true,
@@ -1147,14 +1262,14 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           aggregation: 'weighted_average',
           filtering: 'outlier_removal',
           validation: 'cross_validation',
-          integration: 'incremental'
-        }
+          integration: 'incremental',
+        },
       },
       modelAdapterConfig: {
         provider: 'openai',
         apiKey: this._configuration.modelAdapterConfig?.apiKey,
-        model: this._configuration.modelAdapterConfig?.model
-      }
+        model: this._configuration.modelAdapterConfig?.model,
+      },
     });
     this.collaborationManager = new CollaborationManager(this._configuration.collaborationConfig);
     this.resourceManager = new ResourceManager(this._configuration.resourceLimits);
@@ -1181,287 +1296,386 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     // 连接各子系统的事件总线 - 使用EnhancedMessageBus的增强功能
 
     // 订阅引擎事件并转发
-    this.messageBus.subscribe(MessageType.ENGINE_EVENT, async (message) => {
-      const msg = message as any;
-      this.emit(msg.payload.event, msg.payload.data);
-    }, {
-      id: 'engine-event-forwarder'
-    });
+    this.messageBus.subscribe(
+      MessageType.ENGINE_EVENT,
+      async (message) => {
+        const msg = message as any;
+        this.emit(msg.payload.event, msg.payload.data);
+      },
+      {
+        id: 'engine-event-forwarder',
+      }
+    );
 
     // 订阅任务请求
-    this.messageBus.subscribe(MessageType.TASK_REQUEST, async (message) => {
-      try {
-        const msg = message as any;
-        const task = msg.payload as Task;
-        const result = await this.executeTask(task);
-        
-        // 发送任务响应
-        await this.messageBus.publish(MessageType.TASK_RESPONSE, {
-          taskId: task.id,
-          result,
-          status: 'completed'
-        }, {
-          correlationId: msg.correlationId,
-          replyTo: msg.replyTo,
-          priority: msg.priority,
-          metadata: {
-            ...msg.metadata,
-            originalTaskId: task.id
-          }
-        });
-      } catch (error) {
-        const msg = message as any;
-        await this.messageBus.publish(MessageType.TASK_RESPONSE, {
-          taskId: (msg.payload as Task).id,
-          error: (error as Error).message,
-          status: 'failed'
-        }, {
-          correlationId: msg.correlationId,
-          replyTo: msg.replyTo,
-          priority: MessagePriority.HIGH
-        });
+    this.messageBus.subscribe(
+      MessageType.TASK_REQUEST,
+      async (message) => {
+        try {
+          const msg = message as any;
+          const task = msg.payload as Task;
+          const result = await this.executeTask(task);
+
+          // 发送任务响应
+          await this.messageBus.publish(
+            MessageType.TASK_RESPONSE,
+            {
+              taskId: task.id,
+              result,
+              status: 'completed',
+            },
+            {
+              correlationId: msg.correlationId,
+              replyTo: msg.replyTo,
+              priority: msg.priority,
+              metadata: {
+                ...msg.metadata,
+                originalTaskId: task.id,
+              },
+            }
+          );
+        } catch (error) {
+          const msg = message as any;
+          await this.messageBus.publish(
+            MessageType.TASK_RESPONSE,
+            {
+              taskId: (msg.payload as Task).id,
+              error: (error as Error).message,
+              status: 'failed',
+            },
+            {
+              correlationId: msg.correlationId,
+              replyTo: msg.replyTo,
+              priority: MessagePriority.HIGH,
+            }
+          );
+        }
+      },
+      {
+        id: 'task-request-handler',
       }
-    }, {
-      id: 'task-request-handler'
-    });
+    );
 
     // 订阅目标更新
-    this.messageBus.subscribe(MessageType.GOAL_UPDATE, async (message) => {
-      const msg = message as any;
-      const { goalId, progress } = msg.payload as { goalId: string; progress?: number };
-      if (progress !== undefined) {
-        await this.updateGoalProgress(goalId, progress);
+    this.messageBus.subscribe(
+      MessageType.GOAL_UPDATE,
+      async (message) => {
+        const msg = message as any;
+        const { goalId, progress } = msg.payload as { goalId: string; progress?: number };
+        if (progress !== undefined) {
+          await this.updateGoalProgress(goalId, progress);
+        }
+      },
+      {
+        id: 'goal-update-handler',
       }
-    }, {
-      id: 'goal-update-handler'
-    });
+    );
 
     // 订阅决策请求
-    this.messageBus.subscribe(MessageType.DECISION_REQUEST, async (message) => {
-      try {
-        const msg = message as any;
-        const { context, options } = msg.payload as { context: DecisionContext; options: DecisionOption[] };
-        const decision = await this.makeDecision(context, options);
-        
-        await this.messageBus.publish(MessageType.DECISION_RESPONSE, {
-          decision,
-          status: 'completed'
-        }, {
-          correlationId: msg.correlationId,
-          replyTo: msg.replyTo,
-          metadata: {
-            ...msg.metadata,
-            decisionId: decision.id
-          }
-        });
-      } catch (error) {
-        const msg = message as any;
-        await this.messageBus.publish(MessageType.DECISION_RESPONSE, {
-          error: (error as Error).message,
-          status: 'failed'
-        }, {
-          correlationId: msg.correlationId,
-          replyTo: msg.replyTo,
-          priority: MessagePriority.HIGH
-        });
+    this.messageBus.subscribe(
+      MessageType.DECISION_REQUEST,
+      async (message) => {
+        try {
+          const msg = message as any;
+          const { context, options } = msg.payload as {
+            context: DecisionContext;
+            options: DecisionOption[];
+          };
+          const decision = await this.makeDecision(context, options);
+
+          await this.messageBus.publish(
+            MessageType.DECISION_RESPONSE,
+            {
+              decision,
+              status: 'completed',
+            },
+            {
+              correlationId: msg.correlationId,
+              replyTo: msg.replyTo,
+              metadata: {
+                ...msg.metadata,
+                decisionId: decision.id,
+              },
+            }
+          );
+        } catch (error) {
+          const msg = message as any;
+          await this.messageBus.publish(
+            MessageType.DECISION_RESPONSE,
+            {
+              error: (error as Error).message,
+              status: 'failed',
+            },
+            {
+              correlationId: msg.correlationId,
+              replyTo: msg.replyTo,
+              priority: MessagePriority.HIGH,
+            }
+          );
+        }
+      },
+      {
+        id: 'decision-request-handler',
       }
-    }, {
-      id: 'decision-request-handler'
-    });
+    );
 
     // 订阅学习更新
-    this.messageBus.subscribe(MessageType.LEARNING_UPDATE, async (message) => {
-      const msg = message as any;
-      const experience = msg.payload as Experience;
-      await this.learnFromExperience(experience);
-    }, {
-      id: 'learning-update-handler'
-    });
+    this.messageBus.subscribe(
+      MessageType.LEARNING_UPDATE,
+      async (message) => {
+        const msg = message as any;
+        const experience = msg.payload as Experience;
+        await this.learnFromExperience(experience);
+      },
+      {
+        id: 'learning-update-handler',
+      }
+    );
 
     // 订阅资源分配请求
-    this.messageBus.subscribe(MessageType.RESOURCE_ALLOCATION, async (message) => {
-      const msg = message as any;
-      const { type, payload } = msg.payload as { type: string; payload: any };
-      
-      if (type === 'allocation.failed') {
-        this.emit('resource.error', payload);
-      } else if (type === 'allocation.request') {
-        try {
-          const allocation = await this.allocateResources(payload);
-          await this.messageBus.publish(MessageType.RESOURCE_ALLOCATION, {
-            type: 'allocation.success',
-            payload: allocation
-          }, {
-            correlationId: msg.correlationId,
-            replyTo: msg.replyTo
-          });
-        } catch (error) {
-          await this.messageBus.publish(MessageType.RESOURCE_ALLOCATION, {
-            type: 'allocation.failed',
-            payload: { error: (error as Error).message }
-          }, {
-            correlationId: msg.correlationId,
-            replyTo: msg.replyTo,
-            priority: MessagePriority.HIGH
-          });
+    this.messageBus.subscribe(
+      MessageType.RESOURCE_ALLOCATION,
+      async (message) => {
+        const msg = message as any;
+        const { type, payload } = msg.payload as { type: string; payload: any };
+
+        if (type === 'allocation.failed') {
+          this.emit('resource.error', payload);
+        } else if (type === 'allocation.request') {
+          try {
+            const allocation = await this.allocateResources(payload);
+            await this.messageBus.publish(
+              MessageType.RESOURCE_ALLOCATION,
+              {
+                type: 'allocation.success',
+                payload: allocation,
+              },
+              {
+                correlationId: msg.correlationId,
+                replyTo: msg.replyTo,
+              }
+            );
+          } catch (error) {
+            await this.messageBus.publish(
+              MessageType.RESOURCE_ALLOCATION,
+              {
+                type: 'allocation.failed',
+                payload: { error: (error as Error).message },
+              },
+              {
+                correlationId: msg.correlationId,
+                replyTo: msg.replyTo,
+                priority: MessagePriority.HIGH,
+              }
+            );
+          }
         }
+      },
+      {
+        id: 'resource-allocation-handler',
       }
-    }, {
-      id: 'resource-allocation-handler'
-    });
+    );
 
     // 订阅健康检查
-    this.messageBus.subscribe(MessageType.HEALTH_CHECK, async (message) => {
-      const msg = message as any;
-      const healthStatus = this.getHealthStatus();
-      await this.messageBus.publish(MessageType.HEALTH_CHECK, {
-        status: healthStatus,
-        timestamp: Date.now()
-      }, {
-        correlationId: msg.correlationId,
-        replyTo: msg.replyTo
-      });
-    }, {
-      id: 'health-check-handler'
-    });
+    this.messageBus.subscribe(
+      MessageType.HEALTH_CHECK,
+      async (message) => {
+        const msg = message as any;
+        const healthStatus = this.getHealthStatus();
+        await this.messageBus.publish(
+          MessageType.HEALTH_CHECK,
+          {
+            status: healthStatus,
+            timestamp: Date.now(),
+          },
+          {
+            correlationId: msg.correlationId,
+            replyTo: msg.replyTo,
+          }
+        );
+      },
+      {
+        id: 'health-check-handler',
+      }
+    );
 
     // 资源管理器事件转发到消息总线
     this.resourceManager.on('resource.allocation.failed', async (payload) => {
-      await this.messageBus.publish(MessageType.RESOURCE_ALLOCATION, {
-        type: 'allocation.failed',
-        payload,
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.HIGH,
-        metadata: {
-          category: 'resource',
-          tags: ['allocation', 'failure']
+      await this.messageBus.publish(
+        MessageType.RESOURCE_ALLOCATION,
+        {
+          type: 'allocation.failed',
+          payload,
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.HIGH,
+          metadata: {
+            category: 'resource',
+            tags: ['allocation', 'failure'],
+          },
         }
-      });
+      );
     });
 
     this.resourceManager.on('resource.allocated', async (payload) => {
-      await this.messageBus.publish(MessageType.RESOURCE_ALLOCATION, {
-        type: 'allocation.success',
-        payload,
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.NORMAL,
-        metadata: {
-          category: 'resource',
-          tags: ['allocation', 'success']
+      await this.messageBus.publish(
+        MessageType.RESOURCE_ALLOCATION,
+        {
+          type: 'allocation.success',
+          payload,
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.NORMAL,
+          metadata: {
+            category: 'resource',
+            tags: ['allocation', 'success'],
+          },
         }
-      });
+      );
     });
 
     // 决策引擎事件转发到消息总线
     this.decisionEngine.on('decision.made', async (payload) => {
-      await this.messageBus.publish(MessageType.DECISION_RESPONSE, {
-        decision: payload,
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.NORMAL,
-        metadata: {
-          category: 'decision',
-          tags: ['decision', 'made']
+      await this.messageBus.publish(
+        MessageType.DECISION_RESPONSE,
+        {
+          decision: payload,
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.NORMAL,
+          metadata: {
+            category: 'decision',
+            tags: ['decision', 'made'],
+          },
         }
-      });
+      );
     });
 
     this.decisionEngine.on('decision.evaluation.completed', async (payload) => {
-      await this.messageBus.publish(MessageType.DECISION_RESPONSE, {
-        evaluation: payload,
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.NORMAL,
-        metadata: {
-          category: 'decision',
-          tags: ['evaluation', 'completed']
+      await this.messageBus.publish(
+        MessageType.DECISION_RESPONSE,
+        {
+          evaluation: payload,
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.NORMAL,
+          metadata: {
+            category: 'decision',
+            tags: ['evaluation', 'completed'],
+          },
         }
-      });
+      );
     });
 
     // 学习系统事件转发到消息总线
     this.learningSystem.on('adaptation.required', async (payload) => {
-      await this.messageBus.publish(MessageType.LEARNING_UPDATE, {
-        adaptation: payload,
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.NORMAL,
-        metadata: {
-          category: 'learning',
-          tags: ['adaptation', 'required']
+      await this.messageBus.publish(
+        MessageType.LEARNING_UPDATE,
+        {
+          adaptation: payload,
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.NORMAL,
+          metadata: {
+            category: 'learning',
+            tags: ['adaptation', 'required'],
+          },
         }
-      });
+      );
     });
 
     this.learningSystem.on('knowledge.updated', async (payload) => {
-      await this.messageBus.publish(MessageType.LEARNING_UPDATE, {
-        knowledge: payload,
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.NORMAL,
-        metadata: {
-          category: 'learning',
-          tags: ['knowledge', 'updated']
+      await this.messageBus.publish(
+        MessageType.LEARNING_UPDATE,
+        {
+          knowledge: payload,
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.NORMAL,
+          metadata: {
+            category: 'learning',
+            tags: ['knowledge', 'updated'],
+          },
         }
-      });
+      );
     });
 
     this.learningSystem.on('strategy.adapted', async (payload) => {
-      await this.messageBus.publish(MessageType.LEARNING_UPDATE, {
-        strategy: payload,
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.NORMAL,
-        metadata: {
-          category: 'learning',
-          tags: ['strategy', 'adapted']
+      await this.messageBus.publish(
+        MessageType.LEARNING_UPDATE,
+        {
+          strategy: payload,
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.NORMAL,
+          metadata: {
+            category: 'learning',
+            tags: ['strategy', 'adapted'],
+          },
         }
-      });
+      );
     });
 
     // 任务调度器事件转发
     this.taskScheduler.on('task.scheduled', async (payload) => {
-      await this.messageBus.publish(MessageType.TASK_RESPONSE, {
-        task: payload,
-        status: 'scheduled',
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.NORMAL,
-        metadata: {
-          category: 'task',
-          tags: ['scheduled']
+      await this.messageBus.publish(
+        MessageType.TASK_RESPONSE,
+        {
+          task: payload,
+          status: 'scheduled',
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.NORMAL,
+          metadata: {
+            category: 'task',
+            tags: ['scheduled'],
+          },
         }
-      });
+      );
     });
 
     this.taskScheduler.on('task.completed', async (payload) => {
-      await this.messageBus.publish(MessageType.TASK_RESPONSE, {
-        task: payload,
-        status: 'completed',
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.NORMAL,
-        metadata: {
-          category: 'task',
-          tags: ['completed']
+      await this.messageBus.publish(
+        MessageType.TASK_RESPONSE,
+        {
+          task: payload,
+          status: 'completed',
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.NORMAL,
+          metadata: {
+            category: 'task',
+            tags: ['completed'],
+          },
         }
-      });
+      );
     });
 
     this.taskScheduler.on('task.failed', async (payload) => {
-      await this.messageBus.publish(MessageType.TASK_RESPONSE, {
-        task: payload,
-        status: 'failed',
-        timestamp: Date.now()
-      }, {
-        priority: MessagePriority.HIGH,
-        metadata: {
-          category: 'task',
-          tags: ['failed']
+      await this.messageBus.publish(
+        MessageType.TASK_RESPONSE,
+        {
+          task: payload,
+          status: 'failed',
+          timestamp: Date.now(),
+        },
+        {
+          priority: MessagePriority.HIGH,
+          metadata: {
+            category: 'task',
+            tags: ['failed'],
+          },
         }
-      });
+      );
     });
   }
 
@@ -1475,7 +1689,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       this.collaborationManager,
       this.monitoringSystem,
       this.securityManager,
-      this.stateManager
+      this.stateManager,
     ];
 
     for (const subsystem of subsystems) {
@@ -1495,7 +1709,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       this.monitoringSystem,
       this.securityManager,
       this.messageBus,
-      this.stateManager
+      this.stateManager,
     ];
 
     for (const subsystem of subsystems) {
@@ -1508,17 +1722,17 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
   private async reconfigureSubsystems(): Promise<void> {
     // 重新配置各子系统
     await this.resourceManager.reconfigure(this._configuration.resourceLimits);
-    
+
     // Convert DecisionMakingConfiguration to DecisionEngineConfig
     const decisionEngineConfig: Partial<DecisionEngineConfig> = {
       enableAIAssistedDecision: this._configuration.decisionMakingConfig.enableDecisionMaking,
       enableLearning: true,
       maxOptionsToEvaluate: 10,
       decisionTimeout: this._configuration.decisionMakingConfig.timeHorizon,
-      modelAdapterConfig: this._configuration.modelAdapterConfig
+      modelAdapterConfig: this._configuration.modelAdapterConfig,
     };
     await this.decisionEngine.reconfigure(decisionEngineConfig);
-    
+
     // Convert LearningConfiguration to LearningSystemConfig
     const learningSystemConfig: Partial<LearningSystemConfig> = {
       enableLearning: this._configuration.learningConfig.enableLearning,
@@ -1529,12 +1743,12 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       knowledgeDomains: [...this._configuration.learningConfig.knowledgeDomains],
       feedbackIntegration: {
         ...this._configuration.learningConfig.feedbackIntegration,
-        sources: [...this._configuration.learningConfig.feedbackIntegration.sources]
+        sources: [...this._configuration.learningConfig.feedbackIntegration.sources],
       },
-      modelAdapterConfig: this._configuration.modelAdapterConfig
+      modelAdapterConfig: this._configuration.modelAdapterConfig,
     };
     await this.learningSystem.reconfigure(learningSystemConfig);
-    
+
     await this.collaborationManager.reconfigure(this._configuration.collaborationConfig);
     await this.monitoringSystem.reconfigure(this._configuration.monitoringConfig);
     await this.securityManager.reconfigure(this._configuration.securityConfig);
@@ -1571,8 +1785,8 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
       heap: {
         total: memUsage.heapTotal,
         used: memUsage.heapUsed,
-        limit: memUsage.heapTotal
-      }
+        limit: memUsage.heapTotal,
+      },
     };
 
     // 更新资源利用率
@@ -1634,9 +1848,9 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         memory: { min: 128, unit: 'MB' },
         storage: { min: 0, unit: 'GB' },
         network: { min: 0, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       },
-      steps: goal.keyResults.map(kr => ({
+      steps: goal.keyResults.map((kr) => ({
         id: this.generateId('step'),
         name: kr.description,
         description: `Complete key result: ${kr.description}`,
@@ -1644,7 +1858,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         parameters: { target: kr.target },
         dependencies: [],
         estimatedDuration: 60000,
-        requiredResources: []
+        requiredResources: [],
       })),
       metadata: {
         source: 'goal_execution',
@@ -1654,12 +1868,12 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
           maxAttempts: 3,
           backoffStrategy: 'exponential',
           baseDelay: 1000,
-          maxDelay: 10000
+          maxDelay: 10000,
         },
         timeout: 3600000,
-        qualityRequirements: {}
+        qualityRequirements: {},
       },
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     await this.executeTask(task);
@@ -1676,58 +1890,64 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     return results;
   }
 
-  private async executeStep(step: { id: string, name: string }): Promise<unknown> {
+  private async executeStep(step: { id: string; name: string }): Promise<unknown> {
     const startTime = performance.now();
 
     try {
       // 模拟步骤执行
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000));
+      await new Promise((resolve) => setTimeout(resolve, Math.random() * 1000));
 
       return {
         stepId: step.id,
         duration: performance.now() - startTime,
         resourceUsage: { cpu: 0.1, memory: 50, storage: 0, network: 0, specialized: {} },
-        result: { success: true, data: `Step ${step.name} completed` }
+        result: { success: true, data: `Step ${step.name} completed` },
       };
     } catch (error) {
       return {
         stepId: step.id,
         duration: performance.now() - startTime,
         resourceUsage: { cpu: 0.1, memory: 50, storage: 0, network: 0, specialized: {} },
-        result: { success: false, error: error instanceof Error ? error.message : String(error) }
+        result: { success: false, error: error instanceof Error ? error.message : String(error) },
       };
     }
   }
 
   private aggregateStepResults(stepResults: unknown[]): unknown {
-    const successful = (stepResults as { result: { success: boolean, data: unknown } }[]).filter(r => r.result.success);
-    const failed = (stepResults as { result: { success: boolean, error: unknown } }[]).filter(r => !r.result.success);
+    const successful = (stepResults as { result: { success: boolean; data: unknown } }[]).filter(
+      (r) => r.result.success
+    );
+    const failed = (stepResults as { result: { success: boolean; error: unknown } }[]).filter(
+      (r) => !r.result.success
+    );
 
     return {
       totalSteps: stepResults.length,
       successfulSteps: successful.length,
       failedSteps: failed.length,
       overallSuccess: failed.length === 0,
-      data: successful.map(r => r.result.data),
-      errors: failed.map(r => r.result.error)
+      data: successful.map((r) => r.result.data),
+      errors: failed.map((r) => r.result.error),
     };
   }
 
   private calculateTaskQuality(stepResults: unknown[]): QualityMetrics {
-    const successRate = stepResults.length > 0
-      ? (stepResults as { result: { success: boolean } }[]).filter(r => r.result.success).length / stepResults.length
-      : 0;
+    const successRate =
+      stepResults.length > 0
+        ? (stepResults as { result: { success: boolean } }[]).filter((r) => r.result.success)
+            .length / stepResults.length
+        : 0;
     return {
       accuracy: successRate,
       completeness: successRate,
       relevance: 0.9,
       reliability: successRate,
-      usability: 0.8
+      usability: 0.8,
     };
   }
 
   private calculatePerformanceMetrics(stepResults: unknown[]): PerformanceMetrics {
-    const durations = (stepResults as { duration: number }[]).map(r => r.duration);
+    const durations = (stepResults as { duration: number }[]).map((r) => r.duration);
     const totalDuration = durations.reduce((sum, d) => sum + d, 0);
 
     return {
@@ -1738,7 +1958,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         p99: this.percentile(durations, 0.99),
         average: totalDuration / durations.length,
         max: Math.max(...durations),
-        min: Math.min(...durations)
+        min: Math.min(...durations),
       },
       memory: {
         total: this._metrics.memory.total,
@@ -1748,13 +1968,13 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         heap: {
           total: this._metrics.memory.heap.total,
           used: this._metrics.memory.heap.used,
-          limit: this._metrics.memory.heap.limit
-        }
+          limit: this._metrics.memory.heap.limit,
+        },
       },
       cpu: {
         utilization: 0.3,
-        loadAverage: [0.3, 0.3, 0.3]
-      }
+        loadAverage: [0.3, 0.3, 0.3],
+      },
     };
   }
 
@@ -1773,16 +1993,16 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         content: {
           task: task,
           results: stepResults,
-          summary: this.aggregateStepResults(stepResults)
+          summary: this.aggregateStepResults(stepResults),
         },
         metadata: {
           format: 'json',
           size: JSON.stringify(stepResults).length,
           checksum: this.calculateChecksum(JSON.stringify(stepResults)),
           createdAt: new Date(),
-          tags: ['execution', 'report'] as const
-        }
-      }
+          tags: ['execution', 'report'] as const,
+        },
+      },
     ];
   }
 
@@ -1791,7 +2011,7 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
       const char = data.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // 转换为32位整数
     }
     return hash.toString(16);
@@ -1806,37 +2026,39 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         constraints: [],
         resources: this.resourceManager.getResourceUtilization(),
         environment: { type: 'production', load: 0, conditions: {}, externalFactors: [] },
-        stakeholders: []
+        stakeholders: [],
       },
       situation: {
         description: `Task executed: ${task.name}`,
         complexity: 'complicated',
         uncertainty: 'low',
         novelty: 'familiar',
-        criticality: this.getTaskCriticality(task)
+        criticality: this.getTaskCriticality(task),
       },
-      actions: task.steps.map(step => ({
+      actions: task.steps.map((step) => ({
         id: this.generateId('action'),
         type: 'execution',
         description: step.description,
         parameters: step.parameters,
-        reasoning: 'Execute task step'
+        reasoning: 'Execute task step',
       })),
-      outcomes: [{
-        id: this.generateId('outcome'),
-        type: result.status === 'completed' ? 'success' : 'failure',
-        value: result.result,
-        quality: result.metadata.quality.accuracy > 0.8 ? 'excellent' : 'good',
-        duration: result.metadata.executionTime,
-        resourceUsage: result.metadata.resourceUsage
-      }],
+      outcomes: [
+        {
+          id: this.generateId('outcome'),
+          type: result.status === 'completed' ? 'success' : 'failure',
+          value: result.result,
+          quality: result.metadata.quality.accuracy > 0.8 ? 'excellent' : 'good',
+          duration: result.metadata.executionTime,
+          resourceUsage: result.metadata.resourceUsage,
+        },
+      ],
       feedback: {
         source: 'system',
         type: 'performance',
         content: `Task ${result.status}`,
         sentiment: result.status === 'completed' ? 'positive' : 'negative',
         confidence: 1.0,
-        actionability: 'immediate'
+        actionability: 'immediate',
       },
       timestamp: new Date(),
       metadata: {
@@ -1844,8 +2066,8 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
         category: 'performance',
         importance: task.priority === 'critical' ? 'critical' : 'high',
         applicability: [task.type],
-        sharingConsent: true
-      }
+        sharingConsent: true,
+      },
     };
 
     await this.learnFromExperience(experience);
@@ -1860,8 +2082,9 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
 
   private async finalizeTasks(): Promise<void> {
     // 完成所有运行中的任务
-    const runningTasks = Array.from(this._tasks.values())
-      .filter(task => task.status === 'running');
+    const runningTasks = Array.from(this._tasks.values()).filter(
+      (task) => task.status === 'running'
+    );
 
     for (const task of runningTasks) {
       task.status = 'cancelled';
@@ -1871,10 +2094,9 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
 
   // === 事件处理器 ===
 
-  private handleGoalCreated(event: { goal: { name: string } }): void {
-  }
+  private handleGoalCreated(event: { goal: { name: string } }): void {}
 
-  private handleTaskCompleted(event: { result: { status: string }, task: { name: string } }): void {
+  private handleTaskCompleted(event: { result: { status: string }; task: { name: string } }): void {
     this._metrics.totalTasksExecuted++;
     if (event.result.status === 'completed') {
       this._metrics.successfulTasks++;
@@ -1887,15 +2109,14 @@ export class AutonomousAIEngine extends EventEmitter implements IAutonomousAIEng
     this._decisions.set(event.decision.id, event.decision);
   }
 
-  private handleLearningCompleted(event: { experience: Experience }): void {
-  }
+  private handleLearningCompleted(event: { experience: Experience }): void {}
 
-  private handleCollaborationCompleted(event: { task: Task }): void {
-  }
+  private handleCollaborationCompleted(event: { task: Task }): void {}
 
   private handleError(error: unknown): void {
     logger.error('❌ AutonomousAIEngine Error:', error instanceof Error ? error : undefined);
-    this._metrics.errorRate = this._metrics.failedTasks / Math.max(this._metrics.totalTasksExecuted, 1);
+    this._metrics.errorRate =
+      this._metrics.failedTasks / Math.max(this._metrics.totalTasksExecuted, 1);
   }
 }
 
@@ -1954,11 +2175,14 @@ class MessageBus extends BaseSubsystem {
   publish(event: string, payload: unknown): void {
     const handlers = this.subscribers.get(event);
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
           handler(payload);
         } catch (error) {
-          logger.error(`Error in event handler for ${event}:`, error instanceof Error ? error : undefined);
+          logger.error(
+            `Error in event handler for ${event}:`,
+            error instanceof Error ? error : undefined
+          );
         }
       });
     }
@@ -1969,7 +2193,7 @@ class MessageBus extends BaseSubsystem {
 
 class TaskScheduler extends BaseSubsystem {
   private maxConcurrentTasks: number;
-  private scheduledTasks: Map<string, { task: Task, schedule?: unknown }> = new Map();
+  private scheduledTasks: Map<string, { task: Task; schedule?: unknown }> = new Map();
 
   constructor(maxConcurrentTasks: number) {
     super({});
@@ -2063,30 +2287,36 @@ class DecisionEngine extends BaseSubsystem {
         weights: { efficiency: 0.4, quality: 0.4, risk: 0.2 },
         scores: { efficiency: 0.8, quality: 0.7, risk: 0.6 },
         methodology: 'utility_theory',
-        assumptions: ['Current trends continue']
+        assumptions: ['Current trends continue'],
       },
       confidence: 0.75,
-      alternatives: options.map(o => o.id),
+      alternatives: options.map((o) => o.id),
       expectedValue: 0.75,
       riskAssessment: {
         overall: 'medium',
         factors: [],
         mitigation: [],
-        contingencyPlans: []
+        contingencyPlans: [],
       },
       implementationPlan: {
         phases: [],
-        resources: { cpu: { min: 0.1, unit: 'cores' }, memory: { min: 128, unit: 'MB' }, storage: { min: 0, unit: 'GB' }, network: { min: 0, unit: 'Mbps' }, specialized: [] },
+        resources: {
+          cpu: { min: 0.1, unit: 'cores' },
+          memory: { min: 128, unit: 'MB' },
+          storage: { min: 0, unit: 'GB' },
+          network: { min: 0, unit: 'Mbps' },
+          specialized: [],
+        },
         timeline: {
           start: new Date(),
           end: new Date(Date.now() + 86400000),
           milestones: [],
-          criticalPath: []
+          criticalPath: [],
         },
         dependencies: [],
-        milestones: []
+        milestones: [],
       },
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     this.emit('decision.made', { decision });
@@ -2096,28 +2326,32 @@ class DecisionEngine extends BaseSubsystem {
   async evaluateDecision(decision: Decision): Promise<DecisionEvaluation> {
     return {
       decisionId: decision.id,
-      actualOutcomes: [{
-        metric: 'success_rate',
-        expectedValue: decision.expectedValue,
-        actualValue: 0.8,
-        deviation: 0.05,
-        explanation: 'Actual performance exceeded expectations'
-      }],
+      actualOutcomes: [
+        {
+          metric: 'success_rate',
+          expectedValue: decision.expectedValue,
+          actualValue: 0.8,
+          deviation: 0.05,
+          explanation: 'Actual performance exceeded expectations',
+        },
+      ],
       effectiveness: {
         goalAlignment: 0.8,
         efficiency: 0.75,
         stakeholderSatisfaction: 0.7,
         innovation: 0.6,
-        adaptability: 0.8
+        adaptability: 0.8,
       },
-      lessons: [{
-        situation: 'Decision making process',
-        observation: 'Decision was effective',
-        insight: 'Consider additional factors in future decisions',
-        actionability: 'immediate'
-      }],
+      lessons: [
+        {
+          situation: 'Decision making process',
+          observation: 'Decision was effective',
+          insight: 'Consider additional factors in future decisions',
+          actionability: 'immediate',
+        },
+      ],
       recommendations: ['Include risk assessment in decision process'],
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -2170,7 +2404,7 @@ class LearningSystem extends BaseSubsystem {
       competencyLevel: 'intermediate',
       areasOfImprovement: ['decision_making', 'collaboration'],
       recentInsights: [],
-      nextMilestones: []
+      nextMilestones: [],
     };
   }
 }
@@ -2205,7 +2439,7 @@ class CollaborationManager extends BaseSubsystem {
       collaborationId: `collab-${Date.now()}`,
       status: 'active',
       participants: [],
-      startTime: new Date()
+      startTime: new Date(),
     };
   }
 
@@ -2216,11 +2450,14 @@ class CollaborationManager extends BaseSubsystem {
       status: 'active',
       participants: [],
       progress: 0.5,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
   }
 
-  async collaborate(otherEngines: readonly string[], task: CollaborativeTask): Promise<CollaborativeResult> {
+  async collaborate(
+    otherEngines: readonly string[],
+    task: CollaborativeTask
+  ): Promise<CollaborativeResult> {
     // 简化的协作实现
     return {
       taskId: task.id,
@@ -2232,40 +2469,40 @@ class CollaborationManager extends BaseSubsystem {
           technical: 0.7,
           process: 0.8,
           outcome: 0.9,
-          collaboration: 0.8
+          collaboration: 0.8,
         },
         collaboration: {
           communication: {
             clarity: 0.8,
             timeliness: 0.9,
             completeness: 0.7,
-            appropriateness: 0.8
+            appropriateness: 0.8,
           },
           coordination: {
             synchronization: 0.8,
             resourceSharing: 0.7,
             taskAlignment: 0.9,
-            dependencyManagement: 0.8
+            dependencyManagement: 0.8,
           },
           knowledgeSharing: {
             knowledgeTransfer: 0.8,
             learningOpportunities: 0.7,
             documentationQuality: 0.8,
-            innovationGeneration: 0.6
+            innovationGeneration: 0.6,
           },
           conflictResolution: {
             prevention: 0.9,
             resolution: 0.8,
             satisfaction: 0.8,
-            relationshipPreservation: 0.9
-          }
+            relationshipPreservation: 0.9,
+          },
         },
         innovation: {
           novelty: 0.7,
           usefulness: 0.8,
           feasibility: 0.9,
-          adoption: 0.6
-        }
+          adoption: 0.6,
+        },
       },
       contributions: otherEngines.map((engine, index) => ({
         participantId: engine,
@@ -2273,23 +2510,23 @@ class CollaborationManager extends BaseSubsystem {
         contributions: ['analysis', 'execution'],
         quality: 0.8,
         efficiency: 0.7,
-        collaboration: 0.8
+        collaboration: 0.8,
       })),
       quality: {
         accuracy: 0.8,
         completeness: 0.9,
         relevance: 0.8,
         reliability: 0.9,
-        usability: 0.7
+        usability: 0.7,
       },
       efficiency: {
         timeEfficiency: 0.8,
         resourceEfficiency: 0.7,
         costEfficiency: 0.9,
-        processEfficiency: 0.8
+        processEfficiency: 0.8,
       },
       lessons: [],
-      nextSteps: ['Continue collaboration', 'Share lessons learned']
+      nextSteps: ['Continue collaboration', 'Share lessons learned'],
     };
   }
 }
@@ -2307,7 +2544,7 @@ class ResourceManager extends BaseSubsystem {
       memory: { allocated: 0, used: 0, available: 100, percentage: 0 },
       storage: { allocated: 0, used: 0, available: 100, percentage: 0 },
       network: { allocated: 0, used: 0, available: 100, percentage: 0 },
-      specialized: []
+      specialized: [],
     };
   }
 
@@ -2336,12 +2573,27 @@ class ResourceManager extends BaseSubsystem {
       id: allocationId,
       resources: [
         { type: 'cpu', amount: requirements.cpu.min, unit: requirements.cpu.unit, utilization: 0 },
-        { type: 'memory', amount: requirements.memory.min, unit: requirements.memory.unit, utilization: 0 },
-        { type: 'storage', amount: requirements.storage.min, unit: requirements.storage.unit, utilization: 0 },
-        { type: 'network', amount: requirements.network.min, unit: requirements.network.unit, utilization: 0 }
+        {
+          type: 'memory',
+          amount: requirements.memory.min,
+          unit: requirements.memory.unit,
+          utilization: 0,
+        },
+        {
+          type: 'storage',
+          amount: requirements.storage.min,
+          unit: requirements.storage.unit,
+          utilization: 0,
+        },
+        {
+          type: 'network',
+          amount: requirements.network.min,
+          unit: requirements.network.unit,
+          utilization: 0,
+        },
       ],
       expiresAt: new Date(Date.now() + 3600000), // 1 hour
-      status: 'active'
+      status: 'active',
     };
 
     this.allocations.set(allocationId, allocation);
@@ -2369,7 +2621,7 @@ class ResourceManager extends BaseSubsystem {
       memory: this.utilization.memory.used,
       storage: this.utilization.storage.used,
       network: this.utilization.network.used,
-      specialized: {}
+      specialized: {},
     };
   }
 
@@ -2379,25 +2631,28 @@ class ResourceManager extends BaseSubsystem {
       throw new Error(`Allocation not found: ${allocationId}`);
     }
 
-    const usage = allocation.resources.reduce((acc, resource) => {
-      switch (resource.type) {
-        case 'cpu':
-          acc.cpu = resource.amount * (resource.utilization / 100);
-          break;
-        case 'memory':
-          acc.memory = resource.amount * (resource.utilization / 100);
-          break;
-        case 'storage':
-          acc.storage = resource.amount * (resource.utilization / 100);
-          break;
-        case 'network':
-          acc.network = resource.amount * (resource.utilization / 100);
-          break;
-        default:
-          acc.specialized[resource.type] = resource.amount * (resource.utilization / 100);
-      }
-      return acc;
-    }, { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} } as ResourceUsage);
+    const usage = allocation.resources.reduce(
+      (acc, resource) => {
+        switch (resource.type) {
+          case 'cpu':
+            acc.cpu = resource.amount * (resource.utilization / 100);
+            break;
+          case 'memory':
+            acc.memory = resource.amount * (resource.utilization / 100);
+            break;
+          case 'storage':
+            acc.storage = resource.amount * (resource.utilization / 100);
+            break;
+          case 'network':
+            acc.network = resource.amount * (resource.utilization / 100);
+            break;
+          default:
+            acc.specialized[resource.type] = resource.amount * (resource.utilization / 100);
+        }
+        return acc;
+      },
+      { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} } as ResourceUsage
+    );
 
     return usage;
   }
@@ -2412,7 +2667,7 @@ class ResourceManager extends BaseSubsystem {
   }
 
   private updateUtilization(allocation: ResourceAllocation, allocate: boolean): void {
-    allocation.resources.forEach(resource => {
+    allocation.resources.forEach((resource) => {
       const multiplier = allocate ? 1 : -1;
 
       switch (resource.type) {
@@ -2433,7 +2688,7 @@ class ResourceManager extends BaseSubsystem {
 
     // 重新计算可用资源和百分比
     const resourceTypes = ['cpu', 'memory', 'storage', 'network'] as const;
-    resourceTypes.forEach(type => {
+    resourceTypes.forEach((type) => {
       const resource = this.utilization[type];
       resource.available = 100 - resource.allocated;
       resource.percentage = (resource.allocated / 100) * 100;
@@ -2479,10 +2734,10 @@ class MonitoringSystem extends BaseSubsystem {
             responseTime: 100,
             throughput: 100,
             errorRate: 0,
-            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} }
+            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} },
           },
           issues: [],
-          dependencies: ['database']
+          dependencies: ['database'],
         },
         {
           component: 'learningSystem',
@@ -2492,10 +2747,10 @@ class MonitoringSystem extends BaseSubsystem {
             responseTime: 150,
             throughput: 80,
             errorRate: 0,
-            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} }
+            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} },
           },
           issues: [],
-          dependencies: ['database', 'messageQueue']
+          dependencies: ['database', 'messageQueue'],
         },
         {
           component: 'collaborationManager',
@@ -2505,10 +2760,10 @@ class MonitoringSystem extends BaseSubsystem {
             responseTime: 200,
             throughput: 60,
             errorRate: 0,
-            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} }
+            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} },
           },
           issues: [],
-          dependencies: ['externalApis']
+          dependencies: ['externalApis'],
         },
         {
           component: 'resourceManager',
@@ -2518,10 +2773,10 @@ class MonitoringSystem extends BaseSubsystem {
             responseTime: 50,
             throughput: 200,
             errorRate: 0,
-            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} }
+            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} },
           },
           issues: [],
-          dependencies: []
+          dependencies: [],
         },
         {
           component: 'monitoringSystem',
@@ -2531,10 +2786,10 @@ class MonitoringSystem extends BaseSubsystem {
             responseTime: 80,
             throughput: 120,
             errorRate: 0,
-            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} }
+            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} },
           },
           issues: [],
-          dependencies: []
+          dependencies: [],
         },
         {
           component: 'securityManager',
@@ -2544,15 +2799,15 @@ class MonitoringSystem extends BaseSubsystem {
             responseTime: 90,
             throughput: 150,
             errorRate: 0,
-            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} }
+            resourceUsage: { cpu: 0, memory: 0, storage: 0, network: 0, specialized: {} },
           },
           issues: [],
-          dependencies: []
-        }
+          dependencies: [],
+        },
       ],
       alerts: [],
       lastCheck: lastCheck,
-      nextCheck: nextCheck
+      nextCheck: nextCheck,
     };
   }
 
@@ -2563,31 +2818,31 @@ class MonitoringSystem extends BaseSubsystem {
         configuration: {
           valid: true,
           issues: [],
-          lastValidated: new Date()
+          lastValidated: new Date(),
         },
         dependencies: {
           satisfied: true,
           missing: [],
           outdated: [],
-          conflicts: []
+          conflicts: [],
         },
         environment: {
           variables: {
             required: [],
             optional: [],
             missing: [],
-            invalid: []
+            invalid: [],
           },
           permissions: {
             required: [],
             granted: [],
-            denied: []
+            denied: [],
           },
           network: {
             connectivity: true,
             bandwidth: 1000,
             latency: 100,
-            packetLoss: 0
+            packetLoss: 0,
           },
           storage: {
             available: 400,
@@ -2596,23 +2851,23 @@ class MonitoringSystem extends BaseSubsystem {
             performance: {
               readSpeed: 100,
               writeSpeed: 50,
-              iops: 150
-            }
-          }
+              iops: 150,
+            },
+          },
         },
         logs: {
           accessible: true,
           size: 0,
           retention: 7,
-          rotation: true
-        }
+          rotation: true,
+        },
       },
       performance: {
         cpu: {
           utilization: 0.3,
           loadAverage: [0.3, 0.3, 0.3],
           temperature: 45,
-          throttling: false
+          throttling: false,
         },
         memory: {
           total: 16,
@@ -2623,8 +2878,8 @@ class MonitoringSystem extends BaseSubsystem {
             total: 4,
             used: 0,
             free: 4,
-            activity: 0
-          }
+            activity: 0,
+          },
         },
         io: {
           disk: {
@@ -2633,7 +2888,7 @@ class MonitoringSystem extends BaseSubsystem {
             readBytes: 1000,
             writeBytes: 500,
             queueDepth: 1,
-            utilization: 0.2
+            utilization: 0.2,
           },
           network: {
             bytesIn: 1000,
@@ -2641,8 +2896,8 @@ class MonitoringSystem extends BaseSubsystem {
             packetsIn: 100,
             packetsOut: 50,
             errorsIn: 0,
-            errorsOut: 0
-          }
+            errorsOut: 0,
+          },
         },
         network: {
           connections: 10,
@@ -2650,20 +2905,20 @@ class MonitoringSystem extends BaseSubsystem {
             current: 1000,
             peak: 2000,
             average: 800,
-            limit: 10000
+            limit: 10000,
           },
           latency: {
             current: 100,
             average: 80,
             p50: 50,
             p95: 150,
-            p99: 200
+            p99: 200,
           },
           errors: {
             rate: 0,
             count: 0,
-            types: []
-          }
+            types: [],
+          },
         },
         application: {
           responseTime: {
@@ -2671,27 +2926,27 @@ class MonitoringSystem extends BaseSubsystem {
             p50: 50,
             p95: 150,
             p99: 200,
-            trend: 0
+            trend: 0,
           },
           throughput: {
             current: 100,
             average: 80,
             peak: 200,
-            capacity: 500
+            capacity: 500,
           },
           errorRate: {
             current: 0,
             average: 0,
             trend: 0,
-            types: []
+            types: [],
           },
           utilization: {
             cpu: 0.3,
             memory: 0.125,
             disk: 0.2,
-            network: 0.1
-          }
-        }
+            network: 0.1,
+          },
+        },
       },
       resources: {
         allocation: {
@@ -2699,20 +2954,20 @@ class MonitoringSystem extends BaseSubsystem {
           allocated: 30,
           available: 70,
           efficiency: 0.8,
-          fragmentation: 0.1
+          fragmentation: 0.1,
         },
         utilization: {
           average: 0.3,
           peak: 0.5,
           distribution: [],
-          trends: []
+          trends: [],
         },
         efficiency: {
           overall: 0.8,
           byResource: [],
-          optimization: []
+          optimization: [],
         },
-        bottlenecks: []
+        bottlenecks: [],
       },
       learning: {
         experience: {
@@ -2722,9 +2977,9 @@ class MonitoringSystem extends BaseSubsystem {
             completeness: 0,
             accuracy: 0,
             relevance: 0,
-            diversity: 0
+            diversity: 0,
           },
-          patterns: []
+          patterns: [],
         },
         adaptation: {
           attempts: 0,
@@ -2734,8 +2989,8 @@ class MonitoringSystem extends BaseSubsystem {
           effectiveness: {
             overall: 0,
             byType: [],
-            trends: []
-          }
+            trends: [],
+          },
         },
         knowledge: {
           total: 0,
@@ -2746,8 +3001,8 @@ class MonitoringSystem extends BaseSubsystem {
             completeness: 0,
             relevance: 0,
             timeliness: 0,
-            consistency: 0
-          }
+            consistency: 0,
+          },
         },
         performance: {
           accuracy: {
@@ -2755,30 +3010,30 @@ class MonitoringSystem extends BaseSubsystem {
             baseline: 0,
             change: 0,
             direction: 'stable',
-            significance: 0
+            significance: 0,
           },
           efficiency: {
             current: 0,
             baseline: 0,
             change: 0,
             direction: 'stable',
-            significance: 0
+            significance: 0,
           },
           quality: {
             current: 0,
             baseline: 0,
             change: 0,
             direction: 'stable',
-            significance: 0
+            significance: 0,
           },
           innovation: {
             current: 0,
             baseline: 0,
             change: 0,
             direction: 'stable',
-            significance: 0
-          }
-        }
+            significance: 0,
+          },
+        },
       },
       collaboration: {
         participation: {
@@ -2786,40 +3041,40 @@ class MonitoringSystem extends BaseSubsystem {
           total: 0,
           engagement: 0,
           contribution: 0,
-          satisfaction: 0
+          satisfaction: 0,
         },
         communication: {
           volume: {
             messages: 0,
             participants: 0,
             channels: 0,
-            frequency: 0
+            frequency: 0,
           },
           quality: {
             clarity: 0,
             completeness: 0,
             timeliness: 0,
-            relevance: 0
+            relevance: 0,
           },
           effectiveness: {
             understanding: 100,
             alignment: 100,
             decisionSpeed: 100,
-            conflictResolution: 100
-          }
+            conflictResolution: 100,
+          },
         },
         coordination: {
           synchronization: 100,
           resourceSharing: 100,
           taskCoordination: 100,
-          dependencyManagement: 100
+          dependencyManagement: 100,
         },
         performance: {
           quality: 0,
           efficiency: 0,
           innovation: 0,
-          satisfaction: 0
-        }
+          satisfaction: 0,
+        },
       },
       integration: {
         endpoints: {
@@ -2827,47 +3082,47 @@ class MonitoringSystem extends BaseSubsystem {
           active: 0,
           healthy: 0,
           responseTime: 0,
-          throughput: 0
+          throughput: 0,
         },
         dataFlow: {
           volume: {
             total: 0,
             average: 0,
             peak: 0,
-            trend: 0
+            trend: 0,
           },
           latency: {
             current: 0,
             average: 0,
             p95: 0,
             target: 0,
-            compliance: 100
+            compliance: 100,
           },
           quality: {
             completeness: 0,
             accuracy: 0,
             consistency: 0,
             timeliness: 0,
-            validity: 0
+            validity: 0,
           },
           security: {
             encryption: 100,
             authentication: 100,
             authorization: 100,
             audit: 100,
-            compliance: 100
-          }
+            compliance: 100,
+          },
         },
         compatibility: {
           standards: {
             compliant: 0,
             total: 0,
             percentage: 0,
-            issues: []
+            issues: [],
           },
           protocols: [],
           formats: [],
-          versions: []
+          versions: [],
         },
         reliability: {
           availability: {
@@ -2878,26 +3133,26 @@ class MonitoringSystem extends BaseSubsystem {
               total: 0,
               planned: 0,
               unplanned: 0,
-              incidents: []
-            }
+              incidents: [],
+            },
           },
           mtbf: {
             current: 0,
             target: 0,
-            trend: 0
+            trend: 0,
           },
           mttr: {
             current: 0,
             target: 0,
-            trend: 0
+            trend: 0,
           },
           errors: {
             count: 0,
             rate: 0,
-            types: []
-          }
-        }
-      }
+            types: [],
+          },
+        },
+      },
     };
   }
 }

@@ -92,12 +92,18 @@ export default function CommunityLoading() {
                       <div className="flex items-center justify-between pt-2 border-t">
                         <div className="flex items-center space-x-4">
                           {[1, 2, 3].map((j) => (
-                            <div key={j} className="w-12 h-4 bg-gray-200 rounded animate-pulse"></div>
+                            <div
+                              key={j}
+                              className="w-12 h-4 bg-gray-200 rounded animate-pulse"
+                            ></div>
                           ))}
                         </div>
                         <div className="flex items-center space-x-2">
                           {[1, 2, 3].map((j) => (
-                            <div key={j} className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+                            <div
+                              key={j}
+                              className="w-16 h-8 bg-gray-200 rounded animate-pulse"
+                            ></div>
                           ))}
                         </div>
                       </div>
@@ -110,5 +116,5 @@ export default function CommunityLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

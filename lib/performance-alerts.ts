@@ -8,43 +8,43 @@
  * @license MIT
  */
 
-import { PERFORMANCE_THRESHOLDS, type PerformanceMetric } from './performance.config'
+import { PERFORMANCE_THRESHOLDS, type PerformanceMetric } from './performance.config';
 
 export interface Alert {
-  id: string
-  type: 'critical' | 'warning' | 'info'
-  metric: string
-  message: string
-  value: number
-  threshold: number
-  timestamp: number
-  acknowledged: boolean
+  id: string;
+  type: 'critical' | 'warning' | 'info';
+  metric: string;
+  message: string;
+  value: number;
+  threshold: number;
+  timestamp: number;
+  acknowledged: boolean;
 }
 
 export interface AlertRule {
-  metric: string
-  condition: 'exceeds' | 'below' | 'equals'
-  threshold: number
-  severity: 'critical' | 'warning' | 'info'
-  cooldown: number
+  metric: string;
+  condition: 'exceeds' | 'below' | 'equals';
+  threshold: number;
+  severity: 'critical' | 'warning' | 'info';
+  cooldown: number;
 }
 
 export interface NotificationChannel {
-  type: 'console' | 'email' | 'slack' | 'webhook'
-  enabled: boolean
-  config?: Record<string, any>
+  type: 'console' | 'email' | 'slack' | 'webhook';
+  enabled: boolean;
+  config?: Record<string, any>;
 }
 
 class PerformanceAlertManager {
-  private alerts: Alert[] = []
-  private rules: Map<string, AlertRule> = new Map()
-  private channels: NotificationChannel[] = []
-  private lastAlertTimes: Map<string, number> = new Map()
-  private maxAlerts = 1000
+  private alerts: Alert[] = [];
+  private rules: Map<string, AlertRule> = new Map();
+  private channels: NotificationChannel[] = [];
+  private lastAlertTimes: Map<string, number> = new Map();
+  private maxAlerts = 1000;
 
   constructor() {
-    this.initializeDefaultRules()
-    this.initializeDefaultChannels()
+    this.initializeDefaultRules();
+    this.initializeDefaultChannels();
   }
 
   private initializeDefaultRules() {
@@ -119,11 +119,11 @@ class PerformanceAlertManager {
         severity: 'critical',
         cooldown: 30000,
       },
-    ]
+    ];
 
-    defaultRules.forEach(rule => {
-      this.rules.set(rule.metric, rule)
-    })
+    defaultRules.forEach((rule) => {
+      this.rules.set(rule.metric, rule);
+    });
   }
 
   private initializeDefaultChannels() {
@@ -132,37 +132,37 @@ class PerformanceAlertManager {
         type: 'console',
         enabled: true,
       },
-    ]
+    ];
   }
 
   addRule(rule: AlertRule) {
-    this.rules.set(rule.metric, rule)
+    this.rules.set(rule.metric, rule);
   }
 
   removeRule(metric: string) {
-    this.rules.delete(metric)
+    this.rules.delete(metric);
   }
 
   addChannel(channel: NotificationChannel) {
-    this.channels.push(channel)
+    this.channels.push(channel);
   }
 
   removeChannel(type: string) {
-    this.channels = this.channels.filter(c => c.type !== type)
+    this.channels = this.channels.filter((c) => c.type !== type);
   }
 
   checkMetric(metric: PerformanceMetric) {
-    const rule = this.rules.get(metric.name)
-    if (!rule) return
+    const rule = this.rules.get(metric.name);
+    if (!rule) return;
 
-    const shouldAlert = this.evaluateCondition(metric.value, rule.condition, rule.threshold)
-    if (!shouldAlert) return
+    const shouldAlert = this.evaluateCondition(metric.value, rule.condition, rule.threshold);
+    if (!shouldAlert) return;
 
-    const lastAlertTime = this.lastAlertTimes.get(metric.name) || 0
-    const timeSinceLastAlert = Date.now() - lastAlertTime
+    const lastAlertTime = this.lastAlertTimes.get(metric.name) || 0;
+    const timeSinceLastAlert = Date.now() - lastAlertTime;
 
     if (timeSinceLastAlert < rule.cooldown) {
-      return
+      return;
     }
 
     const alert: Alert = {
@@ -174,81 +174,81 @@ class PerformanceAlertManager {
       threshold: rule.threshold,
       timestamp: Date.now(),
       acknowledged: false,
-    }
+    };
 
-    this.addAlert(alert)
-    this.lastAlertTimes.set(metric.name, Date.now())
+    this.addAlert(alert);
+    this.lastAlertTimes.set(metric.name, Date.now());
   }
 
   private evaluateCondition(value: number, condition: string, threshold: number): boolean {
     switch (condition) {
       case 'exceeds':
-        return value > threshold
+        return value > threshold;
       case 'below':
-        return value < threshold
+        return value < threshold;
       case 'equals':
-        return value === threshold
+        return value === threshold;
       default:
-        return false
+        return false;
     }
   }
 
   private generateAlertMessage(metric: PerformanceMetric, rule: AlertRule): string {
-    const threshold = PERFORMANCE_THRESHOLDS.find(t => t.name === metric.name)
-    const description = threshold?.description || metric.name
+    const threshold = PERFORMANCE_THRESHOLDS.find((t) => t.name === metric.name);
+    const description = threshold?.description || metric.name;
 
     switch (rule.condition) {
       case 'exceeds':
-        return `${description} 超过阈值: ${metric.value.toFixed(2)}${metric.unit} > ${rule.threshold}${metric.unit}`
+        return `${description} 超过阈值: ${metric.value.toFixed(2)}${metric.unit} > ${rule.threshold}${metric.unit}`;
       case 'below':
-        return `${description} 低于阈值: ${metric.value.toFixed(2)}${metric.unit} < ${rule.threshold}${metric.unit}`
+        return `${description} 低于阈值: ${metric.value.toFixed(2)}${metric.unit} < ${rule.threshold}${metric.unit}`;
       case 'equals':
-        return `${description} 等于阈值: ${metric.value.toFixed(2)}${metric.unit}`
+        return `${description} 等于阈值: ${metric.value.toFixed(2)}${metric.unit}`;
       default:
-        return `${description} 异常: ${metric.value.toFixed(2)}${metric.unit}`
+        return `${description} 异常: ${metric.value.toFixed(2)}${metric.unit}`;
     }
   }
 
   private addAlert(alert: Alert) {
-    this.alerts.unshift(alert)
+    this.alerts.unshift(alert);
 
     if (this.alerts.length > this.maxAlerts) {
-      this.alerts = this.alerts.slice(0, this.maxAlerts)
+      this.alerts = this.alerts.slice(0, this.maxAlerts);
     }
 
-    this.sendNotifications(alert)
+    this.sendNotifications(alert);
   }
 
   private sendNotifications(alert: Alert) {
-    this.channels.forEach(channel => {
-      if (!channel.enabled) return
+    this.channels.forEach((channel) => {
+      if (!channel.enabled) return;
 
       switch (channel.type) {
         case 'console':
-          this.sendConsoleNotification(alert)
-          break
+          this.sendConsoleNotification(alert);
+          break;
         case 'email':
-          this.sendEmailNotification(alert, channel.config ?? {})
-          break
+          this.sendEmailNotification(alert, channel.config ?? {});
+          break;
         case 'slack':
-          this.sendSlackNotification(alert, channel.config ?? {})
-          break
+          this.sendSlackNotification(alert, channel.config ?? {});
+          break;
         case 'webhook':
-          this.sendWebhookNotification(alert, channel.config ?? {})
-          break
+          this.sendWebhookNotification(alert, channel.config ?? {});
+          break;
       }
-    })
+    });
   }
 
   private sendConsoleNotification(alert: Alert) {
-    const emoji = alert.type === 'critical' ? '🚨' : alert.type === 'warning' ? '⚠️' : 'ℹ️'
-    console.warn(`${emoji} [${alert.type.toUpperCase()}] ${alert.message}`)
+    const emoji = alert.type === 'critical' ? '🚨' : alert.type === 'warning' ? '⚠️' : 'ℹ️';
+    console.warn(`${emoji} [${alert.type.toUpperCase()}] ${alert.message}`);
   }
 
   private async sendEmailNotification(alert: Alert, config: Record<string, any>) {
     if (!config.to || !config.from) {
-      console.warn('Email notification config missing: to or from')
-      return
+      console.warn('Email notification config missing: to or from');
+      return;
     }
 
     try {
@@ -264,24 +264,25 @@ class PerformanceAlertManager {
           body: alert.message,
           alert,
         }),
-      })
+      });
 
       if (!response.ok) {
-        console.error('Failed to send email notification')
+        console.error('Failed to send email notification');
       }
     } catch (error) {
-      console.error('Error sending email notification:', error)
+      console.error('Error sending email notification:', error);
     }
   }
 
   private async sendSlackNotification(alert: Alert, config: Record<string, any>) {
     if (!config.webhookUrl) {
-      console.warn('Slack webhook URL not configured')
-      return
+      console.warn('Slack webhook URL not configured');
+      return;
     }
 
     try {
-      const color = alert.type === 'critical' ? '#FF0000' : alert.type === 'warning' ? '#FFA500' : '#0000FF'
+      const color =
+        alert.type === 'critical' ? '#FF0000' : alert.type === 'warning' ? '#FFA500' : '#0000FF';
       const response = await fetch(config.webhookUrl, {
         method: 'POST',
         headers: {
@@ -318,20 +319,20 @@ class PerformanceAlertManager {
             },
           ],
         }),
-      })
+      });
 
       if (!response.ok) {
-        console.error('Failed to send Slack notification')
+        console.error('Failed to send Slack notification');
       }
     } catch (error) {
-      console.error('Error sending Slack notification:', error)
+      console.error('Error sending Slack notification:', error);
     }
   }
 
   private async sendWebhookNotification(alert: Alert, config: Record<string, any>) {
     if (!config.url) {
-      console.warn('Webhook URL not configured')
-      return
+      console.warn('Webhook URL not configured');
+      return;
     }
 
     try {
@@ -344,51 +345,51 @@ class PerformanceAlertManager {
           alert,
           timestamp: new Date(alert.timestamp).toISOString(),
         }),
-      })
+      });
 
       if (!response.ok) {
-        console.error('Failed to send webhook notification')
+        console.error('Failed to send webhook notification');
       }
     } catch (error) {
-      console.error('Error sending webhook notification:', error)
+      console.error('Error sending webhook notification:', error);
     }
   }
 
   acknowledgeAlert(alertId: string) {
-    const alert = this.alerts.find(a => a.id === alertId)
+    const alert = this.alerts.find((a) => a.id === alertId);
     if (alert) {
-      alert.acknowledged = true
+      alert.acknowledged = true;
     }
   }
 
   getAlerts(options?: {
-    type?: 'critical' | 'warning' | 'info'
-    acknowledged?: boolean
-    limit?: number
+    type?: 'critical' | 'warning' | 'info';
+    acknowledged?: boolean;
+    limit?: number;
   }): Alert[] {
-    let filtered = [...this.alerts]
+    let filtered = [...this.alerts];
 
     if (options?.type) {
-      filtered = filtered.filter(a => a.type === options.type)
+      filtered = filtered.filter((a) => a.type === options.type);
     }
 
     if (options?.acknowledged !== undefined) {
-      filtered = filtered.filter(a => a.acknowledged === options.acknowledged)
+      filtered = filtered.filter((a) => a.acknowledged === options.acknowledged);
     }
 
     if (options?.limit) {
-      filtered = filtered.slice(0, options.limit)
+      filtered = filtered.slice(0, options.limit);
     }
 
-    return filtered
+    return filtered;
   }
 
   getAlertStats() {
-    const total = this.alerts.length
-    const critical = this.alerts.filter(a => a.type === 'critical').length
-    const warning = this.alerts.filter(a => a.type === 'warning').length
-    const info = this.alerts.filter(a => a.type === 'info').length
-    const acknowledged = this.alerts.filter(a => a.acknowledged).length
+    const total = this.alerts.length;
+    const critical = this.alerts.filter((a) => a.type === 'critical').length;
+    const warning = this.alerts.filter((a) => a.type === 'warning').length;
+    const info = this.alerts.filter((a) => a.type === 'info').length;
+    const acknowledged = this.alerts.filter((a) => a.acknowledged).length;
 
     return {
       total,
@@ -397,21 +398,21 @@ class PerformanceAlertManager {
       info,
       acknowledged,
       unacknowledged: total - acknowledged,
-    }
+    };
   }
 
   clearAlerts() {
-    this.alerts = []
-    this.lastAlertTimes.clear()
+    this.alerts = [];
+    this.lastAlertTimes.clear();
   }
 
   clearOldAlerts(maxAge: number) {
-    const cutoff = Date.now() - maxAge
-    this.alerts = this.alerts.filter(a => a.timestamp > cutoff)
+    const cutoff = Date.now() - maxAge;
+    this.alerts = this.alerts.filter((a) => a.timestamp > cutoff);
   }
 }
 
-export const performanceAlertManager = new PerformanceAlertManager()
+export const performanceAlertManager = new PerformanceAlertManager();
 
 export function usePerformanceAlerts() {
   return {
@@ -425,7 +426,7 @@ export function usePerformanceAlerts() {
     getAlertStats: () => performanceAlertManager.getAlertStats(),
     clearAlerts: () => performanceAlertManager.clearAlerts(),
     clearOldAlerts: (maxAge: number) => performanceAlertManager.clearOldAlerts(maxAge),
-  }
+  };
 }
 
-export default performanceAlertManager
+export default performanceAlertManager;

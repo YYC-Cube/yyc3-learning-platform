@@ -4,25 +4,25 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertTriangle, RefreshCw, Home } from "lucide-react"
-import Link from "next/link"
-import { logger } from "@/lib/logger"
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import Link from 'next/link';
+import { logger } from '@/lib/logger';
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
-    logger.error("应用错误", error)
-  }, [error])
+    logger.error('应用错误', error);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
@@ -56,5 +56,5 @@ export default function Error({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

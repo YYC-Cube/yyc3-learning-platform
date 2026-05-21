@@ -69,7 +69,7 @@ describe('ApiClient', () => {
 
       await apiClient.get('/test', {
         headers: {
-          'Authorization': 'Bearer token',
+          Authorization: 'Bearer token',
         },
       });
 
@@ -77,7 +77,7 @@ describe('ApiClient', () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer token',
+          Authorization: 'Bearer token',
         },
       });
     });
@@ -166,11 +166,15 @@ describe('ApiClient', () => {
         json: async () => mockData,
       } as Response);
 
-      await apiClient.put('/test/1', { name: 'test' }, {
-        headers: {
-          'X-Custom-Header': 'value',
-        },
-      });
+      await apiClient.put(
+        '/test/1',
+        { name: 'test' },
+        {
+          headers: {
+            'X-Custom-Header': 'value',
+          },
+        }
+      );
 
       expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test/1', {
         method: 'PUT',
@@ -211,7 +215,7 @@ describe('ApiClient', () => {
 
       await apiClient.delete('/test/1', {
         headers: {
-          'Authorization': 'Bearer token',
+          Authorization: 'Bearer token',
         },
       });
 
@@ -219,7 +223,7 @@ describe('ApiClient', () => {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer token',
+          Authorization: 'Bearer token',
         },
       });
     });
@@ -283,10 +287,7 @@ describe('ApiClient', () => {
       } as Response);
 
       await expect(apiClient.get('/test')).rejects.toThrow('API Error');
-      expect(logger.error).toHaveBeenCalledWith(
-        'API request failed',
-        expect.any(Error)
-      );
+      expect(logger.error).toHaveBeenCalledWith('API request failed', expect.any(Error));
     });
 
     it('应该处理JSON解析错误', async () => {
@@ -355,10 +356,7 @@ describe('ApiClient', () => {
 
       await apiClient.get('/test');
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:3000/api/test',
-        expect.any(Object)
-      );
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test', expect.any(Object));
     });
   });
 });

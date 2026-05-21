@@ -454,7 +454,10 @@ export interface IModelAdapter {
 
   // Request Processing
   processRequest(request: ModelRequest): Promise<ModelResponse>;
-  processStreamingRequest(request: ModelRequest, onChunk: (chunk: ModelResponse) => void): Promise<void>;
+  processStreamingRequest(
+    request: ModelRequest,
+    onChunk: (chunk: ModelResponse) => void
+  ): Promise<void>;
   cancelRequest(requestId: string): Promise<void>;
 
   // Convenience Methods
@@ -484,15 +487,13 @@ export interface IModelAdapter {
     },
     onChunk: (chunk: string) => void
   ): Promise<void>;
-  generateStream(
-    options: {
-      prompt: string;
-      maxTokens?: number;
-      temperature?: number;
-      model?: string;
-      systemPrompt?: string;
-    }
-  ): AsyncIterable<{ text: string }>;
+  generateStream(options: {
+    prompt: string;
+    maxTokens?: number;
+    temperature?: number;
+    model?: string;
+    systemPrompt?: string;
+  }): AsyncIterable<{ text: string }>;
 
   // Health and Monitoring
   healthCheck(): Promise<Record<string, ModelHealthCheck>>;
@@ -522,7 +523,10 @@ export interface IModelProvider {
 
   initialize(config: ModelConfig): Promise<void>;
   processRequest(request: ModelRequest): Promise<ModelResponse>;
-  processStreamingRequest(request: ModelRequest, onChunk: (chunk: ModelResponse) => void): Promise<void>;
+  processStreamingRequest(
+    request: ModelRequest,
+    onChunk: (chunk: ModelResponse) => void
+  ): Promise<void>;
   healthCheck(): Promise<ModelHealthCheck>;
   getCapabilities(): ModelCapabilities;
   validateConfig(config: ModelConfig): boolean;

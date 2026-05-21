@@ -10,7 +10,7 @@ export enum CacheLevel {
   L1 = 'memory',
   L2 = 'shared',
   L3 = 'persistent',
-  L4 = 'remote'
+  L4 = 'remote',
 }
 
 export enum CacheStrategy {
@@ -20,7 +20,7 @@ export enum CacheStrategy {
   MRU = 'mru',
   FIFO = 'fifo',
   TTL = 'ttl',
-  HYBRID = 'hybrid'
+  HYBRID = 'hybrid',
 }
 
 export interface CacheEntry<T = any> {
@@ -110,12 +110,15 @@ export interface WarmupReport {
     totalSize: number;
     duration: number;
   }>;
-  results: Record<string, Array<{
-    key: string;
-    success: boolean;
-    size?: number;
-    error?: string;
-  }>>;
+  results: Record<
+    string,
+    Array<{
+      key: string;
+      success: boolean;
+      size?: number;
+      error?: string;
+    }>
+  >;
   analysis?: {
     hitRateImprovement: number;
     latencyImprovement: number;
@@ -210,7 +213,7 @@ export class IntelligentCacheLayer extends EventEmitter {
   private l2Cache: Map<string, CacheEntry> = new Map();
   private l3Cache: Map<string, CacheEntry> = new Map();
   private l4Cache: Map<string, CacheEntry> = new Map();
-  
+
   private metrics: {
     hits: Map<CacheLevel, number>;
     misses: Map<CacheLevel, number>;
@@ -218,14 +221,14 @@ export class IntelligentCacheLayer extends EventEmitter {
     sets: Map<CacheLevel, number>;
     latencies: number[];
   };
-  
+
   private backgroundWriteQueue: Array<{
     key: string;
     value: any;
     metadata: CacheMetadata;
     levels: CacheLevel[];
   }>;
-  
+
   private isBackgroundWriteRunning: boolean;
 
   constructor(config: CacheConfig = {}) {
@@ -250,28 +253,25 @@ export class IntelligentCacheLayer extends EventEmitter {
       redisConfig: {},
       clusteringEnabled: false,
       writeBufferSize: 1000,
-      ...config
+      ...config,
     };
-    
+
     this.metrics = {
       hits: new Map(),
       misses: new Map(),
       evictions: new Map(),
       sets: new Map(),
-      latencies: []
+      latencies: [],
     };
-    
+
     this.backgroundWriteQueue = [];
     this.isBackgroundWriteRunning = false;
-    
+
     this.initializeCaches();
     this.startBackgroundProcesses();
   }
 
-  async get<T>(
-    key: string,
-    options: CacheGetOptions = {}
-  ): Promise<CacheResult<T>> {
+  async get<T>(key: string, options: CacheGetOptions = {}): Promise<CacheResult<T>> {
     const startTime = Date.now();
     const traceId = this.generateTraceId();
 
@@ -280,30 +280,48 @@ export class IntelligentCacheLayer extends EventEmitter {
       let result = await this.getFromLevel<T>(CacheLevel.L1, key);
       if (result.hit) {
         this.recordHit(CacheLevel.L1);
-        return this.wrapResult(result.value, true, CacheLevel.L1, result.metadata, Date.now() - startTime);
+        return this.wrapResult(
+          result.value,
+          true,
+          CacheLevel.L1,
+          result.metadata,
+          Date.now() - startTime
+        );
       }
-      
+
       // Check L2 cache
       result = await this.getFromLevel<T>(CacheLevel.L2, key);
       if (result.hit && result.metadata) {
         // Backfill to L1
         await this.setToLevel(CacheLevel.L1, key, result.value, result.metadata);
         this.recordHit(CacheLevel.L2);
-        return this.wrapResult(result.value, true, CacheLevel.L2, result.metadata, Date.now() - startTime);
+        return this.wrapResult(
+          result.value,
+          true,
+          CacheLevel.L2,
+          result.metadata,
+          Date.now() - startTime
+        );
       }
-      
+
       // Check L3 cache
       result = await this.getFromLevel<T>(CacheLevel.L3, key);
       if (result.hit && result.metadata) {
         // Backfill to L1 and L2
         await Promise.all([
           this.setToLevel(CacheLevel.L1, key, result.value, result.metadata),
-          this.setToLevel(CacheLevel.L2, key, result.value, result.metadata)
+          this.setToLevel(CacheLevel.L2, key, result.value, result.metadata),
         ]);
         this.recordHit(CacheLevel.L3);
-        return this.wrapResult(result.value, true, CacheLevel.L3, result.metadata, Date.now() - startTime);
+        return this.wrapResult(
+          result.value,
+          true,
+          CacheLevel.L3,
+          result.metadata,
+          Date.now() - startTime
+        );
       }
-      
+
       // Check L4 cache
       result = await this.getFromLevel<T>(CacheLevel.L4, key);
       if (result.hit && result.metadata) {
@@ -311,43 +329,44 @@ export class IntelligentCacheLayer extends EventEmitter {
         await Promise.all([
           this.setToLevel(CacheLevel.L1, key, result.value, result.metadata),
           this.setToLevel(CacheLevel.L2, key, result.value, result.metadata),
-          this.setToLevel(CacheLevel.L3, key, result.value, result.metadata)
+          this.setToLevel(CacheLevel.L3, key, result.value, result.metadata),
         ]);
         this.recordHit(CacheLevel.L4);
-        return this.wrapResult(result.value, true, CacheLevel.L4, result.metadata, Date.now() - startTime);
+        return this.wrapResult(
+          result.value,
+          true,
+          CacheLevel.L4,
+          result.metadata,
+          Date.now() - startTime
+        );
       }
-      
+
       // Cache miss, need to load data
       this.recordMiss(CacheLevel.L1);
-      
+
       if (options.loader) {
         const data = await options.loader();
         const metadata: CacheMetadata = {
           ttl: options.ttl,
           tags: options.tags,
           priority: options.priority || 'medium',
-          dependencies: options.dependencies
+          dependencies: options.dependencies,
         };
-        
+
         await this.set(key, data, { ...options, metadata });
-        
+
         return this.wrapResult(data, false, CacheLevel.L1, metadata, Date.now() - startTime);
       }
-      
+
       // No loader, return miss
       return this.wrapResult(null as any, false, CacheLevel.L1, undefined, Date.now() - startTime);
-      
     } catch (error) {
       this.emit('cache:error', { key, error, traceId });
       return this.wrapResult(null as any, false, CacheLevel.L1, undefined, Date.now() - startTime);
     }
   }
 
-  async set<T>(
-    key: string,
-    value: T,
-    options: CacheSetOptions = {}
-  ): Promise<void> {
+  async set<T>(key: string, value: T, options: CacheSetOptions = {}): Promise<void> {
     const metadata: CacheMetadata = {
       createdAt: new Date(),
       ttl: options.ttl,
@@ -355,11 +374,12 @@ export class IntelligentCacheLayer extends EventEmitter {
       priority: options.priority || 'medium',
       dependencies: options.dependencies,
       version: 1,
-      checksum: this.calculateChecksum(value)
+      checksum: this.calculateChecksum(value),
     };
-    
-    const strategy = options.strategy || (this.config.writeBehind ? 'write-behind' : 'write-through');
-    
+
+    const strategy =
+      options.strategy || (this.config.writeBehind ? 'write-behind' : 'write-through');
+
     switch (strategy) {
       case 'write-through':
         // Synchronous write to all levels
@@ -367,16 +387,20 @@ export class IntelligentCacheLayer extends EventEmitter {
           this.setToLevel(CacheLevel.L1, key, value, metadata),
           this.setToLevel(CacheLevel.L2, key, value, metadata),
           this.setToLevel(CacheLevel.L3, key, value, metadata),
-          this.setToLevel(CacheLevel.L4, key, value, metadata)
+          this.setToLevel(CacheLevel.L4, key, value, metadata),
         ]);
         break;
-        
+
       case 'write-behind':
         // Asynchronous write, write to L1 first, then background write to others
         await this.setToLevel(CacheLevel.L1, key, value, metadata);
-        this.queueBackgroundWrite(key, value, metadata, [CacheLevel.L2, CacheLevel.L3, CacheLevel.L4]);
+        this.queueBackgroundWrite(key, value, metadata, [
+          CacheLevel.L2,
+          CacheLevel.L3,
+          CacheLevel.L4,
+        ]);
         break;
-        
+
       case 'write-around':
         // Bypass cache, write directly to data source
         await this.writeToDataSource(key, value);
@@ -384,17 +408,17 @@ export class IntelligentCacheLayer extends EventEmitter {
           await this.invalidateDependencies(options.dependencies);
         }
         break;
-        
+
       case 'cache-aside':
         // Only write to data source, don't write to cache
         await this.writeToDataSource(key, value);
         break;
-        
+
       default:
         // Smart write based on access patterns
         await this.smartWrite(key, value, metadata);
     }
-    
+
     this.recordSet(CacheLevel.L1);
     this.emit('cache:set', { key, metadata, strategy });
   }
@@ -404,25 +428,25 @@ export class IntelligentCacheLayer extends EventEmitter {
       this.deleteFromLevel(CacheLevel.L1, key),
       this.deleteFromLevel(CacheLevel.L2, key),
       this.deleteFromLevel(CacheLevel.L3, key),
-      this.deleteFromLevel(CacheLevel.L4, key)
+      this.deleteFromLevel(CacheLevel.L4, key),
     ]);
-    
+
     this.emit('cache:invalidate', { key });
   }
 
   async invalidateTags(tags: string[]): Promise<void> {
     const keysToInvalidate: string[] = [];
-    
+
     // Find keys with matching tags in all levels
     for (const [key, entry] of this.l1Cache) {
       if (entry.metadata.tags && this.hasMatchingTags(entry.metadata.tags, tags)) {
         keysToInvalidate.push(key);
       }
     }
-    
+
     // Invalidate all matching keys
-    await Promise.all(keysToInvalidate.map(key => this.invalidate(key)));
-    
+    await Promise.all(keysToInvalidate.map((key) => this.invalidate(key)));
+
     this.emit('cache:invalidateTags', { tags, keys: keysToInvalidate });
   }
 
@@ -430,52 +454,52 @@ export class IntelligentCacheLayer extends EventEmitter {
     const report: WarmupReport = {
       startTime: new Date(),
       patterns: [],
-      results: {}
+      results: {},
     };
-    
+
     for (const pattern of patterns) {
       const patternStart = Date.now();
-      
+
       // Identify keys to warm up
       const keysToWarm = await this.identifyKeysForWarmup(pattern);
-      
+
       // Parallel load data
-      const warmupPromises = keysToWarm.map(async key => {
+      const warmupPromises = keysToWarm.map(async (key) => {
         try {
           const data = await pattern.loader(key);
           await this.set(key, data, {
             ttl: pattern.ttl,
-            priority: pattern.priority || 'low'
+            priority: pattern.priority || 'low',
           });
-          
+
           return { key, success: true, size: this.calculateSize(data) };
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : String(error);
           return { key, success: false, error: errorMessage };
         }
       });
-      
+
       // Execute warmup
       const results = await Promise.all(warmupPromises);
-      
+
       // Record results
       report.patterns.push({
         pattern: pattern.name,
         keysAttempted: keysToWarm.length,
-        keysWarmed: results.filter(r => r.success).length,
+        keysWarmed: results.filter((r) => r.success).length,
         totalSize: results.reduce((sum, r) => sum + (r.size || 0), 0),
-        duration: Date.now() - patternStart
+        duration: Date.now() - patternStart,
       });
-      
+
       report.results[pattern.name] = results;
     }
-    
+
     report.endTime = new Date();
     report.totalDuration = report.endTime.getTime() - report.startTime.getTime();
-    
+
     // Analyze warmup effect
     report.analysis = await this.analyzeWarmupEffect(report);
-    
+
     return report;
   }
 
@@ -486,14 +510,14 @@ export class IntelligentCacheLayer extends EventEmitter {
     const bottlenecks = await this.identifyBottlenecks();
     const recommendations = await this.generateOptimizationRecommendations(bottlenecks);
     const forecast = await this.forecastCacheNeeds();
-    
+
     const healthScore = this.calculateHealthScore({
       hitRates,
       latencies,
       memoryUsage,
-      bottlenecks
+      bottlenecks,
     });
-    
+
     return {
       timestamp: new Date(),
       metrics: {
@@ -504,39 +528,39 @@ export class IntelligentCacheLayer extends EventEmitter {
         p99Latency: latencies.p99,
         throughput: this.calculateThroughput(),
         memoryUsage: memoryUsage.total,
-        evictionRate: this.calculateEvictionRate()
+        evictionRate: this.calculateEvictionRate(),
       },
       bottlenecks,
       recommendations,
       forecast,
       healthScore,
-      autoOptimizationPlan: await this.createAutoOptimizationPlan(recommendations)
+      autoOptimizationPlan: await this.createAutoOptimizationPlan(recommendations),
     };
   }
 
   private async getFromLevel<T>(level: CacheLevel, key: string): Promise<CacheResult<T>> {
     const cache = this.getCacheMap(level);
     const entry = cache.get(key);
-    
+
     if (!entry) {
       return { value: null as any, hit: false, source: level };
     }
-    
+
     // Check TTL
     if (entry.metadata.ttl && Date.now() - entry.createdAt.getTime() > entry.metadata.ttl) {
       cache.delete(key);
       return { value: null as any, hit: false, source: level };
     }
-    
+
     // Update access info
     entry.lastAccessed = new Date();
     entry.accessCount++;
-    
-    return { 
-      value: entry.value, 
-      hit: true, 
-      source: level, 
-      metadata: entry.metadata 
+
+    return {
+      value: entry.value,
+      hit: true,
+      source: level,
+      metadata: entry.metadata,
     };
   }
 
@@ -547,12 +571,12 @@ export class IntelligentCacheLayer extends EventEmitter {
     metadata: CacheMetadata
   ): Promise<void> {
     const cache = this.getCacheMap(level);
-    
+
     // Check size limits
     if (cache.size >= this.getMaxSize(level)) {
       await this.evictFromLevel(level);
     }
-    
+
     const entry: CacheEntry<T> = {
       key,
       value,
@@ -560,9 +584,9 @@ export class IntelligentCacheLayer extends EventEmitter {
       createdAt: new Date(),
       lastAccessed: new Date(),
       accessCount: 1,
-      size: this.calculateSize(value)
+      size: this.calculateSize(value),
     };
-    
+
     cache.set(key, entry);
     this.emit('cache:level:set', { level, key, entry });
   }
@@ -575,38 +599,48 @@ export class IntelligentCacheLayer extends EventEmitter {
 
   private getCacheMap(level: CacheLevel): Map<string, CacheEntry> {
     switch (level) {
-      case CacheLevel.L1: return this.l1Cache;
-      case CacheLevel.L2: return this.l2Cache;
-      case CacheLevel.L3: return this.l3Cache;
-      case CacheLevel.L4: return this.l4Cache;
-      default: return this.l1Cache;
+      case CacheLevel.L1:
+        return this.l1Cache;
+      case CacheLevel.L2:
+        return this.l2Cache;
+      case CacheLevel.L3:
+        return this.l3Cache;
+      case CacheLevel.L4:
+        return this.l4Cache;
+      default:
+        return this.l1Cache;
     }
   }
 
   private getMaxSize(level: CacheLevel): number {
     switch (level) {
-      case CacheLevel.L1: return this.config.l1Size || 1000;
-      case CacheLevel.L2: return 10000; // Approximate for shared cache
-      case CacheLevel.L3: return 100000; // Approximate for persistent cache
-      case CacheLevel.L4: return 1000000; // Approximate for remote cache
-      default: return 1000;
+      case CacheLevel.L1:
+        return this.config.l1Size || 1000;
+      case CacheLevel.L2:
+        return 10000; // Approximate for shared cache
+      case CacheLevel.L3:
+        return 100000; // Approximate for persistent cache
+      case CacheLevel.L4:
+        return 1000000; // Approximate for remote cache
+      default:
+        return 1000;
     }
   }
 
   private async evictFromLevel(level: CacheLevel): Promise<void> {
     const cache = this.getCacheMap(level);
     const entries = Array.from(cache.entries());
-    
+
     // Sort by access time (LRU)
     entries.sort((a, b) => a[1].lastAccessed.getTime() - b[1].lastAccessed.getTime());
-    
+
     // Evict oldest entries (10% of cache)
     const evictCount = Math.max(1, Math.floor(cache.size * 0.1));
     for (let i = 0; i < evictCount; i++) {
       const [key] = entries[i];
       cache.delete(key);
     }
-    
+
     this.recordEviction(level, evictCount);
     this.emit('cache:eviction', { level, evictedCount: evictCount });
   }
@@ -618,7 +652,7 @@ export class IntelligentCacheLayer extends EventEmitter {
     levels: CacheLevel[]
   ): void {
     this.backgroundWriteQueue.push({ key, value, metadata, levels });
-    
+
     if (!this.isBackgroundWriteRunning) {
       this.processBackgroundWrites();
     }
@@ -629,23 +663,23 @@ export class IntelligentCacheLayer extends EventEmitter {
       this.isBackgroundWriteRunning = false;
       return;
     }
-    
+
     this.isBackgroundWriteRunning = true;
-    
+
     while (this.backgroundWriteQueue.length > 0) {
       const write = this.backgroundWriteQueue.shift()!;
-      
+
       await Promise.all(
-        write.levels.map(level => this.setToLevel(level, write.key, write.value, write.metadata))
+        write.levels.map((level) => this.setToLevel(level, write.key, write.value, write.metadata))
       );
     }
-    
+
     // Schedule next batch
     setTimeout(() => this.processBackgroundWrites(), 1000);
   }
 
   private hasMatchingTags(entryTags: string[], filterTags: string[]): boolean {
-    return filterTags.some(tag => entryTags.includes(tag));
+    return filterTags.some((tag) => entryTags.includes(tag));
   }
 
   private async identifyKeysForWarmup(pattern: WarmupPattern): Promise<string[]> {
@@ -656,7 +690,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       `${pattern.keyPattern}-2`,
       `${pattern.keyPattern}-3`,
       `${pattern.keyPattern}-4`,
-      `${pattern.keyPattern}-5`
+      `${pattern.keyPattern}-5`,
     ];
   }
 
@@ -669,7 +703,7 @@ export class IntelligentCacheLayer extends EventEmitter {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
     return hash.toString(16);
@@ -681,21 +715,22 @@ export class IntelligentCacheLayer extends EventEmitter {
   }
 
   private async invalidateDependencies(dependencies: string[]): Promise<void> {
-    await Promise.all(dependencies.map(dep => this.invalidate(dep)));
+    await Promise.all(dependencies.map((dep) => this.invalidate(dep)));
   }
 
   private async smartWrite<T>(key: string, value: T, metadata: CacheMetadata): Promise<void> {
     // Analyze access patterns to determine best write strategy
     const accessPattern = await this.analyzeAccessPattern(key);
-    
+
     if (accessPattern.frequency > 10) {
       // High frequency, use write-through
       await this.set(key, value, { strategy: 'write-through' });
-    } else if (accessPattern.recency < 3600000) { // 1 hour
+    } else if (accessPattern.recency < 3600000) {
+      // 1 hour
       // Recently accessed, write to L1 and L2
       await Promise.all([
         this.setToLevel(CacheLevel.L1, key, value, metadata),
-        this.setToLevel(CacheLevel.L2, key, value, metadata)
+        this.setToLevel(CacheLevel.L2, key, value, metadata),
       ]);
     } else {
       // Low frequency, use write-behind
@@ -707,7 +742,7 @@ export class IntelligentCacheLayer extends EventEmitter {
     // Mock implementation - in reality this would analyze historical access data
     return {
       frequency: Math.floor(Math.random() * 20),
-      recency: Math.floor(Math.random() * 24 * 60 * 60 * 1000) // 0-24 hours
+      recency: Math.floor(Math.random() * 24 * 60 * 60 * 1000), // 0-24 hours
     };
   }
 
@@ -743,28 +778,31 @@ export class IntelligentCacheLayer extends EventEmitter {
       hit,
       source,
       metadata,
-      loadTime
+      loadTime,
     };
   }
 
   private calculateHitRates(): { overall: number; byLevel: Map<CacheLevel, number> } {
     const byLevel = new Map<CacheLevel, number>();
-    
+
     for (const level of [CacheLevel.L1, CacheLevel.L2, CacheLevel.L3, CacheLevel.L4]) {
       const hits = this.metrics.hits.get(level) || 0;
       const misses = this.metrics.misses.get(level) || 0;
       const total = hits + misses;
-      
+
       byLevel.set(level, total > 0 ? hits / total : 0);
     }
-    
+
     const totalHits = Array.from(this.metrics.hits.values()).reduce((sum, count) => sum + count, 0);
-    const totalMisses = Array.from(this.metrics.misses.values()).reduce((sum, count) => sum + count, 0);
+    const totalMisses = Array.from(this.metrics.misses.values()).reduce(
+      (sum, count) => sum + count,
+      0
+    );
     const total = totalHits + totalMisses;
-    
+
     return {
       overall: total > 0 ? totalHits / total : 0,
-      byLevel
+      byLevel,
     };
   }
 
@@ -772,118 +810,128 @@ export class IntelligentCacheLayer extends EventEmitter {
     if (this.metrics.latencies.length === 0) {
       return { avg: 0, p95: 0, p99: 0 };
     }
-    
+
     const sorted = [...this.metrics.latencies].sort((a, b) => a - b);
     const avg = sorted.reduce((sum, lat) => sum + lat, 0) / sorted.length;
     const p95Index = Math.floor(sorted.length * 0.95);
     const p99Index = Math.floor(sorted.length * 0.99);
-    
+
     return {
       avg,
       p95: sorted[p95Index] || 0,
-      p99: sorted[p99Index] || 0
+      p99: sorted[p99Index] || 0,
     };
   }
 
   private calculateMemoryUsage(): { byLevel: Map<CacheLevel, number>; total: number } {
     const byLevel = new Map<CacheLevel, number>();
-    
+
     for (const level of [CacheLevel.L1, CacheLevel.L2, CacheLevel.L3, CacheLevel.L4]) {
       const cache = this.getCacheMap(level);
       const totalSize = Array.from(cache.values()).reduce((sum, entry) => sum + entry.size, 0);
       byLevel.set(level, totalSize);
     }
-    
+
     const total = Array.from(byLevel.values()).reduce((sum, size) => sum + size, 0);
-    
+
     return { byLevel, total };
   }
 
   private calculateThroughput(): number {
     const now = Date.now();
-    const oneHourAgo = now - (60 * 60 * 1000);
-    
+    const oneHourAgo = now - 60 * 60 * 1000;
+
     // Count operations in the last hour (simplified)
-    const totalOperations = Array.from(this.metrics.sets.values()).reduce((sum, count) => sum + count, 0);
-    
+    const totalOperations = Array.from(this.metrics.sets.values()).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+
     return totalOperations / 3600; // Operations per second
   }
 
   private calculateEvictionRate(): number {
-    const totalEvictions = Array.from(this.metrics.evictions.values()).reduce((sum, count) => sum + count, 0);
+    const totalEvictions = Array.from(this.metrics.evictions.values()).reduce(
+      (sum, count) => sum + count,
+      0
+    );
     const totalSets = Array.from(this.metrics.sets.values()).reduce((sum, count) => sum + count, 0);
-    
+
     return totalSets > 0 ? totalEvictions / totalSets : 0;
   }
 
-  private async identifyBottlenecks(): Promise<Array<{
-    type: string;
-    severity: 'low' | 'medium' | 'high';
-    description: string;
-  }>> {
+  private async identifyBottlenecks(): Promise<
+    Array<{
+      type: string;
+      severity: 'low' | 'medium' | 'high';
+      description: string;
+    }>
+  > {
     const bottlenecks: Array<{
       type: string;
       severity: 'low' | 'medium' | 'high';
       description: string;
     }> = [];
     const hitRates = this.calculateHitRates();
-    
+
     if (hitRates.overall < 0.7) {
       bottlenecks.push({
         type: 'low_hit_rate',
         severity: 'high',
-        description: `Overall hit rate is ${(hitRates.overall * 100).toFixed(1)}%, below optimal 80%`
+        description: `Overall hit rate is ${(hitRates.overall * 100).toFixed(1)}%, below optimal 80%`,
       });
     }
-    
+
     const memoryUsage = this.calculateMemoryUsage();
     const l1Usage = memoryUsage.byLevel.get(CacheLevel.L1) || 0;
     const l1MaxSize = this.getMaxSize(CacheLevel.L1);
-    
+
     if (l1Usage / l1MaxSize > 0.9) {
       bottlenecks.push({
         type: 'l1_memory_pressure',
         severity: 'medium',
-        description: `L1 cache is ${(l1Usage / l1MaxSize * 100).toFixed(1)}% full`
+        description: `L1 cache is ${((l1Usage / l1MaxSize) * 100).toFixed(1)}% full`,
       });
     }
-    
+
     return bottlenecks;
   }
 
   private async generateOptimizationRecommendations(
     bottlenecks: Array<{ type: string; severity: 'low' | 'medium' | 'high'; description: string }>
-  ): Promise<Array<{
-    action: string;
-    expectedImpact: string;
-    priority: 'low' | 'medium' | 'high';
-  }>> {
+  ): Promise<
+    Array<{
+      action: string;
+      expectedImpact: string;
+      priority: 'low' | 'medium' | 'high';
+    }>
+  > {
     const recommendations: Array<{
       action: string;
       expectedImpact: string;
       priority: 'low' | 'medium' | 'high';
     }> = [];
-    
+
     for (const bottleneck of bottlenecks) {
       switch (bottleneck.type) {
         case 'low_hit_rate':
           recommendations.push({
             action: 'Increase cache sizes or adjust TTL values',
             expectedImpact: 'Improve hit rate by 15-25%',
-            priority: 'high'
+            priority: 'high',
           });
           break;
-          
+
         case 'l1_memory_pressure':
           recommendations.push({
             action: 'Implement more aggressive eviction policy for L1',
             expectedImpact: 'Reduce memory pressure by 30%',
-            priority: 'medium'
+            priority: 'medium',
           });
           break;
       }
     }
-    
+
     return recommendations;
   }
 
@@ -896,15 +944,15 @@ export class IntelligentCacheLayer extends EventEmitter {
     const memoryUsage = this.calculateMemoryUsage();
     const currentUsage = memoryUsage.total;
     const growthRate = 0.1; // 10% growth per month
-    
+
     return {
       expectedGrowth: growthRate,
-      capacityThreshold: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)), // 30 days
+      capacityThreshold: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
       recommendedActions: [
         'Monitor memory usage trends',
         'Plan cache expansion in 3 months',
-        'Consider data archiving strategy'
-      ]
+        'Consider data archiving strategy',
+      ],
     };
   }
 
@@ -915,19 +963,19 @@ export class IntelligentCacheLayer extends EventEmitter {
     bottlenecks: Array<{ severity: string }>;
   }): number {
     let score = 0.5; // Base score
-    
+
     // Hit rate impact (40% weight)
     score += (metrics.hitRates.overall - 0.5) * 0.4;
-    
+
     // Latency impact (30% weight)
-    const latencyScore = Math.max(0, 1 - (metrics.latencies.avg / 1000)); // Normalize to 0-1
+    const latencyScore = Math.max(0, 1 - metrics.latencies.avg / 1000); // Normalize to 0-1
     score += (latencyScore - 0.5) * 0.3;
-    
+
     // Bottlenecks impact (30% weight)
-    const highSeverityCount = metrics.bottlenecks.filter(b => b.severity === 'high').length;
-    const bottleneckScore = Math.max(0, 1 - (highSeverityCount * 0.2));
+    const highSeverityCount = metrics.bottlenecks.filter((b) => b.severity === 'high').length;
+    const bottleneckScore = Math.max(0, 1 - highSeverityCount * 0.2);
     score += (bottleneckScore - 0.5) * 0.3;
-    
+
     return Math.max(0, Math.min(1, score));
   }
 
@@ -941,15 +989,15 @@ export class IntelligentCacheLayer extends EventEmitter {
     }>;
     schedule: Date;
   }> {
-    const actions = recommendations.map(rec => ({
+    const actions = recommendations.map((rec) => ({
       name: rec.action,
       description: `Automated optimization: ${rec.action}`,
-      critical: rec.priority === 'high'
+      critical: rec.priority === 'high',
     }));
-    
+
     return {
       actions,
-      schedule: new Date(Date.now() + (60 * 60 * 1000)) // 1 hour from now
+      schedule: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
     };
   }
 
@@ -962,7 +1010,7 @@ export class IntelligentCacheLayer extends EventEmitter {
     return {
       hitRateImprovement: 0.15, // 15% improvement
       latencyImprovement: 0.25, // 25% improvement
-      costSavings: 0.1 // 10% cost savings
+      costSavings: 0.1, // 10% cost savings
     };
   }
 
@@ -972,7 +1020,7 @@ export class IntelligentCacheLayer extends EventEmitter {
     this.l2Cache.clear();
     this.l3Cache.clear();
     this.l4Cache.clear();
-    
+
     this.emit('cache:initialized', { config: this.config });
   }
 
@@ -983,7 +1031,7 @@ export class IntelligentCacheLayer extends EventEmitter {
         this.processBackgroundWrites();
       }
     }, 5000); // Check every 5 seconds
-    
+
     // Start metrics collection
     setInterval(() => {
       this.collectMetrics();
@@ -996,7 +1044,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       timestamp: new Date(),
       hitRates: this.calculateHitRates(),
       memoryUsage: this.calculateMemoryUsage(),
-      throughput: this.calculateThroughput()
+      throughput: this.calculateThroughput(),
     });
   }
 
@@ -1009,7 +1057,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       hits: Object.fromEntries(this.metrics.hits),
       misses: Object.fromEntries(this.metrics.misses),
       evictions: Object.fromEntries(this.metrics.evictions),
-      sets: Object.fromEntries(this.metrics.sets)
+      sets: Object.fromEntries(this.metrics.sets),
     };
   }
 
@@ -1018,7 +1066,7 @@ export class IntelligentCacheLayer extends EventEmitter {
     this.l2Cache.clear();
     this.l3Cache.clear();
     this.l4Cache.clear();
-    
+
     this.emit('cache:cleared', { timestamp: new Date() });
   }
 }

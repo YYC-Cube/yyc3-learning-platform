@@ -57,7 +57,6 @@ class YYC3WebSocketClient {
           this.stopHeartbeat();
           this.handleReconnect();
         });
-
       } catch (error) {
         reject(error);
       }
@@ -87,7 +86,7 @@ class YYC3WebSocketClient {
         type,
         data,
         timestamp: Date.now(),
-        messageId: this.generateMessageId()
+        messageId: this.generateMessageId(),
       };
       this.ws.send(JSON.stringify(message));
     } else {
@@ -112,7 +111,9 @@ class YYC3WebSocketClient {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
       const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-      console.log(`🔄 ${delay}ms后尝试重新连接... (尝试 ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      console.log(
+        `🔄 ${delay}ms后尝试重新连接... (尝试 ${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+      );
 
       setTimeout(() => {
         console.log('🔄 正在重新连接...');
@@ -185,30 +186,29 @@ async function webSocketApiExample() {
     client.send('reasoning:request', {
       context: '优化项目开发流程',
       constraints: ['时间限制', '预算限制'],
-      objectives: ['效率提升', '质量保证']
+      objectives: ['效率提升', '质量保证'],
     });
 
     console.log('\n🤖 发起生成请求...');
     client.send('generation:request', {
       prompt: '请简述敏捷开发的核心原则',
-      maxTokens: 300
+      maxTokens: 300,
     });
 
     console.log('\n📊 订阅指标更新...');
     client.send('metrics:subscribe', {
-      interval: 5000
+      interval: 5000,
     });
 
     console.log('\n🧠 订阅学习更新...');
     client.send('learning:subscribe', {
-      interval: 10000
+      interval: 10000,
     });
 
     setTimeout(() => {
       console.log('\n🔌 断开连接...');
       client.disconnect();
     }, 60000);
-
   } catch (error) {
     console.error('❌ 错误:', error);
   }

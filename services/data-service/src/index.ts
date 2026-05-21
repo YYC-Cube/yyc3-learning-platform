@@ -76,7 +76,7 @@ export class DataService {
       port: parseInt(process.env.PORT || '3202'),
       enableEventPublishing: true,
       maxConnections: 100,
-      ...config
+      ...config,
     };
 
     this.app = express();
@@ -94,12 +94,17 @@ export class DataService {
   private setupMiddleware(): void {
     // 安全中间件
     this.app.use(helmet());
-    
+
     // CORS
-    this.app.use(cors({
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3200', 'http://localhost:3201'],
-      credentials: true
-    }));
+    this.app.use(
+      cors({
+        origin: process.env.ALLOWED_ORIGINS?.split(',') || [
+          'http://localhost:3200',
+          'http://localhost:3201',
+        ],
+        credentials: true,
+      })
+    );
 
     // JSON解析
     this.app.use(express.json({ limit: '20mb' }));
@@ -109,7 +114,7 @@ export class DataService {
     const limiter = rateLimit({
       windowMs: 15 * 60 * 1000,
       max: 100,
-      message: '数据服务请求过于频繁，请稍后再试'
+      message: '数据服务请求过于频繁，请稍后再试',
     });
     this.app.use('/api/', limiter);
 
@@ -132,7 +137,7 @@ export class DataService {
         status: 'healthy',
         timestamp: Date.now(),
         uptime: process.uptime(),
-        service: 'data-service'
+        service: 'data-service',
       });
     });
 
@@ -142,7 +147,7 @@ export class DataService {
     this.app.get('/api/users/:id', async (req: AuthenticatedRequest, res: Response) => {
       try {
         const { id } = req.params;
-        const user = this.mockData.users.find(u => u.id === id);
+        const user = this.mockData.users.find((u) => u.id === id);
 
         if (!user) {
           return res.status(404).json({ error: '用户不存在' });
@@ -160,7 +165,7 @@ export class DataService {
       try {
         const { id } = req.params;
         const updateData = req.body;
-        const userIndex = this.mockData.users.findIndex(u => u.id === id);
+        const userIndex = this.mockData.users.findIndex((u) => u.id === id);
 
         if (userIndex === -1) {
           return res.status(404).json({ error: '用户不存在' });
@@ -169,7 +174,7 @@ export class DataService {
         const updatedUser = {
           ...this.mockData.users[userIndex],
           ...updateData,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
 
         this.mockData.users[userIndex] = updatedUser;
@@ -197,7 +202,7 @@ export class DataService {
     this.app.get('/api/courses/:id', async (req: AuthenticatedRequest, res: Response) => {
       try {
         const { id } = req.params;
-        const course = this.mockData.courses.find(c => c.id === id);
+        const course = this.mockData.courses.find((c) => c.id === id);
 
         if (!course) {
           return res.status(404).json({ error: '课程不存在' });
@@ -218,7 +223,7 @@ export class DataService {
           id: `course-${Date.now()}`,
           ...courseData,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
 
         this.mockData.courses.push(newCourse);
@@ -232,16 +237,19 @@ export class DataService {
     // ==================== 考试结果API ====================
 
     // 获取用户考试结果
-    this.app.get('/api/users/:userId/exam-results', async (req: AuthenticatedRequest, res: Response) => {
-      try {
-        const { userId } = req.params;
-        const results = this.mockData.examResults.filter(r => r.userId === userId);
-        this.publishEvent('examResults.retrieved', { userId, count: results.length });
-        res.json({ success: true, data: results });
-      } catch (error) {
-        res.status(500).json({ error: '获取考试结果失败' });
+    this.app.get(
+      '/api/users/:userId/exam-results',
+      async (req: AuthenticatedRequest, res: Response) => {
+        try {
+          const { userId } = req.params;
+          const results = this.mockData.examResults.filter((r) => r.userId === userId);
+          this.publishEvent('examResults.retrieved', { userId, count: results.length });
+          res.json({ success: true, data: results });
+        } catch (error) {
+          res.status(500).json({ error: '获取考试结果失败' });
+        }
       }
-    });
+    );
 
     // 保存考试结果
     this.app.post('/api/exam-results', async (req: AuthenticatedRequest, res: Response) => {
@@ -250,7 +258,7 @@ export class DataService {
         const newResult: ExamResult = {
           id: `result-${Date.now()}`,
           ...resultData,
-          createdAt: new Date()
+          createdAt: new Date(),
         };
 
         this.mockData.examResults.push(newResult);
@@ -289,15 +297,15 @@ export class DataService {
           email: 'test@example.com',
           name: '测试用户',
           createdAt: new Date('2025-01-01'),
-          updatedAt: new Date('2025-01-01')
+          updatedAt: new Date('2025-01-01'),
         },
         {
           id: 'user-2',
           email: 'admin@example.com',
           name: '管理员',
           createdAt: new Date('2025-01-01'),
-          updatedAt: new Date('2025-01-01')
-        }
+          updatedAt: new Date('2025-01-01'),
+        },
       ],
       courses: [
         {
@@ -306,7 +314,7 @@ export class DataService {
           description: '学习TypeScript的基本概念和语法',
           author: 'YYC³团队',
           createdAt: new Date('2025-01-05'),
-          updatedAt: new Date('2025-01-05')
+          updatedAt: new Date('2025-01-05'),
         },
         {
           id: 'course-2',
@@ -314,8 +322,8 @@ export class DataService {
           description: '深入学习React的高级特性和最佳实践',
           author: 'YYC³团队',
           createdAt: new Date('2025-01-10'),
-          updatedAt: new Date('2025-01-10')
-        }
+          updatedAt: new Date('2025-01-10'),
+        },
       ],
       examResults: [
         {
@@ -323,10 +331,10 @@ export class DataService {
           userId: 'user-1',
           examId: 'exam-1',
           score: 85,
-          answers: { 'q1': 'A', 'q2': 'B', 'q3': 'C' },
-          createdAt: new Date('2025-01-15')
-        }
-      ]
+          answers: { q1: 'A', q2: 'B', q3: 'C' },
+          createdAt: new Date('2025-01-15'),
+        },
+      ],
     };
   }
 
@@ -351,7 +359,7 @@ export class DataService {
   private errorHandler(err: any, req: Request, res: Response, next: NextFunction): void {
     logger.error('错误:', err);
     res.status(err.status || 500).json({
-      error: err.message || '服务器内部错误'
+      error: err.message || '服务器内部错误',
     });
   }
 
@@ -360,7 +368,7 @@ export class DataService {
       this.eventDispatcher.publish(eventName, {
         service: 'data-service',
         timestamp: Date.now(),
-        ...data
+        ...data,
       });
     }
   }
@@ -368,8 +376,7 @@ export class DataService {
   // ==================== 服务启动 ====================
 
   public start(): void {
-    this.app.listen(this.config.port, () => {
-    });
+    this.app.listen(this.config.port, () => {});
   }
 }
 

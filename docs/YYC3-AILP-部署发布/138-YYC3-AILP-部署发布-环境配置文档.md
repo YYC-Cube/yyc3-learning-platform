@@ -9,11 +9,11 @@
 @tags: [部署发布],[环境配置],[生产环境]
 ---
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -21,12 +21,12 @@
 
 ## 📋 文档信息
 
-| 属性         | 内容                                           |
-| ------------ | ---------------------------------------------- |
-| **文档标题** | YYC3-AILP-部署发布-环境配置文档     |
-| **文档版本** | v1.0.0                                         |
-| **创建时间** | 2026-01-24                                     |
-| **适用范围** | YYC3-AILP学习平台环境配置     |
+| 属性         | 内容                             |
+| ------------ | -------------------------------- |
+| **文档标题** | YYC3-AILP-部署发布-环境配置文档  |
+| **文档版本** | v1.0.0                           |
+| **创建时间** | 2026-01-24                       |
+| **适用范围** | YYC3-AILP学习平台环境配置        |
 | **文档类型** | 环境配置、服务器配置、数据库配置 |
 
 ---
@@ -75,6 +75,7 @@
 ### 🎯 生产环境配置
 
 **硬件配置**:
+
 ```typescript
 // 生产环境服务器配置
 interface ProductionServerConfig {
@@ -87,12 +88,12 @@ interface ProductionServerConfig {
       storage: '2TB NVMe SSD RAID 10';
       network: '10Gbps Dual Network Card';
     };
-    
+
     purpose: '主应用服务、API服务';
     deployment: 'Docker Container';
     orchestration: 'Kubernetes';
   };
-  
+
   // 数据库服务器
   databaseServers: {
     quantity: 3;
@@ -102,12 +103,12 @@ interface ProductionServerConfig {
       storage: '4TB NVMe SSD RAID 10';
       network: '10Gbps Dual Network Card';
     };
-    
+
     purpose: 'MySQL集群、数据存储';
     deployment: 'MySQL Group Replication';
     backup: 'Daily Full Backup + Hourly Incremental';
   };
-  
+
   // 缓存服务器
   cacheServers: {
     quantity: 2;
@@ -117,12 +118,12 @@ interface ProductionServerConfig {
       storage: '1TB NVMe SSD';
       network: '10Gbps Network Card';
     };
-    
+
     purpose: 'Redis集群、缓存服务';
     deployment: 'Redis Cluster';
     persistence: 'RDB + AOF';
   };
-  
+
   // 文件服务器
   fileServers: {
     quantity: 2;
@@ -132,7 +133,7 @@ interface ProductionServerConfig {
       storage: '8TB HDD RAID 6 + 1TB SSD Cache';
       network: '10Gbps Network Card';
     };
-    
+
     purpose: '文件存储、静态资源';
     deployment: 'MinIO Distributed';
     backup: 'Daily Full Backup';
@@ -141,6 +142,7 @@ interface ProductionServerConfig {
 ```
 
 **软件配置**:
+
 ```typescript
 // 生产环境软件配置
 interface ProductionSoftwareConfig {
@@ -150,28 +152,28 @@ interface ProductionSoftwareConfig {
     version: '22.04 LTS';
     kernel: '5.15.0';
     architecture: 'x86_64';
-    
+
     security: {
       firewall: 'UFW + Fail2ban';
       antivirus: 'ClamAV';
       intrusionDetection: 'OSSEC';
     };
   };
-  
+
   // 容器化平台
   containerPlatform: {
     runtime: 'Docker';
     version: '24.0.5';
     orchestration: 'Kubernetes';
     kubernetesVersion: '1.28.2';
-    
+
     networking: {
       cni: 'Calico';
       ingress: 'Nginx Ingress Controller';
       loadBalancer: 'HAProxy';
     };
   };
-  
+
   // 监控系统
   monitoringSystem: {
     metrics: 'Prometheus';
@@ -180,7 +182,7 @@ interface ProductionSoftwareConfig {
     version: '10.2.0';
     alerting: 'AlertManager';
     version: '0.26.0';
-    
+
     logging: {
       collection: 'Fluentd';
       storage: 'Elasticsearch';
@@ -193,6 +195,7 @@ interface ProductionSoftwareConfig {
 ### 🎯 预生产环境配置
 
 **硬件配置**:
+
 ```typescript
 // 预生产环境服务器配置
 interface StagingServerConfig {
@@ -205,12 +208,12 @@ interface StagingServerConfig {
       storage: '1TB NVMe SSD RAID 1';
       network: '10Gbps Network Card';
     };
-    
+
     purpose: '预生产验证、用户验收';
     deployment: 'Docker Container';
     orchestration: 'Kubernetes';
   };
-  
+
   // 数据库服务器
   databaseServers: {
     quantity: 1;
@@ -220,12 +223,12 @@ interface StagingServerConfig {
       storage: '2TB NVMe SSD RAID 1';
       network: '10Gbps Network Card';
     };
-    
+
     purpose: '预生产数据、测试验证';
     deployment: 'MySQL Single Instance';
     backup: 'Daily Full Backup';
   };
-  
+
   // 缓存服务器
   cacheServers: {
     quantity: 1;
@@ -235,7 +238,7 @@ interface StagingServerConfig {
       storage: '512GB NVMe SSD';
       network: '1Gbps Network Card';
     };
-    
+
     purpose: '预生产缓存、会话存储';
     deployment: 'Redis Single Instance';
     persistence: 'RDB';
@@ -250,6 +253,7 @@ interface StagingServerConfig {
 ### 🎯 MySQL配置
 
 **生产环境MySQL配置**:
+
 ```sql
 -- MySQL生产环境配置
 [mysqld]
@@ -308,6 +312,7 @@ innodb_write_io_threads = 8
 ```
 
 **预生产环境MySQL配置**:
+
 ```sql
 -- MySQL预生产环境配置
 [mysqld]
@@ -368,6 +373,7 @@ innodb_write_io_threads = 4
 ### 🎯 Redis配置
 
 **生产环境Redis配置**:
+
 ```conf
 # Redis生产环境配置
 
@@ -422,6 +428,7 @@ always-show-logo yes
 ### 🎯 负载均衡配置
 
 **HAProxy配置**:
+
 ```conf
 # HAProxy生产环境配置
 global
@@ -484,6 +491,7 @@ backend api_back
 ### 🎯 防火墙配置
 
 **UFW防火墙规则**:
+
 ```bash
 #!/bin/bash
 # UFW防火墙配置脚本
@@ -532,51 +540,52 @@ ufw status verbose
 ### 🎯 SSL/TLS配置
 
 **Nginx SSL配置**:
+
 ```nginx
 # Nginx SSL配置
 server {
     listen 443 ssl http2;
     server_name yyc3-ailp.com;
-    
+
     # SSL证书配置
     ssl_certificate /etc/ssl/certs/yyc3-ailp.com.crt;
     ssl_certificate_key /etc/ssl/private/yyc3-ailp.com.key;
-    
+
     # SSL协议配置
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_prefer_server_ciphers off;
-    
+
     # SSL加密套件配置
     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
-    
+
     # SSL会话配置
     ssl_session_cache shared:SSL:50m;
     ssl_session_timeout 1d;
     ssl_session_tickets off;
-    
+
     # OCSP Stapling
     ssl_stapling on;
     ssl_stapling_verify on;
     resolver 8.8.8.8 8.8.4.4 valid=300s;
     resolver_timeout 5s;
-    
+
     # HSTS
     add_header Strict-Transport-Security "max-age=63072000" always;
-    
+
     # 其他安全头
     add_header X-Frame-Options DENY;
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
     add_header Referrer-Policy "strict-origin-when-cross-origin";
-    
+
     # 应用配置
     root /var/www/yyc3-ailp;
     index index.html index.php;
-    
+
     location / {
         try_files $uri $uri/ /index.php?$query_string;
     }
-    
+
     location ~ \.php$ {
         fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
         fastcgi_index index.php;
@@ -589,6 +598,7 @@ server {
 ### 🎯 系统安全加固
 
 **系统安全配置**:
+
 ```bash
 #!/bin/bash
 # 系统安全加固脚本
@@ -691,6 +701,7 @@ EOF
 ### 🎯 Prometheus配置
 
 **Prometheus配置**:
+
 ```yaml
 # prometheus.yml
 global:
@@ -698,13 +709,13 @@ global:
   evaluation_interval: 15s
 
 rule_files:
-  - "rules/*.yml"
+  - 'rules/*.yml'
 
 alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 
 scrape_configs:
   # Prometheus自监控
@@ -742,6 +753,7 @@ scrape_configs:
 ### 🎯 Grafana仪表板
 
 **系统监控仪表板**:
+
 ```json
 {
   "dashboard": {
@@ -800,7 +812,7 @@ scrape_configs:
 
 ## 📄 文档标尾
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

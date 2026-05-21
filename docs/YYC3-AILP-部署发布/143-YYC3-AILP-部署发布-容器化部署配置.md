@@ -9,11 +9,11 @@
 @tags: [部署发布],[容器化],[Docker]
 ---
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -21,13 +21,13 @@
 
 ## 📋 文档信息
 
-| 属性         | 内容                                           |
-| ------------ | ---------------------------------------------- |
-| **文档标题** | YYC3-AILP-部署发布-容器化部署配置     |
-| **文档版本** | v1.0.0                                         |
-| **创建时间** | 2026-01-24                                     |
-| **适用范围** | YYC3-AILP学习平台容器化部署     |
-| **文档类型** | 容器化部署、Docker、Kubernetes |
+| 属性         | 内容                              |
+| ------------ | --------------------------------- |
+| **文档标题** | YYC3-AILP-部署发布-容器化部署配置 |
+| **文档版本** | v1.0.0                            |
+| **创建时间** | 2026-01-24                        |
+| **适用范围** | YYC3-AILP学习平台容器化部署       |
+| **文档类型** | 容器化部署、Docker、Kubernetes    |
 
 ---
 
@@ -42,6 +42,7 @@
 ### 🎯 基础镜像选择
 
 **多阶段构建策略**:
+
 ```dockerfile
 # 基础构建镜像
 FROM node:18-alpine AS builder
@@ -96,6 +97,7 @@ CMD ["npm", "start"]
 ```
 
 **Docker Compose开发环境配置**:
+
 ```yaml
 # docker-compose.dev.yml
 version: '3.8'
@@ -108,7 +110,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: yyc3-ailp-app-dev
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=development
       - DATABASE_URL=mysql://yyc3_user:password@mysql:3306/yyc3_ailp
@@ -133,7 +135,7 @@ services:
       MYSQL_USER: yyc3_user
       MYSQL_PASSWORD: password
     ports:
-      - "3306:3306"
+      - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
       - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -145,7 +147,7 @@ services:
     image: redis:7-alpine
     container_name: yyc3-ailp-redis-dev
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     networks:
@@ -156,8 +158,8 @@ services:
     image: nginx:alpine
     container_name: yyc3-ailp-nginx-dev
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl:/etc/nginx/ssl
@@ -182,6 +184,7 @@ networks:
 ### 🎯 集群架构设计
 
 **Kubernetes集群架构**:
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    YYC³ AILP Kubernetes集群架构        │
@@ -217,6 +220,7 @@ networks:
 ```
 
 **命名空间配置**:
+
 ```yaml
 # namespaces.yaml
 apiVersion: v1
@@ -248,6 +252,7 @@ metadata:
 ```
 
 **应用部署配置**:
+
 ```yaml
 # deployment.yaml
 apiVersion: apps/v1
@@ -275,67 +280,68 @@ spec:
         version: v2.2.0
     spec:
       containers:
-      - name: yyc3-ailp-app
-        image: yyc3/ailp-app:v2.2.0
-        ports:
-        - containerPort: 3000
-          name: http
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: yyc3-ailp-secrets
-              key: database-url
-        - name: REDIS_URL
-          valueFrom:
-            secretKeyRef:
-              name: yyc3-ailp-secrets
-              key: redis-url
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "1Gi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /api/ready
-            port: 3000
-          initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 3
-        volumeMounts:
-        - name: config-volume
-          mountPath: /app/config
-          readOnly: true
+        - name: yyc3-ailp-app
+          image: yyc3/ailp-app:v2.2.0
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: yyc3-ailp-secrets
+                  key: database-url
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: yyc3-ailp-secrets
+                  key: redis-url
+          resources:
+            requests:
+              memory: '512Mi'
+              cpu: '250m'
+            limits:
+              memory: '1Gi'
+              cpu: '500m'
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/ready
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config
+              readOnly: true
       volumes:
-      - name: config-volume
-        configMap:
-          name: yyc3-ailp-config
+        - name: config-volume
+          configMap:
+            name: yyc3-ailp-config
       imagePullSecrets:
-      - name: yyc3-registry-secret
+        - name: yyc3-registry-secret
       nodeSelector:
         node-type: application
       tolerations:
-      - key: "application"
-        operator: "Equal"
-        value: "true"
-        effect: "NoSchedule"
+        - key: 'application'
+          operator: 'Equal'
+          value: 'true'
+          effect: 'NoSchedule'
 ```
 
 **服务配置**:
+
 ```yaml
 # service.yaml
 apiVersion: v1
@@ -348,10 +354,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 80
-    targetPort: 3000
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+      name: http
   selector:
     app: yyc3-ailp-app
 ---
@@ -366,15 +372,16 @@ spec:
   type: ClusterIP
   clusterIP: None
   ports:
-  - port: 3000
-    targetPort: 3000
-    protocol: TCP
-    name: http
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http
   selector:
     app: yyc3-ailp-app
 ```
 
 **Ingress配置**:
+
 ```yaml
 # ingress.yaml
 apiVersion: networking.k8s.io/v1
@@ -385,26 +392,26 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-    nginx.ingress.kubernetes.io/rate-limit: "100"
-    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/proxy-body-size: '50m'
+    nginx.ingress.kubernetes.io/rate-limit: '100'
+    nginx.ingress.kubernetes.io/rate-limit-window: '1m'
 spec:
   tls:
-  - hosts:
-    - yyc3-ailp.example.com
-    secretName: yyc3-ailp-tls
+    - hosts:
+        - yyc3-ailp.example.com
+      secretName: yyc3-ailp-tls
   rules:
-  - host: yyc3-ailp.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: yyc3-ailp-app-service
-            port:
-              number: 80
+    - host: yyc3-ailp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: yyc3-ailp-app-service
+                port:
+                  number: 80
 ```
 
 ---
@@ -414,6 +421,7 @@ spec:
 ### 🎯 ConfigMap配置
 
 **应用配置**:
+
 ```yaml
 # configmap.yaml
 apiVersion: v1
@@ -454,7 +462,7 @@ data:
     upstream yyc3_ailp_backend {
       server yyc3-ailp-app-service:80;
     }
-    
+
     server {
       listen 80;
       server_name yyc3-ailp.example.com;
@@ -477,6 +485,7 @@ data:
 ### 🎯 Secret配置
 
 **敏感信息配置**:
+
 ```yaml
 # secrets.yaml
 apiVersion: v1
@@ -531,10 +540,10 @@ spec:
     matchLabels:
       app: yyc3-ailp-app
   endpoints:
-  - port: metrics
-    path: /metrics
-    interval: 30s
-    scrapeTimeout: 10s
+    - port: metrics
+      path: /metrics
+      interval: 30s
+      scrapeTimeout: 10s
 
 ---
 # autoscaler.yaml
@@ -554,31 +563,31 @@ spec:
   minReplicas: 4
   maxReplicas: 20
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 300
       policies:
-      - type: Percent
-        value: 10
-        periodSeconds: 60
+        - type: Percent
+          value: 10
+          periodSeconds: 60
     scaleUp:
       stabilizationWindowSeconds: 60
       policies:
-      - type: Percent
-        value: 50
-        periodSeconds: 60
+        - type: Percent
+          value: 50
+          periodSeconds: 60
 
 ---
 # networkpolicy.yaml
@@ -595,44 +604,44 @@ spec:
     matchLabels:
       app: yyc3-ailp-app
   policyTypes:
-  - Ingress
-  - Egress
+    - Ingress
+    - Egress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          name: yyc3-ailp-ingress
-    - namespaceSelector:
-        matchLabels:
-          name: yyc3-ailp-monitoring
-    ports:
-    - protocol: TCP
-      port: 3000
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: yyc3-ailp-ingress
+        - namespaceSelector:
+            matchLabels:
+              name: yyc3-ailp-monitoring
+      ports:
+        - protocol: TCP
+          port: 3000
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: yyc3-ailp-database
-    ports:
-    - protocol: TCP
-      port: 3306
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: yyc3-ailp-cache
-    ports:
-    - protocol: TCP
-      port: 6379
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 53
-    - protocol: UDP
-      port: 53
-    - protocol: TCP
-      port: 443
-    - protocol: TCP
-      port: 80
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: yyc3-ailp-database
+      ports:
+        - protocol: TCP
+          port: 3306
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: yyc3-ailp-cache
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
 
 ---
 # rbac.yaml
@@ -655,12 +664,12 @@ metadata:
     app: yyc3-ailp-app
     component: rbac
 rules:
-- apiGroups: [""]
-  resources: ["configmaps", "secrets"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get", "list", "watch"]
+  - apiGroups: ['']
+    resources: ['configmaps', 'secrets']
+    verbs: ['get', 'list', 'watch']
+  - apiGroups: ['']
+    resources: ['pods']
+    verbs: ['get', 'list', 'watch']
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -672,9 +681,9 @@ metadata:
     app: yyc3-ailp-app
     component: rbac
 subjects:
-- kind: ServiceAccount
-  name: yyc3-ailp-app-sa
-  namespace: yyc3-ailp-prod
+  - kind: ServiceAccount
+    name: yyc3-ailp-app-sa
+    namespace: yyc3-ailp-prod
 roleRef:
   kind: Role
   name: yyc3-ailp-app-role
@@ -708,16 +717,16 @@ metadata:
     component: resources
 spec:
   hard:
-    requests.cpu: "4"
+    requests.cpu: '4'
     requests.memory: 8Gi
-    limits.cpu: "8"
+    limits.cpu: '8'
     limits.memory: 16Gi
-    persistentvolumeclaims: "5"
-    services: "5"
-    secrets: "10"
-    configmaps: "10"
-    count/deployments.apps: "5"
-    count/pods: "20"
+    persistentvolumeclaims: '5'
+    services: '5'
+    secrets: '10'
+    configmaps: '10'
+    count/deployments.apps: '5'
+    count/pods: '20'
 ```
 
 ## 5. CI/CD集成配置
@@ -741,25 +750,25 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: npm ci
-    
-    - name: Run tests
-      run: npm test
-    
-    - name: Run linting
-      run: npm run lint
-    
-    - name: Run type checking
-      run: npm run type-check
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run type checking
+        run: npm run type-check
 
   build:
     needs: test
@@ -768,73 +777,73 @@ jobs:
       contents: read
       packages: write
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    
-    - name: Log in to Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Extract metadata
-      id: meta
-      uses: docker/metadata-action@v4
-      with:
-        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        tags: |
-          type=ref,event=tag
-          type=raw,value=latest,enable={{is_default_branch}}
-    
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment: production
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    
-    - name: Setup kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'v1.24.0'
-    
-    - name: Configure kubectl
-      run: |
-        echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
-        export KUBECONFIG=kubeconfig
-    
-    - name: Deploy to Kubernetes
-      run: |
-        export KUBECONFIG=kubeconfig
-        
-        # 更新镜像标签
-        sed -i "s|image: yyc3/ailp-app:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}|g" deployment.yaml
-        
-        # 应用配置
-        kubectl apply -f namespace.yaml
-        kubectl apply -f configmap.yaml
-        kubectl apply -f secrets.yaml
-        kubectl apply -f deployment.yaml
-        kubectl apply -f service.yaml
-        kubectl apply -f ingress.yaml
-        
-        # 等待部署完成
-        kubectl rollout status deployment/yyc3-ailp-app -n yyc3-ailp-prod --timeout=300s
-        
-        # 验证部署
-        kubectl get pods -n yyc3-ailp-prod -l app=yyc3-ailp-app
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.24.0'
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 -d > kubeconfig
+          export KUBECONFIG=kubeconfig
+
+      - name: Deploy to Kubernetes
+        run: |
+          export KUBECONFIG=kubeconfig
+
+          # 更新镜像标签
+          sed -i "s|image: yyc3/ailp-app:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}|g" deployment.yaml
+
+          # 应用配置
+          kubectl apply -f namespace.yaml
+          kubectl apply -f configmap.yaml
+          kubectl apply -f secrets.yaml
+          kubectl apply -f deployment.yaml
+          kubectl apply -f service.yaml
+          kubectl apply -f ingress.yaml
+
+          # 等待部署完成
+          kubectl rollout status deployment/yyc3-ailp-app -n yyc3-ailp-prod --timeout=300s
+
+          # 验证部署
+          kubectl get pods -n yyc3-ailp-prod -l app=yyc3-ailp-app
 ```
 
 ### 5.2 GitLab CI/CD配置
@@ -929,10 +938,10 @@ data:
     global:
       scrape_interval: 15s
       evaluation_interval: 15s
-    
+
     rule_files:
       - "yyc3-ailp-rules.yml"
-    
+
     scrape_configs:
       - job_name: 'yyc3-ailp-app'
         static_configs:
@@ -954,7 +963,7 @@ data:
             action: replace
             target_label: __metrics_path__
             regex: (.+)
-  
+
   yyc3-ailp-rules.yml: |
     groups:
     - name: yyc3-ailp-app.rules
@@ -1109,11 +1118,11 @@ data:
       format json
       time_format %Y-%m-%dT%H:%M:%S.%NZ
     </source>
-    
+
     <filter kubernetes.**>
       @type kubernetes_metadata
     </filter>
-    
+
     <filter kubernetes.**>
       @type record_transformer
       <record>
@@ -1121,7 +1130,7 @@ data:
         environment #{ENV['ENVIRONMENT'] || 'production'}
       </record>
     </filter>
-    
+
     <match kubernetes.**>
       @type elasticsearch
       host elasticsearch.logging.svc.cluster.local
@@ -1192,30 +1201,30 @@ spec:
     matchLabels:
       app: yyc3-ailp-app
   policyTypes:
-  - Egress
+    - Egress
   egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: yyc3-ailp-database
-    ports:
-    - protocol: TCP
-      port: 3306
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          name: yyc3-ailp-cache
-    ports:
-    - protocol: TCP
-      port: 6379
-  - to: []
-    ports:
-    - protocol: TCP
-      port: 53
-    - protocol: UDP
-      port: 53
-    - protocol: TCP
-      port: 443
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: yyc3-ailp-database
+      ports:
+        - protocol: TCP
+          port: 3306
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: yyc3-ailp-cache
+      ports:
+        - protocol: TCP
+          port: 6379
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 53
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 443
 ```
 
 ## 8. 备份与恢复
@@ -1230,80 +1239,80 @@ metadata:
   name: yyc3-ailp-backup
   namespace: yyc3-ailp-prod
 spec:
-  schedule: "0 2 * * *"  # 每天凌晨2点执行
+  schedule: '0 2 * * *' # 每天凌晨2点执行
   jobTemplate:
     spec:
       template:
         spec:
           containers:
-          - name: backup
-            image: mysql:8.0
-            command:
-            - /bin/bash
-            - -c
-            - |
-              TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-              BACKUP_FILE="yyc3-ailp-backup-${TIMESTAMP}.sql"
-              
-              # 执行数据库备份
-              mysqldump -h $DATABASE_HOST -u $DATABASE_USER -p$DATABASE_PASSWORD $DATABASE_NAME > /backup/${BACKUP_FILE}
-              
-              # 压缩备份文件
-              gzip /backup/${BACKUP_FILE}
-              
-              # 上传到对象存储
-              aws s3 cp /backup/${BACKUP_FILE}.gz s3://yyc3-ailp-backups/database/
-              
-              # 清理本地文件
-              rm /backup/${BACKUP_FILE}.gz
-              
-              # 清理7天前的备份
-              aws s3 ls s3://yyc3-ailp-backups/database/ | while read -r line; do
-                createDate=$(echo $line | awk '{print $1" "$2}')
-                createDate=$(date -d "$createDate" +%s)
-                olderThan=$(date -d "7 days ago" +%s)
-                if [[ $createDate -lt $olderThan ]]; then
-                  fileName=$(echo $line | awk '{print $4}')
-                  aws s3 rm s3://yyc3-ailp-backups/database/$fileName
-                fi
-              done
-            env:
-            - name: DATABASE_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: yyc3-ailp-secrets
-                  key: database-host
-            - name: DATABASE_USER
-              valueFrom:
-                secretKeyRef:
-                  name: yyc3-ailp-secrets
-                  key: database-user
-            - name: DATABASE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: yyc3-ailp-secrets
-                  key: database-password
-            - name: DATABASE_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: yyc3-ailp-secrets
-                  key: database-name
-            - name: AWS_ACCESS_KEY_ID
-              valueFrom:
-                secretKeyRef:
-                  name: yyc3-ailp-secrets
-                  key: aws-access-key-id
-            - name: AWS_SECRET_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: yyc3-ailp-secrets
-                  key: aws-secret-access-key
-            volumeMounts:
-            - name: backup-storage
-              mountPath: /backup
+            - name: backup
+              image: mysql:8.0
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+                  BACKUP_FILE="yyc3-ailp-backup-${TIMESTAMP}.sql"
+
+                  # 执行数据库备份
+                  mysqldump -h $DATABASE_HOST -u $DATABASE_USER -p$DATABASE_PASSWORD $DATABASE_NAME > /backup/${BACKUP_FILE}
+
+                  # 压缩备份文件
+                  gzip /backup/${BACKUP_FILE}
+
+                  # 上传到对象存储
+                  aws s3 cp /backup/${BACKUP_FILE}.gz s3://yyc3-ailp-backups/database/
+
+                  # 清理本地文件
+                  rm /backup/${BACKUP_FILE}.gz
+
+                  # 清理7天前的备份
+                  aws s3 ls s3://yyc3-ailp-backups/database/ | while read -r line; do
+                    createDate=$(echo $line | awk '{print $1" "$2}')
+                    createDate=$(date -d "$createDate" +%s)
+                    olderThan=$(date -d "7 days ago" +%s)
+                    if [[ $createDate -lt $olderThan ]]; then
+                      fileName=$(echo $line | awk '{print $4}')
+                      aws s3 rm s3://yyc3-ailp-backups/database/$fileName
+                    fi
+                  done
+              env:
+                - name: DATABASE_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: yyc3-ailp-secrets
+                      key: database-host
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: yyc3-ailp-secrets
+                      key: database-user
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: yyc3-ailp-secrets
+                      key: database-password
+                - name: DATABASE_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: yyc3-ailp-secrets
+                      key: database-name
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: yyc3-ailp-secrets
+                      key: aws-access-key-id
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: yyc3-ailp-secrets
+                      key: aws-secret-access-key
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
           volumes:
-          - name: backup-storage
-            emptyDir: {}
+            - name: backup-storage
+              emptyDir: {}
           restartPolicy: OnFailure
 ```
 
@@ -1468,9 +1477,9 @@ kubectl patch deployment yyc3-ailp-app -n yyc3-ailp-prod -p '{"spec":{"template"
 
 ## 📄 文档标尾 (Footer)
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
-data:
-  .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5leGFtcGxlLmNvbSI6eyJ1c2VybmFtZSI6Inl5YzMiLCJwYXNzd29yZCI6InBhc3N3b3JkIiwiYXV0aCI6ImJYbGxZV1J2Y2s1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWF
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」
+> data:
+> .dockerconfigjson: eyJhdXRocyI6eyJyZWdpc3RyeS5leGFtcGxlLmNvbSI6eyJ1c2VybmFtZSI6Inl5YzMiLCJwYXNzd29yZCI6InBhc3N3b3JkIiwiYXV0aCI6ImJYbGxZV1J2Y2s1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWFJ2Y2k1dmNHVnlZWF

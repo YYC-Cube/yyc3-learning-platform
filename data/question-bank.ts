@@ -1,13 +1,13 @@
-import { ExamQuestion } from '../app/types.d'
+import { ExamQuestion } from '../app/types.d';
 
 export function getQuestionsByExamId(examId: string): ExamQuestion[] {
-  return []
+  return [];
 }
 
 export function getQuestionById(questionId: string): ExamQuestion | undefined {
-  return undefined
+  return undefined;
 }
 
 export function getAllQuestions(): ExamQuestion[] {
-  return []
+  return [];
 }

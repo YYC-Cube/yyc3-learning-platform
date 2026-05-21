@@ -4,71 +4,79 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
-import type { ComprehensiveExamQuestion } from "@/data/comprehensive-exam-questions"
-import { Award, BookOpen, CheckCircle, Clock } from "lucide-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import type { ComprehensiveExamQuestion } from '@/data/comprehensive-exam-questions';
+import { Award, BookOpen, CheckCircle, Clock } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 interface ComprehensiveExamProps {
-  examType: string
-  questions: ComprehensiveExamQuestion[]
-  onComplete: (results: any) => void
+  examType: string;
+  questions: ComprehensiveExamQuestion[];
+  onComplete: (results: any) => void;
 }
 
 export function ComprehensiveExam({ examType, questions, onComplete }: ComprehensiveExamProps) {
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [answers, setAnswers] = useState<{ [key: number]: any }>({})
-  const [timeLeft, setTimeLeft] = useState(120 * 60)
-  const [results, setResults] = useState<any>(null)
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const currentQuestion = useMemo(() => questions[currentQuestionIndex], [questions, currentQuestionIndex])
-  const progress = useMemo(() => ((currentQuestionIndex + 1) / questions.length) * 100, [currentQuestionIndex, questions.length])
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<{ [key: number]: any }>({});
+  const [timeLeft, setTimeLeft] = useState(120 * 60);
+  const [results, setResults] = useState<any>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const currentQuestion = useMemo(
+    () => questions[currentQuestionIndex],
+    [questions, currentQuestionIndex]
+  );
+  const progress = useMemo(
+    () => ((currentQuestionIndex + 1) / questions.length) * 100,
+    [currentQuestionIndex, questions.length]
+  );
 
   const calculateScore = useCallback(() => {
-    let totalScore = 0
-    let maxScore = 0
-    const questionResults: any[] = []
+    let totalScore = 0;
+    let maxScore = 0;
+    const questionResults: any[] = [];
 
     questions.forEach((question, index) => {
-      maxScore += question.points
-      const userAnswer = answers[index]
-      let questionScore = 0
-      let isCorrect = false
+      maxScore += question.points;
+      const userAnswer = answers[index];
+      let questionScore = 0;
+      let isCorrect = false;
 
-      if (question.type === "single") {
-        isCorrect = userAnswer === question.correctAnswers[0]
-        questionScore = isCorrect ? question.points : 0
-      } else if (question.type === "multiple") {
+      if (question.type === 'single') {
+        isCorrect = userAnswer === question.correctAnswers[0];
+        questionScore = isCorrect ? question.points : 0;
+      } else if (question.type === 'multiple') {
         if (Array.isArray(userAnswer) && Array.isArray(question.correctAnswers)) {
-          const correctCount = userAnswer.filter((ans) => question.correctAnswers.includes(ans)).length
-          const incorrectCount = userAnswer.length - correctCount
-          const missedCount = question.correctAnswers.length - correctCount
+          const correctCount = userAnswer.filter((ans) =>
+            question.correctAnswers.includes(ans)
+          ).length;
+          const incorrectCount = userAnswer.length - correctCount;
+          const missedCount = question.correctAnswers.length - correctCount;
 
           if (incorrectCount === 0 && missedCount === 0) {
-            questionScore = question.points
-            isCorrect = true
+            questionScore = question.points;
+            isCorrect = true;
           } else {
             questionScore = Math.max(
               0,
-              ((correctCount - incorrectCount) / question.correctAnswers.length) * question.points,
-            )
+              ((correctCount - incorrectCount) / question.correctAnswers.length) * question.points
+            );
           }
         }
-      } else if (["essay", "definition", "comparison", "application"].includes(question.type)) {
-        questionScore = userAnswer && userAnswer.trim() ? question.points * 0.7 : 0
-        isCorrect = questionScore > 0
+      } else if (['essay', 'definition', 'comparison', 'application'].includes(question.type)) {
+        questionScore = userAnswer && userAnswer.trim() ? question.points * 0.7 : 0;
+        isCorrect = questionScore > 0;
       }
 
-      totalScore += questionScore
+      totalScore += questionScore;
       questionResults.push({
         question: question.question,
         userAnswer,
@@ -78,8 +86,8 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
         isCorrect,
         explanation: question.explanation,
         keywords: question.keywords,
-      })
-    })
+      });
+    });
 
     return {
       totalScore: Math.round(totalScore),
@@ -87,50 +95,53 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
       percentage: Math.round((totalScore / maxScore) * 100),
       questionResults,
       timeUsed: 120 * 60 - timeLeft,
-    }
-  }, [questions, answers, timeLeft])
+    };
+  }, [questions, answers, timeLeft]);
 
   const handleSubmit = useCallback(() => {
-    const examResults = calculateScore()
-    setResults(examResults)
-    setIsSubmitted(true)
-    onComplete(examResults)
-  }, [calculateScore, onComplete])
+    const examResults = calculateScore();
+    setResults(examResults);
+    setIsSubmitted(true);
+    onComplete(examResults);
+  }, [calculateScore, onComplete]);
 
   useEffect(() => {
     if (timeLeft > 0 && !isSubmitted) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000)
-      return () => clearTimeout(timer)
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
     } else if (timeLeft === 0) {
-      handleSubmit()
+      handleSubmit();
     }
-  }, [timeLeft, isSubmitted, handleSubmit])
+  }, [timeLeft, isSubmitted, handleSubmit]);
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
-  const handleAnswerChange = useCallback((value: any) => {
-    setAnswers({
-      ...answers,
-      [currentQuestionIndex]: value,
-    })
-  }, [answers, currentQuestionIndex])
+  const handleAnswerChange = useCallback(
+    (value: any) => {
+      setAnswers({
+        ...answers,
+        [currentQuestionIndex]: value,
+      });
+    },
+    [answers, currentQuestionIndex]
+  );
 
   const handleNext = useCallback(() => {
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
-  }, [currentQuestionIndex, questions.length])
+  }, [currentQuestionIndex, questions.length]);
 
   const handlePrevious = useCallback(() => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1)
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
-  }, [currentQuestionIndex])
+  }, [currentQuestionIndex]);
 
   if (isSubmitted && results) {
     return (
@@ -154,7 +165,9 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
                 <div className="text-sm text-gray-600">正确率</div>
               </div>
               <div className="text-center p-4 bg-white rounded-lg shadow-sm">
-                <div className="text-3xl font-bold text-purple-600 mb-2">{Math.floor(results.timeUsed / 60)}分钟</div>
+                <div className="text-3xl font-bold text-purple-600 mb-2">
+                  {Math.floor(results.timeUsed / 60)}分钟
+                </div>
                 <div className="text-sm text-gray-600">用时</div>
               </div>
             </div>
@@ -162,13 +175,16 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">答题详情</h3>
               {results.questionResults.map((result: any, index: number) => (
-                <Card key={index} className={`${result.isCorrect ? "border-green-200" : "border-red-200"}`}>
+                <Card
+                  key={index}
+                  className={`${result.isCorrect ? 'border-green-200' : 'border-red-200'}`}
+                >
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-sm">
                         第{index + 1}题 ({questions[index].points}分)
                       </CardTitle>
-                      <Badge variant={result.isCorrect ? "default" : "destructive"}>
+                      <Badge variant={result.isCorrect ? 'default' : 'destructive'}>
                         {result.score}/{result.maxScore}分
                       </Badge>
                     </div>
@@ -180,8 +196,8 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
                         <span className="font-medium text-sm">您的答案：</span>
                         <span className="text-sm ml-2">
                           {Array.isArray(result.userAnswer)
-                            ? result.userAnswer.join(", ")
-                            : result.userAnswer || "未作答"}
+                            ? result.userAnswer.join(', ')
+                            : result.userAnswer || '未作答'}
                         </span>
                       </div>
                       {!result.isCorrect && (
@@ -189,7 +205,7 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
                           <span className="font-medium text-sm text-green-600">正确答案：</span>
                           <span className="text-sm ml-2">
                             {Array.isArray(result.correctAnswer)
-                              ? result.correctAnswer.join(", ")
+                              ? result.correctAnswer.join(', ')
                               : result.correctAnswer}
                           </span>
                         </div>
@@ -215,7 +231,7 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -227,7 +243,11 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
             <div>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5 text-blue-600" />
-                {examType === "comprehensive" ? "AI大模型综合考试" : examType === "practice" ? "AI大模型练习" : "AI考试"}
+                {examType === 'comprehensive'
+                  ? 'AI大模型综合考试'
+                  : examType === 'practice'
+                    ? 'AI大模型练习'
+                    : 'AI考试'}
               </CardTitle>
               <CardDescription>
                 第 {currentQuestionIndex + 1} 题 / 共 {questions.length} 题
@@ -254,11 +274,11 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
                 <Badge variant="outline">{currentQuestion.category}</Badge>
                 <Badge
                   variant={
-                    currentQuestion.difficulty === "高级"
-                      ? "destructive"
-                      : currentQuestion.difficulty === "中级"
-                        ? "default"
-                        : "secondary"
+                    currentQuestion.difficulty === '高级'
+                      ? 'destructive'
+                      : currentQuestion.difficulty === '中级'
+                        ? 'default'
+                        : 'secondary'
                   }
                 >
                   {currentQuestion.difficulty}
@@ -274,9 +294,9 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
         </CardHeader>
         <CardContent>
           {/* 单选题 */}
-          {currentQuestion.type === "single" && currentQuestion.options && (
+          {currentQuestion.type === 'single' && currentQuestion.options && (
             <RadioGroup
-              value={answers[currentQuestionIndex]?.toString() || ""}
+              value={answers[currentQuestionIndex]?.toString() || ''}
               onValueChange={(value) => handleAnswerChange(Number.parseInt(value))}
             >
               {currentQuestion.options.map((option, index) => (
@@ -291,7 +311,7 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
           )}
 
           {/* 多选题 */}
-          {currentQuestion.type === "multiple" && currentQuestion.options && (
+          {currentQuestion.type === 'multiple' && currentQuestion.options && (
             <div className="space-y-3">
               {currentQuestion.options.map((option, index) => (
                 <div key={index} className="flex items-center space-x-2">
@@ -299,11 +319,11 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
                     id={`option-${index}`}
                     checked={answers[currentQuestionIndex]?.includes(index) || false}
                     onCheckedChange={(checked) => {
-                      const currentAnswers = answers[currentQuestionIndex] || []
+                      const currentAnswers = answers[currentQuestionIndex] || [];
                       if (checked) {
-                        handleAnswerChange([...currentAnswers, index])
+                        handleAnswerChange([...currentAnswers, index]);
                       } else {
-                        handleAnswerChange(currentAnswers.filter((ans: number) => ans !== index))
+                        handleAnswerChange(currentAnswers.filter((ans: number) => ans !== index));
                       }
                     }}
                   />
@@ -316,15 +336,17 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
           )}
 
           {/* 主观题 */}
-          {["essay", "definition", "comparison", "application"].includes(currentQuestion.type) && (
+          {['essay', 'definition', 'comparison', 'application'].includes(currentQuestion.type) && (
             <div className="space-y-3">
               <Textarea
                 placeholder="请在此输入您的答案..."
-                value={answers[currentQuestionIndex] || ""}
+                value={answers[currentQuestionIndex] || ''}
                 onChange={(e) => handleAnswerChange(e.target.value)}
                 className="min-h-[200px]"
               />
-              <div className="text-sm text-gray-600">提示：请详细阐述您的观点，包含关键概念和具体分析。</div>
+              <div className="text-sm text-gray-600">
+                提示：请详细阐述您的观点，包含关键概念和具体分析。
+              </div>
             </div>
           )}
 
@@ -373,7 +395,11 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
               <Button
                 key={index}
                 variant={
-                  index === currentQuestionIndex ? "default" : answers[index] !== undefined ? "secondary" : "outline"
+                  index === currentQuestionIndex
+                    ? 'default'
+                    : answers[index] !== undefined
+                      ? 'secondary'
+                      : 'outline'
                 }
                 size="sm"
                 className="w-8 h-8 p-0"
@@ -389,5 +415,5 @@ export function ComprehensiveExam({ examType, questions, onComplete }: Comprehen
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

@@ -48,8 +48,8 @@ export class IntelligentOutboundSystem extends EventEmitter {
           connectedCalls: 0,
           conversions: 0,
           averageDuration: 0,
-          successRate: 0
-        }
+          successRate: 0,
+        },
       };
 
       this.campaigns.set(campaignId, campaign);
@@ -64,12 +64,11 @@ export class IntelligentOutboundSystem extends EventEmitter {
         conversions: campaign.metrics.conversions,
         insights: await this.generateCampaignInsights(campaign),
         efficiency: this.calculateCampaignEfficiency(campaign),
-        costAnalysis: await this.analyzeCampaignCost(campaign)
+        costAnalysis: await this.analyzeCampaignCost(campaign),
       };
 
       this.emit('outbound-campaign-completed', result);
       return result;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -82,11 +81,11 @@ export class IntelligentOutboundSystem extends EventEmitter {
     const strategy = await this.aiEngine.optimize({
       type: 'call-strategy',
       customerData: data,
-      objectives: ['maximize_connection', 'improve_conversion']
+      objectives: ['maximize_connection', 'improve_conversion'],
     });
 
     // 更新活动配置
-    this.campaigns.forEach(campaign => {
+    this.campaigns.forEach((campaign) => {
       if (campaign.status === 'active') {
         campaign.config.callStrategy = strategy;
         this.emit('call-strategy-updated', { campaignId: campaign.id, strategy });
@@ -115,7 +114,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
           customerId: activeCall.customerId,
           callData: data,
           analysis: analysis,
-          nextActions: nextActions
+          nextActions: nextActions,
         });
       }
 
@@ -136,8 +135,8 @@ export class IntelligentOutboundSystem extends EventEmitter {
         customerSegments: customerSegments,
         historicalData: historicalData,
         marketConditions: marketConditions,
-        objectives: config.objectives
-      }
+        objectives: config.objectives,
+      },
     });
 
     return {
@@ -147,7 +146,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
       scriptTemplate: optimization.scriptTemplate,
       timing: optimization.timing,
       segmentation: optimization.segmentation,
-      fallbackStrategies: optimization.fallbackStrategies
+      fallbackStrategies: optimization.fallbackStrategies,
     };
   }
 
@@ -156,7 +155,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
     campaign.status = 'active';
 
     // 并行处理呼叫列表
-    const callPromises = campaign.config.targetList.map(target =>
+    const callPromises = campaign.config.targetList.map((target) =>
       this.initiateCall(target, campaign)
     );
 
@@ -183,7 +182,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
       campaignId: campaign.id,
       voiceProfile: voiceProfile,
       script: personalizedScript,
-      maxDuration: campaign.config.maxCallDuration || 300
+      maxDuration: campaign.config.maxCallDuration || 300,
     });
 
     if (callInitiation.success) {
@@ -200,8 +199,8 @@ export class IntelligentOutboundSystem extends EventEmitter {
         analytics: {
           sentiment: 0,
           engagement: 0,
-          compliance: 0
-        }
+          compliance: 0,
+        },
       };
 
       this.activeCalls.set(callId, activeCall);
@@ -233,9 +232,9 @@ export class IntelligentOutboundSystem extends EventEmitter {
         constraints: {
           maxDuration: 180, // 3分钟
           compliance: true,
-          personalizationLevel: 'high'
-        }
-      }
+          personalizationLevel: 'high',
+        },
+      },
     });
 
     return {
@@ -246,12 +245,15 @@ export class IntelligentOutboundSystem extends EventEmitter {
       responses: script.responses,
       fallbacks: script.fallbacks,
       complianceNotes: script.complianceNotes,
-      personalization: script.personalization
+      personalization: script.personalization,
     };
   }
 
   // 选择最优声音
-  private async selectOptimalVoice(target: CallTarget, campaign: CallCampaign): Promise<VoiceProfile> {
+  private async selectOptimalVoice(
+    target: CallTarget,
+    campaign: CallCampaign
+  ): Promise<VoiceProfile> {
     const customerProfile = await this.getCustomerProfile(target.customerId);
     const campaignVoice = campaign.config.voiceProfile;
 
@@ -260,8 +262,8 @@ export class IntelligentOutboundSystem extends EventEmitter {
       context: {
         customerProfile: customerProfile,
         campaignVoice: campaignVoice,
-        objectives: ['maximize_engagement', 'improve_trust']
-      }
+        objectives: ['maximize_engagement', 'improve_trust'],
+      },
     });
 
     return {
@@ -270,7 +272,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
       age: voiceSelection.age || campaignVoice.age,
       tone: voiceSelection.tone || campaignVoice.tone,
       speed: voiceSelection.speed || 1.0,
-      style: voiceSelection.style || 'professional'
+      style: voiceSelection.style || 'professional',
     };
   }
 
@@ -322,8 +324,8 @@ export class IntelligentOutboundSystem extends EventEmitter {
         speech: speechData.text,
         context: {
           script: activeCall.script,
-          conversation: activeCall.conversation
-        }
+          conversation: activeCall.conversation,
+        },
       });
 
       // 更新对话记录
@@ -333,7 +335,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
         timestamp: new Date(),
         intent: intent.primaryIntent,
         sentiment: intent.sentiment,
-        confidence: intent.confidence
+        confidence: intent.confidence,
       });
 
       // 生成AI回应
@@ -347,7 +349,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
           text: response.text,
           timestamp: new Date(),
           intent: response.intent,
-          strategy: response.strategy
+          strategy: response.strategy,
         });
       }
 
@@ -374,7 +376,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
         callId,
         intent: intentData.intent,
         confidence: intentData.confidence,
-        customerId: activeCall.customerId
+        customerId: activeCall.customerId,
       });
 
       // 根据意图调整策略
@@ -390,8 +392,8 @@ export class IntelligentOutboundSystem extends EventEmitter {
         currentIntent: intent,
         conversationHistory: activeCall.conversation,
         script: activeCall.script,
-        objectives: ['engage_customer', 'achieve_goal']
-      }
+        objectives: ['engage_customer', 'achieve_goal'],
+      },
     });
 
     return {
@@ -399,7 +401,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
       intent: response.intent,
       strategy: response.strategy,
       followUpQuestions: response.followUpQuestions,
-      compliance: response.compliance
+      compliance: response.compliance,
     };
   }
 
@@ -409,14 +411,12 @@ export class IntelligentOutboundSystem extends EventEmitter {
     if (activeCall) {
       // 更新情感分析
       if (intent.sentiment) {
-        activeCall.analytics.sentiment =
-          (activeCall.analytics.sentiment + intent.sentiment) / 2;
+        activeCall.analytics.sentiment = (activeCall.analytics.sentiment + intent.sentiment) / 2;
       }
 
       // 更新参与度
       if (intent.engagement) {
-        activeCall.analytics.engagement =
-          (activeCall.analytics.engagement + intent.engagement) / 2;
+        activeCall.analytics.engagement = (activeCall.analytics.engagement + intent.engagement) / 2;
       }
     }
   }
@@ -443,7 +443,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
         conversionProbability: analysis.conversionProbability,
         nextBestAction: analysis.nextBestAction,
         conversation: activeCall.conversation,
-        analytics: activeCall.analytics
+        analytics: activeCall.analytics,
       };
 
       // 更新活动指标
@@ -480,8 +480,8 @@ export class IntelligentOutboundSystem extends EventEmitter {
       data: {
         conversation: conversation,
         duration: duration,
-        script: activeCall.script
-      }
+        script: activeCall.script,
+      },
     });
 
     return {
@@ -490,7 +490,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
       customerSatisfaction: analysis.customerSatisfaction,
       complianceScore: analysis.complianceScore,
       nextBestAction: analysis.nextBestAction,
-      keyInsights: analysis.keyInsights
+      keyInsights: analysis.keyInsights,
     };
   }
 
@@ -510,7 +510,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
       const progress = await this.aiEngine.analyze({
         type: 'conversation-progress',
         conversation: activeCall.conversation,
-        script: activeCall.script
+        script: activeCall.script,
       });
 
       if (progress.requiresIntervention) {
@@ -528,7 +528,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
         type: 'script-adjustment',
         currentScript: activeCall.script,
         recommendations: recommendations,
-        conversation: activeCall.conversation
+        conversation: activeCall.conversation,
       });
 
       // 应用调整
@@ -543,7 +543,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
     return await this.aiEngine.analyze({
       type: 'call-feedback-analysis',
       feedback: feedback,
-      callData: activeCall
+      callData: activeCall,
     });
   }
 
@@ -558,14 +558,14 @@ export class IntelligentOutboundSystem extends EventEmitter {
         ...profile.callPreferences,
         optimalTime: analysis.optimalCallTime,
         preferredTopics: analysis.preferredTopics,
-        communicationStyle: analysis.communicationStyle
+        communicationStyle: analysis.communicationStyle,
       },
       insights: {
         ...profile.insights,
         recentCalls: analysis.keyInsights,
         conversionSignals: analysis.conversionSignals,
-        riskFactors: analysis.riskFactors
-      }
+        riskFactors: analysis.riskFactors,
+      },
     };
 
     await this.saveCustomerProfile(customerId, updatedProfile);
@@ -576,7 +576,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
     const actions = await this.aiEngine.recommend({
       type: 'follow-up-actions',
       analysis: analysis,
-      objectives: ['convert_lead', 'maintain_relationship']
+      objectives: ['convert_lead', 'maintain_relationship'],
     });
 
     return actions.recommendations;
@@ -587,7 +587,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
     return await this.aiEngine.analyze({
       type: 'campaign-insights',
       campaignData: campaign,
-      callResults: Array.from(this.activeCalls.values())
+      callResults: Array.from(this.activeCalls.values()),
     });
   }
 
@@ -608,11 +608,11 @@ export class IntelligentOutboundSystem extends EventEmitter {
     return {
       totalCost,
       costPerCall: totalCost / campaign.metrics.totalCalls,
-      costPerConnection: campaign.metrics.connectedCalls > 0 ?
-        totalCost / campaign.metrics.connectedCalls : 0,
-      costPerConversion: campaign.metrics.conversions > 0 ?
-        totalCost / campaign.metrics.conversions : 0,
-      roi: this.calculateROI(campaign, totalCost)
+      costPerConnection:
+        campaign.metrics.connectedCalls > 0 ? totalCost / campaign.metrics.connectedCalls : 0,
+      costPerConversion:
+        campaign.metrics.conversions > 0 ? totalCost / campaign.metrics.conversions : 0,
+      roi: this.calculateROI(campaign, totalCost),
     };
   }
 
@@ -636,7 +636,7 @@ export class IntelligentOutboundSystem extends EventEmitter {
       demographics: {},
       preferences: {},
       callHistory: [],
-      insights: {}
+      insights: {},
     };
   }
 

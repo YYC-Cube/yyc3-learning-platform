@@ -20,12 +20,12 @@ The YYC³ Learning Platform now includes a comprehensive monitoring system with 
 
 #### Health Checks
 
-| Check | Description | Dependency |
-|-------|-------------|------------|
-| Database | PostgreSQL connectivity check | `postgresql` |
-| Redis | Redis connectivity check (optional) | `redis` |
-| External API | External service availability | `external-api` |
-| Memory | Application memory usage | N/A |
+| Check        | Description                         | Dependency     |
+| ------------ | ----------------------------------- | -------------- |
+| Database     | PostgreSQL connectivity check       | `postgresql`   |
+| Redis        | Redis connectivity check (optional) | `redis`        |
+| External API | External service availability       | `external-api` |
+| Memory       | Application memory usage            | N/A            |
 
 #### Health Status Levels
 
@@ -38,6 +38,7 @@ The YYC³ Learning Platform now includes a comprehensive monitoring system with 
 #### `/api/health` - Detailed Health Check
 
 **Response Example**:
+
 ```json
 {
   "status": "healthy",
@@ -67,6 +68,7 @@ The YYC³ Learning Platform now includes a comprehensive monitoring system with 
 Kubernetes liveness probe - checks if the application is running.
 
 **Response**:
+
 ```json
 {
   "status": "alive",
@@ -79,12 +81,11 @@ Kubernetes liveness probe - checks if the application is running.
 Kubernetes readiness probe - checks if the application is ready to serve traffic.
 
 **Response**:
+
 ```json
 {
   "status": "ready",
-  "checks": [
-    "database:ready"
-  ]
+  "checks": ["database:ready"]
 }
 ```
 
@@ -94,24 +95,26 @@ Kubernetes readiness probe - checks if the application is ready to serve traffic
 
 #### Available Metrics
 
-| Metric | Type | Description |
-|--------|------|-------------|
+| Metric                     | Type      | Description                           |
+| -------------------------- | --------- | ------------------------------------- |
 | `http_request_duration_ms` | Histogram | HTTP request duration in milliseconds |
-| `http_requests_2xx` | Counter | Count of 2xx HTTP responses |
-| `http_requests_4xx` | Counter | Count of 4xx HTTP responses |
-| `http_requests_5xx` | Counter | Count of 5xx HTTP responses |
-| `db_query_duration_ms` | Histogram | Database query duration |
-| `errors_total` | Counter | Total errors by type |
-| `system_uptime_seconds` | Gauge | System uptime in seconds |
-| `system_memory_bytes` | Gauge | Memory usage in bytes |
+| `http_requests_2xx`        | Counter   | Count of 2xx HTTP responses           |
+| `http_requests_4xx`        | Counter   | Count of 4xx HTTP responses           |
+| `http_requests_5xx`        | Counter   | Count of 5xx HTTP responses           |
+| `db_query_duration_ms`     | Histogram | Database query duration               |
+| `errors_total`             | Counter   | Total errors by type                  |
+| `system_uptime_seconds`    | Gauge     | System uptime in seconds              |
+| `system_memory_bytes`      | Gauge     | Memory usage in bytes                 |
 
 #### `/api/metrics` - Metrics Endpoint
 
 **Accept Headers**:
+
 - `text/plain` - Returns Prometheus format
 - `application/json` - Returns JSON format
 
 **Prometheus Format Example**:
+
 ```
 # HELP system_uptime_seconds System uptime in seconds
 # TYPE system_uptime_seconds gauge
@@ -124,6 +127,7 @@ system_memory_bytes{type="heap_total"} 24680135
 ```
 
 **JSON Format Example**:
+
 ```json
 {
   "system": {
@@ -131,9 +135,7 @@ system_memory_bytes{type="heap_total"} 24680135
     "memory": { "heapUsed": 12345678, "heapTotal": 24680135 },
     "cpu": { "user": 1234567, "system": 456789 }
   },
-  "counters": [
-    { "name": "http_requests_2xx", "count": 1234, "timestamp": 1704278400000 }
-  ],
+  "counters": [{ "name": "http_requests_2xx", "count": 1234, "timestamp": 1704278400000 }],
   "timestamp": 1704278400000
 }
 ```
@@ -253,7 +255,7 @@ recordMetric({
   name: 'custom_metric',
   value: 42,
   timestamp: Date.now(),
-  labels: { label1: 'value1' }
+  labels: { label1: 'value1' },
 });
 
 // Increment a counter
@@ -313,12 +315,14 @@ async function checkCustomService() {
 ## Next Steps
 
 ### Phase 2 (Week 5-6)
+
 - [ ] Integrate with Prometheus for metrics storage
 - [ ] Set up Grafana dashboards
 - [ ] Add alerting rules
 - [ ] Implement distributed tracing
 
 ### Phase 3 (Week 7-8)
+
 - [ ] Add log aggregation (ELK/Loki)
 - [ ] Implement error tracking (Sentry)
 - [ ] Add real user monitoring (RUM)

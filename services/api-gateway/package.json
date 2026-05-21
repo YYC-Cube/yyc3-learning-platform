@@ -10,7 +10,12 @@
     "lint": "eslint src --ext .ts",
     "test": "jest"
   },
-  "keywords": ["ai", "gateway", "api", "microservices"],
+  "keywords": [
+    "ai",
+    "gateway",
+    "api",
+    "microservices"
+  ],
   "author": "YYC3 Team",
   "license": "MIT",
   "dependencies": {

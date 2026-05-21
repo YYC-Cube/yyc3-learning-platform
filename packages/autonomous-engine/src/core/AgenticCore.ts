@@ -21,7 +21,7 @@ export enum AgentState {
   PLANNING = 'planning',
   EXECUTING = 'executing',
   REFLECTING = 'reflecting',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 export interface AgentContext {
@@ -134,7 +134,7 @@ export class AgenticCore extends EventEmitter {
   private taskHistory: AgentTask[] = [];
   private config: AgentConfig;
   private modelAdapter: ModelAdapter;
-  
+
   constructor(config: Partial<AgentConfig> = {}) {
     super();
     this.config = {
@@ -143,21 +143,21 @@ export class AgenticCore extends EventEmitter {
       defaultTimeout: config.defaultTimeout || 300000, // 5分钟
       enableLearning: config.enableLearning ?? true,
       logLevel: config.logLevel || 'info',
-      modelAdapterConfig: config.modelAdapterConfig
+      modelAdapterConfig: config.modelAdapterConfig,
     };
-    
+
     // 初始化ModelAdapter
     this.modelAdapter = new ModelAdapter();
-    
+
     // 配置ModelAdapter
     if (this.config.modelAdapterConfig) {
       this.setupModelAdapter(this.config.modelAdapterConfig);
     }
-    
+
     this.setupEventListeners();
     this.startTaskProcessor();
   }
-  
+
   /**
    * 配置并初始化ModelAdapter
    */
@@ -175,15 +175,15 @@ export class AgenticCore extends EventEmitter {
             retryDelay: 1000,
             exponentialBackoff: true,
             alternativeModels: [],
-            fallbackOnErrors: ['rate_limit', 'timeout']
-          }
+            fallbackOnErrors: ['rate_limit', 'timeout'],
+          },
         },
         loadBalancing: {
           strategy: 'round_robin',
           weights: {},
           healthCheckInterval: 30000,
           unhealthyThreshold: 3,
-          healthyThreshold: 2
+          healthyThreshold: 2,
         },
         cache: {
           enabled: true,
@@ -191,7 +191,7 @@ export class AgenticCore extends EventEmitter {
           ttl: 3600000,
           strategy: 'lru',
           compressionEnabled: false,
-          encryptionEnabled: false
+          encryptionEnabled: false,
         },
         monitoring: {
           enabled: true,
@@ -202,9 +202,9 @@ export class AgenticCore extends EventEmitter {
             latency: 5000,
             cost: 10,
             queueDepth: 100,
-            resourceUsage: 0.9
+            resourceUsage: 0.9,
           },
-          retentionPeriod: 86400000
+          retentionPeriod: 86400000,
         },
         security: {
           encryptionEnabled: false,
@@ -216,9 +216,9 @@ export class AgenticCore extends EventEmitter {
             rbacEnabled: false,
             defaultPermissions: [],
             adminRoles: [],
-            userRoles: []
-          }
-        }
+            userRoles: [],
+          },
+        },
       });
 
       // 添加OpenAI模型配置
@@ -228,7 +228,7 @@ export class AgenticCore extends EventEmitter {
         provider: 'openai',
         model: config.openAIModel,
         credentials: {
-          apiKey: config.openAIKey
+          apiKey: config.openAIKey,
         },
         capabilities: {
           maxTokens: config.maxTokens || 8192,
@@ -240,14 +240,14 @@ export class AgenticCore extends EventEmitter {
           codeGeneration: true,
           reasoning: true,
           multilingual: true,
-          customInstructions: true
+          customInstructions: true,
         },
         pricing: {
           inputTokensPer1K: 0.03,
           outputTokensPer1K: 0.06,
           currency: 'USD',
-          unit: 'token'
-        }
+          unit: 'token',
+        },
       };
 
       // 添加模型到ModelAdapter
@@ -260,42 +260,42 @@ export class AgenticCore extends EventEmitter {
       throw error;
     }
   }
-  
+
   private setupEventListeners(): void {
     this.on('task:created', (task: AgentTask) => {
       this.log('info', `Task created: ${task.id}`);
     });
-    
+
     this.on('task:started', (task: AgentTask) => {
       this.log('info', `Task started: ${task.id}`);
     });
-    
+
     this.on('task:completed', (task: AgentTask) => {
       this.log('info', `Task completed: ${task.id}`);
     });
-    
+
     this.on('task:failed', (task: AgentTask, error: Error) => {
       this.log('error', `Task failed: ${task.id}`, error);
     });
-    
+
     // ModelAdapter事件监听
     this.modelAdapter.on('request-start', (request: ModelRequest) => {
       this.emit('model-request-start', request);
     });
-    
+
     this.modelAdapter.on('request-completed', (response: ModelResponse) => {
       this.emit('model-request-completed', response);
     });
-    
+
     this.modelAdapter.on('request-error', (error: any) => {
       this.emit('model-request-error', error);
     });
-    
+
     this.modelAdapter.on('health-status', (status: any) => {
       this.emit('model-health-status', status);
     });
   }
-  
+
   /**
    * 处理用户输入，启动智能流程
    */
@@ -303,13 +303,13 @@ export class AgenticCore extends EventEmitter {
     try {
       // 1. 意图分析
       const intent = await this.analyzeIntent(input);
-      
+
       // 2. 创建目标
       const goal = this.createGoal(intent, input.context);
-      
+
       // 3. 生成计划
       const plan = await this.generatePlan(goal, input.context);
-      
+
       // 4. 创建任务
       const task: AgentTask = {
         id: this.generateId(),
@@ -317,9 +317,9 @@ export class AgenticCore extends EventEmitter {
         plan,
         context: input.context,
         status: 'pending',
-        progress: 0
+        progress: 0,
       };
-      
+
       // 5. 加入队列
       if (this.activeTasks.size < this.config.maxConcurrentTasks) {
         this.activeTasks.set(task.id, task);
@@ -329,22 +329,21 @@ export class AgenticCore extends EventEmitter {
       } else {
         throw new Error('Task queue is full');
       }
-      
+
       this.emit('task:created', task);
-      
+
       return {
         taskId: task.id,
         status: this.state,
         message: '任务已创建，正在处理...',
-        suggestions: this.generateSuggestions(intent)
+        suggestions: this.generateSuggestions(intent),
       };
-      
     } catch (error) {
       this.log('error', 'Failed to process input', error);
       throw error;
     }
   }
-  
+
   /**
    * 意图分析
    */
@@ -354,17 +353,17 @@ export class AgenticCore extends EventEmitter {
       if (!this.config.modelAdapterConfig) {
         return this.simpleIntentAnalysis(input);
       }
-      
+
       // 构建模型请求
       const modelRequest: ModelRequest = {
         id: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         taskType: 'analysis',
         prompt: input.text,
-        messages: input.context.conversationHistory.map(msg => ({
+        messages: input.context.conversationHistory.map((msg) => ({
           role: msg.role as 'system' | 'user' | 'assistant',
           content: msg.content,
           timestamp: msg.timestamp,
-          metadata: msg.metadata || {}
+          metadata: msg.metadata || {},
         })),
         systemPrompt: `你是一个智能意图分析引擎，请分析用户输入并返回结构化的意图信息。
 
@@ -386,13 +385,13 @@ export class AgenticCore extends EventEmitter {
           userId: input.context.userId,
           sessionId: input.context.sessionId,
           requestId: `req_${Date.now()}`,
-          priority: 'normal'
-        }
+          priority: 'normal',
+        },
       };
-      
+
       // 使用ModelAdapter处理请求
       const response: ModelResponse = await this.modelAdapter.processRequest(modelRequest);
-      
+
       // 解析模型响应
       let result;
       if (typeof response.content === 'string') {
@@ -416,31 +415,37 @@ export class AgenticCore extends EventEmitter {
           return this.simpleIntentAnalysis(input);
         }
       }
-      
+
       // 验证结果格式
-      if (!result.primaryIntent || !result.entities || !result.sentiment || !result.complexity || !result.urgency || !result.confidence) {
+      if (
+        !result.primaryIntent ||
+        !result.entities ||
+        !result.sentiment ||
+        !result.complexity ||
+        !result.urgency ||
+        !result.confidence
+      ) {
         this.log('warn', 'Invalid LLM response format, falling back to simple intent analysis');
         return this.simpleIntentAnalysis(input);
       }
-      
+
       return result;
-      
     } catch (error) {
       this.log('error', 'Error analyzing intent with LLM:', error);
       // 降级到简单的关键词匹配实现
       return this.simpleIntentAnalysis(input);
     }
   }
-  
+
   /**
    * 简单的关键词匹配实现（作为降级方案）
    */
   private simpleIntentAnalysis(input: UserInput): AnalyzedIntent {
     const text = input.text.toLowerCase();
-    
+
     let primaryIntent = 'general_query';
     const entities: Array<{ type: string; value: string; confidence: number }> = [];
-    
+
     // 检测意图
     if (text.includes('创建') || text.includes('新建')) {
       primaryIntent = 'create';
@@ -451,23 +456,23 @@ export class AgenticCore extends EventEmitter {
     } else if (text.includes('帮助') || text.includes('如何')) {
       primaryIntent = 'help';
     }
-    
+
     // 提取实体
     const courseMatch = text.match(/课程|学习|教程/);
     if (courseMatch) {
       entities.push({ type: 'topic', value: 'course', confidence: 0.9 });
     }
-    
+
     return {
       primaryIntent,
       entities,
       sentiment: 'neutral',
       complexity: entities.length > 2 ? 'complex' : 'simple',
       urgency: text.includes('紧急') || text.includes('马上') ? 'high' : 'medium',
-      confidence: 0.85
+      confidence: 0.85,
     };
   }
-  
+
   /**
    * 创建目标
    */
@@ -480,13 +485,13 @@ export class AgenticCore extends EventEmitter {
       status: 'pending',
       constraints: {
         maxDuration: 300000,
-        requiredPermissions: context.permissions
+        requiredPermissions: context.permissions,
       },
       successCriteria: ['任务完成', '用户满意'],
-      createdAt: Date.now()
+      createdAt: Date.now(),
     };
   }
-  
+
   /**
    * 生成执行计划
    */
@@ -496,17 +501,17 @@ export class AgenticCore extends EventEmitter {
       if (!this.config.modelAdapterConfig) {
         return this.simplePlanGeneration(goal, context);
       }
-      
+
       // 构建模型请求
       const modelRequest: ModelRequest = {
         id: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         taskType: 'reasoning',
         prompt: `请为目标"${goal.description}"生成详细的执行计划。`,
-        messages: context.conversationHistory.map(msg => ({
+        messages: context.conversationHistory.map((msg) => ({
           role: msg.role as 'system' | 'user' | 'assistant',
           content: msg.content,
           timestamp: msg.timestamp,
-          metadata: msg.metadata || {}
+          metadata: msg.metadata || {},
         })),
         systemPrompt: `你是一个智能计划生成引擎，请根据目标生成详细的执行计划。
 
@@ -536,13 +541,13 @@ export class AgenticCore extends EventEmitter {
           userId: context.userId,
           sessionId: context.sessionId,
           requestId: `req_${Date.now()}`,
-          priority: 'normal'
-        }
+          priority: 'normal',
+        },
       };
-      
+
       // 使用ModelAdapter处理请求
       const response: ModelResponse = await this.modelAdapter.processRequest(modelRequest);
-      
+
       // 解析模型响应
       let result;
       if (typeof response.content === 'string') {
@@ -566,36 +571,35 @@ export class AgenticCore extends EventEmitter {
           return this.simplePlanGeneration(goal, context);
         }
       }
-      
+
       // 验证结果格式
       if (!result.steps || !Array.isArray(result.steps) || result.steps.length === 0) {
         this.log('warn', 'Invalid LLM response format, falling back to simple plan generation');
         return this.simplePlanGeneration(goal, context);
       }
-      
+
       // 为每个步骤生成唯一ID
       const stepsWithIds = result.steps.map((step: any) => ({
         ...step,
         id: step.id || this.generateId(),
-        status: step.status || 'pending'
+        status: step.status || 'pending',
       }));
-      
+
       return {
         id: this.generateId(),
         goalId: goal.id,
         steps: stepsWithIds,
         estimatedDuration: result.estimatedDuration || 10000,
         requiredResources: result.requiredResources || ['cpu', 'memory'],
-        dependencies: result.dependencies || []
+        dependencies: result.dependencies || [],
       };
-      
     } catch (error) {
       this.log('error', 'Error generating plan with LLM:', error);
       // 降级到简单的硬编码步骤
       return this.simplePlanGeneration(goal, context);
     }
   }
-  
+
   /**
    * 简单的硬编码步骤实现（作为降级方案）
    */
@@ -607,92 +611,91 @@ export class AgenticCore extends EventEmitter {
         description: '收集相关信息',
         tool: 'knowledge_search',
         parameters: { query: goal.description },
-        status: 'pending'
+        status: 'pending',
       },
       {
         id: this.generateId(),
         description: '处理数据',
         tool: 'data_processor',
         parameters: {},
-        status: 'pending'
+        status: 'pending',
       },
       {
         id: this.generateId(),
         description: '生成响应',
         tool: 'response_generator',
         parameters: {},
-        status: 'pending'
-      }
+        status: 'pending',
+      },
     ];
-    
+
     return {
       id: this.generateId(),
       goalId: goal.id,
       steps,
       estimatedDuration: 10000,
       requiredResources: ['cpu', 'memory'],
-      dependencies: []
+      dependencies: [],
     };
   }
-  
+
   /**
    * 执行任务
    */
   private async executeTask(taskId: string): Promise<void> {
     const task = this.activeTasks.get(taskId);
     if (!task) return;
-    
+
     try {
       this.state = AgentState.EXECUTING;
       task.status = 'executing';
       task.startTime = Date.now();
       this.emit('task:started', task);
-      
+
       // 执行计划中的每个步骤
       for (const step of task.plan.steps) {
         step.status = 'executing';
-        
+
         // 模拟工具执行
         await this.delay(1000);
         step.result = { success: true, data: `步骤 ${step.description} 完成` };
         step.status = 'completed';
-        
+
         // 更新进度
-        const completedSteps = task.plan.steps.filter(s => s.status === 'completed').length;
+        const completedSteps = task.plan.steps.filter((s) => s.status === 'completed').length;
         task.progress = (completedSteps / task.plan.steps.length) * 100;
-        
+
         this.emit('task:progress', task);
       }
-      
+
       // 任务完成
       task.status = 'completed';
       task.endTime = Date.now();
       task.result = {
         success: true,
         message: '任务已成功完成',
-        data: task.plan.steps.map(s => s.result)
+        data: task.plan.steps.map((s) => s.result),
       };
-      
+
       this.taskHistory.push(task);
       this.activeTasks.delete(taskId);
       this.emit('task:completed', task);
-      
+
       // 处理队列中的下一个任务
       this.processNextTask();
-      
     } catch (error) {
       task.status = 'failed';
       task.error = error instanceof Error ? error.message : 'Unknown error';
       task.endTime = Date.now();
-      
+
       this.activeTasks.delete(taskId);
       this.emit('task:failed', task, error);
-      
+
       // 处理队列中的下一个任务
       this.processNextTask();
     }
   }
-  
+
   /**
    * 处理队列中的下一个任务
    */
@@ -704,12 +707,12 @@ export class AgenticCore extends EventEmitter {
         this.executeTask(nextTask.id);
       }
     }
-    
+
     if (this.activeTasks.size === 0 && this.taskQueue.length === 0) {
       this.state = AgentState.IDLE;
     }
   }
-  
+
   /**
    * 启动任务处理器
    */
@@ -718,7 +721,7 @@ export class AgenticCore extends EventEmitter {
       // 清理超时任务
       const now = Date.now();
       for (const [taskId, task] of this.activeTasks.entries()) {
-        if (task.startTime && (now - task.startTime) > this.config.defaultTimeout) {
+        if (task.startTime && now - task.startTime > this.config.defaultTimeout) {
           task.status = 'failed';
           task.error = 'Task timeout';
           task.endTime = now;
@@ -728,13 +731,13 @@ export class AgenticCore extends EventEmitter {
       }
     }, 10000); // 每10秒检查一次
   }
-  
+
   /**
    * 生成建议
    */
   private generateSuggestions(intent: AnalyzedIntent): string[] {
     const suggestions: string[] = [];
-    
+
     if (intent.primaryIntent === 'search') {
       suggestions.push('尝试使用更具体的关键词');
       suggestions.push('使用筛选条件缩小范围');
@@ -742,25 +745,27 @@ export class AgenticCore extends EventEmitter {
       suggestions.push('查看创建指南');
       suggestions.push('使用模板快速开始');
     }
-    
+
     return suggestions;
   }
-  
+
   /**
    * 获取系统状态
    */
   getSystemStatus(): SystemStatus {
-    const completedTasks = this.taskHistory.filter(t => t.status === 'completed');
-    const avgTime = completedTasks.length > 0
-      ? completedTasks.reduce((sum, t) => sum + ((t.endTime || 0) - (t.startTime || 0)), 0) / completedTasks.length
-      : 0;
-    
+    const completedTasks = this.taskHistory.filter((t) => t.status === 'completed');
+    const avgTime =
+      completedTasks.length > 0
+        ? completedTasks.reduce((sum, t) => sum + ((t.endTime || 0) - (t.startTime || 0)), 0) /
+          completedTasks.length
+        : 0;
+
     return {
       state: this.state,
       activeTasks: this.activeTasks.size,
       queuedTasks: this.taskQueue.length,
       totalTasksProcessed: this.taskHistory.length,
-      averageResponseTime: avgTime
+      averageResponseTime: avgTime,
     };
   }
 
@@ -788,8 +793,8 @@ export class AgenticCore extends EventEmitter {
       systemPrompt: options.parameters?.systemPrompt,
       metadata: {
         requestId: this.generateId(),
-        priority: 'normal'
-      }
+        priority: 'normal',
+      },
     };
 
     const response = await this.modelAdapter.processRequest(request);
@@ -800,16 +805,12 @@ export class AgenticCore extends EventEmitter {
   /**
    * 创建文本嵌入（简化实现）
    */
-  async createEmbedding(options: {
-    text: string;
-    model?: string;
-    context?: any;
-  }): Promise<any> {
+  async createEmbedding(options: { text: string; model?: string; context?: any }): Promise<any> {
     // 简化实现，实际应调用嵌入模型
     const embedding = new Array(384).fill(0).map(() => Math.random() - 0.5);
     return {
       embedding,
-      text: options.text
+      text: options.text,
     };
   }
 
@@ -821,37 +822,38 @@ export class AgenticCore extends EventEmitter {
     // 可以在此添加实际的用户偏好更新逻辑
     console.log(`Updated preferences for user ${userId}`, preferences);
   }
-  
+
   /**
    * 获取任务状态
    */
   getTaskStatus(taskId: string): TaskStatus {
-    const task = this.activeTasks.get(taskId) || 
-                 this.taskQueue.find(t => t.id === taskId) ||
-                 this.taskHistory.find(t => t.id === taskId);
+    const task =
+      this.activeTasks.get(taskId) ||
+      this.taskQueue.find((t) => t.id === taskId) ||
+      this.taskHistory.find((t) => t.id === taskId);
     if (!task) {
       throw new Error(`Task not found: ${taskId}`);
     }
     // 转换AgentTask状态为TaskStatus
     const statusMap: Record<string, TaskStatus> = {
-      'pending': 'pending',
-      'executing': 'running',
-      'completed': 'completed',
-      'failed': 'failed'
+      pending: 'pending',
+      executing: 'running',
+      completed: 'completed',
+      failed: 'failed',
     };
     return statusMap[task.status] || 'failed';
   }
-  
+
   // ==================== 辅助方法 ====================
-  
+
   private generateId(): string {
     return `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
-  
+
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
-  
+
   private log(level: string, message: string, error?: any): void {
     const levels = ['debug', 'info', 'warn', 'error'];
     if (levels.indexOf(level) >= levels.indexOf(this.config.logLevel)) {

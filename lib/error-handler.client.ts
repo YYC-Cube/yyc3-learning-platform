@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import { logger } from "./logger";
+import { logger } from './logger';
 
 /**
  * 客户端安全的错误记录函数
@@ -16,12 +16,15 @@ export function logError(
   context?: Record<string, any>
 ): void {
   logger.error(message, {
-    error: error instanceof Error ? {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
-    } : error,
-    context
+    error:
+      error instanceof Error
+        ? {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+          }
+        : error,
+    context,
   });
 }
 

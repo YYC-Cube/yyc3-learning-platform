@@ -78,7 +78,7 @@
 **统一样式规范:**
 
 ```css
-TabsList: 
+TabsList:
   - bg-white/80 backdrop-blur-sm
   - p-1 rounded-xl
   - shadow-sm border border-indigo-100
@@ -161,12 +161,10 @@ TabsTrigger激活状态:
 ```tsx
 // 侧边栏添加flex布局
 <aside className="flex flex-col space-y-6">
-  
   // 最近活动 - flex-1自动填充
   <section className="flex-1">
     <Card className="shadow-lg">...</Card>
   </section>
-  
   // 快速操作 - flex-1自动填充 + h-full高度填满
   <section className="flex-1">
     <Card className="shadow-lg h-full flex flex-col">
@@ -193,17 +191,9 @@ TabsTrigger激活状态:
 
 ```css
 /* 主色调 */
---primary: #3b82f6 (blue-600)
---secondary: #6366f1 (indigo-600)
---accent: #9333ea (purple-600)
-
-/* 渐变 */
---gradient-primary: from-indigo-500 to-purple-600
---gradient-bg: from-blue-50 via-indigo-50 to-purple-50
-
-/* 悬停态 */
---hover-bg: indigo-50
---hover-text: indigo-600
+--primary: #3b82f6 (blue-600) --secondary: #6366f1 (indigo-600) --accent: #9333ea (purple-600)
+  /* 渐变 */ --gradient-primary: from-indigo-500 to-purple-600 --gradient-bg: from-blue-50
+  via-indigo-50 to-purple-50 /* 悬停态 */ --hover-bg: indigo-50 --hover-text: indigo-600;
 ```
 
 ### 间距规范
@@ -259,7 +249,6 @@ xl: 1280px  /* 超大屏幕 */
   - 单列布局
   - 底部导航固定
   - 较大的触摸区域
-  
 - **桌面端**:
   - 多列布局 (如首页 2:1 比例)
   - 顶部横向导航
@@ -388,7 +377,7 @@ xl: 1280px  /* 超大屏幕 */
 **更新文件数**: 10+  
 **代码行数**: 500+  
 **优化页面**: 7个主要页面  
-**新增资源**: 12张用户头像  
+**新增资源**: 12张用户头像
 
 ---
 

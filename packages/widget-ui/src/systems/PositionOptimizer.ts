@@ -36,9 +36,9 @@ export class PositionOptimizer {
       y: 100,
       width: PositionOptimizer.DEFAULT_WIDTH,
       height: PositionOptimizer.DEFAULT_HEIGHT,
-      zIndex: 1000
+      zIndex: 1000,
     };
-    
+
     // 仅在客户端获取视口信息
     let viewport: ViewportInfo = { width: 1024, height: 768, scrollX: 0, scrollY: 0 };
     if (typeof window !== 'undefined') {
@@ -51,17 +51,21 @@ export class PositionOptimizer {
         basePosition.y = PositionOptimizer.MARGIN;
         break;
       case 'top-right':
-        basePosition.x = viewport.width - PositionOptimizer.DEFAULT_WIDTH - PositionOptimizer.MARGIN;
+        basePosition.x =
+          viewport.width - PositionOptimizer.DEFAULT_WIDTH - PositionOptimizer.MARGIN;
         basePosition.y = PositionOptimizer.MARGIN;
         break;
       case 'bottom-left':
         basePosition.x = PositionOptimizer.MARGIN;
-        basePosition.y = viewport.height - PositionOptimizer.DEFAULT_HEIGHT - PositionOptimizer.MARGIN;
+        basePosition.y =
+          viewport.height - PositionOptimizer.DEFAULT_HEIGHT - PositionOptimizer.MARGIN;
         break;
       case 'bottom-right':
       default:
-        basePosition.x = viewport.width - PositionOptimizer.DEFAULT_WIDTH - PositionOptimizer.MARGIN;
-        basePosition.y = viewport.height - PositionOptimizer.DEFAULT_HEIGHT - PositionOptimizer.MARGIN;
+        basePosition.x =
+          viewport.width - PositionOptimizer.DEFAULT_WIDTH - PositionOptimizer.MARGIN;
+        basePosition.y =
+          viewport.height - PositionOptimizer.DEFAULT_HEIGHT - PositionOptimizer.MARGIN;
         break;
     }
 
@@ -117,12 +121,12 @@ export class PositionOptimizer {
     if (typeof window === 'undefined') {
       return { width: 1024, height: 768, scrollX: 0, scrollY: 0 };
     }
-    
+
     return {
       width: window.innerWidth,
       height: window.innerHeight,
       scrollX: window.scrollX || window.pageXOffset,
-      scrollY: window.scrollY || window.pageYOffset
+      scrollY: window.scrollY || window.pageYOffset,
     };
   }
 

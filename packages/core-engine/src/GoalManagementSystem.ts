@@ -13,14 +13,14 @@ export enum GoalStatus {
   BLOCKED = 'blocked',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
-  FAILED = 'failed'
+  FAILED = 'failed',
 }
 
 export enum GoalPriority {
   LOW = 1,
   MEDIUM = 2,
   HIGH = 3,
-  CRITICAL = 4
+  CRITICAL = 4,
 }
 
 export interface Goal {
@@ -30,45 +30,45 @@ export interface Goal {
   type: 'objective' | 'key_result' | 'task';
   status: GoalStatus;
   priority: GoalPriority;
-  
+
   // OKR关联
   parentId?: string;
   childrenIds: string[];
-  
+
   // SMART验证
   smart: SMARTCriteria;
-  
+
   // 时间管理
   startDate: number;
   dueDate: number;
   completedDate?: number;
-  
+
   // 进度跟踪
   progress: number;
   milestones: Milestone[];
-  
+
   // 依赖关系
   dependencies: string[];
   blockers: Blocker[];
-  
+
   // 价值评估
   value: ValueMetrics;
-  
+
   // 协作信息
   owner: string;
   stakeholders: string[];
-  
+
   // 元数据
   metadata: GoalMetadata;
 }
 
 export interface SMARTCriteria {
-  specific: boolean;          // 具体的
-  measurable: boolean;         // 可度量的
-  achievable: boolean;         // 可实现的
-  relevant: boolean;           // 相关的
-  timeBound: boolean;          // 有时限的
-  score: number;               // 0-100分
+  specific: boolean; // 具体的
+  measurable: boolean; // 可度量的
+  achievable: boolean; // 可实现的
+  relevant: boolean; // 相关的
+  timeBound: boolean; // 有时限的
+  score: number; // 0-100分
   feedback: string[];
 }
 
@@ -91,17 +91,17 @@ export interface Blocker {
 }
 
 export interface ValueMetrics {
-  businessValue: number;       // 业务价值 0-100
-  strategicAlignment: number;  // 战略对齐度 0-100
-  roi: number;                 // 投资回报率
+  businessValue: number; // 业务价值 0-100
+  strategicAlignment: number; // 战略对齐度 0-100
+  roi: number; // 投资回报率
   impact: ImpactAssessment;
 }
 
 export interface ImpactAssessment {
-  userImpact: number;          // 用户影响
-  revenueImpact: number;       // 收入影响
-  efficiencyImpact: number;    // 效率影响
-  riskReduction: number;       // 风险降低
+  userImpact: number; // 用户影响
+  revenueImpact: number; // 收入影响
+  efficiencyImpact: number; // 效率影响
+  riskReduction: number; // 风险降低
 }
 
 export interface GoalMetadata {
@@ -191,9 +191,9 @@ export interface RiskAssessment {
 export interface Risk {
   id: string;
   description: string;
-  probability: number;  // 0-1
-  impact: number;       // 0-100
-  score: number;        // probability * impact
+  probability: number; // 0-1
+  impact: number; // 0-100
+  score: number; // probability * impact
 }
 
 export interface MitigationPlan {
@@ -403,25 +403,25 @@ export class GoalManagementSystem extends EventEmitter {
 
     // 2. 规划阶段
     const planning = await this.planGoalExecution(creation);
-    
+
     // 3. 执行阶段
     const execution = await this.executeGoal(planning);
-    
+
     // 4. 监控阶段
     const monitoring = await this.monitorGoalProgress(execution);
-    
+
     // 5. 调整阶段
     const adjustment = await this.adjustGoalStrategy(monitoring);
-    
+
     // 6. 完成阶段
     const completion = await this.completeGoal(adjustment);
-    
+
     // 7. 评估阶段
     const evaluation = await this.evaluateGoalValue(completion);
-    
+
     // 8. 学习阶段
     const learning = await this.learnFromGoal(evaluation);
-    
+
     return {
       creation,
       planning,
@@ -430,7 +430,7 @@ export class GoalManagementSystem extends EventEmitter {
       adjustment,
       completion,
       evaluation,
-      learning
+      learning,
     };
   }
 
@@ -462,8 +462,8 @@ export class GoalManagementSystem extends EventEmitter {
         updatedAt: Date.now(),
         createdBy: 'system',
         tags: input.tags || [],
-        category: this.categorizeGoal(input)
-      }
+        category: this.categorizeGoal(input),
+      },
     };
 
     this.goals.set(goal.id, goal);
@@ -474,7 +474,7 @@ export class GoalManagementSystem extends EventEmitter {
     return {
       goal,
       smartValidation: goal.smart,
-      valueAssessment: goal.value
+      valueAssessment: goal.value,
     };
   }
 
@@ -496,7 +496,7 @@ export class GoalManagementSystem extends EventEmitter {
     const actionPlan: ActionPlan = {
       tasks,
       timeline,
-      dependencies
+      dependencies,
     };
 
     // 资源分配
@@ -511,7 +511,7 @@ export class GoalManagementSystem extends EventEmitter {
     return {
       actionPlan,
       resourceAllocation,
-      riskAssessment
+      riskAssessment,
     };
   }
 
@@ -529,7 +529,7 @@ export class GoalManagementSystem extends EventEmitter {
         type: 'task_start',
         timestamp: Date.now(),
         actor: task.assignee || 'system',
-        details: { taskId: task.id, taskName: task.name }
+        details: { taskId: task.id, taskName: task.name },
       });
     }
 
@@ -537,13 +537,13 @@ export class GoalManagementSystem extends EventEmitter {
       percentage: 0,
       completedMilestones: 0,
       totalMilestones: planning.actionPlan.tasks.length,
-      onTrack: true
+      onTrack: true,
     };
 
     return {
       startTime,
       activities,
-      progress
+      progress,
     };
   }
 
@@ -555,7 +555,7 @@ export class GoalManagementSystem extends EventEmitter {
       progressVelocity: this.calculateVelocity(execution),
       timeRemaining: 0,
       budgetRemaining: 100,
-      qualityScore: 85
+      qualityScore: 85,
     };
 
     const alerts: Alert[] = [];
@@ -564,7 +564,7 @@ export class GoalManagementSystem extends EventEmitter {
     return {
       metrics,
       alerts,
-      insights
+      insights,
     };
   }
 
@@ -579,13 +579,13 @@ export class GoalManagementSystem extends EventEmitter {
       scheduleImpact: 0,
       costImpact: 0,
       qualityImpact: 0,
-      riskImpact: 0
+      riskImpact: 0,
     };
 
     return {
       adjustments,
       rationale,
-      impact
+      impact,
     };
   }
 
@@ -599,14 +599,14 @@ export class GoalManagementSystem extends EventEmitter {
       recipients: [],
       documentation: [],
       trainingSessions: 0,
-      supportPlan: 'Standard support plan'
+      supportPlan: 'Standard support plan',
     };
 
     return {
       completionDate: Date.now(),
       finalStatus: GoalStatus.COMPLETED,
       deliverables,
-      handoff
+      handoff,
     };
   }
 
@@ -617,35 +617,35 @@ export class GoalManagementSystem extends EventEmitter {
     const successCriteria: SuccessCriteria = {
       criteria: [],
       overallSuccess: true,
-      successRate: 0.95
+      successRate: 0.95,
     };
 
     const actualResults: ActualResults = {
       valueDelivered: 85,
       costActual: 10000,
       timeActual: 30,
-      qualityActual: 90
+      qualityActual: 90,
     };
 
     const variance: VarianceAnalysis = {
       scheduleVariance: 0,
       costVariance: 0,
       scopeVariance: 0,
-      qualityVariance: 0
+      qualityVariance: 0,
     };
 
     const retrospective: Retrospective = {
       whatWentWell: ['团队协作良好', '技术方案可行'],
       whatDidntGoWell: ['时间估算不准', '资源不足'],
       lessonsLearned: ['需要更好的规划'],
-      improvements: ['改进估算方法']
+      improvements: ['改进估算方法'],
     };
 
     return {
       successCriteria,
       actualResults,
       variance,
-      retrospective
+      retrospective,
     };
   }
 
@@ -660,7 +660,7 @@ export class GoalManagementSystem extends EventEmitter {
     return {
       patterns,
       bestPractices,
-      recommendations
+      recommendations,
     };
   }
 
@@ -674,7 +674,7 @@ export class GoalManagementSystem extends EventEmitter {
       relevant: true,
       timeBound: !!input.dueDate,
       score: 85,
-      feedback: []
+      feedback: [],
     };
   }
 
@@ -687,8 +687,8 @@ export class GoalManagementSystem extends EventEmitter {
         userImpact: 70,
         revenueImpact: 60,
         efficiencyImpact: 80,
-        riskReduction: 50
-      }
+        riskReduction: 50,
+      },
     };
   }
 
@@ -713,15 +713,15 @@ export class GoalManagementSystem extends EventEmitter {
         name: '需求分析',
         description: '分析目标需求',
         estimatedEffort: 5,
-        dependencies: []
+        dependencies: [],
       },
       {
         id: 'task_2',
         name: '方案设计',
         description: '设计实施方案',
         estimatedEffort: 8,
-        dependencies: ['task_1']
-      }
+        dependencies: ['task_1'],
+      },
     ];
   }
 
@@ -729,20 +729,20 @@ export class GoalManagementSystem extends EventEmitter {
     return {
       startDate: goal.startDate,
       endDate: goal.dueDate,
-      phases: []
+      phases: [],
     };
   }
 
   private async analyzeDependencies(tasks: Task[]): Promise<DependencyGraph> {
-    const nodes = tasks.map(t => t.id);
+    const nodes = tasks.map((t) => t.id);
     const edges: DependencyEdge[] = [];
 
-    tasks.forEach(task => {
-      task.dependencies.forEach(depId => {
+    tasks.forEach((task) => {
+      task.dependencies.forEach((depId) => {
         edges.push({
           from: depId,
           to: task.id,
-          type: 'finish_to_start'
+          type: 'finish_to_start',
         });
       });
     });
@@ -754,7 +754,7 @@ export class GoalManagementSystem extends EventEmitter {
     return {
       requiredResources: [],
       allocatedResources: [],
-      gaps: []
+      gaps: [],
     };
   }
 
@@ -762,7 +762,7 @@ export class GoalManagementSystem extends EventEmitter {
     return {
       risks: [],
       overallRiskScore: 0.3,
-      mitigationPlan: []
+      mitigationPlan: [],
     };
   }
 

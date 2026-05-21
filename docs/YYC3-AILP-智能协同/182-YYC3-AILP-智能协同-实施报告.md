@@ -23,12 +23,12 @@
 **关键方法**:
 
 ```typescript
-- processInput()      // 处理用户输入
-- analyzeIntent()     // 意图分析
-- createGoal()        // 目标创建
-- generatePlan()      // 计划生成
-- executeTask()       // 任务执行
-- getSystemStatus()   // 系统状态
+-processInput() - // 处理用户输入
+  analyzeIntent() - // 意图分析
+  createGoal() - // 目标创建
+  generatePlan() - // 计划生成
+  executeTask() - // 任务执行
+  getSystemStatus(); // 系统状态
 ```
 
 ---
@@ -95,11 +95,11 @@
 **核心算法**:
 
 ```typescript
-- semanticSearch()        // 语义搜索
-- hybridSearch()          // 混合搜索
-- ragQuery()              // RAG查询
-- multiHopReasoning()     // 多跳推理
-- findPath()              // 图路径查找
+-semanticSearch() - // 语义搜索
+  hybridSearch() - // 混合搜索
+  ragQuery() - // RAG查询
+  multiHopReasoning() - // 多跳推理
+  findPath(); // 图路径查找
 ```
 
 ---
@@ -237,13 +237,13 @@ pnpm dev
 
 ## 🌐 访问地址
 
-| 服务 | 地址 | 说明 |
-|------|------|------|
-| Web应用 | <http://localhost:3000> | Next.js前端 |
-| AI Gateway | <http://localhost:4000> | API网关 |
-| API文档 | <http://localhost:4000/api-docs> | RESTful API文档 |
-| PostgreSQL | localhost:5432 | 数据库 |
-| Redis | localhost:6379 | 缓存服务 |
+| 服务       | 地址                             | 说明            |
+| ---------- | -------------------------------- | --------------- |
+| Web应用    | <http://localhost:3000>          | Next.js前端     |
+| AI Gateway | <http://localhost:4000>          | API网关         |
+| API文档    | <http://localhost:4000/api-docs> | RESTful API文档 |
+| PostgreSQL | localhost:5432                   | 数据库          |
+| Redis      | localhost:6379                   | 缓存服务        |
 
 ---
 
@@ -286,15 +286,15 @@ const response = await fetch('http://localhost:4000/api/agent/process', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer user_token'
+    Authorization: 'Bearer user_token',
   },
   body: JSON.stringify({
     text: '帮我分析这段代码',
     context: {
       conversationHistory: [],
-      workingMemory: {}
-    }
-  })
+      workingMemory: {},
+    },
+  }),
 });
 
 const data = await response.json();
@@ -308,13 +308,13 @@ const response = await fetch('http://localhost:4000/api/knowledge/search', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer user_token'
+    Authorization: 'Bearer user_token',
   },
   body: JSON.stringify({
     query: 'React Hooks 使用方法',
     topK: 10,
-    threshold: 0.7
-  })
+    threshold: 0.7,
+  }),
 });
 
 const { results } = await response.json();
@@ -327,15 +327,15 @@ const response = await fetch('http://localhost:4000/api/tools/execute', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer user_token'
+    Authorization: 'Bearer user_token',
   },
   body: JSON.stringify({
     toolId: 'builtin.code_analysis',
     input: {
       code: 'function hello() { console.log("Hi"); }',
-      language: 'javascript'
-    }
-  })
+      language: 'javascript',
+    },
+  }),
 });
 
 const result = await response.json();
@@ -384,22 +384,22 @@ const result = await response.json();
 
 ## 📊 技术栈
 
-| 层级 | 技术 | 版本 |
-|------|------|------|
-| **前端** | Next.js | 15.2.4 |
-| | React | 19.0.0 |
-| | TypeScript | 5.x |
-| | Tailwind CSS | 3.x |
-| **后端** | Node.js | 20.x |
-| | Express.js | 4.x |
-| | TypeScript | 5.x |
-| **AI/ML** | 自研AgenticCore | 1.0 |
-| | 向量检索 | 自研 |
-| | 强化学习 | Q-Learning |
-| **数据** | PostgreSQL | 15 |
-| | Redis | 7 |
-| **部署** | Docker | 24.x |
-| | Docker Compose | 2.x |
+| 层级      | 技术            | 版本       |
+| --------- | --------------- | ---------- |
+| **前端**  | Next.js         | 15.2.4     |
+|           | React           | 19.0.0     |
+|           | TypeScript      | 5.x        |
+|           | Tailwind CSS    | 3.x        |
+| **后端**  | Node.js         | 20.x       |
+|           | Express.js      | 4.x        |
+|           | TypeScript      | 5.x        |
+| **AI/ML** | 自研AgenticCore | 1.0        |
+|           | 向量检索        | 自研       |
+|           | 强化学习        | Q-Learning |
+| **数据**  | PostgreSQL      | 15         |
+|           | Redis           | 7          |
+| **部署**  | Docker          | 24.x       |
+|           | Docker Compose  | 2.x        |
 
 ---
 

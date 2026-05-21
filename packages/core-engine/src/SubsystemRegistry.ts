@@ -13,7 +13,7 @@ export enum SubsystemStatus {
   ACTIVE = 'active',
   PAUSED = 'paused',
   ERROR = 'error',
-  DISABLED = 'disabled'
+  DISABLED = 'disabled',
 }
 
 export enum SubsystemCategory {
@@ -21,7 +21,7 @@ export enum SubsystemCategory {
   EXTENSION = 'extension',
   INTEGRATION = 'integration',
   TOOL = 'tool',
-  MIDDLEWARE = 'middleware'
+  MIDDLEWARE = 'middleware',
 }
 
 export interface Subsystem {
@@ -122,7 +122,7 @@ export class SubsystemRegistry extends EventEmitter {
       enableDependencyCheck: true,
       enableAutoRecovery: true,
       maxErrorsBeforeDisable: 3,
-      ...config
+      ...config,
     };
 
     this.metrics = {
@@ -130,7 +130,7 @@ export class SubsystemRegistry extends EventEmitter {
       activeSubsystems: 0,
       errorSubsystems: 0,
       disabledSubsystems: 0,
-      averageStartTime: 0
+      averageStartTime: 0,
     };
 
     if (this.config.enableHealthCheck) {
@@ -141,10 +141,7 @@ export class SubsystemRegistry extends EventEmitter {
   /**
    * 注册子系统
    */
-  async register(
-    subsystem: Subsystem,
-    instance: any
-  ): Promise<void> {
+  async register(subsystem: Subsystem, instance: any): Promise<void> {
     // 验证依赖
     if (this.config.enableDependencyCheck) {
       await this.validateDependencies(subsystem);
@@ -159,7 +156,7 @@ export class SubsystemRegistry extends EventEmitter {
       subsystem,
       status: SubsystemStatus.REGISTERED,
       instance,
-      errorCount: 0
+      errorCount: 0,
     };
 
     this.subsystems.set(subsystem.id, registered);
@@ -180,7 +177,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   async unregister(subsystemId: string): Promise<void> {
     const registered = this.subsystems.get(subsystemId);
-    
+
     if (!registered) {
       throw new Error(`Subsystem not found: ${subsystemId}`);
     }
@@ -208,7 +205,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   async start(subsystemId: string): Promise<void> {
     const registered = this.subsystems.get(subsystemId);
-    
+
     if (!registered) {
       throw new Error(`Subsystem not found: ${subsystemId}`);
     }
@@ -247,12 +244,11 @@ export class SubsystemRegistry extends EventEmitter {
       registered.errorCount = 0;
 
       this.metrics.activeSubsystems++;
-      
+
       const duration = Date.now() - startTime;
       this.updateAverageStartTime(duration);
 
       this.emit('subsystem:started', registered);
-
     } catch (error: any) {
       registered.status = SubsystemStatus.ERROR;
       registered.errorCount++;
@@ -262,7 +258,7 @@ export class SubsystemRegistry extends EventEmitter {
 
       this.emit('subsystem:error', {
         registered,
-        error
+        error,
       });
 
       // 自动禁用
@@ -279,7 +275,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   async stop(subsystemId: string): Promise<void> {
     const registered = this.subsystems.get(subsystemId);
-    
+
     if (!registered) {
       throw new Error(`Subsystem not found: ${subsystemId}`);
     }
@@ -304,12 +300,11 @@ export class SubsystemRegistry extends EventEmitter {
       this.metrics.activeSubsystems--;
 
       this.emit('subsystem:stopped', registered);
-
     } catch (error: any) {
       registered.lastError = error;
       this.emit('subsystem:error', {
         registered,
-        error
+        error,
       });
       throw error;
     }
@@ -320,7 +315,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   async pause(subsystemId: string): Promise<void> {
     const registered = this.subsystems.get(subsystemId);
-    
+
     if (!registered) {
       throw new Error(`Subsystem not found: ${subsystemId}`);
     }
@@ -337,7 +332,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   async resume(subsystemId: string): Promise<void> {
     const registered = this.subsystems.get(subsystemId);
-    
+
     if (!registered) {
       throw new Error(`Subsystem not found: ${subsystemId}`);
     }
@@ -354,7 +349,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   async disable(subsystemId: string): Promise<void> {
     const registered = this.subsystems.get(subsystemId);
-    
+
     if (!registered) {
       throw new Error(`Subsystem not found: ${subsystemId}`);
     }
@@ -374,7 +369,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   async enable(subsystemId: string): Promise<void> {
     const registered = this.subsystems.get(subsystemId);
-    
+
     if (!registered) {
       throw new Error(`Subsystem not found: ${subsystemId}`);
     }
@@ -415,13 +410,11 @@ export class SubsystemRegistry extends EventEmitter {
     let subsystems = Array.from(this.subsystems.values());
 
     if (filter?.status) {
-      subsystems = subsystems.filter(s => s.status === filter.status);
+      subsystems = subsystems.filter((s) => s.status === filter.status);
     }
 
     if (filter?.category) {
-      subsystems = subsystems.filter(
-        s => s.subsystem.category === filter.category
-      );
+      subsystems = subsystems.filter((s) => s.subsystem.category === filter.category);
     }
 
     return subsystems;
@@ -433,9 +426,7 @@ export class SubsystemRegistry extends EventEmitter {
   private async validateDependencies(subsystem: Subsystem): Promise<void> {
     for (const depId of subsystem.dependencies) {
       if (!this.subsystems.has(depId)) {
-        throw new Error(
-          `Dependency not found: ${depId} required by ${subsystem.id}`
-        );
+        throw new Error(`Dependency not found: ${depId} required by ${subsystem.id}`);
       }
     }
   }
@@ -446,7 +437,7 @@ export class SubsystemRegistry extends EventEmitter {
   private async startDependencies(subsystem: Subsystem): Promise<void> {
     for (const depId of subsystem.dependencies) {
       const dep = this.subsystems.get(depId);
-      
+
       if (dep && dep.status !== SubsystemStatus.ACTIVE) {
         await this.start(depId);
       }
@@ -458,7 +449,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   private async stopDependents(subsystemId: string): Promise<void> {
     const dependents = this.findDependents(subsystemId);
-    
+
     for (const depId of dependents) {
       await this.stop(depId);
     }
@@ -483,10 +474,7 @@ export class SubsystemRegistry extends EventEmitter {
    * 更新依赖图
    */
   private updateDependencyGraph(subsystem: Subsystem): void {
-    this.dependencyGraph.set(
-      subsystem.id,
-      new Set(subsystem.dependencies)
-    );
+    this.dependencyGraph.set(subsystem.id, new Set(subsystem.dependencies));
   }
 
   /**
@@ -505,7 +493,7 @@ export class SubsystemRegistry extends EventEmitter {
           if (!result.healthy) {
             this.emit('subsystem:unhealthy', {
               registered,
-              result
+              result,
             });
 
             // 自动恢复
@@ -517,7 +505,7 @@ export class SubsystemRegistry extends EventEmitter {
           registered.lastError = error;
           this.emit('subsystem:healthcheck-failed', {
             registered,
-            error
+            error,
           });
         }
       }
@@ -531,12 +519,12 @@ export class SubsystemRegistry extends EventEmitter {
     try {
       await this.stop(subsystemId);
       await this.start(subsystemId);
-      
+
       this.emit('subsystem:recovered', subsystemId);
     } catch (error: any) {
       this.emit('subsystem:recovery-failed', {
         subsystemId,
-        error
+        error,
       });
     }
   }
@@ -563,15 +551,12 @@ export class SubsystemRegistry extends EventEmitter {
   /**
    * 带超时执行
    */
-  private async executeWithTimeout<T>(
-    promise: Promise<T>,
-    timeoutMs: number
-  ): Promise<T> {
+  private async executeWithTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
     return Promise.race([
       promise,
       new Promise<T>((_, reject) =>
         setTimeout(() => reject(new Error('Operation timeout')), timeoutMs)
-      )
+      ),
     ]);
   }
 
@@ -580,7 +565,7 @@ export class SubsystemRegistry extends EventEmitter {
    */
   private updateAverageStartTime(startTime: number): void {
     const total = this.metrics.activeSubsystems;
-    this.metrics.averageStartTime = 
+    this.metrics.averageStartTime =
       (this.metrics.averageStartTime * (total - 1) + startTime) / total;
   }
 

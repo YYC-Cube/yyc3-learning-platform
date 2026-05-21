@@ -1,10 +1,10 @@
 # 🚀 YYC³ AILP - 部署发布文档
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -77,6 +77,7 @@
 ### 📋 环境变量配置
 
 #### 开发环境 (.env.development)
+
 ```bash
 # 应用基础配置
 NODE_ENV=development
@@ -116,6 +117,7 @@ NEXT_PUBLIC_DEBUG_MODE=true
 ```
 
 #### 测试环境 (.env.staging)
+
 ```bash
 # 应用基础配置
 NODE_ENV=staging
@@ -160,6 +162,7 @@ NEXT_PUBLIC_ANALYTICS=true
 ```
 
 #### 生产环境 (.env.production)
+
 ```bash
 # 应用基础配置
 NODE_ENV=production
@@ -301,7 +304,7 @@ services:
       target: runner
     container_name: yyc3-learning-platform
     ports:
-      - "3491:3491"
+      - '3491:3491'
     environment:
       - NODE_ENV=production
       - PORT=3491
@@ -319,7 +322,7 @@ services:
     networks:
       - yyc3-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3491/api/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3491/api/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -333,17 +336,17 @@ services:
       POSTGRES_DB: yyc3_production
       POSTGRES_USER: yyc3_user
       POSTGRES_PASSWORD: yyc3_secure_password
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      POSTGRES_INITDB_ARGS: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     ports:
-      - "5432:5432"
+      - '5432:5432'
     restart: unless-stopped
     networks:
       - yyc3-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U yyc3_user -d yyc3_production"]
+      test: ['CMD-SHELL', 'pg_isready -U yyc3_user -d yyc3_production']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -356,12 +359,12 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
     restart: unless-stopped
     networks:
       - yyc3-network
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
       interval: 10s
       timeout: 3s
       retries: 5
@@ -371,8 +374,8 @@ services:
     image: nginx:alpine
     container_name: yyc3-nginx
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/ssl:/etc/nginx/ssl:ro
@@ -417,7 +420,7 @@ on:
     types: [created]
 
 env:
-  NODE_VERSION: "18"
+  NODE_VERSION: '18'
   REGISTRY: ghcr.io
   IMAGE_NAME: yyc3-learning-platform
 
@@ -665,14 +668,14 @@ jobs:
 
 | 安全项目       | 配置要求                      | 状态 |
 | -------------- | ----------------------------- | ---- |
-| **HTTPS证书**  | 有效SSL/TLS证书               | ✅    |
-| **防火墙规则** | 仅开放必要端口(80, 443, 3491) | ✅    |
-| **数据库加密** | 传输和存储加密                | ✅    |
-| **JWT密钥**    | 强密钥，定期轮换              | ✅    |
-| **API限流**    | 每IP每分钟最多1000请求        | ✅    |
-| **CORS配置**   | 限制可信域名                  | ✅    |
-| **安全头**     | HSTS, CSP, X-Frame-Options等  | ✅    |
-| **依赖扫描**   | 定期npm audit和Snyk扫描       | ✅    |
+| **HTTPS证书**  | 有效SSL/TLS证书               | ✅   |
+| **防火墙规则** | 仅开放必要端口(80, 443, 3491) | ✅   |
+| **数据库加密** | 传输和存储加密                | ✅   |
+| **JWT密钥**    | 强密钥，定期轮换              | ✅   |
+| **API限流**    | 每IP每分钟最多1000请求        | ✅   |
+| **CORS配置**   | 限制可信域名                  | ✅   |
+| **安全头**     | HSTS, CSP, X-Frame-Options等  | ✅   |
+| **依赖扫描**   | 定期npm audit和Snyk扫描       | ✅   |
 
 ### 🌍 域名和SSL配置
 
@@ -723,7 +726,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        
+
         # API限流配置
         limit_req zone=api burst=100 nodelay;
     }
@@ -758,7 +761,7 @@ services:
     image: prom/prometheus:latest
     container_name: yyc3-prometheus
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
@@ -775,7 +778,7 @@ services:
     image: grafana/grafana:latest
     container_name: yyc3-grafana
     ports:
-      - "3001:3000"
+      - '3001:3000'
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin_password_2026
       - GF_USERS_ALLOW_SIGN_UP=false
@@ -791,7 +794,7 @@ services:
     image: grafana/loki:latest
     container_name: yyc3-loki
     ports:
-      - "3100:3100"
+      - '3100:3100'
     volumes:
       - loki_data:/loki
       - ./monitoring/loki.yml:/etc/loki/local-config.yaml
@@ -837,9 +840,8 @@ networks:
   - 健康检查失败 (连续3次)
   - 性能指标异常 (持续5分钟)
   - 错误率超标 (>10%)
-  
-自动恢复动作:
-  1. 重启应用容器
+
+自动恢复动作: 1. 重启应用容器
   2. 切换到备用实例
   3. 回滚到上一版本
   4. 发送告警通知
@@ -913,7 +915,7 @@ graph LR
     G --> H[生产环境发布]
     H --> I[监控验证]
     I --> J[发布完成]
-    
+
     H --> K[回滚准备]
     K --> L[问题检测]
     L --> M[执行回滚]
@@ -937,7 +939,7 @@ graph LR
 
 ## 📄 文档标尾
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

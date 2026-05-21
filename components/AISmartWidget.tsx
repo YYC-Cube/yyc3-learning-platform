@@ -13,7 +13,9 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import { IntelligentAIWidget } from './intelligent-ai-widget/intelligent-ai-widget';
 
 // Mock ThemeProvider for now
-const ThemeProvider: React.FC<{ initialTheme: string; children: React.ReactNode }> = ({ children }) => {
+const ThemeProvider: React.FC<{ initialTheme: string; children: React.ReactNode }> = ({
+  children,
+}) => {
   return <>{children}</>;
 };
 
@@ -29,13 +31,13 @@ export const AISmartWidget: React.FC = () => {
     const checkMobile = () => {
       isMobileRef.current = window.innerWidth < 768;
     };
-    
+
     // 初始化检测
     checkMobile();
-    
+
     // 监听窗口大小变化
     window.addEventListener('resize', checkMobile);
-    
+
     return () => {
       window.removeEventListener('resize', checkMobile);
     };
@@ -47,10 +49,7 @@ export const AISmartWidget: React.FC = () => {
   return (
     <DndProvider backend={Backend}>
       <ThemeProvider initialTheme="light">
-        <IntelligentAIWidget
-          userId="default-user"
-          initialPosition="bottom-right"
-        />
+        <IntelligentAIWidget userId="default-user" initialPosition="bottom-right" />
       </ThemeProvider>
     </DndProvider>
   );

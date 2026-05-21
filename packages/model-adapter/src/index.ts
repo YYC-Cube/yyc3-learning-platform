@@ -76,7 +76,7 @@ import type {
   ThroughputAnalysis,
   CostAnalysis,
   ReliabilityAnalysis,
-  Alert
+  Alert,
 } from './IModelAdapter.js';
 
 // Import the main implementation
@@ -87,7 +87,10 @@ import { OpenAIProvider } from './OpenAIProvider.js';
 import { GoogleProvider } from './GoogleProvider.js';
 
 // Import core components
-import { IntelligentCacheLayer, CacheConfig as IntelligentCacheConfig } from './core/IntelligentCacheLayer.js';
+import {
+  IntelligentCacheLayer,
+  CacheConfig as IntelligentCacheConfig,
+} from './core/IntelligentCacheLayer.js';
 import { EnhancedStreamingProcessor, StreamingConfig } from './core/EnhancedStreamingProcessor.js';
 
 // Re-export all types
@@ -160,7 +163,7 @@ export type {
   ThroughputAnalysis,
   CostAnalysis,
   ReliabilityAnalysis,
-  Alert
+  Alert,
 };
 
 // Main implementation
@@ -188,7 +191,7 @@ export type {
   EvictionResult,
   ConsistencyCheck,
   CacheConfig,
-  CachePerformanceReport
+  CachePerformanceReport,
 };
 
 // Re-export streaming types
@@ -197,7 +200,7 @@ export type {
   StreamingMetrics,
   StreamBuffer,
   PrefetchContext,
-  StreamPerformanceReport
+  StreamPerformanceReport,
 };
 
 // Package version
@@ -226,15 +229,15 @@ export const DEFAULT_MODEL_ADAPTER_CONFIG: ModelAdapterConfig = {
       retryDelay: 1000,
       exponentialBackoff: true,
       alternativeModels: [],
-      fallbackOnErrors: ['timeout', 'rate_limit', 'error']
-    }
+      fallbackOnErrors: ['timeout', 'rate_limit', 'error'],
+    },
   },
   loadBalancing: {
     strategy: 'round_robin',
     weights: {},
     healthCheckInterval: 60000,
     unhealthyThreshold: 3,
-    healthyThreshold: 2
+    healthyThreshold: 2,
   },
   cache: {
     enabled: true,
@@ -242,7 +245,7 @@ export const DEFAULT_MODEL_ADAPTER_CONFIG: ModelAdapterConfig = {
     maxSize: 1000,
     strategy: 'lru',
     compressionEnabled: true,
-    encryptionEnabled: false
+    encryptionEnabled: false,
   },
   monitoring: {
     enabled: true,
@@ -253,9 +256,9 @@ export const DEFAULT_MODEL_ADAPTER_CONFIG: ModelAdapterConfig = {
       latency: 5000,
       cost: 100,
       queueDepth: 100,
-      resourceUsage: 80
+      resourceUsage: 80,
     },
-    retentionPeriod: 2592000000 // 30 days
+    retentionPeriod: 2592000000, // 30 days
   },
   security: {
     encryptionEnabled: true,
@@ -267,9 +270,9 @@ export const DEFAULT_MODEL_ADAPTER_CONFIG: ModelAdapterConfig = {
       rbacEnabled: false,
       defaultPermissions: [],
       adminRoles: ['admin'],
-      userRoles: ['user']
-    }
-  }
+      userRoles: ['user'],
+    },
+  },
 };
 
 /**
@@ -293,8 +296,8 @@ export const MODEL_PRESETS = {
         codeGeneration: true,
         reasoning: true,
         multilingual: true,
-        customInstructions: true
-      }
+        customInstructions: true,
+      },
     },
     gpt35: {
       id: 'gpt-3.5-turbo',
@@ -311,9 +314,9 @@ export const MODEL_PRESETS = {
         codeGeneration: true,
         reasoning: true,
         multilingual: true,
-        customInstructions: true
-      }
-    }
+        customInstructions: true,
+      },
+    },
   },
   anthropic: {
     claude3: {
@@ -331,9 +334,9 @@ export const MODEL_PRESETS = {
         codeGeneration: true,
         reasoning: true,
         multilingual: true,
-        customInstructions: true
-      }
-    }
+        customInstructions: true,
+      },
+    },
   },
   google: {
     gemini: {
@@ -351,10 +354,10 @@ export const MODEL_PRESETS = {
         codeGeneration: true,
         reasoning: true,
         multilingual: true,
-        customInstructions: true
-      }
-    }
-  }
+        customInstructions: true,
+      },
+    },
+  },
 };
 
 /**
@@ -381,9 +384,9 @@ export function createModelRequest(
     metadata: {
       requestId: generateId(),
       priority: 'normal',
-      tags: []
+      tags: [],
     },
-    ...options
+    ...options,
   };
 }
 
@@ -456,13 +459,13 @@ export function selectBestModelForTask(
     extraction: ['gpt-4', 'claude-3-opus', 'gemini-pro'],
     code: ['gpt-4', 'claude-3-opus', 'gpt-3.5-turbo'],
     reasoning: ['gpt-4', 'claude-3-opus', 'gemini-pro'],
-    creative: ['gpt-4', 'claude-3-opus', 'gemini-pro']
+    creative: ['gpt-4', 'claude-3-opus', 'gemini-pro'],
   };
 
   const preferredOrder = preferences[taskType] || preferences.conversation;
 
   for (const preferredModel of preferredOrder) {
-    const model = availableModels.find(m => m.model === preferredModel);
+    const model = availableModels.find((m) => m.model === preferredModel);
     if (model) return model;
   }
 
@@ -495,7 +498,7 @@ export function formatCost(cost: number, currency = 'USD'): string {
     style: 'currency',
     currency,
     minimumFractionDigits: 4,
-    maximumFractionDigits: 6
+    maximumFractionDigits: 6,
   }).format(cost);
 }
 
@@ -522,10 +525,10 @@ export function getModelCapabilityNames(capabilities: ModelCapabilities): string
     'codeGeneration',
     'reasoning',
     'multilingual',
-    'customInstructions'
+    'customInstructions',
   ];
 
-  return capabilityNames.filter(name => capabilities[name]) as string[];
+  return capabilityNames.filter((name) => capabilities[name]) as string[];
 }
 
 /**
@@ -547,7 +550,7 @@ export function createErrorResponse(
       inputTokens: 0,
       outputTokens: 0,
       totalTokens: 0,
-      cost: 0
+      cost: 0,
     },
     metadata: {
       latency: 0,
@@ -558,7 +561,7 @@ export function createErrorResponse(
       processingTime: 0,
       retryCount: 0,
       cacheHit: false,
-      confidence: 0
-    }
+      confidence: 0,
+    },
   };
 }

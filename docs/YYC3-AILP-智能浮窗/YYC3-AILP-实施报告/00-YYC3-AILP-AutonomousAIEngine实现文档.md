@@ -40,8 +40,8 @@
 ```typescript
 class MessageBus extends BaseSubsystem {
   // 事件订阅与发布机制
-  subscribe(event: string, handler: Function): void
-  publish(event: string, payload: any): void
+  subscribe(event: string, handler: Function): void;
+  publish(event: string, payload: any): void;
   // 支持异步事件处理和错误恢复
 }
 ```
@@ -51,8 +51,8 @@ class MessageBus extends BaseSubsystem {
 ```typescript
 class TaskScheduler extends BaseSubsystem {
   // 智能任务调度算法
-  schedule(task: Task, schedule?: ScheduleConfig): string
-  cancel(taskId: string): Promise<void>
+  schedule(task: Task, schedule?: ScheduleConfig): string;
+  cancel(taskId: string): Promise<void>;
   // 支持优先级调度和依赖管理
 }
 ```
@@ -62,8 +62,8 @@ class TaskScheduler extends BaseSubsystem {
 ```typescript
 class DecisionEngine extends BaseSubsystem {
   // 多模型决策支持
-  async makeDecision(context: DecisionContext, options: DecisionOption[]): Promise<Decision>
-  async evaluateDecision(decision: Decision): Promise<DecisionEvaluation>
+  async makeDecision(context: DecisionContext, options: DecisionOption[]): Promise<Decision>;
+  async evaluateDecision(decision: Decision): Promise<DecisionEvaluation>;
   // 支持效用理论、机器学习、混合决策方法
 }
 ```
@@ -73,8 +73,8 @@ class DecisionEngine extends BaseSubsystem {
 ```typescript
 class LearningSystem extends BaseSubsystem {
   // 经验学习与策略适应
-  async learnFromExperience(experience: Experience): Promise<void>
-  async adaptStrategy(newStrategy: Strategy): Promise<void>
+  async learnFromExperience(experience: Experience): Promise<void>;
+  async adaptStrategy(newStrategy: Strategy): Promise<void>;
   // 支持持续学习和性能优化
 }
 ```
@@ -84,8 +84,8 @@ class LearningSystem extends BaseSubsystem {
 ```typescript
 class ResourceManager extends BaseSubsystem {
   // 智能资源分配与优化
-  async allocateResources(requirements: ResourceRequirements): Promise<ResourceAllocation>
-  async releaseResources(allocationId: string): Promise<void>
+  async allocateResources(requirements: ResourceRequirements): Promise<ResourceAllocation>;
+  async releaseResources(allocationId: string): Promise<void>;
   // 支持动态资源调度和负载均衡
 }
 ```
@@ -95,8 +95,11 @@ class ResourceManager extends BaseSubsystem {
 ```typescript
 class CollaborationManager extends BaseSubsystem {
   // 分布式协作与通信
-  async sendMessage(message: EngineMessage): Promise<void>
-  async collaborate(otherEngines: readonly string[], task: CollaborativeTask): Promise<CollaborativeResult>
+  async sendMessage(message: EngineMessage): Promise<void>;
+  async collaborate(
+    otherEngines: readonly string[],
+    task: CollaborativeTask
+  ): Promise<CollaborativeResult>;
   // 支持多引擎协调和知识共享
 }
 ```
@@ -106,8 +109,8 @@ class CollaborationManager extends BaseSubsystem {
 ```typescript
 class MonitoringSystem extends BaseSubsystem {
   // 全方位健康监控与诊断
-  getHealthStatus(): HealthStatus
-  getDiagnosticInfo(): DiagnosticInfo
+  getHealthStatus(): HealthStatus;
+  getDiagnosticInfo(): DiagnosticInfo;
   // 支持实时监控、预警和性能分析
 }
 ```
@@ -213,68 +216,68 @@ User Input → Intent Analysis → Goal Generation → Task Decomposition
 
 ```typescript
 // 启动引擎
-await engine.start()
+await engine.start();
 
 // 停止引擎
-await engine.stop()
+await engine.stop();
 
 // 重启引擎
-await engine.restart()
+await engine.restart();
 
 // 配置更新
-await engine.updateConfiguration(config)
+await engine.updateConfiguration(config);
 ```
 
 ### 目标管理
 
 ```typescript
 // 设置目标
-await engine.setGoal(goal)
+await engine.setGoal(goal);
 
 // 获取活跃目标
-const goals = engine.getActiveGoals()
+const goals = engine.getActiveGoals();
 
 // 更新进度
-await engine.updateGoalProgress(goalId, progress)
+await engine.updateGoalProgress(goalId, progress);
 
 // 完成目标
-await engine.completeGoal(goalId, result)
+await engine.completeGoal(goalId, result);
 ```
 
 ### 任务执行
 
 ```typescript
 // 执行任务
-const result = await engine.executeTask(task)
+const result = await engine.executeTask(task);
 
 // 调度任务
-const taskId = await engine.scheduleTask(task, schedule)
+const taskId = await engine.scheduleTask(task, schedule);
 
 // 任务状态
-const status = engine.getTaskStatus(taskId)
+const status = engine.getTaskStatus(taskId);
 ```
 
 ### 智能决策
 
 ```typescript
 // 做出决策
-const decision = await engine.makeDecision(context, options)
+const decision = await engine.makeDecision(context, options);
 
 // 评估决策
-const evaluation = await engine.evaluateDecision(decisionId)
+const evaluation = await engine.evaluateDecision(decisionId);
 ```
 
 ### 学习适应
 
 ```typescript
 // 从经验学习
-await engine.learnFromExperience(experience)
+await engine.learnFromExperience(experience);
 
 // 适应策略
-await engine.adaptStrategy(newStrategy)
+await engine.adaptStrategy(newStrategy);
 
 // 学习进度
-const progress = engine.getLearningProgress()
+const progress = engine.getLearningProgress();
 ```
 
 ## 📦 项目结构

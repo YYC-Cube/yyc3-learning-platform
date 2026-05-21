@@ -4,16 +4,16 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import type React from "react"
+import type React from 'react';
 
-import { useState, useEffect, useCallback } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
+import { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
 import {
   Clock,
   ArrowLeft,
@@ -26,18 +26,18 @@ import {
   EyeOff,
   Maximize2,
   Minimize2,
-} from "lucide-react"
+} from 'lucide-react';
 
 interface EnhancedExamLayoutProps {
-  exam: any
-  questions: any[]
-  currentQuestionIndex: number
-  answers: Record<number, any>
-  timeRemaining: number
-  onQuestionChange: (index: number) => void
-  onAnswerChange: (questionIndex: number, answer: any) => void
-  onSubmit: () => void
-  children: React.ReactNode
+  exam: any;
+  questions: any[];
+  currentQuestionIndex: number;
+  answers: Record<number, any>;
+  timeRemaining: number;
+  onQuestionChange: (index: number) => void;
+  onAnswerChange: (questionIndex: number, answer: any) => void;
+  onSubmit: () => void;
+  children: React.ReactNode;
 }
 
 export function EnhancedExamLayout({
@@ -51,103 +51,112 @@ export function EnhancedExamLayout({
   onSubmit,
   children,
 }: EnhancedExamLayoutProps) {
-  const [isFullscreen, setIsFullscreen] = useState(false)
-  const [showSidebar, setShowSidebar] = useState(true)
-  const [focusMode, setFocusMode] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [focusMode, setFocusMode] = useState(false);
 
-  const currentQuestion = questions[currentQuestionIndex]
-  const answeredCount = Object.keys(answers).length
-  const progressPercentage = (answeredCount / questions.length) * 100
+  const currentQuestion = questions[currentQuestionIndex];
+  const answeredCount = Object.keys(answers).length;
+  const progressPercentage = (answeredCount / questions.length) * 100;
 
   // 格式化时间
   const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // 全屏切换
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen()
-      setIsFullscreen(true)
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
     } else {
-      document.exitFullscreen()
-      setIsFullscreen(false)
+      document.exitFullscreen();
+      setIsFullscreen(false);
     }
-  }, [])
+  }, []);
 
   // 专注模式
   const toggleFocusMode = useCallback(() => {
-    setFocusMode(!focusMode)
-    setShowSidebar(!focusMode ? false : true)
-  }, [focusMode])
+    setFocusMode(!focusMode);
+    setShowSidebar(!focusMode ? false : true);
+  }, [focusMode]);
 
   // 键盘快捷键
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
         switch (e.key) {
-          case "ArrowLeft":
-            e.preventDefault()
+          case 'ArrowLeft':
+            e.preventDefault();
             if (currentQuestionIndex > 0) {
-              onQuestionChange(currentQuestionIndex - 1)
+              onQuestionChange(currentQuestionIndex - 1);
             }
-            break
-          case "ArrowRight":
-            e.preventDefault()
+            break;
+          case 'ArrowRight':
+            e.preventDefault();
             if (currentQuestionIndex < questions.length - 1) {
-              onQuestionChange(currentQuestionIndex + 1)
+              onQuestionChange(currentQuestionIndex + 1);
             }
-            break
-          case "Enter":
-            e.preventDefault()
+            break;
+          case 'Enter':
+            e.preventDefault();
             if (currentQuestionIndex === questions.length - 1) {
-              onSubmit()
+              onSubmit();
             }
-            break
-          case "f":
-            e.preventDefault()
-            toggleFullscreen()
-            break
-          case "d":
-            e.preventDefault()
-            toggleFocusMode()
-            break
+            break;
+          case 'f':
+            e.preventDefault();
+            toggleFullscreen();
+            break;
+          case 'd':
+            e.preventDefault();
+            toggleFocusMode();
+            break;
         }
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [currentQuestionIndex, questions.length, onQuestionChange, onSubmit, toggleFocusMode, toggleFullscreen])
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [
+    currentQuestionIndex,
+    questions.length,
+    onQuestionChange,
+    onSubmit,
+    toggleFocusMode,
+    toggleFullscreen,
+  ]);
 
   return (
     <div
       className={`min-h-screen pb-24 md:pb-6 transition-all duration-300 ${
-        focusMode ? "bg-gray-900" : "bg-gradient-to-br from-blue-50 to-indigo-100"
+        focusMode ? 'bg-gray-900' : 'bg-gradient-to-br from-blue-50 to-indigo-100'
       }`}
     >
       {/* 顶部固定导航栏 */}
       <div
         className={`sticky top-0 z-40 backdrop-blur-md border-b transition-all duration-300 ${
-          focusMode ? "bg-gray-800/90 border-gray-700" : "bg-white/90 border-gray-200"
+          focusMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/90 border-gray-200'
         }`}
       >
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             {/* 左侧信息 */}
             <div className="flex items-center space-x-4">
-              <Badge variant="outline" className={focusMode ? "border-gray-600 text-gray-300" : ""}>
+              <Badge variant="outline" className={focusMode ? 'border-gray-600 text-gray-300' : ''}>
                 {currentQuestionIndex + 1} / {questions.length}
               </Badge>
-              <Badge variant="secondary" className={focusMode ? "bg-gray-700 text-gray-300" : ""}>
+              <Badge variant="secondary" className={focusMode ? 'bg-gray-700 text-gray-300' : ''}>
                 {exam.category}
               </Badge>
               <div className="hidden md:flex items-center space-x-2">
-                <div className={`text-sm ${focusMode ? "text-gray-400" : "text-gray-600"}`}>已答: {answeredCount}</div>
+                <div className={`text-sm ${focusMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                  已答: {answeredCount}
+                </div>
                 <Separator orientation="vertical" className="h-4" />
-                <div className={`text-sm ${focusMode ? "text-gray-400" : "text-gray-600"}`}>
+                <div className={`text-sm ${focusMode ? 'text-gray-400' : 'text-gray-600'}`}>
                   剩余: {questions.length - answeredCount}
                 </div>
               </div>
@@ -156,8 +165,13 @@ export function EnhancedExamLayout({
             {/* 中间进度条 */}
             <div className="flex-1 max-w-md mx-8 hidden lg:block">
               <div className="flex items-center space-x-2">
-                <Progress value={progressPercentage} className={`flex-1 h-2 ${focusMode ? "bg-gray-700" : ""}`} />
-                <span className={`text-sm font-medium ${focusMode ? "text-gray-300" : "text-gray-700"}`}>
+                <Progress
+                  value={progressPercentage}
+                  className={`flex-1 h-2 ${focusMode ? 'bg-gray-700' : ''}`}
+                />
+                <span
+                  className={`text-sm font-medium ${focusMode ? 'text-gray-300' : 'text-gray-700'}`}
+                >
                   {Math.round(progressPercentage)}%
                 </span>
               </div>
@@ -169,10 +183,10 @@ export function EnhancedExamLayout({
               <div
                 className={`flex items-center space-x-2 px-3 py-1 rounded-lg ${
                   timeRemaining <= 600
-                    ? "bg-red-100 text-red-700 animate-pulse"
+                    ? 'bg-red-100 text-red-700 animate-pulse'
                     : focusMode
-                      ? "bg-gray-700 text-gray-300"
-                      : "bg-orange-100 text-orange-700"
+                      ? 'bg-gray-700 text-gray-300'
+                      : 'bg-orange-100 text-orange-700'
                 }`}
               >
                 <Clock className="h-4 w-4" />
@@ -185,7 +199,7 @@ export function EnhancedExamLayout({
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowSidebar(!showSidebar)}
-                  className={focusMode ? "text-gray-300 hover:text-white hover:bg-gray-700" : ""}
+                  className={focusMode ? 'text-gray-300 hover:text-white hover:bg-gray-700' : ''}
                   title="切换侧边栏"
                 >
                   {showSidebar ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -194,7 +208,7 @@ export function EnhancedExamLayout({
                   variant="ghost"
                   size="sm"
                   onClick={toggleFocusMode}
-                  className={focusMode ? "text-gray-300 hover:text-white hover:bg-gray-700" : ""}
+                  className={focusMode ? 'text-gray-300 hover:text-white hover:bg-gray-700' : ''}
                   title="专注模式 (Ctrl+D)"
                 >
                   <Target className="h-4 w-4" />
@@ -203,10 +217,14 @@ export function EnhancedExamLayout({
                   variant="ghost"
                   size="sm"
                   onClick={toggleFullscreen}
-                  className={focusMode ? "text-gray-300 hover:text-white hover:bg-gray-700" : ""}
+                  className={focusMode ? 'text-gray-300 hover:text-white hover:bg-gray-700' : ''}
                   title="全屏模式 (Ctrl+F)"
                 >
-                  {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                  {isFullscreen ? (
+                    <Minimize2 className="h-4 w-4" />
+                  ) : (
+                    <Maximize2 className="h-4 w-4" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -216,40 +234,51 @@ export function EnhancedExamLayout({
 
       {/* 主要内容区域 */}
       <div className="container mx-auto px-4 py-6">
-        <div className={`grid gap-6 transition-all duration-300 ${showSidebar ? "lg:grid-cols-4" : "lg:grid-cols-1"}`}>
+        <div
+          className={`grid gap-6 transition-all duration-300 ${showSidebar ? 'lg:grid-cols-4' : 'lg:grid-cols-1'}`}
+        >
           {/* 主要考试内容 */}
-          <div className={`space-y-6 ${showSidebar ? "lg:col-span-3" : "lg:col-span-1 max-w-4xl mx-auto"}`}>
+          <div
+            className={`space-y-6 ${showSidebar ? 'lg:col-span-3' : 'lg:col-span-1 max-w-4xl mx-auto'}`}
+          >
             {/* 题目卡片 */}
             <Card
               className={`shadow-lg transition-all duration-300 ${
-                focusMode ? "bg-gray-800 border-gray-700" : "bg-white"
+                focusMode ? 'bg-gray-800 border-gray-700' : 'bg-white'
               }`}
             >
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <CardTitle
-                      className={`text-lg flex items-center gap-2 ${focusMode ? "text-gray-100" : "text-gray-900"}`}
+                      className={`text-lg flex items-center gap-2 ${focusMode ? 'text-gray-100' : 'text-gray-900'}`}
                     >
                       <div
                         className={`p-2 rounded-lg ${
-                          currentQuestion.type === "single"
-                            ? "bg-blue-100 text-blue-600"
-                            : currentQuestion.type === "multiple"
-                              ? "bg-green-100 text-green-600"
-                              : "bg-purple-100 text-purple-600"
-                        } ${focusMode ? "bg-opacity-20" : ""}`}
+                          currentQuestion.type === 'single'
+                            ? 'bg-blue-100 text-blue-600'
+                            : currentQuestion.type === 'multiple'
+                              ? 'bg-green-100 text-green-600'
+                              : 'bg-purple-100 text-purple-600'
+                        } ${focusMode ? 'bg-opacity-20' : ''}`}
                       >
-                        {currentQuestion.type === "single" ? "单" : currentQuestion.type === "multiple" ? "多" : "简"}
+                        {currentQuestion.type === 'single'
+                          ? '单'
+                          : currentQuestion.type === 'multiple'
+                            ? '多'
+                            : '简'}
                       </div>
                       <span>
-                        {currentQuestion.type === "single"
-                          ? "单选题"
-                          : currentQuestion.type === "multiple"
-                            ? "多选题"
-                            : "简答题"}
+                        {currentQuestion.type === 'single'
+                          ? '单选题'
+                          : currentQuestion.type === 'multiple'
+                            ? '多选题'
+                            : '简答题'}
                       </span>
-                      <Badge variant="outline" className={focusMode ? "border-gray-600 text-gray-400" : ""}>
+                      <Badge
+                        variant="outline"
+                        className={focusMode ? 'border-gray-600 text-gray-400' : ''}
+                      >
                         {currentQuestion.points}分
                       </Badge>
                     </CardTitle>
@@ -262,13 +291,17 @@ export function EnhancedExamLayout({
                         key={level}
                         className={`w-2 h-2 rounded-full ${
                           level <=
-                          (currentQuestion.difficulty === "easy" ? 2 : currentQuestion.difficulty === "medium" ? 3 : 4)
+                          (currentQuestion.difficulty === 'easy'
+                            ? 2
+                            : currentQuestion.difficulty === 'medium'
+                              ? 3
+                              : 4)
                             ? focusMode
-                              ? "bg-yellow-400"
-                              : "bg-yellow-500"
+                              ? 'bg-yellow-400'
+                              : 'bg-yellow-500'
                             : focusMode
-                              ? "bg-gray-600"
-                              : "bg-gray-300"
+                              ? 'bg-gray-600'
+                              : 'bg-gray-300'
                         }`}
                       />
                     ))}
@@ -277,7 +310,9 @@ export function EnhancedExamLayout({
               </CardHeader>
 
               <CardContent>
-                <div className={`text-base leading-relaxed mb-6 ${focusMode ? "text-gray-200" : "text-gray-900"}`}>
+                <div
+                  className={`text-base leading-relaxed mb-6 ${focusMode ? 'text-gray-200' : 'text-gray-900'}`}
+                >
                   {currentQuestion.question}
                 </div>
 
@@ -292,7 +327,7 @@ export function EnhancedExamLayout({
                 variant="outline"
                 onClick={() => onQuestionChange(Math.max(0, currentQuestionIndex - 1))}
                 disabled={currentQuestionIndex === 0}
-                className={`${focusMode ? "border-gray-600 text-gray-300 hover:bg-gray-700" : ""}`}
+                className={`${focusMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : ''}`}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 上一题
@@ -303,35 +338,38 @@ export function EnhancedExamLayout({
                 {/* 快速跳转 */}
                 <div className="hidden md:flex items-center space-x-1">
                   {questions
-                    .slice(Math.max(0, currentQuestionIndex - 2), Math.min(questions.length, currentQuestionIndex + 3))
+                    .slice(
+                      Math.max(0, currentQuestionIndex - 2),
+                      Math.min(questions.length, currentQuestionIndex + 3)
+                    )
                     .map((_, index) => {
-                      const actualIndex = Math.max(0, currentQuestionIndex - 2) + index
-                      const isAnswered = answers[actualIndex] !== undefined
-                      const isCurrent = actualIndex === currentQuestionIndex
+                      const actualIndex = Math.max(0, currentQuestionIndex - 2) + index;
+                      const isAnswered = answers[actualIndex] !== undefined;
+                      const isCurrent = actualIndex === currentQuestionIndex;
 
                       return (
                         <Button
                           key={actualIndex}
-                          variant={isCurrent ? "default" : "ghost"}
+                          variant={isCurrent ? 'default' : 'ghost'}
                           size="sm"
                           onClick={() => onQuestionChange(actualIndex)}
                           className={`w-8 h-8 p-0 ${
                             isCurrent
                               ? focusMode
-                                ? "bg-blue-600 text-white"
-                                : "bg-blue-600 text-white"
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-blue-600 text-white'
                               : isAnswered
                                 ? focusMode
-                                  ? "bg-green-700 text-green-200"
-                                  : "bg-green-100 text-green-700"
+                                  ? 'bg-green-700 text-green-200'
+                                  : 'bg-green-100 text-green-700'
                                 : focusMode
-                                  ? "text-gray-400 hover:bg-gray-700"
-                                  : ""
+                                  ? 'text-gray-400 hover:bg-gray-700'
+                                  : ''
                           }`}
                         >
                           {actualIndex + 1}
                         </Button>
-                      )
+                      );
                     })}
                 </div>
 
@@ -346,7 +384,9 @@ export function EnhancedExamLayout({
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => onQuestionChange(Math.min(questions.length - 1, currentQuestionIndex + 1))}
+                    onClick={() =>
+                      onQuestionChange(Math.min(questions.length - 1, currentQuestionIndex + 1))
+                    }
                     className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white"
                   >
                     下一题
@@ -360,11 +400,15 @@ export function EnhancedExamLayout({
 
           {/* 侧边栏 */}
           {showSidebar && (
-            <div className={`lg:col-span-1 space-y-4 transition-all duration-300 ${focusMode ? "opacity-80" : ""}`}>
+            <div
+              className={`lg:col-span-1 space-y-4 transition-all duration-300 ${focusMode ? 'opacity-80' : ''}`}
+            >
               {/* 进度概览 */}
-              <Card className={focusMode ? "bg-gray-800 border-gray-700" : ""}>
+              <Card className={focusMode ? 'bg-gray-800 border-gray-700' : ''}>
                 <CardHeader className="pb-3">
-                  <CardTitle className={`text-sm flex items-center gap-2 ${focusMode ? "text-gray-200" : ""}`}>
+                  <CardTitle
+                    className={`text-sm flex items-center gap-2 ${focusMode ? 'text-gray-200' : ''}`}
+                  >
                     <BookOpen className="h-4 w-4" />
                     答题进度
                   </CardTitle>
@@ -372,8 +416,10 @@ export function EnhancedExamLayout({
                 <CardContent className="space-y-4">
                   <div>
                     <div className="flex justify-between text-sm mb-2">
-                      <span className={focusMode ? "text-gray-400" : "text-gray-600"}>总体进度</span>
-                      <span className={focusMode ? "text-gray-300" : "text-gray-700"}>
+                      <span className={focusMode ? 'text-gray-400' : 'text-gray-600'}>
+                        总体进度
+                      </span>
+                      <span className={focusMode ? 'text-gray-300' : 'text-gray-700'}>
                         {answeredCount}/{questions.length}
                       </span>
                     </div>
@@ -381,30 +427,42 @@ export function EnhancedExamLayout({
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 text-xs">
-                    <div className={`text-center p-2 rounded ${focusMode ? "bg-gray-700" : "bg-green-50"}`}>
-                      <div className={`font-bold ${focusMode ? "text-green-400" : "text-green-600"}`}>
+                    <div
+                      className={`text-center p-2 rounded ${focusMode ? 'bg-gray-700' : 'bg-green-50'}`}
+                    >
+                      <div
+                        className={`font-bold ${focusMode ? 'text-green-400' : 'text-green-600'}`}
+                      >
                         {answeredCount}
                       </div>
-                      <div className={focusMode ? "text-gray-400" : "text-green-700"}>已答</div>
+                      <div className={focusMode ? 'text-gray-400' : 'text-green-700'}>已答</div>
                     </div>
-                    <div className={`text-center p-2 rounded ${focusMode ? "bg-gray-700" : "bg-blue-50"}`}>
-                      <div className={`font-bold ${focusMode ? "text-blue-400" : "text-blue-600"}`}>1</div>
-                      <div className={focusMode ? "text-gray-400" : "text-blue-700"}>当前</div>
+                    <div
+                      className={`text-center p-2 rounded ${focusMode ? 'bg-gray-700' : 'bg-blue-50'}`}
+                    >
+                      <div className={`font-bold ${focusMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                        1
+                      </div>
+                      <div className={focusMode ? 'text-gray-400' : 'text-blue-700'}>当前</div>
                     </div>
-                    <div className={`text-center p-2 rounded ${focusMode ? "bg-gray-700" : "bg-gray-50"}`}>
-                      <div className={`font-bold ${focusMode ? "text-gray-400" : "text-gray-600"}`}>
+                    <div
+                      className={`text-center p-2 rounded ${focusMode ? 'bg-gray-700' : 'bg-gray-50'}`}
+                    >
+                      <div className={`font-bold ${focusMode ? 'text-gray-400' : 'text-gray-600'}`}>
                         {questions.length - answeredCount - 1}
                       </div>
-                      <div className={focusMode ? "text-gray-400" : "text-gray-700"}>未答</div>
+                      <div className={focusMode ? 'text-gray-400' : 'text-gray-700'}>未答</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* 题目导航网格 */}
-              <Card className={focusMode ? "bg-gray-800 border-gray-700" : ""}>
+              <Card className={focusMode ? 'bg-gray-800 border-gray-700' : ''}>
                 <CardHeader className="pb-3">
-                  <CardTitle className={`text-sm flex items-center gap-2 ${focusMode ? "text-gray-200" : ""}`}>
+                  <CardTitle
+                    className={`text-sm flex items-center gap-2 ${focusMode ? 'text-gray-200' : ''}`}
+                  >
                     <Target className="h-4 w-4" />
                     题目导航
                   </CardTitle>
@@ -412,8 +470,8 @@ export function EnhancedExamLayout({
                 <CardContent>
                   <div className="grid grid-cols-5 gap-1">
                     {questions.map((_, index) => {
-                      const isAnswered = answers[index] !== undefined
-                      const isCurrent = index === currentQuestionIndex
+                      const isAnswered = answers[index] !== undefined;
+                      const isCurrent = index === currentQuestionIndex;
 
                       return (
                         <Button
@@ -424,29 +482,31 @@ export function EnhancedExamLayout({
                           className={`h-8 w-8 p-0 text-xs transition-all duration-200 ${
                             isCurrent
                               ? focusMode
-                                ? "bg-blue-600 text-white"
-                                : "bg-blue-500 text-white"
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-blue-500 text-white'
                               : isAnswered
                                 ? focusMode
-                                  ? "bg-green-700 text-green-200 hover:bg-green-600"
-                                  : "bg-green-100 text-green-800 hover:bg-green-200"
+                                  ? 'bg-green-700 text-green-200 hover:bg-green-600'
+                                  : 'bg-green-100 text-green-800 hover:bg-green-200'
                                 : focusMode
-                                  ? "text-gray-400 hover:bg-gray-700 hover:text-gray-200"
-                                  : "hover:bg-gray-100"
+                                  ? 'text-gray-400 hover:bg-gray-700 hover:text-gray-200'
+                                  : 'hover:bg-gray-100'
                           }`}
                         >
                           {index + 1}
                         </Button>
-                      )
+                      );
                     })}
                   </div>
                 </CardContent>
               </Card>
 
               {/* 智能提示 */}
-              <Card className={focusMode ? "bg-gray-800 border-gray-700" : ""}>
+              <Card className={focusMode ? 'bg-gray-800 border-gray-700' : ''}>
                 <CardHeader className="pb-3">
-                  <CardTitle className={`text-sm flex items-center gap-2 ${focusMode ? "text-gray-200" : ""}`}>
+                  <CardTitle
+                    className={`text-sm flex items-center gap-2 ${focusMode ? 'text-gray-200' : ''}`}
+                  >
                     <Lightbulb className="h-4 w-4" />
                     智能提示
                   </CardTitle>
@@ -457,8 +517,8 @@ export function EnhancedExamLayout({
                       <div
                         className={`p-2 rounded border-l-4 ${
                           focusMode
-                            ? "bg-red-900/30 border-red-500 text-red-300"
-                            : "bg-red-50 border-red-400 text-red-700"
+                            ? 'bg-red-900/30 border-red-500 text-red-300'
+                            : 'bg-red-50 border-red-400 text-red-700'
                         }`}
                       >
                         ⚠️ 时间紧迫，还有 {questions.length - answeredCount} 题未完成
@@ -469,8 +529,8 @@ export function EnhancedExamLayout({
                       <div
                         className={`p-2 rounded border-l-4 ${
                           focusMode
-                            ? "bg-green-900/30 border-green-500 text-green-300"
-                            : "bg-green-50 border-green-400 text-green-700"
+                            ? 'bg-green-900/30 border-green-500 text-green-300'
+                            : 'bg-green-50 border-green-400 text-green-700'
                         }`}
                       >
                         ✅ 进度良好，继续保持！
@@ -478,7 +538,7 @@ export function EnhancedExamLayout({
                     )}
 
                     <div
-                      className={`p-2 rounded ${focusMode ? "bg-gray-700 text-gray-300" : "bg-blue-50 text-blue-700"}`}
+                      className={`p-2 rounded ${focusMode ? 'bg-gray-700 text-gray-300' : 'bg-blue-50 text-blue-700'}`}
                     >
                       💡 使用 Ctrl+← → 快速切换题目
                     </div>
@@ -511,5 +571,5 @@ export function EnhancedExamLayout({
         </div>
       )}
     </div>
-  )
+  );
 }

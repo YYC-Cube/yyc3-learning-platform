@@ -1,21 +1,21 @@
 # 📝 YYC³ AILP - 类型定义
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
 ## 📋 文档信息
 
-| 属性         | 内容                                           |
-| ------------ | ---------------------------------------------- |
-| **文档标题** | YYC³ AILP - 类型定义           |
-| **文档版本** | v1.0.0                                         |
-| **创建时间** | 2026-01-24                                     |
-| **适用范围** | YYC³ AILP学习平台类型定义管理     |
+| 属性         | 内容                                     |
+| ------------ | ---------------------------------------- |
+| **文档标题** | YYC³ AILP - 类型定义                     |
+| **文档版本** | v1.0.0                                   |
+| **创建时间** | 2026-01-24                               |
+| **适用范围** | YYC³ AILP学习平台类型定义管理            |
 | **文档类型** | 数据库类型、前端类型、后端类型、业务类型 |
 
 ---
@@ -57,14 +57,14 @@
 
 ### 🎯 类型定义分类
 
-| 类型类别         | 定义重点                          | 技术栈                   | 负责团队       |
-| --------------- | --------------------------------- | ----------------------- | --------------- |
-| **数据库类型**     | 表结构、字段字典、枚举值           | PostgreSQL、MySQL、Redis   | 数据团队、后端团队 |
-| **前端类型**     | TypeScript、组件Props、数据类型     | React、Next.js、TypeScript | 前端团队、UI团队 |
-| **后端类型**     | Java实体、DTO、VO、BO           | Java、Spring Boot、JPA  | 后端团队、架构团队 |
-| **业务类型**     | 用户权限、课程体系、测评数据       | 业务逻辑、领域模型         | 产品团队、业务团队 |
-| **微服务类型**     | 服务契约、API定义、消息格式       | gRPC、REST、GraphQL     | 架构团队、后端团队 |
-| **通用类型**     | 常量枚举、校验规则、数据格式     | 工具类、公共组件         | 架构团队、全栈团队 |
+| 类型类别       | 定义重点                        | 技术栈                     | 负责团队           |
+| -------------- | ------------------------------- | -------------------------- | ------------------ |
+| **数据库类型** | 表结构、字段字典、枚举值        | PostgreSQL、MySQL、Redis   | 数据团队、后端团队 |
+| **前端类型**   | TypeScript、组件Props、数据类型 | React、Next.js、TypeScript | 前端团队、UI团队   |
+| **后端类型**   | Java实体、DTO、VO、BO           | Java、Spring Boot、JPA     | 后端团队、架构团队 |
+| **业务类型**   | 用户权限、课程体系、测评数据    | 业务逻辑、领域模型         | 产品团队、业务团队 |
+| **微服务类型** | 服务契约、API定义、消息格式     | gRPC、REST、GraphQL        | 架构团队、后端团队 |
+| **通用类型**   | 常量枚举、校验规则、数据格式    | 工具类、公共组件           | 架构团队、全栈团队 |
 
 ---
 
@@ -77,6 +77,7 @@
 #### 📋 核心数据表结构
 
 **用户相关表**：
+
 ```sql
 -- 用户表
 CREATE TABLE users (
@@ -110,6 +111,7 @@ CREATE TABLE user_profiles (
 ```
 
 **课程相关表**：
+
 ```sql
 -- 课程表
 CREATE TABLE courses (
@@ -143,6 +145,7 @@ CREATE TABLE course_chapters (
 #### 🏗️ 数据类型规范
 
 **字段类型标准**：
+
 - **主键**：统一使用UUID类型，默认gen_random_uuid()
 - **时间戳**：created_at和updated_at字段，默认CURRENT_TIMESTAMP
 - **状态字段**：使用枚举类型，提供默认值
@@ -160,6 +163,7 @@ CREATE TABLE course_chapters (
 #### 📋 核心枚举类型
 
 **用户相关枚举**：
+
 ```sql
 -- 用户角色枚举
 CREATE TYPE user_role AS ENUM (
@@ -187,6 +191,7 @@ CREATE TYPE gender_type AS ENUM (
 ```
 
 **课程相关枚举**：
+
 ```sql
 -- 课程难度枚举
 CREATE TYPE course_difficulty AS ENUM (
@@ -226,6 +231,7 @@ CREATE TYPE education_type AS ENUM (
 #### 📋 核心类型定义
 
 **基础类型定义**：
+
 ```typescript
 // 用户相关类型
 export interface User {
@@ -286,13 +292,14 @@ export interface CourseChapter {
 #### 🏗️ 枚举类型定义
 
 **枚举类型**：
+
 ```typescript
 // 用户角色枚举
 export enum UserRole {
   STUDENT = 'student',
   INSTRUCTOR = 'instructor',
   ADMIN = 'admin',
-  SUPER_ADMIN = 'super_admin'
+  SUPER_ADMIN = 'super_admin',
 }
 
 // 用户状态枚举
@@ -300,7 +307,7 @@ export enum UserStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
   SUSPENDED = 'suspended',
-  DELETED = 'deleted'
+  DELETED = 'deleted',
 }
 
 // 课程难度枚举
@@ -308,7 +315,7 @@ export enum CourseDifficulty {
   BEGINNER = 'beginner',
   INTERMEDIATE = 'intermediate',
   ADVANCED = 'advanced',
-  EXPERT = 'expert'
+  EXPERT = 'expert',
 }
 ```
 
@@ -323,6 +330,7 @@ export enum CourseDifficulty {
 #### 📋 组件Props类型定义
 
 **基础组件Props**：
+
 ```typescript
 // Button组件Props
 export interface ButtonProps {
@@ -372,6 +380,7 @@ export interface ModalProps {
 #### 🏗️ 复杂组件类型
 
 **业务组件Props**：
+
 ```typescript
 // CourseCard组件Props
 export interface CourseCardProps {
@@ -414,6 +423,7 @@ export interface LearningProgressProps {
 #### 📋 API请求类型
 
 **请求参数类型**：
+
 ```typescript
 // 分页请求参数
 export interface PaginationParams {
@@ -451,6 +461,7 @@ export interface UserUpdateParams {
 #### 🏗️ API响应类型
 
 **响应数据类型**：
+
 ```typescript
 // API响应基础结构
 export interface ApiResponse<T = any> {
@@ -504,6 +515,7 @@ export interface CourseDetailResponse extends Course {
 #### 📋 核心实体定义
 
 **用户相关实体**：
+
 ```java
 // 用户实体
 @Entity
@@ -513,37 +525,37 @@ public class User {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    
+
     @Column(unique = true, nullable = false, length = 255)
     private String email;
-    
+
     @Column(unique = true, nullable = false, length = 100)
     private String username;
-    
+
     @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
-    
+
     @Column(name = "first_name", length = 100)
     private String firstName;
-    
+
     @Column(name = "last_name", length = 100)
     private String lastName;
-    
+
     @Column(name = "avatar_url", columnDefinition = "TEXT")
     private String avatarUrl;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserRole role = UserRole.STUDENT;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
-    
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
@@ -557,37 +569,37 @@ public class UserProfile {
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
+
     @Column(columnDefinition = "TEXT")
     private String bio;
-    
+
     @Column(length = 20)
     private String phone;
-    
+
     @Column(columnDefinition = "TEXT")
     private String address;
-    
+
     @Column(name = "birth_date")
     private LocalDate birthDate;
-    
+
     @Enumerated(EnumType.STRING)
     private GenderType gender;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "education_level")
     private EducationType educationLevel;
-    
+
     @Column(name = "work_experience")
     private Integer workExperience = 0;
-    
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
+
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
@@ -605,6 +617,7 @@ public class UserProfile {
 #### 📋 请求参数VO定义
 
 **用户相关VO**：
+
 ```java
 // 用户注册VO
 @Data
@@ -613,21 +626,21 @@ public class UserRegistrationVO {
     @Email(message = "邮箱格式不正确")
     @Length(max = 255, message = "邮箱长度不能超过255个字符")
     private String email;
-    
+
     @NotBlank(message = "用户名不能为空")
     @Length(min = 3, max = 100, message = "用户名长度必须在3-100个字符之间")
     @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "用户名只能包含字母、数字和下划线")
     private String username;
-    
+
     @NotBlank(message = "密码不能为空")
     @Length(min = 8, max = 128, message = "密码长度必须在8-128个字符之间")
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d@$!%*?&]{8,}$", 
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d@$!%*?&]{8,}$",
              message = "密码必须包含大小写字母和数字")
     private String password;
-    
+
     @Length(max = 100, message = "名字长度不能超过100个字符")
     private String firstName;
-    
+
     @Length(max = 100, message = "姓氏长度不能超过100个字符")
     private String lastName;
 }
@@ -637,26 +650,26 @@ public class UserRegistrationVO {
 public class UserUpdateVO {
     @Length(max = 100, message = "名字长度不能超过100个字符")
     private String firstName;
-    
+
     @Length(max = 100, message = "姓氏长度不能超过100个字符")
     private String lastName;
-    
+
     @Length(max = 1000, message = "个人简介长度不能超过1000个字符")
     private String bio;
-    
+
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
     private String phone;
-    
+
     @Length(max = 500, message = "地址长度不能超过500个字符")
     private String address;
-    
+
     @Past(message = "出生日期必须是过去的日期")
     private LocalDate birthDate;
-    
+
     private GenderType gender;
-    
+
     private EducationType educationLevel;
-    
+
     @Min(value = 0, message = "工作经验不能为负数")
     @Max(value = 50, message = "工作经验不能超过50年")
     private Integer workExperience;
@@ -674,6 +687,7 @@ public class UserUpdateVO {
 #### 📋 响应结果BO定义
 
 **基础响应BO**：
+
 ```java
 // API响应结果
 @Data
@@ -684,7 +698,7 @@ public class ApiResponse<T> {
     private String message;
     private String code;
     private String timestamp;
-    
+
     public static <T> ApiResponse<T> success(T data) {
         return ApiResponse.<T>builder()
                 .success(true)
@@ -692,7 +706,7 @@ public class ApiResponse<T> {
                 .timestamp(LocalDateTime.now().toString())
                 .build();
     }
-    
+
     public static <T> ApiResponse<T> error(String message, String code) {
         return ApiResponse.<T>builder()
                 .success(false)
@@ -709,7 +723,7 @@ public class ApiResponse<T> {
 public class PaginatedResponse<T> {
     private List<T> items;
     private PaginationInfo pagination;
-    
+
     @Data
     @Builder
     public static class PaginationInfo {
@@ -761,6 +775,7 @@ public class UserBO {
 #### 📋 权限体系结构
 
 **角色权限定义**：
+
 ```typescript
 // 权限枚举
 export enum Permission {
@@ -768,22 +783,22 @@ export enum Permission {
   USER_READ = 'user:read',
   USER_WRITE = 'user:write',
   USER_DELETE = 'user:delete',
-  
+
   // 课程管理权限
   COURSE_READ = 'course:read',
   COURSE_WRITE = 'course:write',
   COURSE_DELETE = 'course:delete',
   COURSE_PUBLISH = 'course:publish',
-  
+
   // 学习管理权限
   LEARNING_READ = 'learning:read',
   LEARNING_WRITE = 'learning:write',
   LEARNING_DELETE = 'learning:delete',
-  
+
   // 系统管理权限
   SYSTEM_ADMIN = 'system:admin',
   SYSTEM_MONITOR = 'system:monitor',
-  SYSTEM_CONFIG = 'system:config'
+  SYSTEM_CONFIG = 'system:config',
 }
 
 // 角色权限映射
@@ -792,7 +807,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.USER_READ,
     Permission.COURSE_READ,
     Permission.LEARNING_READ,
-    Permission.LEARNING_WRITE
+    Permission.LEARNING_WRITE,
   ],
   [UserRole.INSTRUCTOR]: [
     Permission.USER_READ,
@@ -800,7 +815,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.COURSE_WRITE,
     Permission.COURSE_PUBLISH,
     Permission.LEARNING_READ,
-    Permission.LEARNING_WRITE
+    Permission.LEARNING_WRITE,
   ],
   [UserRole.ADMIN]: [
     Permission.USER_READ,
@@ -812,9 +827,9 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     Permission.LEARNING_READ,
     Permission.LEARNING_WRITE,
     Permission.LEARNING_DELETE,
-    Permission.SYSTEM_MONITOR
+    Permission.SYSTEM_MONITOR,
   ],
-  [UserRole.SUPER_ADMIN]: Object.values(Permission)
+  [UserRole.SUPER_ADMIN]: Object.values(Permission),
 };
 ```
 
@@ -829,6 +844,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
 #### 📋 课程类型体系
 
 **课程分类定义**：
+
 ```typescript
 // 课程分类
 export interface CourseCategory {
@@ -845,11 +861,11 @@ export interface CourseCategory {
 
 // 课程类型
 export enum CourseType {
-  VIDEO = 'video',           // 视频课程
-  TEXT = 'text',             // 文本课程
+  VIDEO = 'video', // 视频课程
+  TEXT = 'text', // 文本课程
   INTERACTIVE = 'interactive', // 互动课程
-  LIVE = 'live',             // 直播课程
-  MIXED = 'mixed'             // 混合课程
+  LIVE = 'live', // 直播课程
+  MIXED = 'mixed', // 混合课程
 }
 
 // 学习路径
@@ -879,6 +895,7 @@ export interface LearningPath {
 #### 📋 测评类型体系
 
 **测评数据结构**：
+
 ```typescript
 // 测验定义
 export interface Quiz {
@@ -897,11 +914,11 @@ export interface Quiz {
 
 // 题目类型
 export enum QuestionType {
-  SINGLE_CHOICE = 'single_choice',    // 单选题
+  SINGLE_CHOICE = 'single_choice', // 单选题
   MULTIPLE_CHOICE = 'multiple_choice', // 多选题
-  TRUE_FALSE = 'true_false',       // 判断题
-  FILL_BLANK = 'fill_blank',       // 填空题
-  ESSAY = 'essay'                 // 简答题
+  TRUE_FALSE = 'true_false', // 判断题
+  FILL_BLANK = 'fill_blank', // 填空题
+  ESSAY = 'essay', // 简答题
 }
 
 // 题目定义
@@ -939,6 +956,7 @@ export interface QuestionOption {
 #### 📋 服务契约结构
 
 **服务接口定义**：
+
 ```typescript
 // 用户服务接口
 export interface UserService {
@@ -979,20 +997,21 @@ export interface LearningService {
 #### 📋 全局常量定义
 
 **系统常量**：
+
 ```typescript
 // API常量
 export const API_CONSTANTS = {
   BASE_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
   TIMEOUT: 30000, // 30秒
   RETRY_COUNT: 3,
-  RETRY_DELAY: 1000 // 1秒
+  RETRY_DELAY: 1000, // 1秒
 };
 
 // 分页常量
 export const PAGINATION_CONSTANTS = {
   DEFAULT_PAGE_SIZE: 20,
   MAX_PAGE_SIZE: 100,
-  PAGE_SIZES: [10, 20, 50, 100]
+  PAGE_SIZES: [10, 20, 50, 100],
 };
 
 // 文件上传常量
@@ -1000,7 +1019,11 @@ export const UPLOAD_CONSTANTS = {
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
   ALLOWED_IMAGE_TYPES: ['image/jpeg', 'image/png', 'image/gif'],
   ALLOWED_VIDEO_TYPES: ['video/mp4', 'video/avi', 'video/mov'],
-  ALLOWED_DOCUMENT_TYPES: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+  ALLOWED_DOCUMENT_TYPES: [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ],
 };
 
 // 缓存常量
@@ -1008,7 +1031,7 @@ export const CACHE_CONSTANTS = {
   USER_SESSION_TTL: 24 * 60 * 60, // 24小时
   COURSE_DATA_TTL: 60 * 60, // 1小时
   QUIZ_DATA_TTL: 30 * 60, // 30分钟
-  MAX_CACHE_SIZE: 1000
+  MAX_CACHE_SIZE: 1000,
 };
 ```
 
@@ -1023,6 +1046,7 @@ export const CACHE_CONSTANTS = {
 #### 📋 校验规则体系
 
 **数据格式校验**：
+
 ```typescript
 // 邮箱校验
 export const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -1037,10 +1061,12 @@ export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{
 export const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
 
 // URL校验
-export const URL_REGEX = /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?$/;
+export const URL_REGEX =
+  /^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?$/;
 
 // 身份证号校验（18位）
-export const ID_CARD_REGEX = /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+export const ID_CARD_REGEX =
+  /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
 ```
 
 ---
@@ -1054,6 +1080,7 @@ export const ID_CARD_REGEX = /^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-
 #### 📋 跨端类型适配
 
 **平台特定类型**：
+
 ```typescript
 // 平台类型
 export enum PlatformType {
@@ -1062,7 +1089,7 @@ export enum PlatformType {
   IOS_APP = 'ios_app',
   ANDROID_APP = 'android_app',
   WECHAT_MINI = 'wechat_mini',
-  ALIPAY_MINI = 'alipay_mini'
+  ALIPAY_MINI = 'alipay_mini',
 }
 
 // 平台特定配置
@@ -1104,6 +1131,7 @@ export interface PlatformUIConfig {
 #### 📋 版本变更记录
 
 **版本变更日志**：
+
 ```typescript
 // 版本变更记录
 export interface TypeChangeRecord {
@@ -1141,18 +1169,18 @@ export const TYPE_CHANGE_HISTORY: TypeChangeRecord[] = [
         type: 'add',
         target: 'User',
         description: '新增用户基础类型定义',
-        breakingChange: false
+        breakingChange: false,
       },
       {
         type: 'add',
         target: 'Course',
         description: '新增课程基础类型定义',
-        breakingChange: false
-      }
+        breakingChange: false,
+      },
     ],
     author: 'YYC³ Team',
-    description: '初始版本，包含基础用户和课程类型定义'
-  }
+    description: '初始版本，包含基础用户和课程类型定义',
+  },
 ];
 ```
 
@@ -1162,39 +1190,39 @@ export const TYPE_CHANGE_HISTORY: TypeChangeRecord[] = [
 
 ### 🎯 类型系统指标
 
-| 指标类型         | 指标名称                          | 目标值     | 当前值     | 状态     |
-| --------------- | --------------------------------- | --------- | --------- | ----- |
-| **类型覆盖率**   | 代码类型定义覆盖率              | ≥95%      | 97%       | ✅    |
-| **接口一致性**   | 前后端接口类型一致性            | 100%      | 100%      | ✅    |
-| **文档同步率**   | 类型文档与代码同步率            | ≥90%      | 95%       | ✅    |
-| **校验规则覆盖** | 数据校验规则覆盖率              | ≥85%      | 90%       | ✅    |
-| **版本兼容性**   | 类型版本向后兼容性              | ≥80%      | 85%       | ✅    |
+| 指标类型         | 指标名称             | 目标值 | 当前值 | 状态 |
+| ---------------- | -------------------- | ------ | ------ | ---- |
+| **类型覆盖率**   | 代码类型定义覆盖率   | ≥95%   | 97%    | ✅   |
+| **接口一致性**   | 前后端接口类型一致性 | 100%   | 100%   | ✅   |
+| **文档同步率**   | 类型文档与代码同步率 | ≥90%   | 95%    | ✅   |
+| **校验规则覆盖** | 数据校验规则覆盖率   | ≥85%   | 90%    | ✅   |
+| **版本兼容性**   | 类型版本向后兼容性   | ≥80%   | 85%    | ✅   |
 
 ### 🎯 类型质量指标
 
-| 质量指标         | 指标名称                          | 目标值     | 当前值     | 状态     |
-| --------------- | --------------------------------- | --------- | --------- | ----- |
-| **类型安全性**   | TypeScript编译错误数            | 0         | 0         | ✅    |
-| **命名规范性**   | 类型命名规范符合率              | ≥95%      | 98%       | ✅    |
-| **文档完整性**   | 类型定义文档完整性            | ≥90%      | 95%       | ✅    |
-| **更新及时性**   | 类型变更文档更新及时率          | ≥85%      | 90%       | ✅    |
+| 质量指标       | 指标名称               | 目标值 | 当前值 | 状态 |
+| -------------- | ---------------------- | ------ | ------ | ---- |
+| **类型安全性** | TypeScript编译错误数   | 0      | 0      | ✅   |
+| **命名规范性** | 类型命名规范符合率     | ≥95%   | 98%    | ✅   |
+| **文档完整性** | 类型定义文档完整性     | ≥90%   | 95%    | ✅   |
+| **更新及时性** | 类型变更文档更新及时率 | ≥85%   | 90%    | ✅   |
 
 ---
 
 ## 📚 相关文档链接
 
-| 文档名称                           | 链接                                                      |
-| ---------------------------------- | ---------------------------------------------------------- |
-| **模版规范文档**                     | [../YYC3-AILP-模版规范/README.md](../YYC3-AILP-模版规范/README.md) |
-| **实施步骤文档**                     | [../YYC3-AILP-实施步骤/README.md](../YYC3-AILP-实施步骤/README.md) |
-| **详细设计文档**                     | [../YYC3-AILP-详细设计/README.md](../YYC3-AILP-详细设计/README.md) |
-| **API文档**                         | [../YYC3-AILP-API文档/README.md](../YYC3-AILP-API文档/README.md) |
+| 文档名称         | 链接                                                               |
+| ---------------- | ------------------------------------------------------------------ |
+| **模版规范文档** | [../YYC3-AILP-模版规范/README.md](../YYC3-AILP-模版规范/README.md) |
+| **实施步骤文档** | [../YYC3-AILP-实施步骤/README.md](../YYC3-AILP-实施步骤/README.md) |
+| **详细设计文档** | [../YYC3-AILP-详细设计/README.md](../YYC3-AILP-详细设计/README.md) |
+| **API文档**      | [../YYC3-AILP-API文档/README.md](../YYC3-AILP-API文档/README.md)   |
 
 ---
 
 ## 📄 文档标尾
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-"use client";
+'use client';
 
 import { Activity, BarChart3, PieChart, TrendingDown, TrendingUp, Zap } from 'lucide-react';
 import * as React from 'react';
@@ -73,7 +73,7 @@ interface RecommendationCardProps {
 
 export const InsightsDashboard: React.FC<InsightsDashboardProps> = ({
   onPeriodChange,
-  onRecommendationAction
+  onRecommendationAction,
 }) => {
   const [period, setPeriod] = useState<'today' | 'week' | 'month' | 'year'>('today');
   const [insightData, setInsightData] = useState<InsightData | null>(null);
@@ -83,27 +83,36 @@ export const InsightsDashboard: React.FC<InsightsDashboardProps> = ({
     loadInsightData(period);
   }, [period]);
 
-  const loadInsightData = useCallback(async (selectedPeriod: 'today' | 'week' | 'month' | 'year') => {
-    setLoading(true);
+  const loadInsightData = useCallback(
+    async (selectedPeriod: 'today' | 'week' | 'month' | 'year') => {
+      setLoading(true);
 
-    try {
-      const data = await generateInsightData(selectedPeriod);
-      setInsightData(data);
-    } catch (error) {
-      console.error('加载洞察数据失败:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      try {
+        const data = await generateInsightData(selectedPeriod);
+        setInsightData(data);
+      } catch (error) {
+        console.error('加载洞察数据失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
-  const handlePeriodChange = useCallback((newPeriod: 'today' | 'week' | 'month' | 'year') => {
-    setPeriod(newPeriod);
-    onPeriodChange?.(newPeriod);
-  }, [onPeriodChange]);
+  const handlePeriodChange = useCallback(
+    (newPeriod: 'today' | 'week' | 'month' | 'year') => {
+      setPeriod(newPeriod);
+      onPeriodChange?.(newPeriod);
+    },
+    [onPeriodChange]
+  );
 
-  const handleRecommendationAction = useCallback((recommendationId: string) => {
-    onRecommendationAction?.(recommendationId);
-  }, [onRecommendationAction]);
+  const handleRecommendationAction = useCallback(
+    (recommendationId: string) => {
+      onRecommendationAction?.(recommendationId);
+    },
+    [onRecommendationAction]
+  );
 
   if (loading) {
     return (
@@ -164,11 +173,8 @@ export const InsightsDashboard: React.FC<InsightsDashboardProps> = ({
             核心指标
           </h4>
           <div className="grid grid-cols-2 gap-3">
-            {insightData.metrics.map(metric => (
-              <MetricCard
-                key={metric.id}
-                metric={metric}
-              />
+            {insightData.metrics.map((metric) => (
+              <MetricCard key={metric.id} metric={metric} />
             ))}
           </div>
         </div>
@@ -180,12 +186,8 @@ export const InsightsDashboard: React.FC<InsightsDashboardProps> = ({
             数据趋势
           </h4>
           <div className="space-y-4">
-            {insightData.charts.map(chart => (
-              <ChartCard
-                key={chart.id}
-                chart={chart}
-                height={200}
-              />
+            {insightData.charts.map((chart) => (
+              <ChartCard key={chart.id} chart={chart} height={200} />
             ))}
           </div>
         </div>
@@ -198,7 +200,7 @@ export const InsightsDashboard: React.FC<InsightsDashboardProps> = ({
               智能建议
             </h4>
             <div className="space-y-3">
-              {insightData.recommendations.map(recommendation => (
+              {insightData.recommendations.map((recommendation) => (
                 <RecommendationCard
                   key={recommendation.id}
                   recommendation={recommendation}
@@ -238,8 +240,8 @@ const MetricCard: React.FC<MetricCardProps> = React.memo(({ metric }) => {
 MetricCard.displayName = 'MetricCard';
 
 const ChartCard: React.FC<ChartCardProps> = React.memo(({ chart, height = 200 }) => {
-  const maxValue = Math.max(...chart.data.map(d => d.value));
-  const minValue = Math.min(...chart.data.map(d => d.value));
+  const maxValue = Math.max(...chart.data.map((d) => d.value));
+  const minValue = Math.min(...chart.data.map((d) => d.value));
   const range = maxValue - minValue || 1;
 
   return (
@@ -247,7 +249,11 @@ const ChartCard: React.FC<ChartCardProps> = React.memo(({ chart, height = 200 })
       <h5 className="text-sm font-semibold text-gray-900 mb-3">{chart.title}</h5>
       <div className="relative" style={{ height: `${height}px` }}>
         {chart.type === 'line' && (
-          <svg className="w-full h-full" viewBox={`0 0 ${chart.data.length * 40} ${height}`} preserveAspectRatio="none">
+          <svg
+            className="w-full h-full"
+            viewBox={`0 0 ${chart.data.length * 40} ${height}`}
+            preserveAspectRatio="none"
+          >
             <defs>
               <linearGradient id={`gradient-${chart.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stopColor="hsl(var(--secondary))" stopOpacity="0.3" />
@@ -256,11 +262,13 @@ const ChartCard: React.FC<ChartCardProps> = React.memo(({ chart, height = 200 })
             </defs>
 
             <path
-              d={chart.data.map((point, index) => {
-                const x = index * 40 + 20;
-                const y = height - ((point.value - minValue) / range) * (height - 40) - 20;
-                return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-              }).join(' ')}
+              d={chart.data
+                .map((point, index) => {
+                  const x = index * 40 + 20;
+                  const y = height - ((point.value - minValue) / range) * (height - 40) - 20;
+                  return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+                })
+                .join(' ')}
               fill={`url(#gradient-${chart.id})`}
               stroke="hsl(var(--secondary))"
               strokeWidth="2"
@@ -269,21 +277,17 @@ const ChartCard: React.FC<ChartCardProps> = React.memo(({ chart, height = 200 })
             {chart.data.map((point, index) => {
               const x = index * 40 + 20;
               const y = height - ((point.value - minValue) / range) * (height - 40) - 20;
-              return (
-                <circle
-                  key={index}
-                  cx={x}
-                  cy={y}
-                  r="4"
-                  fill="hsl(var(--secondary))"
-                />
-              );
+              return <circle key={index} cx={x} cy={y} r="4" fill="hsl(var(--secondary))" />;
             })}
           </svg>
         )}
 
         {chart.type === 'bar' && (
-          <svg className="w-full h-full" viewBox={`0 0 ${chart.data.length * 50} ${height}`} preserveAspectRatio="none">
+          <svg
+            className="w-full h-full"
+            viewBox={`0 0 ${chart.data.length * 50} ${height}`}
+            preserveAspectRatio="none"
+          >
             {chart.data.map((point, index) => {
               const barHeight = ((point.value - minValue) / range) * (height - 40);
               const x = index * 50 + 10;
@@ -299,12 +303,7 @@ const ChartCard: React.FC<ChartCardProps> = React.memo(({ chart, height = 200 })
                     fill="hsl(var(--secondary))"
                     rx="4"
                   />
-                  <text
-                    x={x + 15}
-                    y={y - 5}
-                    textAnchor="middle"
-                    className="text-xs fill-gray-600"
-                  >
+                  <text x={x + 15} y={y - 5} textAnchor="middle" className="text-xs fill-gray-600">
                     {point.value}
                   </text>
                   <text
@@ -331,9 +330,14 @@ const ChartCard: React.FC<ChartCardProps> = React.memo(({ chart, height = 200 })
                   <div key={index} className="flex items-center justify-center space-x-2 text-xs">
                     <div
                       className="w-3 h-3 rounded"
-                      style={{ backgroundColor: index % 2 === 0 ? 'hsl(var(--secondary))' : 'hsl(var(--accent))' }}
+                      style={{
+                        backgroundColor:
+                          index % 2 === 0 ? 'hsl(var(--secondary))' : 'hsl(var(--accent))',
+                      }}
                     />
-                    <span>{point.label}: {point.value}</span>
+                    <span>
+                      {point.label}: {point.value}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -347,64 +351,69 @@ const ChartCard: React.FC<ChartCardProps> = React.memo(({ chart, height = 200 })
 
 ChartCard.displayName = 'ChartCard';
 
-const RecommendationCard: React.FC<RecommendationCardProps> = React.memo(({ recommendation, onAction }) => {
-  const priorityColors = {
-    high: 'border-red-300 bg-red-50',
-    medium: 'border-yellow-300 bg-yellow-50',
-    low: 'border-blue-300 bg-blue-50'
-  };
+const RecommendationCard: React.FC<RecommendationCardProps> = React.memo(
+  ({ recommendation, onAction }) => {
+    const priorityColors = {
+      high: 'border-red-300 bg-red-50',
+      medium: 'border-yellow-300 bg-yellow-50',
+      low: 'border-blue-300 bg-blue-50',
+    };
 
-  const priorityLabels = {
-    high: '高优先级',
-    medium: '中优先级',
-    low: '低优先级'
-  };
+    const priorityLabels = {
+      high: '高优先级',
+      medium: '中优先级',
+      low: '低优先级',
+    };
 
-  return (
-    <div className={`p-4 rounded-lg border ${priorityColors[recommendation.priority]}`}>
-      <div className="flex items-start justify-between mb-2">
-        <h5 className="font-semibold text-gray-900">{recommendation.title}</h5>
-        <span className="text-xs px-2 py-1 rounded-full bg-white/60">
-          {priorityLabels[recommendation.priority]}
-        </span>
+    return (
+      <div className={`p-4 rounded-lg border ${priorityColors[recommendation.priority]}`}>
+        <div className="flex items-start justify-between mb-2">
+          <h5 className="font-semibold text-gray-900">{recommendation.title}</h5>
+          <span className="text-xs px-2 py-1 rounded-full bg-white/60">
+            {priorityLabels[recommendation.priority]}
+          </span>
+        </div>
+        <p className="text-sm text-gray-700 mb-3">{recommendation.description}</p>
+        {recommendation.actionable && (
+          <button
+            onClick={onAction}
+            className="w-full px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            立即行动
+          </button>
+        )}
       </div>
-      <p className="text-sm text-gray-700 mb-3">{recommendation.description}</p>
-      {recommendation.actionable && (
-        <button
-          onClick={onAction}
-          className="w-full px-4 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
-        >
-          立即行动
-        </button>
-      )}
-    </div>
-  );
-});
+    );
+  }
+);
 
 RecommendationCard.displayName = 'RecommendationCard';
 
-const PeriodButton: React.FC<{ label: string; active: boolean; onClick: () => void }> = React.memo(({ label, active, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${active
-      ? 'bg-indigo-600 text-white'
-      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+const PeriodButton: React.FC<{ label: string; active: boolean; onClick: () => void }> = React.memo(
+  ({ label, active, onClick }) => (
+    <button
+      onClick={onClick}
+      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+        active ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
       }`}
-  >
-    {label}
-  </button>
-));
+    >
+      {label}
+    </button>
+  )
+);
 
 PeriodButton.displayName = 'PeriodButton';
 
-async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'): Promise<InsightData> {
-  await new Promise(resolve => setTimeout(resolve, 500));
+async function generateInsightData(
+  period: 'today' | 'week' | 'month' | 'year'
+): Promise<InsightData> {
+  await new Promise((resolve) => setTimeout(resolve, 500));
 
   const periodMultipliers = {
     today: 1,
     week: 7,
     month: 30,
-    year: 365
+    year: 365,
   };
 
   const multiplier = periodMultipliers[period];
@@ -418,7 +427,7 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
       trendValue: 12 * multiplier,
       positive: true,
       icon: '📊',
-      category: 'activity'
+      category: 'activity',
     },
     {
       id: 'completion',
@@ -428,7 +437,7 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
       trendValue: 5 * multiplier,
       positive: true,
       icon: '✅',
-      category: 'performance'
+      category: 'performance',
     },
     {
       id: 'messages',
@@ -438,7 +447,7 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
       trendValue: 23 * multiplier,
       positive: true,
       icon: '💬',
-      category: 'usage'
+      category: 'usage',
     },
     {
       id: 'response',
@@ -448,8 +457,8 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
       trendValue: -15 * multiplier,
       positive: true,
       icon: '⚡',
-      category: 'performance'
-    }
+      category: 'performance',
+    },
   ];
 
   const charts: ChartData[] = [
@@ -459,8 +468,8 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
       type: 'line',
       data: Array.from({ length: 7 }, (_, i) => ({
         label: `${i + 1}`,
-        value: Math.round(70 + Math.random() * 30)
-      }))
+        value: Math.round(70 + Math.random() * 30),
+      })),
     },
     {
       id: 'usage-distribution',
@@ -471,9 +480,9 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
         { label: '工具', value: Math.round(25 + Math.random() * 10) },
         { label: '洞察', value: Math.round(15 + Math.random() * 5) },
         { label: '工作流', value: Math.round(10 + Math.random() * 5) },
-        { label: '知识库', value: Math.round(5 + Math.random() * 5) }
-      ]
-    }
+        { label: '知识库', value: Math.round(5 + Math.random() * 5) },
+      ],
+    },
   ];
 
   const recommendations: Recommendation[] = [
@@ -483,7 +492,7 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
       description: '您在工具模块的使用上还有提升空间，建议多尝试使用AI工具提高工作效率。',
       priority: 'medium',
       actionable: true,
-      category: 'usage'
+      category: 'usage',
     },
     {
       id: '2',
@@ -491,7 +500,7 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
       description: '您的消息响应时间表现优秀，可以考虑使用工作流自动化进一步优化。',
       priority: 'high',
       actionable: true,
-      category: 'workflow'
+      category: 'workflow',
     },
     {
       id: '3',
@@ -499,15 +508,15 @@ async function generateInsightData(period: 'today' | 'week' | 'month' | 'year'):
       description: '知识库中包含丰富的资源，建议您定期浏览和学习。',
       priority: 'low',
       actionable: true,
-      category: 'knowledge'
-    }
+      category: 'knowledge',
+    },
   ];
 
   return {
     period,
     metrics,
     charts,
-    recommendations
+    recommendations,
   };
 }
 

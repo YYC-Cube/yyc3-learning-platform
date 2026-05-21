@@ -1,4 +1,11 @@
-import { ManagementConfig, StrategicGoal, KPI, Milestone, Risk, Recommendation } from '../types/IFiveDimensionalManagement';
+import {
+  ManagementConfig,
+  StrategicGoal,
+  KPI,
+  Milestone,
+  Risk,
+  Recommendation,
+} from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 
 export class GoalAnalyticsEngine {
@@ -31,7 +38,7 @@ export class GoalAnalyticsEngine {
     return {
       goalPerformance: {},
       trendAnalysis: {},
-      riskAssessment: {}
+      riskAssessment: {},
     };
   }
 

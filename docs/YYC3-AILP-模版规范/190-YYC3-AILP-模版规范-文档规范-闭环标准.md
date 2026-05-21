@@ -1,10 +1,10 @@
 # YYC³ AILP 文档规范-闭环标准
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -159,12 +159,7 @@ YYC³团队标准化规范的核心目标是：
   "bugs": {
     "url": "https://github.com/yyc3/{project-name}/issues"
   },
-  "keywords": [
-    "yyc3",
-    "{category}",
-    "{framework}",
-    "typescript"
-  ],
+  "keywords": ["yyc3", "{category}", "{framework}", "typescript"],
   "scripts": {
     "dev": "bun --hot src/index.ts",
     "build": "bun build src/index.ts --outdir ./dist --target bun",
@@ -269,7 +264,7 @@ import { Hono } from 'hono';
 
 > **YYC³（YanYu Cloud Cube）**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***英文***：*All Realms Converge at Cloud Nexus, DeepStack Ignites a New Era*
+> **_英文_**：_All Realms Converge at Cloud Nexus, DeepStack Ignites a New Era_
 
 ---
 
@@ -290,18 +285,23 @@ import { Hono } from 'hono';
 万象归元于云枢 | 深栈智启新纪元
 
 ## 1. 接口概述
+
 简要描述模块功能和适用场景
 
 ## 2. 认证方式
+
 说明接口认证机制
 
 ## 3. 接口列表
+
 详细的API接口说明
 
 ## 4. 错误码说明
+
 错误代码和处理方式
 
 ## 5. 示例代码
+
 使用示例和最佳实践
 ```
 
@@ -314,15 +314,15 @@ import { Hono } from 'hono';
 ```
 
 docs/
-├── README.md              # 项目总览
-├── API.md                 # API接口文档
-├── DEPLOYMENT.md          # 部署指南
-├── CONTRIBUTING.md        # 贡献指南
-├── CHANGELOG.md           # 更新日志
-├── examples/              # 示例代码
-│   ├── basic-usage.md
-│   └── advanced-usage.md
-└── troubleshooting.md     # 故障排除
+├── README.md # 项目总览
+├── API.md # API接口文档
+├── DEPLOYMENT.md # 部署指南
+├── CONTRIBUTING.md # 贡献指南
+├── CHANGELOG.md # 更新日志
+├── examples/ # 示例代码
+│ ├── basic-usage.md
+│ └── advanced-usage.md
+└── troubleshooting.md # 故障排除
 
 ---
 
@@ -330,14 +330,14 @@ docs/
 
 ### 6.1 标准README结构
 
-```markdown
+````markdown
 # 🚀 YYC³ - {项目名称}
 
 <div align="center">
 
 **YYC³（YanYu Cloud Cube）**
 **标语**：万象归元于云枢 | 深栈智启新纪元
-***英文***：*All Realms Converge at Cloud Nexus, DeepStack Ignites a New Era*
+**_英文_**：_All Realms Converge at Cloud Nexus, DeepStack Ignites a New Era_
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Bun](https://img.shields.io/badge/Bun-1.0+-black.svg)](https://bun.sh)
@@ -371,12 +371,15 @@ docs/
 ## 🎯 项目概述
 
 ### 项目背景
+
 {详细描述项目背景、需求和解决的问题}
 
 ### 项目目标
+
 {说明项目的核心目标和预期效果}
 
 ### 核心价值
+
 - 🚀 **高效开发**：{价值点1}
 - 🤖 **智能助手**：{价值点2}
 - 🔄 **自动化流程**：{价值点3}
@@ -414,6 +417,7 @@ bun run dev
 # 构建生产版本
 bun run build
 ```
+````
 
 访问 <http://localhost:3000> 查看应用
 
@@ -522,7 +526,7 @@ services:
       dockerfile: Dockerfile
     container_name: yyc3_app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - logs:/app/logs
       - uploads:/app/uploads
@@ -537,7 +541,7 @@ services:
       redis:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -555,9 +559,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U yyc3_user -d yyc3_project"]
+      test: ['CMD-SHELL', 'pg_isready -U yyc3_user -d yyc3_project']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -571,9 +575,9 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6379:6379"
+      - '6379:6379'
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -651,22 +655,22 @@ JWT_SECRET=your_jwt_secret_key_here
 ## 📁 项目结构
 
 {项目名称}/
-├── 📄 README.md                    # 项目说明文档
-├── 📄 package.json                 # 项目依赖配置
-├── 📄 bun.lockb                    # Bun锁文件
-├── 📄 tsconfig.json                # TypeScript配置
-├── 📄 tailwind.config.js           # Tailwind CSS配置
-├── 🌐 public/                      # 静态资源
-├── 💻 src/                         # 源代码目录
-│   ├── 📄 index.ts                 # 服务器入口文件
-│   ├── 📂 components/              # React组件
-│   ├── 📂 pages/                   # 页面组件
-│   ├── 📂 services/                # API服务
-│   ├── 📂 utils/                   # 工具函数
-│   └── 📂 types/                   # TypeScript类型定义
-├── 🗄️ data/                        # 数据存储
-├── 🧪 tests/                       # 测试文件
-└── 📚 docs/                        # 项目文档
+├── 📄 README.md # 项目说明文档
+├── 📄 package.json # 项目依赖配置
+├── 📄 bun.lockb # Bun锁文件
+├── 📄 tsconfig.json # TypeScript配置
+├── 📄 tailwind.config.js # Tailwind CSS配置
+├── 🌐 public/ # 静态资源
+├── 💻 src/ # 源代码目录
+│ ├── 📄 index.ts # 服务器入口文件
+│ ├── 📂 components/ # React组件
+│ ├── 📂 pages/ # 页面组件
+│ ├── 📂 services/ # API服务
+│ ├── 📂 utils/ # 工具函数
+│ └── 📂 types/ # TypeScript类型定义
+├── 🗄️ data/ # 数据存储
+├── 🧪 tests/ # 测试文件
+└── 📚 docs/ # 项目文档
 
 ---
 
@@ -745,6 +749,7 @@ docker run -p 3000:3000 yyc3-{project-name}
 #### 分支操作流程
 
 ##### 创建功能分支
+
 ```bash
 git checkout develop
 git pull origin develop
@@ -753,6 +758,7 @@ git push origin feature/新功能名称
 ```
 
 ##### 创建修复分支
+
 ```bash
 git checkout develop
 git pull origin develop
@@ -761,6 +767,7 @@ git push origin bugfix/问题描述
 ```
 
 ##### 创建紧急修复分支
+
 ```bash
 git checkout main
 git pull origin main
@@ -962,7 +969,7 @@ const directoryNamingRules = {
   types: 'type-definitions/',
 
   // 配置文件
-  config: 'environment-configs/'
+  config: 'environment-configs/',
 };
 ```
 
@@ -973,16 +980,16 @@ const directoryNamingRules = {
 interface ProjectStructure {
   src: {
     components: {
-      ui: '基础UI组件',
-      layout: '布局组件',
-      business: '业务组件'
+      ui: '基础UI组件';
+      layout: '布局组件';
+      business: '业务组件';
     };
     pages: {
       'page-name': {
-        'index.tsx': '页面主文件',
-        'components': '页面级组件',
-        'styles': '页面样式'
-      }
+        'index.tsx': '页面主文件';
+        components: '页面级组件';
+        styles: '页面样式';
+      };
     };
     services: 'API服务';
     utils: '工具函数';
@@ -1111,15 +1118,18 @@ app.get('/', async (c) => {
       pagination: {
         page,
         limit,
-        total: data.length
-      }
+        total: data.length,
+      },
     });
   } catch (error) {
     console.error('Error fetching data:', error);
-    return c.json({
-      success: false,
-      error: 'Failed to fetch data'
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to fetch data',
+      },
+      500
+    );
   }
 });
 
@@ -1135,22 +1145,28 @@ app.get('/:id', async (c) => {
     const data = await getDataById(id);
 
     if (!data) {
-      return c.json({
-        success: false,
-        error: 'Resource not found'
-      }, 404);
+      return c.json(
+        {
+          success: false,
+          error: 'Resource not found',
+        },
+        404
+      );
     }
 
     return c.json({
       success: true,
-      data: data
+      data: data,
     });
   } catch (error) {
     console.error('Error fetching data by ID:', error);
-    return c.json({
-      success: false,
-      error: 'Failed to fetch data'
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to fetch data',
+      },
+      500
+    );
   }
 });
 
@@ -1165,17 +1181,23 @@ app.post('/', zValidator('json', createSchema), async (c) => {
     const body = c.req.valid('json');
     const data = await createDataService(body);
 
-    return c.json({
-      success: true,
-      data: data,
-      message: 'Resource created successfully'
-    }, 201);
+    return c.json(
+      {
+        success: true,
+        data: data,
+        message: 'Resource created successfully',
+      },
+      201
+    );
   } catch (error) {
     console.error('Error creating data:', error);
-    return c.json({
-      success: false,
-      error: 'Failed to create resource'
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to create resource',
+      },
+      500
+    );
   }
 });
 
@@ -1194,23 +1216,29 @@ app.put('/:id', zValidator('json', updateSchema), async (c) => {
     const data = await updateDataService(id, body);
 
     if (!data) {
-      return c.json({
-        success: false,
-        error: 'Resource not found'
-      }, 404);
+      return c.json(
+        {
+          success: false,
+          error: 'Resource not found',
+        },
+        404
+      );
     }
 
     return c.json({
       success: true,
       data: data,
-      message: 'Resource updated successfully'
+      message: 'Resource updated successfully',
     });
   } catch (error) {
     console.error('Error updating data:', error);
-    return c.json({
-      success: false,
-      error: 'Failed to update resource'
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to update resource',
+      },
+      500
+    );
   }
 });
 
@@ -1226,22 +1254,28 @@ app.delete('/:id', async (c) => {
     const success = await deleteDataService(id);
 
     if (!success) {
-      return c.json({
-        success: false,
-        error: 'Resource not found'
-      }, 404);
+      return c.json(
+        {
+          success: false,
+          error: 'Resource not found',
+        },
+        404
+      );
     }
 
     return c.json({
       success: true,
-      message: 'Resource deleted successfully'
+      message: 'Resource deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting data:', error);
-    return c.json({
-      success: false,
-      error: 'Failed to delete resource'
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to delete resource',
+      },
+      500
+    );
   }
 });
 
@@ -1250,7 +1284,7 @@ export default app;
 
 ### 8.3 工具函数模板
 
-```ts
+````ts
 /**
  * @fileoverview {工具模块名称}
  * @description {工具功能描述}
@@ -1338,7 +1372,7 @@ export const {UTILITY_NAME}_CONSTANTS = {
 
 // 类型导出
 export type { {UtilityName}Options, {UtilityName}Result };
-```
+````
 
 ---
 
@@ -1549,7 +1583,7 @@ services:
   api-gateway:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
       - DB_HOST=postgres
@@ -1815,7 +1849,7 @@ A: 使用连字符(-)分隔多个单词，例如：`yyc3-api-gateway`。
 **Q: 测试文件必须使用.test后缀吗？**
 A: 是的，为了保持一致性和便于自动化测试工具识别，所有测试文件都应使用.test后缀。
 
-**Q: 可以使用下划线(_)作为文件名分隔符吗？**
+**Q: 可以使用下划线(\_)作为文件名分隔符吗？**
 A: 不建议，我们统一使用驼峰命名法或连字符命名法，具体取决于文件类型。
 
 ### 12.3 代码标头格式
@@ -1917,16 +1951,13 @@ bunx create-yyc3-app yyc3-new-project
 ```javascript
 // .eslintrc.js
 module.exports = {
-  extends: [
-    '@yyc3/eslint-config',
-    '@typescript-eslint/recommended'
-  ],
+  extends: ['@yyc3/eslint-config', '@typescript-eslint/recommended'],
   rules: {
     // YYC³团队特定规则
     'yyc3/file-header': 'error',
     'yyc3/project-naming': 'error',
-    'yyc3/component-structure': 'warn'
-  }
+    'yyc3/component-structure': 'warn',
+  },
 };
 ```
 
@@ -2026,10 +2057,10 @@ YYC³团队标准化规范文档是我们追求卓越工程的基石。通过严
 
 <div align="center">
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」
 
 Made with ❤️ by YYC³ Team
 

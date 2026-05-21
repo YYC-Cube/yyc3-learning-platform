@@ -80,7 +80,12 @@ export function clearMetrics(): void {
 /**
  * Record HTTP request metric
  */
-export function recordHttpRequest(method: string, path: string, statusCode: number, duration: number): void {
+export function recordHttpRequest(
+  method: string,
+  path: string,
+  statusCode: number,
+  duration: number
+): void {
   recordMetric({
     name: 'http_request_duration_ms',
     value: duration,

@@ -25,16 +25,16 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
   const themes: { value: Theme; label: string; icon: React.ReactNode }[] = [
     { value: 'light', label: '明亮', icon: <Sun className="w-4 h-4" /> },
     { value: 'dark', label: '暗黑', icon: <Moon className="w-4 h-4" /> },
-    { value: 'system', label: '跟随系统', icon: <Monitor className="w-4 h-4" /> }
+    { value: 'system', label: '跟随系统', icon: <Monitor className="w-4 h-4" /> },
   ];
 
   const getCurrentThemeIcon = () => {
-    const currentTheme = themes.find(t => t.value === theme);
+    const currentTheme = themes.find((t) => t.value === theme);
     return currentTheme?.icon || <Sun className="w-4 h-4" />;
   };
 
   const getCurrentThemeLabel = () => {
-    const currentTheme = themes.find(t => t.value === theme);
+    const currentTheme = themes.find((t) => t.value === theme);
     return currentTheme?.label || '明亮';
   };
 
@@ -79,9 +79,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
                 onClick={() => handleThemeSelect(themeOption.value)}
                 className={`
                   w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
-                  ${theme === themeOption.value
-                    ? 'bg-indigo-100 text-indigo-700'
-                    : 'hover:bg-gray-100 text-gray-700'
+                  ${
+                    theme === themeOption.value
+                      ? 'bg-indigo-100 text-indigo-700'
+                      : 'hover:bg-gray-100 text-gray-700'
                   }
                 `}
               >

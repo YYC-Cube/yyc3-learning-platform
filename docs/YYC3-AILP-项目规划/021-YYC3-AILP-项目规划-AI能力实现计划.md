@@ -115,9 +115,7 @@ export class ClaudeProvider {
         messages: params.messages,
       });
 
-      return response.content[0]?.type === 'text'
-        ? response.content[0].text
-        : 'AI响应失败';
+      return response.content[0]?.type === 'text' ? response.content[0].text : 'AI响应失败';
     } catch (error) {
       console.error('Claude API错误:', error);
       throw new Error('AI服务暂时不可用');
@@ -363,7 +361,7 @@ export class AITools {
     return await db.order.findFirst({
       where: {
         id: orderId,
-        ...(userId && { userId })
+        ...(userId && { userId }),
       },
       include: { items: true, customer: true },
     });
@@ -471,12 +469,12 @@ export class QualityAssurance {
 
 ### AI能力提升
 
-| 指标 | 当前状态 | 目标状态 | 提升 |
-|------|----------|----------|------|
-| 响应质量 | 模拟数据 | 真实AI | 100% |
-| 响应速度 | 即时(假) | <3秒 | 真实响应 |
-| 成本控制 | 无 | 精确控制 | 新增能力 |
-| 模型选择 | 单一 | 多模型 | 灵活性提升 |
+| 指标     | 当前状态 | 目标状态 | 提升       |
+| -------- | -------- | -------- | ---------- |
+| 响应质量 | 模拟数据 | 真实AI   | 100%       |
+| 响应速度 | 即时(假) | <3秒     | 真实响应   |
+| 成本控制 | 无       | 精确控制 | 新增能力   |
+| 模型选择 | 单一     | 多模型   | 灵活性提升 |
 
 ### 用户体验改善
 

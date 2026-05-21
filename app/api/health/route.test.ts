@@ -8,15 +8,17 @@ import { GET } from './route';
 
 // Mock the health check functions
 vi.mock('@/lib/monitoring/health-check', () => ({
-  performHealthCheck: vi.fn(() => Promise.resolve({
-    status: 'healthy',
-    timestamp: '2026-01-03T10:00:00.000Z',
-    uptime: 3600,
-    checks: {
-      database: { status: 'pass', responseTime: 10 },
-      memory: { status: 'pass' },
-    },
-  })),
+  performHealthCheck: vi.fn(() =>
+    Promise.resolve({
+      status: 'healthy',
+      timestamp: '2026-01-03T10:00:00.000Z',
+      uptime: 3600,
+      checks: {
+        database: { status: 'pass', responseTime: 10 },
+        memory: { status: 'pass' },
+      },
+    })
+  ),
 }));
 
 describe('GET /api/health', () => {

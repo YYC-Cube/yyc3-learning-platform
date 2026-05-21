@@ -14,16 +14,21 @@ const testConfig: AIProviderConfig = {
   providers: {
     ollama: {
       baseURL: 'http://localhost:11434',
-      models: ['llama3.2:3b-instruct-q4_K_M', 'qwen2.5-coder:1.5b', 'llama3.2:1b', 'deepseek-coder:33b']
-    }
+      models: [
+        'llama3.2:3b-instruct-q4_K_M',
+        'qwen2.5-coder:1.5b',
+        'llama3.2:1b',
+        'deepseek-coder:33b',
+      ],
+    },
   },
   costLimits: {
     dailyLimit: 1000,
     monthlyLimit: 30000,
-    perRequestLimit: 10
+    perRequestLimit: 10,
   },
   routingStrategy: 'best-performance',
-  fallbackEnabled: true
+  fallbackEnabled: true,
 };
 
 // 性能测试结果接口
@@ -55,8 +60,8 @@ const testScenarios = [
     requests: [
       { content: '你好', scenario: 'greeting', costBudget: 'low' },
       { content: '今天天气如何？', scenario: 'qa', costBudget: 'low' },
-      { content: '简单介绍一下你的功能', scenario: 'introduction', costBudget: 'low' }
-    ]
+      { content: '简单介绍一下你的功能', scenario: 'introduction', costBudget: 'low' },
+    ],
   },
   {
     name: '中等负载对话测试',
@@ -65,18 +70,33 @@ const testScenarios = [
     requests: [
       { content: '请分析一下当前的技术发展趋势', scenario: 'analysis', costBudget: 'medium' },
       { content: '如何提高团队协作效率？', scenario: 'consultation', costBudget: 'medium' },
-      { content: '解释一下人工智能在企业中的应用', scenario: 'education', costBudget: 'medium' }
-    ]
+      { content: '解释一下人工智能在企业中的应用', scenario: 'education', costBudget: 'medium' },
+    ],
   },
   {
     name: '高负载压力测试',
     concurrency: 100,
     duration: 60000, // 60秒
     requests: [
-      { content: '为一家软件开发公司制定技术发展策略', scenario: 'strategy', costBudget: 'high', requiresReasoning: true },
-      { content: '设计一个完整的电商系统架构', scenario: 'design', costBudget: 'high', requiresReasoning: true },
-      { content: '分析并优化现有业务流程，提出改进建议', scenario: 'optimization', costBudget: 'high', requiresReasoning: true }
-    ]
+      {
+        content: '为一家软件开发公司制定技术发展策略',
+        scenario: 'strategy',
+        costBudget: 'high',
+        requiresReasoning: true,
+      },
+      {
+        content: '设计一个完整的电商系统架构',
+        scenario: 'design',
+        costBudget: 'high',
+        requiresReasoning: true,
+      },
+      {
+        content: '分析并优化现有业务流程，提出改进建议',
+        scenario: 'optimization',
+        costBudget: 'high',
+        requiresReasoning: true,
+      },
+    ],
   },
   {
     name: '代码生成压力测试',
@@ -85,9 +105,9 @@ const testScenarios = [
     requests: [
       { content: '请写一个Python函数实现快速排序算法', scenario: 'code', costBudget: 'low' },
       { content: '创建一个React组件，实现用户登录表单', scenario: 'code', costBudget: 'medium' },
-      { content: '设计一个RESTful API来管理用户数据', scenario: 'code', costBudget: 'high' }
-    ]
-  }
+      { content: '设计一个RESTful API来管理用户数据', scenario: 'code', costBudget: 'high' },
+    ],
+  },
 ];
 
 /**
@@ -121,7 +141,7 @@ class PerformanceTester {
   private async warmUpModels(): Promise<void> {
     const warmUpRequests = [
       { content: '你好', scenario: 'greeting', costBudget: 'low' },
-      { content: '测试', scenario: 'test', costBudget: 'low' }
+      { content: '测试', scenario: 'test', costBudget: 'low' },
     ];
 
     for (const request of warmUpRequests) {
@@ -138,7 +158,7 @@ class PerformanceTester {
    */
   async runScenario(scenario: any): Promise<PerformanceResult> {
     console.log(`\n🧪 开始测试: ${scenario.name}`);
-    console.log(`📊 并发数: ${scenario.concurrency}, 持续时间: ${scenario.duration/1000}秒`);
+    console.log(`📊 并发数: ${scenario.concurrency}, 持续时间: ${scenario.duration / 1000}秒`);
 
     const startTime = Date.now();
     const responseTimes: number[] = [];
@@ -161,8 +181,12 @@ class PerformanceTester {
         scenario.requests,
         responseTimes,
         errors,
-        () => { failedRequests++; },
-        () => { successfulRequests++; }
+        () => {
+          failedRequests++;
+        },
+        () => {
+          successfulRequests++;
+        }
       );
       promises.push(workerPromise);
     }
@@ -197,7 +221,7 @@ class PerformanceTester {
       requestsPerSecond: (totalRequests / totalDuration) * 1000,
       errorRate: totalRequests > 0 ? (failedRequests / totalRequests) * 100 : 0,
       memoryUsage: finalMemory - initialMemory,
-      cpuUsage: finalCPU - initialCPU
+      cpuUsage: finalCPU - initialCPU,
     };
 
     console.log(`✅ 测试完成: ${scenario.name}`);
@@ -228,7 +252,6 @@ class PerformanceTester {
         const responseTime = Date.now() - startTime;
         responseTimes.push(responseTime);
         onSuccess();
-
       } catch (error) {
         errors.push(error.message);
         onError();
@@ -249,7 +272,6 @@ class PerformanceTester {
 
         // 测试间隔，让系统恢复
         await this.sleep(5000);
-
       } catch (error) {
         console.error(`❌ 测试失败: ${scenario.name}`, error);
       }
@@ -270,7 +292,9 @@ class PerformanceTester {
       console.log(`   总请求数: ${result.totalRequests}`);
       console.log(`   成功请求: ${result.successfulRequests}`);
       console.log(`   失败请求: ${result.failedRequests}`);
-      console.log(`   成功率: ${((result.successfulRequests / result.totalRequests) * 100).toFixed(2)}%`);
+      console.log(
+        `   成功率: ${((result.successfulRequests / result.totalRequests) * 100).toFixed(2)}%`
+      );
       console.log(`   平均响应时间: ${result.avgResponseTime.toFixed(2)}ms`);
       console.log(`   P50响应时间: ${result.p50ResponseTime.toFixed(2)}ms`);
       console.log(`   P95响应时间: ${result.p95ResponseTime.toFixed(2)}ms`);
@@ -292,7 +316,7 @@ class PerformanceTester {
     const targets = {
       maxErrorRate: 1, // 1%
       maxP95ResponseTime: 2000, // 2秒
-      minRequestsPerSecond: 50 // 50请求/秒
+      minRequestsPerSecond: 50, // 50请求/秒
     };
 
     let allPassed = true;
@@ -304,9 +328,15 @@ class PerformanceTester {
       const p95Passed = result.p95ResponseTime <= targets.maxP95ResponseTime;
       const throughputPassed = result.requestsPerSecond >= targets.minRequestsPerSecond;
 
-      console.log(`   ✅ 错误率 ${result.errorRate.toFixed(2)}% ${errorRatePassed ? '通过' : '失败'} (目标: ≤${targets.maxErrorRate}%)`);
-      console.log(`   ✅ P95响应时间 ${result.p95ResponseTime.toFixed(2)}ms ${p95Passed ? '通过' : '失败'} (目标: ≤${targets.maxP95ResponseTime}ms)`);
-      console.log(`   ✅ 吞吐量 ${result.requestsPerSecond.toFixed(2)} req/s ${throughputPassed ? '通过' : '失败'} (目标: ≥${targets.minRequestsPerSecond} req/s)`);
+      console.log(
+        `   ✅ 错误率 ${result.errorRate.toFixed(2)}% ${errorRatePassed ? '通过' : '失败'} (目标: ≤${targets.maxErrorRate}%)`
+      );
+      console.log(
+        `   ✅ P95响应时间 ${result.p95ResponseTime.toFixed(2)}ms ${p95Passed ? '通过' : '失败'} (目标: ≤${targets.maxP95ResponseTime}ms)`
+      );
+      console.log(
+        `   ✅ 吞吐量 ${result.requestsPerSecond.toFixed(2)} req/s ${throughputPassed ? '通过' : '失败'} (目标: ≥${targets.minRequestsPerSecond} req/s)`
+      );
 
       const testPassed = errorRatePassed && p95Passed && throughputPassed;
       console.log(`   🎯 测试结果: ${testPassed ? '✅ 通过' : '❌ 失败'}`);
@@ -333,7 +363,9 @@ class PerformanceTester {
     console.log(`   🔄 总请求数: ${result.totalRequests}`);
     console.log(`   ✅ 成功请求: ${result.successfulRequests}`);
     console.log(`   ❌ 失败请求: ${result.failedRequests}`);
-    console.log(`   📊 成功率: ${((result.successfulRequests / result.totalRequests) * 100).toFixed(2)}%`);
+    console.log(
+      `   📊 成功率: ${((result.successfulRequests / result.totalRequests) * 100).toFixed(2)}%`
+    );
     console.log(`   ⚡ 平均响应时间: ${result.avgResponseTime.toFixed(2)}ms`);
     console.log(`   🎯 P95响应时间: ${result.p95ResponseTime.toFixed(2)}ms`);
     console.log(`   🚀 吞吐量: ${result.requestsPerSecond.toFixed(2)} 请求/秒`);
@@ -365,7 +397,7 @@ class PerformanceTester {
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -383,11 +415,11 @@ class PerformanceTester {
  */
 async function main(): Promise<void> {
   console.log('🚀 YYC³ AI智能协作平台 - 性能压力测试');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
   console.log('测试目标: 企业级并发性能验证');
   console.log('性能要求: P95响应时间<2秒，错误率<1%');
   console.log('测试范围: 50-100并发用户场景');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
 
   const tester = new PerformanceTester(testConfig);
 
@@ -397,7 +429,6 @@ async function main(): Promise<void> {
 
     // 执行性能测试
     await tester.runAllTests();
-
   } catch (error) {
     console.error('💥 测试执行失败:', error);
   } finally {
@@ -408,7 +439,7 @@ async function main(): Promise<void> {
 
 // 运行测试
 if (import.meta.main) {
-  main().catch(error => {
+  main().catch((error) => {
     console.error('💥 未捕获的错误:', error);
     process.exit(1);
   });

@@ -1,14 +1,61 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect, useCallback, useRef, useMemo, useReducer } from 'react';
 import {
-  X, Minus, Maximize2, Minimize2, MessageSquare, Wrench, BarChart3,
-  Workflow, BookOpen, Settings, Send, Loader2, Sparkles, Shield, Zap,
-  Brain, Target, Database, Users, TrendingUp, AlertTriangle, CheckCircle,
-  Activity, Layers, Globe, Lightbulb, ChevronRight, MoreVertical, Bell,
-  Search, Filter, Download, Upload, RefreshCw, Eye, EyeOff, Lock, Unlock,
-  Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, Share2, Copy,
-  Edit, Trash2, Archive, Star, Flag, MessageCircle, ThumbsUp, ThumbsDown
+  X,
+  Minus,
+  Maximize2,
+  Minimize2,
+  MessageSquare,
+  Wrench,
+  BarChart3,
+  Workflow,
+  BookOpen,
+  Settings,
+  Send,
+  Loader2,
+  Sparkles,
+  Shield,
+  Zap,
+  Brain,
+  Target,
+  Database,
+  Users,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Activity,
+  Layers,
+  Globe,
+  Lightbulb,
+  ChevronRight,
+  MoreVertical,
+  Bell,
+  Search,
+  Filter,
+  Download,
+  Upload,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  Lock,
+  Unlock,
+  Play,
+  Pause,
+  SkipForward,
+  SkipBack,
+  Volume2,
+  VolumeX,
+  Share2,
+  Copy,
+  Edit,
+  Trash2,
+  Archive,
+  Star,
+  Flag,
+  MessageCircle,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react';
 
 // 集成YYC³核心系统
@@ -156,7 +203,7 @@ const initialState: WidgetState = {
   theme: 'auto',
   language: 'en',
   notifications: true,
-  soundEnabled: true
+  soundEnabled: true,
 };
 
 // ==================== Enterprise AI Widget Component ====================
@@ -175,18 +222,18 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
     knowledge: true,
     analytics: true,
     goals: true,
-    settings: true
+    settings: true,
   },
   integrations = {
     autonomousEngine: true,
     modelAdapter: true,
     learningSystem: true,
-    fiveDimensionalManagement: true
+    fiveDimensionalManagement: true,
   },
   onClose,
   onMessage,
   onAction,
-  onError
+  onError,
 }) => {
   // ==================== State Management ====================
 
@@ -195,7 +242,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
     mode,
     theme,
     language,
-    position: getInitialPosition(initialPosition)
+    position: getInitialPosition(initialPosition),
   });
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -205,7 +252,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
     engine: 'online' as 'online' | 'offline' | 'loading',
     models: 'online' as 'online' | 'offline' | 'loading',
     learning: 'online' as 'online' | 'offline' | 'loading',
-    management: 'online' as 'online' | 'offline' | 'loading'
+    management: 'online' as 'online' | 'offline' | 'loading',
   });
 
   // ==================== Refs ====================
@@ -224,7 +271,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
       systems.engine = new AutonomousAIEngine({
         userId,
         organizationId,
-        capabilities: ['reasoning', 'planning', 'execution', 'learning']
+        capabilities: ['reasoning', 'planning', 'execution', 'learning'],
       });
     }
 
@@ -232,7 +279,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
       systems.adapter = new ModelAdapter({
         defaultModel: 'gpt-4',
         fallbackModels: ['claude-3', 'gemini-pro'],
-        optimizationEnabled: true
+        optimizationEnabled: true,
       });
     }
 
@@ -240,7 +287,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
       systems.learning = new LearningSystem({
         userId,
         learningRate: 0.01,
-        memoryLimit: 10000
+        memoryLimit: 10000,
       });
     }
 
@@ -279,7 +326,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
 
   const initializeCoreSystems = async () => {
     try {
-      setSystemStatus(prev => ({ ...prev, engine: 'loading' }));
+      setSystemStatus((prev) => ({ ...prev, engine: 'loading' }));
 
       if (coreSystems.engine) {
         await coreSystems.engine.initialize();
@@ -302,19 +349,20 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
         engine: 'online',
         models: 'online',
         learning: 'online',
-        management: 'online'
+        management: 'online',
       });
 
       // Add welcome message
-      addSystemMessage('Enterprise AI Assistant initialized successfully. All systems operational.');
-
+      addSystemMessage(
+        'Enterprise AI Assistant initialized successfully. All systems operational.'
+      );
     } catch (error) {
       console.error('Failed to initialize core systems:', error);
       setSystemStatus({
         engine: 'offline',
         models: 'offline',
         learning: 'offline',
-        management: 'offline'
+        management: 'offline',
       });
 
       addSystemMessage('System initialization failed. Please check your configuration.', 'error');
@@ -352,11 +400,11 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
       status: 'sent',
       metadata: {
         source: 'system',
-        confidence: type === 'error' ? 0 : 1
-      }
+        confidence: type === 'error' ? 0 : 1,
+      },
     };
 
-    setMessages(prev => [...prev, message]);
+    setMessages((prev) => [...prev, message]);
     onMessage?.(message);
   };
 
@@ -370,11 +418,11 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
       timestamp: Date.now(),
       status: 'sent',
       metadata: {
-        source: 'chat'
-      }
+        source: 'chat',
+      },
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
 
@@ -386,11 +434,11 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
         const result = await coreSystems.engine.processMessage(content, {
           userId,
           context: getLastNMessages(5),
-          capabilities: getAvailableCapabilities()
+          capabilities: getAvailableCapabilities(),
         });
         response = result.response;
       } else {
-        response = "AI Engine is not available. Please check system configuration.";
+        response = 'AI Engine is not available. Please check system configuration.';
       }
 
       const assistantMessage: Message = {
@@ -403,18 +451,17 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
           source: 'chat',
           model: coreSystems.adapter?.getCurrentModel() || 'unknown',
           confidence: 0.85,
-          processingTime: Date.now() - userMessage.timestamp
-        }
+          processingTime: Date.now() - userMessage.timestamp,
+        },
       };
 
-      setMessages(prev => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, assistantMessage]);
       onMessage?.(assistantMessage);
 
       // Learn from interaction
       if (coreSystems.learning) {
         await coreSystems.learning.recordInteraction(userMessage, assistantMessage);
       }
-
     } catch (error) {
       console.error('Error processing message:', error);
 
@@ -423,10 +470,10 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
         role: 'system',
         content: 'Sorry, I encountered an error while processing your request. Please try again.',
         timestamp: Date.now(),
-        status: 'error'
+        status: 'error',
       };
 
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [...prev, errorMessage]);
       onError?.(error as Error);
     } finally {
       setIsTyping(false);
@@ -464,7 +511,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
       width: rect.width,
-      height: rect.height
+      height: rect.height,
     };
 
     dispatch({ type: 'SET_POSITION', payload: { isDragging: true } as any });
@@ -478,7 +525,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
 
     dispatch({
       type: 'SET_POSITION',
-      payload: { x: Math.max(0, newX), y: Math.max(0, newY) }
+      payload: { x: Math.max(0, newX), y: Math.max(0, newY) },
     });
   };
 
@@ -509,7 +556,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
           x: (screenWidth - width) / 2,
           y: (screenHeight - height) / 2,
           width,
-          height
+          height,
         };
       default:
         return { x: screenWidth - width - 20, y: screenHeight - height - 20, width, height };
@@ -518,10 +565,14 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'online': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'loading': return <Loader2 className="w-4 h-4 text-yellow-500 animate-spin" />;
-      case 'offline': return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      default: return <Activity className="w-4 h-4 text-gray-500" />;
+      case 'online':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'loading':
+        return <Loader2 className="w-4 h-4 text-yellow-500 animate-spin" />;
+      case 'offline':
+        return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      default:
+        return <Activity className="w-4 h-4 text-gray-500" />;
     }
   };
 
@@ -544,7 +595,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
           left: state.isFullscreen ? 0 : state.position.x,
           top: state.isFullscreen ? 0 : state.position.y,
           width: state.isFullscreen ? '100%' : state.position.width,
-          height: state.isFullscreen ? '100%' : state.position.height
+          height: state.isFullscreen ? '100%' : state.position.height,
         }}
         onMouseMove={handleDragMove}
         onMouseUp={handleDragEnd}
@@ -637,7 +688,11 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
                   onClick={() => dispatch({ type: 'SET_FULLSCREEN', payload: !state.isFullscreen })}
                   className="p-1 hover:bg-white/20 rounded-lg transition-colors"
                 >
-                  {state.isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                  {state.isFullscreen ? (
+                    <Minimize2 className="w-4 h-4" />
+                  ) : (
+                    <Maximize2 className="w-4 h-4" />
+                  )}
                 </button>
               )}
               <button
@@ -658,10 +713,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
               {state.currentView === 'chat' && features.chat && (
                 <div className="flex flex-col h-full">
                   {/* Messages */}
-                  <div
-                    ref={messageContainerRef}
-                    className="flex-1 overflow-y-auto p-4 space-y-4"
-                  >
+                  <div ref={messageContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.map((message) => (
                       <MessageBubble key={message.id} message={message} />
                     ))}
@@ -713,11 +765,7 @@ export const EnterpriseAIWidget: React.FC<EnterpriseAIWidgetProps> = ({
               )}
 
               {state.currentView === 'settings' && features.settings && (
-                <SettingsView
-                  state={state}
-                  dispatch={dispatch}
-                  coreSystems={coreSystems}
-                />
+                <SettingsView state={state} dispatch={dispatch} coreSystems={coreSystems} />
               )}
             </div>
           </div>
@@ -753,9 +801,7 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
 
         {message.metadata && (
           <div className="mt-2 text-xs opacity-70 space-y-1">
-            {message.metadata.model && (
-              <div>Model: {message.metadata.model}</div>
-            )}
+            {message.metadata.model && <div>Model: {message.metadata.model}</div>}
             {message.metadata.confidence && (
               <div>Confidence: {Math.round(message.metadata.confidence * 100)}%</div>
             )}
@@ -885,9 +931,7 @@ const GoalsView: React.FC<{ coreSystems: any }> = ({ coreSystems }) => (
         <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-2">
           <div className="bg-green-500 h-2 rounded-full" style={{ width: '78%' }}></div>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Target: 90% by end of Q4
-        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-400">Target: 90% by end of Q4</p>
       </div>
 
       <div className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -964,7 +1008,12 @@ const SettingsView: React.FC<{
         <h4 className="font-medium mb-3">System Information</h4>
         <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
           <div>Version: 2.0.0</div>
-          <div>User ID: {typeof window !== 'undefined' ? window.location?.pathname?.split('/')?.[1] || 'unknown' : 'unknown'}</div>
+          <div>
+            User ID:{' '}
+            {typeof window !== 'undefined'
+              ? window.location?.pathname?.split('/')?.[1] || 'unknown'
+              : 'unknown'}
+          </div>
           <div>Systems: {Object.keys(coreSystems).length} active</div>
         </div>
       </div>

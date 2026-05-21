@@ -4,21 +4,21 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { CheckCircle, Circle, AlertCircle, Clock, BookOpen } from "lucide-react"
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle, Circle, AlertCircle, Clock, BookOpen } from 'lucide-react';
 
 interface ExamProgressTrackerProps {
-  totalQuestions: number
-  currentQuestionIndex: number
-  answers: Record<number, any>
-  timeRemaining: number
-  onQuestionSelect: (index: number) => void
-  examDuration: number
+  totalQuestions: number;
+  currentQuestionIndex: number;
+  answers: Record<number, any>;
+  timeRemaining: number;
+  onQuestionSelect: (index: number) => void;
+  examDuration: number;
 }
 
 export function ExamProgressTracker({
@@ -29,39 +29,39 @@ export function ExamProgressTracker({
   onQuestionSelect,
   examDuration,
 }: ExamProgressTrackerProps) {
-  const [showDetailedProgress, setShowDetailedProgress] = useState(false)
+  const [showDetailedProgress, setShowDetailedProgress] = useState(false);
 
-  const answeredCount = Object.keys(answers).length
-  const progressPercentage = (answeredCount / totalQuestions) * 100
-  const timeUsedPercentage = ((examDuration * 60 - timeRemaining) / (examDuration * 60)) * 100
+  const answeredCount = Object.keys(answers).length;
+  const progressPercentage = (answeredCount / totalQuestions) * 100;
+  const timeUsedPercentage = ((examDuration * 60 - timeRemaining) / (examDuration * 60)) * 100;
 
   const getQuestionStatus = (index: number) => {
-    if (index === currentQuestionIndex) return "current"
-    if (answers[index] !== undefined) return "answered"
-    return "unanswered"
-  }
+    if (index === currentQuestionIndex) return 'current';
+    if (answers[index] !== undefined) return 'answered';
+    return 'unanswered';
+  };
 
   const _getStatusIcon = (status: string) => {
     switch (status) {
-      case "current":
-        return <AlertCircle className="h-4 w-4 text-blue-600" />
-      case "answered":
-        return <CheckCircle className="h-4 w-4 text-green-600" />
+      case 'current':
+        return <AlertCircle className="h-4 w-4 text-blue-600" />;
+      case 'answered':
+        return <CheckCircle className="h-4 w-4 text-green-600" />;
       default:
-        return <Circle className="h-4 w-4 text-gray-400" />
+        return <Circle className="h-4 w-4 text-gray-400" />;
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "current":
-        return "bg-blue-500 hover:bg-blue-600 text-white"
-      case "answered":
-        return "bg-green-100 hover:bg-green-200 text-green-800 border border-green-300"
+      case 'current':
+        return 'bg-blue-500 hover:bg-blue-600 text-white';
+      case 'answered':
+        return 'bg-green-100 hover:bg-green-200 text-green-800 border border-green-300';
       default:
-        return "bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-300"
+        return 'bg-gray-100 hover:bg-gray-200 text-gray-600 border border-gray-300';
     }
-  }
+  };
 
   return (
     <Card className="sticky top-4">
@@ -118,14 +118,14 @@ export function ExamProgressTracker({
             onClick={() => setShowDetailedProgress(!showDetailedProgress)}
             className="w-full text-xs"
           >
-            {showDetailedProgress ? "隐藏" : "显示"}题目导航
+            {showDetailedProgress ? '隐藏' : '显示'}题目导航
           </Button>
         </div>
 
         {showDetailedProgress && (
           <div className="grid grid-cols-5 gap-1">
             {Array.from({ length: totalQuestions }, (_, index) => {
-              const status = getQuestionStatus(index)
+              const status = getQuestionStatus(index);
               return (
                 <Button
                   key={index}
@@ -136,7 +136,7 @@ export function ExamProgressTracker({
                 >
                   {index + 1}
                 </Button>
-              )
+              );
             })}
           </div>
         )}
@@ -148,7 +148,9 @@ export function ExamProgressTracker({
               <AlertCircle className="h-3 w-3" />
               <span className="font-medium">时间提醒</span>
             </div>
-            <div className="text-red-600 mt-1">还有 {totalQuestions - answeredCount} 题未完成，请抓紧时间！</div>
+            <div className="text-red-600 mt-1">
+              还有 {totalQuestions - answeredCount} 题未完成，请抓紧时间！
+            </div>
           </div>
         )}
 
@@ -163,5 +165,5 @@ export function ExamProgressTracker({
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

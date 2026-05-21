@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-"use client";
+'use client';
 
 import { Search, Star, Clock, Grid, List, Zap, BookOpen, Play } from 'lucide-react';
 import * as React from 'react';
@@ -61,10 +61,7 @@ interface ToolCategoryProps {
   onClick: () => void;
 }
 
-export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
-  onToolExecute,
-  onToolPin
-}) => {
+export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({ onToolExecute, onToolPin }) => {
   const [tools, setTools] = useState<Tool[]>([]);
   const [_filter, _setFilter] = useState<ToolFilter>({});
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -90,7 +87,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
         status: 'active',
         usageCount: 156,
         lastUsed: new Date(),
-        isPinned: true
+        isPinned: true,
       },
       {
         id: 'analysis',
@@ -104,7 +101,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
         status: 'active',
         usageCount: 89,
         lastUsed: new Date(Date.now() - 86400000),
-        isPinned: true
+        isPinned: true,
       },
       {
         id: 'writing',
@@ -118,7 +115,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
         status: 'active',
         usageCount: 234,
         lastUsed: new Date(Date.now() - 172800000),
-        isPinned: false
+        isPinned: false,
       },
       {
         id: 'design',
@@ -132,7 +129,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
         status: 'active',
         usageCount: 67,
         lastUsed: new Date(Date.now() - 259200000),
-        isPinned: false
+        isPinned: false,
       },
       {
         id: 'code',
@@ -146,7 +143,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
         status: 'active',
         usageCount: 312,
         lastUsed: new Date(Date.now() - 345600000),
-        isPinned: true
+        isPinned: true,
       },
       {
         id: 'translate',
@@ -160,7 +157,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
         status: 'active',
         usageCount: 145,
         lastUsed: new Date(Date.now() - 432000000),
-        isPinned: false
+        isPinned: false,
       },
       {
         id: 'calendar',
@@ -174,7 +171,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
         status: 'active',
         usageCount: 78,
         lastUsed: new Date(Date.now() - 518400000),
-        isPinned: false
+        isPinned: false,
       },
       {
         id: 'notes',
@@ -188,8 +185,8 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
         status: 'active',
         usageCount: 198,
         lastUsed: new Date(Date.now() - 604800000),
-        isPinned: true
-      }
+        isPinned: true,
+      },
     ];
 
     setTools(defaultTools);
@@ -197,8 +194,8 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
 
   const categories = useMemo(() => {
     const categoryMap = new Map<string, { count: number; icon: string }>();
-    
-    tools.forEach(tool => {
+
+    tools.forEach((tool) => {
       const existing = categoryMap.get(tool.category);
       if (existing) {
         existing.count++;
@@ -210,65 +207,71 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
     return Array.from(categoryMap.entries()).map(([name, data]) => ({
       name,
       icon: data.icon,
-      count: data.count
+      count: data.count,
     }));
   }, [tools]);
 
   const filteredTools = useMemo(() => {
-    return tools.filter(tool => {
-      if (selectedCategory !== 'all' && tool.category !== selectedCategory) {
-        return false;
-      }
-      
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-          tool.name.toLowerCase().includes(query) ||
-          tool.description.toLowerCase().includes(query) ||
-          tool.tags.some(tag => tag.toLowerCase().includes(query))
-        );
-      }
-      
-      return true;
-    }).sort((a, b) => {
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
-      return b.usageCount - a.usageCount;
-    });
+    return tools
+      .filter((tool) => {
+        if (selectedCategory !== 'all' && tool.category !== selectedCategory) {
+          return false;
+        }
+
+        if (searchQuery) {
+          const query = searchQuery.toLowerCase();
+          return (
+            tool.name.toLowerCase().includes(query) ||
+            tool.description.toLowerCase().includes(query) ||
+            tool.tags.some((tag) => tag.toLowerCase().includes(query))
+          );
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return b.usageCount - a.usageCount;
+      });
   }, [tools, selectedCategory, searchQuery]);
 
-  const handleToolExecute = useCallback(async (tool: Tool) => {
-    setExecutingTool(tool.id);
-    
-    try {
-      const result = await onToolExecute?.(tool.id, tool.config);
-      
-      if (result?.success) {
-        const updatedTools = tools.map(t => 
-          t.id === tool.id 
-            ? { ...t, usageCount: t.usageCount + 1, lastUsed: new Date() }
-            : t
-        );
-        setTools(updatedTools);
-      }
-    } catch (error) {
-      console.error('工具执行失败:', error);
-    } finally {
-      setExecutingTool(null);
-    }
-  }, [tools, onToolExecute]);
+  const handleToolExecute = useCallback(
+    async (tool: Tool) => {
+      setExecutingTool(tool.id);
 
-  const handleToolPin = useCallback((toolId: string, pinned: boolean) => {
-    const updatedTools = tools.map(tool =>
-      tool.id === toolId ? { ...tool, isPinned: pinned } : tool
-    );
-    setTools(updatedTools);
-    onToolPin?.(toolId, pinned);
-  }, [tools, onToolPin]);
+      try {
+        const result = await onToolExecute?.(tool.id, tool.config);
+
+        if (result?.success) {
+          const updatedTools = tools.map((t) =>
+            t.id === tool.id ? { ...t, usageCount: t.usageCount + 1, lastUsed: new Date() } : t
+          );
+          setTools(updatedTools);
+        }
+      } catch (error) {
+        console.error('工具执行失败:', error);
+      } finally {
+        setExecutingTool(null);
+      }
+    },
+    [tools, onToolExecute]
+  );
+
+  const handleToolPin = useCallback(
+    (toolId: string, pinned: boolean) => {
+      const updatedTools = tools.map((tool) =>
+        tool.id === toolId ? { ...tool, isPinned: pinned } : tool
+      );
+      setTools(updatedTools);
+      onToolPin?.(toolId, pinned);
+    },
+    [tools, onToolPin]
+  );
 
   const suggestedTools = useMemo(() => {
     return tools
-      .filter(tool => !tool.isPinned)
+      .filter((tool) => !tool.isPinned)
       .sort((a, b) => b.usageCount - a.usageCount)
       .slice(0, 3);
   }, [tools]);
@@ -306,7 +309,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
             active={selectedCategory === 'all'}
             onClick={() => setSelectedCategory('all')}
           />
-          {categories.map(category => (
+          {categories.map((category) => (
             <ToolCategory
               key={category.name}
               name={category.name}
@@ -322,21 +325,23 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
       {/* 内容区 */}
       <div className="flex-1 overflow-y-auto p-4">
         {/* 固定工具 */}
-        {tools.filter(t => t.isPinned).length > 0 && (
+        {tools.filter((t) => t.isPinned).length > 0 && (
           <div className="mb-6">
             <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
               <Star className="w-4 h-4 mr-2 text-yellow-500" />
               固定工具
             </h3>
             <div className={`grid gap-3 ${viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}>
-              {tools.filter(t => t.isPinned).map(tool => (
-                <ToolCard
-                  key={tool.id}
-                  tool={tool}
-                  onExecute={handleToolExecute}
-                  onPin={handleToolPin}
-                />
-              ))}
+              {tools
+                .filter((t) => t.isPinned)
+                .map((tool) => (
+                  <ToolCard
+                    key={tool.id}
+                    tool={tool}
+                    onExecute={handleToolExecute}
+                    onPin={handleToolPin}
+                  />
+                ))}
             </div>
           </div>
         )}
@@ -349,7 +354,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
               推荐工具
             </h3>
             <div className={`grid gap-3 ${viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}>
-              {suggestedTools.map(tool => (
+              {suggestedTools.map((tool) => (
                 <ToolCard
                   key={tool.id}
                   tool={tool}
@@ -368,7 +373,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
             所有工具
           </h3>
           <div className={`grid gap-3 ${viewMode === 'grid' ? 'grid-cols-2' : 'grid-cols-1'}`}>
-            {filteredTools.map(tool => (
+            {filteredTools.map((tool) => (
               <ToolCard
                 key={tool.id}
                 tool={tool}
@@ -412,16 +417,16 @@ const ToolCard: React.FC<ToolCardProps> = React.memo(({ tool, onExecute, onPin }
           <Star className={`w-4 h-4 ${tool.isPinned ? 'fill-current' : ''}`} />
         </button>
       </div>
-      
+
       <h4 className="font-semibold text-gray-900 mb-1">{tool.name}</h4>
       <p className="text-xs text-gray-600 mb-3 line-clamp-2">{tool.description}</p>
-      
+
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2 text-xs text-gray-500">
           <Clock className="w-3 h-3" />
           <span>{tool.usageCount} 次使用</span>
         </div>
-        
+
         <button
           onClick={() => onExecute(tool)}
           className="flex items-center space-x-1 px-3 py-1 bg-indigo-600 text-white text-xs rounded-md hover:bg-indigo-700 transition-colors"
@@ -430,9 +435,9 @@ const ToolCard: React.FC<ToolCardProps> = React.memo(({ tool, onExecute, onPin }
           <span>运行</span>
         </button>
       </div>
-      
+
       <div className="flex flex-wrap gap-1 mt-2">
-        {tool.tags.slice(0, 2).map(tag => (
+        {tool.tags.slice(0, 2).map((tag) => (
           <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
             {tag}
           </span>
@@ -444,24 +449,22 @@ const ToolCard: React.FC<ToolCardProps> = React.memo(({ tool, onExecute, onPin }
 
 ToolCard.displayName = 'ToolCard';
 
-const ToolCategory: React.FC<ToolCategoryProps> = React.memo(({ name, icon, count, active, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-      active
-        ? 'bg-indigo-600 text-white'
-        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-    }`}
-  >
-    <span>{icon}</span>
-    <span>{name}</span>
-    <span className={`ml-1 px-1.5 py-0.5 rounded-full ${
-      active ? 'bg-white/20' : 'bg-gray-300'
-    }`}>
-      {count}
-    </span>
-  </button>
-));
+const ToolCategory: React.FC<ToolCategoryProps> = React.memo(
+  ({ name, icon, count, active, onClick }) => (
+    <button
+      onClick={onClick}
+      className={`flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+        active ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+      }`}
+    >
+      <span>{icon}</span>
+      <span>{name}</span>
+      <span className={`ml-1 px-1.5 py-0.5 rounded-full ${active ? 'bg-white/20' : 'bg-gray-300'}`}>
+        {count}
+      </span>
+    </button>
+  )
+);
 
 ToolCategory.displayName = 'ToolCategory';
 

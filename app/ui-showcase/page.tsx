@@ -38,9 +38,7 @@ export default function UIShowcasePage() {
           <h1 className="text-4xl font-bold bg-gradient-yyc bg-clip-text text-transparent">
             YYC³ UI 组件库
           </h1>
-          <p className="text-muted-foreground">
-            统一的设计系统 · 现代化的用户界面 · 无障碍体验
-          </p>
+          <p className="text-muted-foreground">统一的设计系统 · 现代化的用户界面 · 无障碍体验</p>
         </div>
 
         <Separator />
@@ -218,30 +216,22 @@ export default function UIShowcasePage() {
             <Alert>
               <InfoIcon className="h-4 w-4" />
               <AlertTitle>提示</AlertTitle>
-              <AlertDescription>
-                这是一个普通的提示信息，用于显示一般性通知。
-              </AlertDescription>
+              <AlertDescription>这是一个普通的提示信息，用于显示一般性通知。</AlertDescription>
             </Alert>
             <Alert className="border-success text-success">
               <CheckCircle2 className="h-4 w-4" />
               <AlertTitle>成功</AlertTitle>
-              <AlertDescription>
-                操作已成功完成！您的更改已保存。
-              </AlertDescription>
+              <AlertDescription>操作已成功完成！您的更改已保存。</AlertDescription>
             </Alert>
             <Alert className="border-warning text-warning">
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>警告</AlertTitle>
-              <AlertDescription>
-                请注意，此操作可能会影响您的数据。
-              </AlertDescription>
+              <AlertDescription>请注意，此操作可能会影响您的数据。</AlertDescription>
             </Alert>
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>错误</AlertTitle>
-              <AlertDescription>
-                抱歉，发生了一个错误。请稍后重试。
-              </AlertDescription>
+              <AlertDescription>抱歉，发生了一个错误。请稍后重试。</AlertDescription>
             </Alert>
           </CardContent>
         </Card>
@@ -292,21 +282,15 @@ export default function UIShowcasePage() {
               </TabsList>
               <TabsContent value="overview" className="space-y-4">
                 <h3 className="text-lg font-semibold">课程概览</h3>
-                <p className="text-muted-foreground">
-                  这里展示课程的基本信息和统计数据。
-                </p>
+                <p className="text-muted-foreground">这里展示课程的基本信息和统计数据。</p>
               </TabsContent>
               <TabsContent value="analytics" className="space-y-4">
                 <h3 className="text-lg font-semibold">学习分析</h3>
-                <p className="text-muted-foreground">
-                  查看您的学习进度和成绩分析。
-                </p>
+                <p className="text-muted-foreground">查看您的学习进度和成绩分析。</p>
               </TabsContent>
               <TabsContent value="settings" className="space-y-4">
                 <h3 className="text-lg font-semibold">课程设置</h3>
-                <p className="text-muted-foreground">
-                  自定义您的学习偏好和通知设置。
-                </p>
+                <p className="text-muted-foreground">自定义您的学习偏好和通知设置。</p>
               </TabsContent>
             </Tabs>
           </CardContent>
@@ -319,9 +303,7 @@ export default function UIShowcasePage() {
               <p className="text-sm text-muted-foreground">
                 © 2025 YanYu Smart Cloud³. 保留所有权利。
               </p>
-              <p className="text-xs text-muted-foreground">
-                万象归元于云枢，深栈智启新纪元
-              </p>
+              <p className="text-xs text-muted-foreground">万象归元于云枢，深栈智启新纪元</p>
             </div>
           </CardContent>
         </Card>

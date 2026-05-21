@@ -4,177 +4,194 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Clock, CheckCircle, XCircle, ArrowLeft, ArrowRight, Trophy, Target, Zap } from "lucide-react"
-import { ResponsiveLayout } from "@/components/responsive-layout"
-import Link from "next/link"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import {
+  Clock,
+  CheckCircle,
+  XCircle,
+  ArrowLeft,
+  ArrowRight,
+  Trophy,
+  Target,
+  Zap,
+} from 'lucide-react';
+import { ResponsiveLayout } from '@/components/responsive-layout';
+import Link from 'next/link';
 
 export default function ExamPage() {
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [selectedAnswer, setSelectedAnswer] = useState("")
-  const [answers, setAnswers] = useState<string[]>([])
-  const [showResult, setShowResult] = useState(false)
-  const [testStarted, setTestStarted] = useState(false)
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState('');
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [showResult, setShowResult] = useState(false);
+  const [testStarted, setTestStarted] = useState(false);
 
   const practiceTests = [
     {
       id: 1,
-      title: "GPT基础概念测试",
-      description: "测试您对GPT模型基础概念的理解",
+      title: 'GPT基础概念测试',
+      description: '测试您对GPT模型基础概念的理解',
       questions: 15,
       duration: 20,
-      difficulty: "初级",
-      category: "理论基础",
+      difficulty: '初级',
+      category: '理论基础',
       points: 100,
     },
     {
       id: 2,
-      title: "Prompt工程实战",
-      description: "评估您的提示词设计和优化能力",
+      title: 'Prompt工程实战',
+      description: '评估您的提示词设计和优化能力',
       questions: 20,
       duration: 30,
-      difficulty: "中级",
-      category: "Prompt工程",
+      difficulty: '中级',
+      category: 'Prompt工程',
       points: 150,
     },
     {
       id: 3,
-      title: "AI应用开发综合测试",
-      description: "全面测试AI应用开发的各个方面",
+      title: 'AI应用开发综合测试',
+      description: '全面测试AI应用开发的各个方面',
       questions: 25,
       duration: 45,
-      difficulty: "高级",
-      category: "开发实战",
+      difficulty: '高级',
+      category: '开发实战',
       points: 200,
     },
     {
       id: 4,
-      title: "大模型微调技术",
-      description: "掌握AI大模型的微调与优化技术",
+      title: '大模型微调技术',
+      description: '掌握AI大模型的微调与优化技术',
       questions: 18,
       duration: 35,
-      difficulty: "高级",
-      category: "模型训练",
+      difficulty: '高级',
+      category: '模型训练',
       points: 180,
     },
     {
       id: 5,
-      title: "AI伦理与安全",
-      description: "了解AI技术的伦理规范和安全标准",
+      title: 'AI伦理与安全',
+      description: '了解AI技术的伦理规范和安全标准',
       questions: 12,
       duration: 25,
-      difficulty: "中级",
-      category: "AI治理",
+      difficulty: '中级',
+      category: 'AI治理',
       points: 120,
     },
     {
       id: 6,
-      title: "智能对话系统设计",
-      description: "构建高质量的AI对话交互系统",
+      title: '智能对话系统设计',
+      description: '构建高质量的AI对话交互系统',
       questions: 22,
       duration: 40,
-      difficulty: "高级",
-      category: "系统设计",
+      difficulty: '高级',
+      category: '系统设计',
       points: 220,
     },
-  ]
+  ];
 
   const questions = [
     {
       id: 1,
       question: '什么是GPT模型中的"Transformer"架构的核心特点？',
       options: [
-        "基于循环神经网络的序列处理",
-        "使用注意力机制处理序列数据",
-        "采用卷积神经网络提取特征",
-        "结合强化学习优化输出",
+        '基于循环神经网络的序列处理',
+        '使用注意力机制处理序列数据',
+        '采用卷积神经网络提取特征',
+        '结合强化学习优化输出',
       ],
       correct: 1,
-      explanation: "Transformer架构的核心是自注意力机制，它能够并行处理序列中的所有位置，捕捉长距离依赖关系。",
+      explanation:
+        'Transformer架构的核心是自注意力机制，它能够并行处理序列中的所有位置，捕捉长距离依赖关系。',
     },
     {
       id: 2,
       question: '在Prompt工程中，"Few-shot Learning"指的是什么？',
-      options: ["使用少量参数训练模型", "在提示中提供少量示例来指导模型", "减少模型的训练时间", "限制模型的输出长度"],
+      options: [
+        '使用少量参数训练模型',
+        '在提示中提供少量示例来指导模型',
+        '减少模型的训练时间',
+        '限制模型的输出长度',
+      ],
       correct: 1,
-      explanation: "Few-shot Learning是指在提示词中提供少量示例，帮助模型理解任务要求并生成期望的输出格式。",
+      explanation:
+        'Few-shot Learning是指在提示词中提供少量示例，帮助模型理解任务要求并生成期望的输出格式。',
     },
     {
       id: 3,
-      question: "以下哪个不是大语言模型的常见应用场景？",
-      options: ["文本生成和摘要", "代码生成和调试", "图像识别和分类", "对话系统和问答"],
+      question: '以下哪个不是大语言模型的常见应用场景？',
+      options: ['文本生成和摘要', '代码生成和调试', '图像识别和分类', '对话系统和问答'],
       correct: 2,
-      explanation: "图像识别和分类主要是计算机视觉任务，通常使用CNN等架构，而不是大语言模型的主要应用领域。",
+      explanation:
+        '图像识别和分类主要是计算机视觉任务，通常使用CNN等架构，而不是大语言模型的主要应用领域。',
     },
-  ]
+  ];
 
   const handleStartTest = () => {
-    setTestStarted(true)
-    setCurrentQuestion(0)
-    setAnswers([])
-    setShowResult(false)
-  }
+    setTestStarted(true);
+    setCurrentQuestion(0);
+    setAnswers([]);
+    setShowResult(false);
+  };
 
   const handleAnswerSelect = (value: string) => {
-    setSelectedAnswer(value)
-  }
+    setSelectedAnswer(value);
+  };
 
   const handleNextQuestion = () => {
-    const newAnswers = [...answers]
-    newAnswers[currentQuestion] = selectedAnswer
-    setAnswers(newAnswers)
-    setSelectedAnswer("")
+    const newAnswers = [...answers];
+    newAnswers[currentQuestion] = selectedAnswer;
+    setAnswers(newAnswers);
+    setSelectedAnswer('');
 
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1)
+      setCurrentQuestion(currentQuestion + 1);
     } else {
-      setShowResult(true)
+      setShowResult(true);
     }
-  }
+  };
 
   const handlePrevQuestion = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1)
-      setSelectedAnswer(answers[currentQuestion - 1] || "")
+      setCurrentQuestion(currentQuestion - 1);
+      setSelectedAnswer(answers[currentQuestion - 1] || '');
     }
-  }
+  };
 
   const calculateScore = () => {
-    let correct = 0
+    let correct = 0;
     answers.forEach((answer, index) => {
       if (Number.parseInt(answer) === questions[index].correct) {
-        correct++
+        correct++;
       }
-    })
-    return Math.round((correct / questions.length) * 100)
-  }
+    });
+    return Math.round((correct / questions.length) * 100);
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case "初级":
-        return "bg-green-100 text-green-800"
-      case "中级":
-        return "bg-yellow-100 text-yellow-800"
-      case "高级":
-        return "bg-red-100 text-red-800"
+      case '初级':
+        return 'bg-green-100 text-green-800';
+      case '中级':
+        return 'bg-yellow-100 text-yellow-800';
+      case '高级':
+        return 'bg-red-100 text-red-800';
       default:
-        return "bg-gray-100 text-gray-800"
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   if (!testStarted) {
     return (
       <ResponsiveLayout
         title="练习测试"
-        user={{ name: "YanYu同学", avatar: "/user/User_61.png", level: "中级工程师" }}
+        user={{ name: 'YanYu同学', avatar: '/user/User_61.png', level: '中级工程师' }}
       >
         <div>
           <div className="mb-6 sm:mb-8">
@@ -230,20 +247,24 @@ export default function ExamPage() {
           </div>
         </div>
       </ResponsiveLayout>
-    )
+    );
   }
 
   if (showResult) {
-    const score = calculateScore()
+    const score = calculateScore();
     const correctAnswers = answers.filter(
-      (answer, index) => Number.parseInt(answer) === questions[index].correct,
-    ).length
+      (answer, index) => Number.parseInt(answer) === questions[index].correct
+    ).length;
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4 pb-24">
         {/* 返回按钮 - 固定在左上角 */}
         <div className="fixed top-4 left-4 z-10">
-          <Button variant="outline" asChild className="flex items-center gap-2 bg-white/90 backdrop-blur-sm">
+          <Button
+            variant="outline"
+            asChild
+            className="flex items-center gap-2 bg-white/90 backdrop-blur-sm"
+          >
             <Link href="/exam" className="inline-flex items-center justify-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               返回测试列表
@@ -301,14 +322,18 @@ export default function ExamPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 pb-24">
       {/* 返回按钮 - 固定在左上角 */}
       <div className="fixed top-4 left-4 z-10">
-        <Button variant="outline" asChild className="flex items-center gap-2 bg-white/90 backdrop-blur-sm">
+        <Button
+          variant="outline"
+          asChild
+          className="flex items-center gap-2 bg-white/90 backdrop-blur-sm"
+        >
           <Link href="/exam" className="inline-flex items-center justify-center gap-2">
             <ArrowLeft className="h-4 w-4" />
             返回测试
@@ -334,7 +359,9 @@ export default function ExamPage() {
         {/* 题目卡片 - 增加触摸友好的间距 */}
         <Card className="shadow-xl bg-white/90 backdrop-blur-sm">
           <CardHeader className="p-4 sm:p-6">
-            <CardTitle className="text-lg sm:text-xl">{questions[currentQuestion].question}</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">
+              {questions[currentQuestion].question}
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-4 sm:p-6">
             <RadioGroup value={selectedAnswer} onValueChange={handleAnswerSelect}>
@@ -355,7 +382,12 @@ export default function ExamPage() {
 
         {/* 导航按钮 - 增加大小和间距 */}
         <div className="flex justify-between mt-6 mb-8">
-          <Button variant="outline" onClick={handlePrevQuestion} disabled={currentQuestion === 0} className="h-12 px-5">
+          <Button
+            variant="outline"
+            onClick={handlePrevQuestion}
+            disabled={currentQuestion === 0}
+            className="h-12 px-5"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             上一题
           </Button>
@@ -364,11 +396,11 @@ export default function ExamPage() {
             disabled={!selectedAnswer}
             className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white h-12 px-5"
           >
-            {currentQuestion === questions.length - 1 ? "完成测试" : "下一题"}
+            {currentQuestion === questions.length - 1 ? '完成测试' : '下一题'}
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </div>
       </div>
     </div>
-  )
+  );
 }

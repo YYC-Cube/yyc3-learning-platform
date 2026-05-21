@@ -90,8 +90,8 @@ export class CacheManager<T = any> extends EventEmitter {
       distributedCacheConfig: config.distributedCacheConfig || {
         host: 'localhost',
         port: 6379,
-        db: 0
-      }
+        db: 0,
+      },
     };
 
     this.statistics = {
@@ -103,7 +103,7 @@ export class CacheManager<T = any> extends EventEmitter {
       totalEvictions: 0,
       currentSize: 0,
       memoryUsage: 0,
-      avgAccessTime: 0
+      avgAccessTime: 0,
     };
 
     this.startCleanup();
@@ -123,7 +123,7 @@ export class CacheManager<T = any> extends EventEmitter {
         return {
           success: false,
           fromCache: false,
-          error: 'Key not found'
+          error: 'Key not found',
         };
       }
 
@@ -135,7 +135,7 @@ export class CacheManager<T = any> extends EventEmitter {
         return {
           success: false,
           fromCache: false,
-          error: 'Entry expired'
+          error: 'Entry expired',
         };
       }
 
@@ -150,14 +150,14 @@ export class CacheManager<T = any> extends EventEmitter {
       return {
         success: true,
         value: entry.value,
-        fromCache: true
+        fromCache: true,
       };
     } catch (error) {
       this.updateAccessTime(startTime);
       return {
         success: false,
         fromCache: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -170,7 +170,7 @@ export class CacheManager<T = any> extends EventEmitter {
         timestamp: Date.now(),
         ttl: ttl || this.config.defaultTTL,
         hits: 0,
-        lastAccess: Date.now()
+        lastAccess: Date.now(),
       };
 
       // 检查是否需要清理过期条目
@@ -196,7 +196,7 @@ export class CacheManager<T = any> extends EventEmitter {
 
       // 异步保存到持久化存储，避免阻塞主线程
       if (this.config.enablePersistence) {
-        this.saveToPersistence().catch(error => {
+        this.saveToPersistence().catch((error) => {
           logger.error('[CacheManager] Failed to save to persistence:', error);
         });
       }
@@ -204,13 +204,13 @@ export class CacheManager<T = any> extends EventEmitter {
       return {
         success: true,
         value,
-        fromCache: false
+        fromCache: false,
       };
     } catch (error) {
       return {
         success: false,
         fromCache: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -258,7 +258,7 @@ export class CacheManager<T = any> extends EventEmitter {
           .slice(0, count);
         entriesToEvict.push(...sortedByLastAccess.map(([key]) => key));
         break;
-        
+
       case 'LFU':
         // 找出访问次数最少的条目
         const sortedByHits = Array.from(this.cache.entries())
@@ -266,7 +266,7 @@ export class CacheManager<T = any> extends EventEmitter {
           .slice(0, count);
         entriesToEvict.push(...sortedByHits.map(([key]) => key));
         break;
-        
+
       case 'FIFO':
         // 找出最旧的条目
         const sortedByTimestamp = Array.from(this.cache.entries())
@@ -274,7 +274,7 @@ export class CacheManager<T = any> extends EventEmitter {
           .slice(0, count);
         entriesToEvict.push(...sortedByTimestamp.map(([key]) => key));
         break;
-        
+
       case 'TTL':
         // 找出剩余TTL最短的条目
         const sortedByTTL = Array.from(this.cache.entries())
@@ -346,7 +346,7 @@ export class CacheManager<T = any> extends EventEmitter {
   }
 
   values(): T[] {
-    return Array.from(this.cache.values()).map(entry => entry.value);
+    return Array.from(this.cache.values()).map((entry) => entry.value);
   }
 
   getStatistics(): CacheStatistics {
@@ -376,11 +376,7 @@ export class CacheManager<T = any> extends EventEmitter {
     return count;
   }
 
-  async getOrSet(
-    key: string,
-    factory: () => Promise<T>,
-    ttl?: number
-  ): Promise<CacheResult<T>> {
+  async getOrSet(key: string, factory: () => Promise<T>, ttl?: number): Promise<CacheResult<T>> {
     const cached = await this.get(key);
 
     if (cached.success) {
@@ -536,16 +532,16 @@ export class CacheManager<T = any> extends EventEmitter {
     for (const [key, entry] of this.cache.entries()) {
       // 估计key的大小
       const keySize = key.length * 2;
-      
+
       // 估计value的大小
       const valueSize = JSON.stringify(entry.value).length * 2;
-      
+
       // 估计元数据的大小
       const metadataSize = entry.metadata ? JSON.stringify(entry.metadata).length * 2 : 0;
-      
+
       // 估计CacheEntry其他字段的大小
       const entryOverhead = 200; // 估算其他字段的内存开销（字节）
-      
+
       total += keySize + valueSize + metadataSize + entryOverhead;
     }
 
@@ -621,7 +617,7 @@ export class CacheManager<T = any> extends EventEmitter {
 
     // 清空缓存
     this.cache.clear();
-    
+
     this.destroyed = true;
     logger.info('CacheManager destroyed');
   }

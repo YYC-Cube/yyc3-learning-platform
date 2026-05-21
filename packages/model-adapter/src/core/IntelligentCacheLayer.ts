@@ -4,7 +4,7 @@ export enum CacheLevel {
   L1 = 'memory',
   L2 = 'shared',
   L3 = 'persistent',
-  L4 = 'remote'
+  L4 = 'remote',
 }
 
 export enum CacheStrategy {
@@ -14,7 +14,7 @@ export enum CacheStrategy {
   MRU = 'mru',
   FIFO = 'fifo',
   TTL = 'ttl',
-  HYBRID = 'hybrid'
+  HYBRID = 'hybrid',
 }
 
 export interface CacheMetadata {
@@ -160,7 +160,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       strategy: CacheStrategy.LRU,
       ttl: config.l1TTL || 60000,
       enableCompression: config.enableCompression || false,
-      serialization: 'json'
+      serialization: 'json',
     });
 
     this.l2Cache = new L2SharedCache({
@@ -168,7 +168,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       connection: config.redisConfig,
       maxMemory: config.l2Size || '1gb',
       policy: config.l2Policy || CacheStrategy.LRU,
-      clustering: config.clusteringEnabled || false
+      clustering: config.clusteringEnabled || false,
     });
 
     this.l3Cache = new L3PersistentCache({
@@ -176,7 +176,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       path: config.persistentPath || './cache',
       maxSize: config.l3Size || '10gb',
       compression: config.enableCompression ? 'gzip' : 'none',
-      writeBuffer: config.writeBufferSize || 1024 * 1024
+      writeBuffer: config.writeBufferSize || 1024 * 1024,
     });
 
     this.l4Cache = new L4RemoteCache({
@@ -184,7 +184,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       bucket: config.cdnBucket || 'default',
       region: config.cdnRegion || 'us-east-1',
       ttl: config.l4TTL || 86400000,
-      edgeLocations: config.edgeLocations || []
+      edgeLocations: config.edgeLocations || [],
     });
   }
 
@@ -210,7 +210,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       if (result.hit) {
         await Promise.all([
           this.l1Cache.set(key, result.value, result.metadata),
-          this.l2Cache.set(key, result.value, result.metadata)
+          this.l2Cache.set(key, result.value, result.metadata),
         ]);
         this.recordHit('L3', traceId);
         return this.wrapResult(result, CacheLevel.L3, Date.now() - startTime);
@@ -221,7 +221,7 @@ export class IntelligentCacheLayer extends EventEmitter {
         await Promise.all([
           this.l1Cache.set(key, result.value, result.metadata),
           this.l2Cache.set(key, result.value, result.metadata),
-          this.l3Cache.set(key, result.value, result.metadata)
+          this.l3Cache.set(key, result.value, result.metadata),
         ]);
         this.recordHit('L4', traceId);
         return this.wrapResult(result, CacheLevel.L4, Date.now() - startTime);
@@ -238,8 +238,8 @@ export class IntelligentCacheLayer extends EventEmitter {
           metadata: {
             loadTime: Date.now() - startTime,
             size: this.calculateSize(data),
-            timestamp: new Date()
-          }
+            timestamp: new Date(),
+          },
         };
       }
 
@@ -250,8 +250,8 @@ export class IntelligentCacheLayer extends EventEmitter {
         source: 'none',
         metadata: {
           missTime: Date.now() - startTime,
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       };
     } catch (error) {
       return await this.handleCacheError<T>(error, key, options, traceId);
@@ -269,7 +269,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       version: 1,
       size: this.calculateSize(value),
       accessCount: 0,
-      lastAccessedAt: new Date()
+      lastAccessedAt: new Date(),
     };
 
     switch (options.strategy || 'write-through') {
@@ -278,7 +278,7 @@ export class IntelligentCacheLayer extends EventEmitter {
           this.l1Cache.set(key, value, metadata),
           this.l2Cache.set(key, value, metadata),
           this.l3Cache.set(key, value, metadata),
-          this.l4Cache.set(key, value, metadata)
+          this.l4Cache.set(key, value, metadata),
         ]);
         break;
 
@@ -302,7 +302,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       default:
         await Promise.all([
           this.l1Cache.set(key, value, metadata),
-          this.l2Cache.set(key, value, metadata)
+          this.l2Cache.set(key, value, metadata),
         ]);
     }
 
@@ -314,7 +314,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       this.l1Cache.delete(key),
       this.l2Cache.delete(key),
       this.l3Cache.delete(key),
-      this.l4Cache.delete(key)
+      this.l4Cache.delete(key),
     ]);
     this.emit('cache:delete', { key });
   }
@@ -324,34 +324,34 @@ export class IntelligentCacheLayer extends EventEmitter {
       this.l1Cache.clear(),
       this.l2Cache.clear(),
       this.l3Cache.clear(),
-      this.l4Cache.clear()
+      this.l4Cache.clear(),
     ]);
     this.emit('cache:clear');
   }
 
   async invalidate(pattern: string | RegExp): Promise<void> {
     const keys = await this.findKeys(pattern);
-    await Promise.all(keys.map(key => this.delete(key)));
+    await Promise.all(keys.map((key) => this.delete(key)));
   }
 
   async warmup(patterns: WarmupPattern[]): Promise<WarmupReport> {
     const report: WarmupReport = {
       startTime: new Date(),
       patterns: [],
-      results: {}
+      results: {},
     };
 
     for (const pattern of patterns) {
       const patternStart = Date.now();
       const keysToWarm = await this.identifyKeysForWarmup(pattern);
 
-      const warmupPromises = keysToWarm.map(async key => {
+      const warmupPromises = keysToWarm.map(async (key) => {
         try {
           const data = await pattern.loader(key);
           await this.set(key, data, {
             strategy: 'write-through',
             ttl: pattern.ttl,
-            priority: pattern.priority || 'medium'
+            priority: pattern.priority || 'medium',
           });
           return { key, success: true, size: this.calculateSize(data) };
         } catch (error) {
@@ -364,9 +364,9 @@ export class IntelligentCacheLayer extends EventEmitter {
       report.patterns.push({
         pattern: pattern.name,
         keysAttempted: keysToWarm.length,
-        keysWarmed: results.filter(r => r.success).length,
+        keysWarmed: results.filter((r) => r.success).length,
         totalSize: results.reduce((sum, r) => sum + (r.size || 0), 0),
-        duration: Date.now() - patternStart
+        duration: Date.now() - patternStart,
       });
 
       report.results[pattern.name] = results;
@@ -383,7 +383,7 @@ export class IntelligentCacheLayer extends EventEmitter {
       this.l1Cache.getStats(),
       this.l2Cache.getStats(),
       this.l3Cache.getStats(),
-      this.l4Cache.getStats()
+      this.l4Cache.getStats(),
     ]);
   }
 
@@ -401,12 +401,12 @@ export class IntelligentCacheLayer extends EventEmitter {
         totalMisses,
         hitRate,
         totalSize: stats.reduce((sum, s) => sum + s.size, 0),
-        totalMemoryUsage: stats.reduce((sum, s) => sum + s.memoryUsage, 0)
+        totalMemoryUsage: stats.reduce((sum, s) => sum + s.memoryUsage, 0),
       },
       bottlenecks: [],
       recommendations: [],
       forecast: {},
-      healthScore: hitRate * 100
+      healthScore: hitRate * 100,
     };
   }
 
@@ -418,8 +418,8 @@ export class IntelligentCacheLayer extends EventEmitter {
       metadata: {
         loadTime,
         size: result.metadata?.size || 0,
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     };
   }
 
@@ -439,7 +439,12 @@ export class IntelligentCacheLayer extends EventEmitter {
     return JSON.stringify(data).length;
   }
 
-  private async handleCacheError<T>(error: any, key: string, options: CacheGetOptions, traceId: string): Promise<CacheResult<T>> {
+  private async handleCacheError<T>(
+    error: any,
+    key: string,
+    options: CacheGetOptions,
+    traceId: string
+  ): Promise<CacheResult<T>> {
     this.emit('cache:error', { error, key, traceId });
 
     if (options.loader) {
@@ -452,8 +457,8 @@ export class IntelligentCacheLayer extends EventEmitter {
           metadata: {
             loadTime: 0,
             size: this.calculateSize(data),
-            timestamp: new Date()
-          }
+            timestamp: new Date(),
+          },
         };
       } catch (loaderError) {
         throw loaderError;
@@ -469,7 +474,7 @@ export class IntelligentCacheLayer extends EventEmitter {
         await Promise.all([
           this.l2Cache.set(key, value, metadata),
           this.l3Cache.set(key, value, metadata),
-          this.l4Cache.set(key, value, metadata)
+          this.l4Cache.set(key, value, metadata),
         ]);
       } catch (error) {
         this.emit('cache:background-write-error', { error, key });
@@ -553,13 +558,13 @@ class L1MemoryCache extends EventEmitter {
       maxSize: this.config.maxSize,
       evictions: 0,
       avgLatency: 0,
-      memoryUsage: this.calculateMemoryUsage()
+      memoryUsage: this.calculateMemoryUsage(),
     };
   }
 
   async findKeys(pattern: string | RegExp): Promise<string[]> {
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-    return Array.from(this.cache.keys()).filter(key => regex.test(key));
+    return Array.from(this.cache.keys()).filter((key) => regex.test(key));
   }
 
   private evictLRU(): void {
@@ -638,13 +643,13 @@ class L2SharedCache extends EventEmitter {
       maxSize: 10000,
       evictions: 0,
       avgLatency: 0,
-      memoryUsage: this.calculateMemoryUsage()
+      memoryUsage: this.calculateMemoryUsage(),
     };
   }
 
   async findKeys(pattern: string | RegExp): Promise<string[]> {
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-    return Array.from(this.cache.keys()).filter(key => regex.test(key));
+    return Array.from(this.cache.keys()).filter((key) => regex.test(key));
   }
 
   private calculateMemoryUsage(): number {
@@ -706,13 +711,13 @@ class L3PersistentCache extends EventEmitter {
       maxSize: 100000,
       evictions: 0,
       avgLatency: 0,
-      memoryUsage: this.calculateMemoryUsage()
+      memoryUsage: this.calculateMemoryUsage(),
     };
   }
 
   async findKeys(pattern: string | RegExp): Promise<string[]> {
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-    return Array.from(this.cache.keys()).filter(key => regex.test(key));
+    return Array.from(this.cache.keys()).filter((key) => regex.test(key));
   }
 
   private calculateMemoryUsage(): number {
@@ -774,13 +779,13 @@ class L4RemoteCache extends EventEmitter {
       maxSize: 1000000,
       evictions: 0,
       avgLatency: 0,
-      memoryUsage: this.calculateMemoryUsage()
+      memoryUsage: this.calculateMemoryUsage(),
     };
   }
 
   async findKeys(pattern: string | RegExp): Promise<string[]> {
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-    return Array.from(this.cache.keys()).filter(key => regex.test(key));
+    return Array.from(this.cache.keys()).filter((key) => regex.test(key));
   }
 
   private calculateMemoryUsage(): number {

@@ -25,34 +25,34 @@ export const ManagementConfigSchema = z.object({
     technology: z.object({ enabled: z.boolean().default(true), priority: z.number().default(2) }),
     data: z.object({ enabled: z.boolean().default(true), priority: z.number().default(3) }),
     ux: z.object({ enabled: z.boolean().default(true), priority: z.number().default(4) }),
-    value: z.object({ enabled: z.boolean().default(true), priority: z.number().default(5) })
+    value: z.object({ enabled: z.boolean().default(true), priority: z.number().default(5) }),
   }),
   alerts: z.object({
     thresholds: z.object({
       goalDeviation: z.number().min(0).max(1).default(0.15),
       performanceDegradation: z.number().min(0).max(1).default(0.2),
       errorRate: z.number().min(0).max(1).default(0.05),
-      userSatisfactionDrop: z.number().min(0).max(1).default(0.1)
+      userSatisfactionDrop: z.number().min(0).max(1).default(0.1),
     }),
     notifications: z.object({
       email: z.boolean().default(true),
       slack: z.boolean().default(false),
       webhook: z.boolean().default(false),
-      dashboard: z.boolean().default(true)
-    })
+      dashboard: z.boolean().default(true),
+    }),
   }),
   optimization: z.object({
     enabled: z.boolean().default(true),
     autoAdjustment: z.boolean().default(false),
     learningEnabled: z.boolean().default(true),
-    mlModelPath: z.string().optional()
+    mlModelPath: z.string().optional(),
   }),
   security: z.object({
     level: z.enum(['basic', 'standard', 'enhanced']).default('standard'),
     encryptionEnabled: z.boolean().default(true),
     auditLog: z.boolean().default(true),
-    accessControl: z.boolean().default(true)
-  })
+    accessControl: z.boolean().default(true),
+  }),
 });
 
 export type ManagementConfig = z.infer<typeof ManagementConfigSchema>;
@@ -761,7 +761,7 @@ export const StrategicGoalSchema = z.object({
   risks: z.array(z.any()),
   createdAt: z.date(),
   updatedAt: z.date(),
-  lastReviewed: z.date()
+  lastReviewed: z.date(),
 });
 
 export const AlertSchema = z.object({
@@ -780,5 +780,5 @@ export const AlertSchema = z.object({
   resolvedAt: z.date().optional(),
   actionRequired: z.boolean(),
   actions: z.array(z.any()),
-  metadata: z.record(z.any())
+  metadata: z.record(z.any()),
 });

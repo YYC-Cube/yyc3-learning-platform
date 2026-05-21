@@ -99,14 +99,14 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
           id = await this._databases.postgres.store('users', {
             ...data,
             created_at: new Date(),
-            updated_at: new Date()
+            updated_at: new Date(),
           });
           break;
 
         case 'conversation':
           id = await this._databases.postgres.store('conversations', {
             ...data,
-            created_at: new Date()
+            created_at: new Date(),
           });
           // 同时缓存到Redis
           await this._databases.redis.setex(`conversation:${id}`, 3600, JSON.stringify(data));
@@ -117,14 +117,14 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
             ...data,
             created_at: new Date(),
             updated_at: new Date(),
-            searchable_text: this.buildSearchableText(data)
+            searchable_text: this.buildSearchableText(data),
           });
           break;
 
         case 'analytics':
           id = await this._databases.postgres.store('analytics', {
             ...data,
-            timestamp: new Date()
+            timestamp: new Date(),
           });
           break;
 
@@ -134,7 +134,6 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
 
       this.emit('data-stored', { type, id, data });
       return id;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -164,7 +163,6 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       }
 
       return data;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -178,7 +176,7 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       const tableName = this.getTableName(type);
       const updateData = {
         ...data,
-        updated_at: new Date()
+        updated_at: new Date(),
       };
 
       const success = await this._databases.postgres.update(tableName, id, updateData);
@@ -190,7 +188,6 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
 
       this.emit('data-updated', { type, id, data });
       return success;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -211,7 +208,6 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
 
       this.emit('data-deleted', { type, id });
       return success;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -227,7 +223,7 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       ...item,
       embedding,
       created_at: new Date(),
-      updated_at: new Date()
+      updated_at: new Date(),
     };
 
     const id = await this.store('knowledge', knowledgeItem);
@@ -242,18 +238,19 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
 
       if (query.type === 'keyword') {
         // 关键词搜索
-        const keywordResults = await this._databases.postgres.search(
-          'knowledge_base',
-          query.text,
-          ['title', 'content', 'tags']
+        const keywordResults = await this._databases.postgres.search('knowledge_base', query.text, [
+          'title',
+          'content',
+          'tags',
+        ]);
+
+        results.push(
+          ...keywordResults.map((item) => ({
+            item,
+            score: this.calculateKeywordScore(query.text, item),
+            matchType: 'keyword',
+          }))
         );
-
-        results.push(...keywordResults.map(item => ({
-          item,
-          score: this.calculateKeywordScore(query.text, item),
-          matchType: 'keyword'
-        })));
-
       } else if (query.type === 'semantic') {
         // 语义搜索
         const queryEmbedding = await this.generateEmbedding(query.text);
@@ -263,16 +260,17 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
           query.limit || 10
         );
 
-        results.push(...semanticResults.map((item: any) => ({
-          item,
-          score: item.similarity,
-          matchType: 'semantic'
-        })));
+        results.push(
+          ...semanticResults.map((item: any) => ({
+            item,
+            score: item.similarity,
+            matchType: 'semantic',
+          }))
+        );
       }
 
       // 按分数排序
       return results.sort((a, b) => b.score - a.score);
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -285,7 +283,7 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
     const updatedItem = {
       ...item,
       ...updates,
-      updated_at: new Date()
+      updated_at: new Date(),
     };
 
     // 如果内容发生变化，重新生成向量
@@ -311,18 +309,17 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
         data: analysis.data,
         insights: analysis.insights,
         recommendations: analysis.recommendations,
-        charts: analysis.charts
+        charts: analysis.charts,
       };
 
       // 保存报告
       await this.store('analytics', {
         type: 'report',
         config,
-        report
+        report,
       });
 
       return report;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -346,13 +343,12 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
 
       const results = await this._databases.postgres.query(query, [type]);
 
-      return results.map(row => ({
+      return results.map((row) => ({
         name: row.metric_name,
         value: parseFloat(row.metric_value),
         timestamp: row.timestamp,
-        labels: row.labels || {}
+        labels: row.labels || {},
       }));
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -366,11 +362,10 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
         seasonality: this.detectSeasonality(data, config),
         anomalies: this.detectAnomalies(data, config),
         forecast: this.generateForecast(data, config),
-        confidence: this.calculateConfidence(data, config)
+        confidence: this.calculateConfidence(data, config),
       };
 
       return analysis;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -392,7 +387,6 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
 
       await this._databases.redis.setex('company_profile', 3600, JSON.stringify(profile));
       return profile;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -404,7 +398,11 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       const currentProfile = await this.getCompanyProfile();
       const updatedProfile = { ...currentProfile, ...updates, updated_at: new Date() };
 
-      const success = await this._databases.postgres.update('company_profile', 'main', updatedProfile);
+      const success = await this._databases.postgres.update(
+        'company_profile',
+        'main',
+        updatedProfile
+      );
 
       if (success) {
         // 清除缓存
@@ -413,7 +411,6 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       }
 
       return success;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -431,7 +428,6 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
 
       await this._databases.redis.setex(`user_profile:${userId}`, 1800, JSON.stringify(profile));
       return profile;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -449,7 +445,6 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       }
 
       return success;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -461,7 +456,7 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
     return {
       postgres: new PostgreSQLConnection(this._config.postgres),
       redis: new RedisConnection(this._config.redis),
-      minio: new MinIOConnection(this._config.minio)
+      minio: new MinIOConnection(this._config.minio),
     };
   }
 
@@ -472,7 +467,7 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       'knowledge_base',
       'analytics',
       'company_profile',
-      'metrics'
+      'metrics',
     ];
 
     for (const table of tables) {
@@ -498,7 +493,7 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       departments: this._config.company.departments || ['技术', '产品', '运营'],
       policies: [],
       created_at: new Date(),
-      updated_at: new Date()
+      updated_at: new Date(),
     };
 
     await this._databases.postgres.store('company_profile', defaultProfile);
@@ -512,37 +507,35 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
 
   private getTableName(type: string): string {
     const tableMap: Record<string, string> = {
-      'user': 'users',
-      'conversation': 'conversations',
-      'knowledge': 'knowledge_base',
-      'analytics': 'analytics',
-      'metrics': 'metrics'
+      user: 'users',
+      conversation: 'conversations',
+      knowledge: 'knowledge_base',
+      analytics: 'analytics',
+      metrics: 'metrics',
     };
 
     return tableMap[type] || type;
   }
 
   private buildSearchableText(data: any): string {
-    return [
-      data.title || '',
-      data.content || '',
-      (data.tags || []).join(' '),
-      data.category || ''
-    ].join(' ').toLowerCase();
+    return [data.title || '', data.content || '', (data.tags || []).join(' '), data.category || '']
+      .join(' ')
+      .toLowerCase();
   }
 
   private async generateEmbedding(text: string): Promise<number[]> {
     // 简化的嵌入生成（实际应该调用嵌入模型）
-    return text.split('').map(char => char.charCodeAt(0) / 1000);
+    return text.split('').map((char) => char.charCodeAt(0) / 1000);
   }
 
   private calculateKeywordScore(query: string, item: any): number {
     const queryLower = query.toLowerCase();
     const titleScore = item.title.toLowerCase().includes(queryLower) ? 1 : 0;
-    const contentScore = (item.content.toLowerCase().match(new RegExp(queryLower, 'g')) || []).length * 0.1;
-    const tagScore = (item.tags || []).filter((tag: string) =>
-      tag.toLowerCase().includes(queryLower)
-    ).length * 0.5;
+    const contentScore =
+      (item.content.toLowerCase().match(new RegExp(queryLower, 'g')) || []).length * 0.1;
+    const tagScore =
+      (item.tags || []).filter((tag: string) => tag.toLowerCase().includes(queryLower)).length *
+      0.5;
 
     return titleScore + contentScore + tagScore;
   }
@@ -558,7 +551,7 @@ export class EnterpriseDataService extends EventEmitter implements IEnterpriseDa
       data: [],
       insights: [],
       recommendations: [],
-      charts: []
+      charts: [],
     };
   }
 

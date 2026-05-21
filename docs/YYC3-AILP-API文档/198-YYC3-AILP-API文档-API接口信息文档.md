@@ -17,23 +17,23 @@ POST /api/auth/login
 **请求体：**
 \`\`\`json
 {
-  "email": "user@example.com",
-  "password": "password123"
+"email": "user@example.com",
+"password": "password123"
 }
 \`\`\`
 
 **响应：**
 \`\`\`json
 {
-  "success": true,
-  "data": {
-    "user": {
-      "id": "user-id",
-      "email": "user@example.com",
-      "username": "username"
-    },
-    "token": "jwt-token"
-  }
+"success": true,
+"data": {
+"user": {
+"id": "user-id",
+"email": "user@example.com",
+"username": "username"
+},
+"token": "jwt-token"
+}
 }
 \`\`\`
 
@@ -114,12 +114,12 @@ GET /api/health
 **响应：**
 \`\`\`json
 {
-  "status": "healthy",
-  "timestamp": "2024-01-01T00:00:00.000Z",
-  "services": {
-    "database": "up",
-    "api": "up"
-  }
+"status": "healthy",
+"timestamp": "2024-01-01T00:00:00.000Z",
+"services": {
+"database": "up",
+"api": "up"
+}
 }
 \`\`\`
 
@@ -129,13 +129,14 @@ GET /api/health
 
 \`\`\`json
 {
-  "success": false,
-  "error": "错误信息",
-  "code": "ERROR_CODE"
+"success": false,
+"error": "错误信息",
+"code": "ERROR_CODE"
 }
 \`\`\`
 
 常见错误码：
+
 - \`400\`: 请求参数错误
 - \`401\`: 未认证
 - \`403\`: 无权限

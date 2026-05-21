@@ -5,12 +5,14 @@
 **从"技术配置"转向"业务配置"**
 
 ### 传统方式的痛点
+
 - ❌ 技术人员才能配置AI助手
 - ❌ 需要编写代码和配置文件
 - ❌ 部署周期长，调试困难
 - ❌ 业务人员无法自主使用
 
 ### 新模式的优势
+
 - ✅ 业务人员5分钟配置AI助手
 - ✅ 可视化拖拽式界面
 - ✅ 预置行业模板开箱即用
@@ -305,14 +307,14 @@ CMD ["npm", "start"]
 
   private static generateEnvVariables(config: AssistantConfig): Record<string, string> {
     return {
-      'ASSISTANT_ID': config.id,
-      'ASSISTANT_NAME': config.name,
-      'AI_PROVIDER': config.ai.provider,
-      'AI_MODEL': config.ai.model,
-      'OPENAI_API_KEY': process.env.OPENAI_API_KEY || '',
-      'ANTHROPIC_API_KEY': process.env.ANTHROPIC_API_KEY || '',
-      'DATABASE_URL': process.env.DATABASE_URL || '',
-      'REDIS_URL': process.env.REDIS_URL || '',
+      ASSISTANT_ID: config.id,
+      ASSISTANT_NAME: config.name,
+      AI_PROVIDER: config.ai.provider,
+      AI_MODEL: config.ai.model,
+      OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
+      ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || '',
+      DATABASE_URL: process.env.DATABASE_URL || '',
+      REDIS_URL: process.env.REDIS_URL || '',
     };
   }
 }
@@ -467,10 +469,7 @@ export const DeploymentWizard: React.FC = () => {
 ```typescript
 // packages/low-code/src/utils/deployment-generator.ts
 export class DeploymentGenerator {
-  static generateDeploymentScript(
-    config: AssistantConfig,
-    target: DeploymentTarget
-  ): string {
+  static generateDeploymentScript(config: AssistantConfig, target: DeploymentTarget): string {
     switch (target) {
       case 'local':
         return this.generateLocalDeploymentScript(config);
@@ -823,14 +822,14 @@ export class RecommendationEngine {
 
     // 基于规模推荐
     if (userInput.companySize === 'small') {
-      recommendations = recommendations.filter(t =>
-        t.difficulty === 'easy' || t.difficulty === 'medium'
+      recommendations = recommendations.filter(
+        (t) => t.difficulty === 'easy' || t.difficulty === 'medium'
       );
     }
 
     // 基于技术能力推荐
     if (userInput.technicalLevel === 'beginner') {
-      recommendations = recommendations.filter(t => t.requiresCoding === false);
+      recommendations = recommendations.filter((t) => t.requiresCoding === false);
     }
 
     return recommendations.slice(0, 3);
@@ -856,14 +855,16 @@ export class RecommendationEngine {
 ## 📊 实施效果
 
 ### 用户体验提升
-| 指标 | 传统方式 | 低代码方式 | 提升 |
-|------|----------|------------|------|
-| 配置时间 | 2-4小时 | 5-15分钟 | 90%+ |
+
+| 指标     | 传统方式     | 低代码方式     | 提升     |
+| -------- | ------------ | -------------- | -------- |
+| 配置时间 | 2-4小时      | 5-15分钟       | 90%+     |
 | 技术门槛 | 需要开发人员 | 业务人员可操作 | 大幅降低 |
-| 部署周期 | 1-3天 | 实时部署 | 99%+ |
-| 试错成本 | 高 | 低 | 显著降低 |
+| 部署周期 | 1-3天        | 实时部署       | 99%+     |
+| 试错成本 | 高           | 低             | 显著降低 |
 
 ### 业务价值
+
 - ✅ **快速验证**：5分钟验证AI助手想法
 - ✅ **降低成本**：无需开发人员参与
 - ✅ **提高效率**：业务人员自主配置

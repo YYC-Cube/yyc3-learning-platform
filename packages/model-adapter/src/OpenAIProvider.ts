@@ -17,7 +17,7 @@ import {
   ModelProvider,
   ModelRequest,
   ModelResponse,
-  TokenUsage
+  TokenUsage,
 } from './IModelAdapter';
 
 import { createLogger } from '../../../lib/logger';
@@ -58,7 +58,7 @@ export class OpenAIProvider implements IModelProvider {
     codeGeneration: true,
     reasoning: true,
     multilingual: true,
-    customInstructions: true
+    customInstructions: true,
   };
 
   get status(): 'active' | 'inactive' | 'error' {
@@ -110,16 +110,16 @@ export class OpenAIProvider implements IModelProvider {
           requestId: request.id,
           processingTime: latency,
           retryCount: 0,
-          cacheHit: false
+          cacheHit: false,
         },
         toolCalls: response.choices[0].message.tool_calls?.map((tc: any) => ({
           id: tc.id,
           toolName: tc.function.name,
           success: true,
           result: JSON.parse(tc.function.arguments),
-          executionTime: 0
+          executionTime: 0,
         })),
-        streaming: false
+        streaming: false,
       };
     } catch (error) {
       this._errorCount++;
@@ -143,7 +143,7 @@ export class OpenAIProvider implements IModelProvider {
       const response = await fetch(`${this._baseURL}/chat/completions`, {
         method: 'POST',
         headers: this._getHeaders(),
-        body: JSON.stringify(this._buildRequestBody(request, true))
+        body: JSON.stringify(this._buildRequestBody(request, true)),
       });
 
       if (!response.ok) {
@@ -189,7 +189,7 @@ export class OpenAIProvider implements IModelProvider {
                   usage: {
                     inputTokens: 0,
                     outputTokens: totalTokens,
-                    totalTokens: totalTokens
+                    totalTokens: totalTokens,
                   },
                   metadata: {
                     latency: Date.now() - startTime,
@@ -197,9 +197,9 @@ export class OpenAIProvider implements IModelProvider {
                     provider: this.provider,
                     timestamp: Date.now(),
                     requestId: request.id,
-                    processingTime: Date.now() - startTime
+                    processingTime: Date.now() - startTime,
                   },
-                  streaming: true
+                  streaming: true,
                 });
               }
             } catch (e) {
@@ -222,7 +222,7 @@ export class OpenAIProvider implements IModelProvider {
     try {
       const response = await fetch(`${this._baseURL}/models`, {
         method: 'GET',
-        headers: this._getHeaders()
+        headers: this._getHeaders(),
       });
 
       const responseTime = Date.now() - startTime;
@@ -248,8 +248,8 @@ export class OpenAIProvider implements IModelProvider {
           p95Latency: responseTime * 1.5,
           p99Latency: responseTime * 2,
           timeoutRate: 0,
-          queueDepth: 0
-        }
+          queueDepth: 0,
+        },
       };
 
       if (health.status === 'healthy') {
@@ -275,8 +275,8 @@ export class OpenAIProvider implements IModelProvider {
           p95Latency: (Date.now() - startTime) * 1.5,
           p99Latency: (Date.now() - startTime) * 2,
           timeoutRate: 1,
-          queueDepth: 0
-        }
+          queueDepth: 0,
+        },
       };
     }
   }
@@ -286,11 +286,7 @@ export class OpenAIProvider implements IModelProvider {
   }
 
   validateConfig(config: ModelConfig): boolean {
-    return !!(
-      config.credentials?.apiKey &&
-      config.model &&
-      config.id
-    );
+    return !!(config.credentials?.apiKey && config.model && config.id);
   }
 
   async cleanup(): Promise<void> {
@@ -311,7 +307,7 @@ export class OpenAIProvider implements IModelProvider {
           method: 'POST',
           headers: this._getHeaders(),
           body: JSON.stringify(body),
-          signal: controller.signal
+          signal: controller.signal,
         });
 
         clearTimeout(timeoutId);
@@ -329,7 +325,7 @@ export class OpenAIProvider implements IModelProvider {
           throw error;
         }
 
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
       }
     }
 
@@ -344,10 +340,12 @@ export class OpenAIProvider implements IModelProvider {
     }
 
     if (request.messages && request.messages.length > 0) {
-      messages.push(...request.messages.map(msg => ({
-        role: msg.role,
-        content: this._formatContent(msg.content)
-      })));
+      messages.push(
+        ...request.messages.map((msg) => ({
+          role: msg.role,
+          content: this._formatContent(msg.content),
+        }))
+      );
     } else {
       messages.push({ role: 'user', content: request.prompt });
     }
@@ -358,24 +356,25 @@ export class OpenAIProvider implements IModelProvider {
       stream,
       temperature: request.temperature ?? 0.7,
       max_tokens: request.maxTokens ?? 4000,
-      top_p: request.topP ?? 1.0
+      top_p: request.topP ?? 1.0,
     };
 
     if (request.tools && request.tools.length > 0) {
-      body.tools = request.tools.map(tool => ({
+      body.tools = request.tools.map((tool) => ({
         type: 'function',
         function: {
           name: tool.function.name,
           description: tool.function.name,
-          parameters: tool.function.arguments
-        }
+          parameters: tool.function.arguments,
+        },
       }));
     }
 
     if (request.toolChoice) {
-      body.tool_choice = request.toolChoice.type === 'function'
-        ? { type: 'function', function: { name: request.toolChoice.function?.name } }
-        : request.toolChoice.type;
+      body.tool_choice =
+        request.toolChoice.type === 'function'
+          ? { type: 'function', function: { name: request.toolChoice.function?.name } }
+          : request.toolChoice.type;
     }
 
     if (request.stopSequences) {
@@ -390,13 +389,13 @@ export class OpenAIProvider implements IModelProvider {
       return content;
     }
 
-    return content.map(block => {
+    return content.map((block) => {
       if (block.type === 'text') {
         return { type: 'text', text: block.content };
       } else if (block.type === 'image') {
         return {
           type: 'image_url',
-          image_url: { url: block.content }
+          image_url: { url: block.content },
         };
       }
       return { type: 'text', text: String(block.content) };
@@ -412,7 +411,7 @@ export class OpenAIProvider implements IModelProvider {
       return content.map((block: any) => ({
         type: block.type || 'text',
         content: block.text || block.image_url?.url || block.content,
-        metadata: block.metadata
+        metadata: block.metadata,
       }));
     }
 
@@ -421,11 +420,11 @@ export class OpenAIProvider implements IModelProvider {
 
   private _parseFinishReason(reason: string | null): FinishReason {
     const mapping: Record<string, FinishReason> = {
-      'stop': 'stop',
-      'length': 'length',
-      'content_filter': 'content_filter',
-      'tool_calls': 'tool_calls',
-      'error': 'error'
+      stop: 'stop',
+      length: 'length',
+      content_filter: 'content_filter',
+      tool_calls: 'tool_calls',
+      error: 'error',
     };
 
     return mapping[reason || ''] || 'stop';
@@ -439,7 +438,8 @@ export class OpenAIProvider implements IModelProvider {
     const pricing = this._config?.pricing;
     let cost = 0;
     if (pricing) {
-      cost = (inputTokens / 1000) * pricing.inputTokensPer1K +
+      cost =
+        (inputTokens / 1000) * pricing.inputTokensPer1K +
         (outputTokens / 1000) * pricing.outputTokensPer1K;
     }
 
@@ -448,14 +448,14 @@ export class OpenAIProvider implements IModelProvider {
       outputTokens,
       totalTokens,
       cachedTokens: usage?.prompt_tokens_details?.cached_tokens || 0,
-      cost
+      cost,
     };
   }
 
   private _getHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this._apiKey}`
+      Authorization: `Bearer ${this._apiKey}`,
     };
 
     if (this._organization) {

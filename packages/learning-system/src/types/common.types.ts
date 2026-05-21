@@ -187,14 +187,7 @@ export interface ConfigObject {
  * Configuration value type
  * 配置值类型
  */
-export type ConfigValue =
-  | string
-  | number
-  | boolean
-  | string[]
-  | number[]
-  | ConfigObject
-  | null;
+export type ConfigValue = string | number | boolean | string[] | number[] | ConfigObject | null;
 
 /**
  * Generic content type for knowledge and other data
@@ -370,4 +363,3 @@ export interface AsyncOperation {
   startedAt: number;
   completedAt?: number;
 }
-

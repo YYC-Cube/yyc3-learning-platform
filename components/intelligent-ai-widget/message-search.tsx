@@ -34,10 +34,13 @@ interface SearchHighlightProps {
 const TIME_RANGES: TimeRangeOption[] = [
   { label: '全部时间', value: {} },
   { label: '今天', value: { startDate: new Date().setHours(0, 0, 0, 0) } },
-  { label: '昨天', value: { 
-    startDate: new Date().setDate(new Date().getDate() - 1),
-    endDate: new Date().setHours(0, 0, 0, 0)
-  }},
+  {
+    label: '昨天',
+    value: {
+      startDate: new Date().setDate(new Date().getDate() - 1),
+      endDate: new Date().setHours(0, 0, 0, 0),
+    },
+  },
   { label: '近7天', value: { startDate: new Date().setDate(new Date().getDate() - 7) } },
   { label: '近30天', value: { startDate: new Date().setDate(new Date().getDate() - 30) } },
 ];
@@ -47,10 +50,10 @@ const SearchHighlight: React.FC<SearchHighlightProps> = ({ text, highlight }) =>
   if (!highlight.trim()) return <>{text}</>;
 
   const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
-  
+
   return (
     <>
-      {parts.map((part, index) => 
+      {parts.map((part, index) =>
         part.toLowerCase() === highlight.toLowerCase() ? (
           <span key={index} className="bg-yellow-200 text-yellow-900 px-0.5 rounded">
             {part}
@@ -63,10 +66,7 @@ const SearchHighlight: React.FC<SearchHighlightProps> = ({ text, highlight }) =>
   );
 };
 
-export const MessageSearch: React.FC<MessageSearchProps> = ({
-  onResultSelect,
-  className = ''
-}) => {
+export const MessageSearch: React.FC<MessageSearchProps> = ({ onResultSelect, className = '' }) => {
   const [searchKeyword, setSearchKeyword] = React.useState('');
   const [searchResults, setSearchResults] = React.useState<StoredMessage[]>([]);
   const [isSearching, setIsSearching] = React.useState(false);
@@ -78,60 +78,64 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
   const searchTimeoutRef = React.useRef<number | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleSearch = React.useCallback(async (keyword: string) => {
-    if (!keyword.trim()) {
-      setSearchResults([]);
-      return;
-    }
+  const handleSearch = React.useCallback(
+    async (keyword: string) => {
+      if (!keyword.trim()) {
+        setSearchResults([]);
+        return;
+      }
 
-    setIsSearching(true);
-    
-    try {
-      const timeRange = TIME_RANGES[selectedTimeRange].value;
-      const _filter: MessageFilter = {
-        keyword: keyword.trim(),
-        role: selectedRole !== 'all' ? selectedRole as 'user' | 'assistant' | 'system' : undefined,
-        startDate: timeRange.startDate,
-        endDate: timeRange.endDate
-      };
+      setIsSearching(true);
 
-      const results = await messageStorage.searchMessages(keyword.trim(), 50);
-      
-      // 应用时间筛选
-      let filteredResults = results;
-      if (timeRange.startDate) {
-        filteredResults = filteredResults.filter(m => m.timestamp >= timeRange.startDate!);
+      try {
+        const timeRange = TIME_RANGES[selectedTimeRange].value;
+        const _filter: MessageFilter = {
+          keyword: keyword.trim(),
+          role:
+            selectedRole !== 'all' ? (selectedRole as 'user' | 'assistant' | 'system') : undefined,
+          startDate: timeRange.startDate,
+          endDate: timeRange.endDate,
+        };
+
+        const results = await messageStorage.searchMessages(keyword.trim(), 50);
+
+        // 应用时间筛选
+        let filteredResults = results;
+        if (timeRange.startDate) {
+          filteredResults = filteredResults.filter((m) => m.timestamp >= timeRange.startDate!);
+        }
+        if (timeRange.endDate) {
+          filteredResults = filteredResults.filter((m) => m.timestamp <= timeRange.endDate!);
+        }
+        if (selectedRole !== 'all') {
+          filteredResults = filteredResults.filter((m) => m.role === selectedRole);
+        }
+
+        setSearchResults(filteredResults);
+
+        // 更新搜索历史
+        if (keyword.trim() && !searchHistory.includes(keyword.trim())) {
+          setSearchHistory((prev) => [keyword.trim(), ...prev.slice(0, 9)]);
+        }
+      } catch (error) {
+        console.error('搜索消息失败:', error);
+      } finally {
+        setIsSearching(false);
       }
-      if (timeRange.endDate) {
-        filteredResults = filteredResults.filter(m => m.timestamp <= timeRange.endDate!);
-      }
-      if (selectedRole !== 'all') {
-        filteredResults = filteredResults.filter(m => m.role === selectedRole);
-      }
-      
-      setSearchResults(filteredResults);
-      
-      // 更新搜索历史
-      if (keyword.trim() && !searchHistory.includes(keyword.trim())) {
-        setSearchHistory(prev => [keyword.trim(), ...prev.slice(0, 9)]);
-      }
-    } catch (error) {
-      console.error('搜索消息失败:', error);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [selectedTimeRange, selectedRole, searchHistory]);
+    },
+    [selectedTimeRange, selectedRole, searchHistory]
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchKeyword(value);
     setShowHistory(value.trim() === '');
-    
+
     // 防抖搜索
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
+
     searchTimeoutRef.current = window.setTimeout(() => {
       handleSearch(value);
     }, 300);
@@ -169,7 +173,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
     } else if (diffDays === 1) {
@@ -228,10 +232,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
           <div className="mt-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-medium text-gray-600">搜索历史</span>
-              <button
-                onClick={clearHistory}
-                className="text-xs text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={clearHistory} className="text-xs text-gray-500 hover:text-gray-700">
                 清除
               </button>
             </div>
@@ -302,7 +303,7 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
                   { value: 'all', label: '全部' },
                   { value: 'user', label: '用户' },
                   { value: 'assistant', label: '助手' },
-                  { value: 'system', label: '系统' }
+                  { value: 'system', label: '系统' },
                 ].map((role) => (
                   <button
                     key={role.value}
@@ -324,16 +325,10 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
 
       {/* 搜索结果 */}
       <div className="max-h-96 overflow-y-auto">
-        {isSearching && (
-          <div className="p-8 text-center text-gray-500">
-            搜索中...
-          </div>
-        )}
+        {isSearching && <div className="p-8 text-center text-gray-500">搜索中...</div>}
 
         {!isSearching && searchKeyword && searchResults.length === 0 && (
-          <div className="p-8 text-center text-gray-500">
-            未找到相关消息
-          </div>
+          <div className="p-8 text-center text-gray-500">未找到相关消息</div>
         )}
 
         {!isSearching && searchResults.length > 0 && (
@@ -346,20 +341,27 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
               >
                 <div className="flex items-start gap-3">
                   {/* 消息类型标识 */}
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0 ${
-                    message.role === 'user' ? 'bg-indigo-600' :
-                    message.role === 'assistant' ? 'bg-green-600' : 'bg-gray-600'
-                  }`}>
-                    {message.role === 'user' ? 'U' :
-                     message.role === 'assistant' ? 'A' : 'S'}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0 ${
+                      message.role === 'user'
+                        ? 'bg-indigo-600'
+                        : message.role === 'assistant'
+                          ? 'bg-green-600'
+                          : 'bg-gray-600'
+                    }`}
+                  >
+                    {message.role === 'user' ? 'U' : message.role === 'assistant' ? 'A' : 'S'}
                   </div>
 
                   {/* 消息内容 */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium text-gray-900">
-                        {message.role === 'user' ? '用户' :
-                         message.role === 'assistant' ? '助手' : '系统'}
+                        {message.role === 'user'
+                          ? '用户'
+                          : message.role === 'assistant'
+                            ? '助手'
+                            : '系统'}
                       </span>
                       <span className="text-xs text-gray-500 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
@@ -367,7 +369,10 @@ export const MessageSearch: React.FC<MessageSearchProps> = ({
                       </span>
                     </div>
                     <p className="text-sm text-gray-700">
-                      <SearchHighlight text={getMessagePreview(message)} highlight={searchKeyword} />
+                      <SearchHighlight
+                        text={getMessagePreview(message)}
+                        highlight={searchKeyword}
+                      />
                     </p>
                   </div>
 

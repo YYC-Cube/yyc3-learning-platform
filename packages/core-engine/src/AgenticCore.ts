@@ -4,7 +4,15 @@
  */
 import { EventEmitter } from 'events';
 import { ModelAdapter } from '@yyc3/model-adapter';
-import { ModelConfig, ModelRequest, ModelResponse, TaskType, ModelHealthCheck, ErrorEvent, ContentBlock } from '@yyc3/model-adapter';
+import {
+  ModelConfig,
+  ModelRequest,
+  ModelResponse,
+  TaskType,
+  ModelHealthCheck,
+  ErrorEvent,
+  ContentBlock,
+} from '@yyc3/model-adapter';
 import { createLogger } from './utils/logger';
 
 const logger = createLogger('AgenticCore');
@@ -50,7 +58,7 @@ export enum AgentState {
   PLANNING = 'planning',
   EXECUTING = 'executing',
   REFLECTING = 'reflecting',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 // 接口定义
@@ -231,7 +239,7 @@ export class GoalManager {
       createdAt: new Date(),
       expectedValue: 0,
       successCriteria: [],
-      dependencies: []
+      dependencies: [],
     };
   }
 }
@@ -249,7 +257,7 @@ export class ActionPlanner {
         priority: 1,
         dependencies: [],
         estimatedTime: 5000,
-        completed: false
+        completed: false,
       },
       {
         id: `subtask_${Date.now()}_2`,
@@ -258,8 +266,8 @@ export class ActionPlanner {
         priority: 2,
         dependencies: [],
         estimatedTime: 10000,
-        completed: false
-      }
+        completed: false,
+      },
     ];
   }
 }
@@ -271,9 +279,13 @@ export class ToolOrchestrator {
     return [];
   }
 
-  async executeToolChain(_tools: unknown[], subtask: Subtask, _context: AgentContext): Promise<unknown> {
+  async executeToolChain(
+    _tools: unknown[],
+    subtask: Subtask,
+    _context: AgentContext
+  ): Promise<unknown> {
     // 模拟工具执行
-    await new Promise(resolve => setTimeout(resolve, Math.random() * 2000));
+    await new Promise((resolve) => setTimeout(resolve, Math.random() * 2000));
     return { success: true, data: `执行${subtask.description}完成` };
   }
 
@@ -295,20 +307,32 @@ export class ReflectionEngine {
 }
 
 export class KnowledgeConnector {
-  constructor(private _config: KnowledgeConfig, private _modelAdapter: ModelAdapter) {}
+  constructor(
+    private _config: KnowledgeConfig,
+    private _modelAdapter: ModelAdapter
+  ) {}
 
-  async analyzeWithLLM(request: { prompt: string; context: AgentContext; tools: string[] }): Promise<{ intentType: string; confidence: number; entities: Record<string, unknown>; constraints: Record<string, unknown> }> {
+  async analyzeWithLLM(request: {
+    prompt: string;
+    context: AgentContext;
+    tools: string[];
+  }): Promise<{
+    intentType: string;
+    confidence: number;
+    entities: Record<string, unknown>;
+    constraints: Record<string, unknown>;
+  }> {
     try {
       // 构建模型请求
       const modelRequest: ModelRequest = {
         id: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         taskType: 'analysis',
         prompt: request.prompt,
-        messages: request.context.conversationHistory.map(msg => ({
+        messages: request.context.conversationHistory.map((msg) => ({
           role: msg.role as 'system' | 'user' | 'assistant',
           content: msg.content,
           timestamp: msg.timestamp.getTime(),
-          metadata: msg.metadata
+          metadata: msg.metadata,
         })),
         systemPrompt: `你是一个智能意图分析引擎，请分析用户输入并返回结构化的意图信息。
 
@@ -328,8 +352,8 @@ export class KnowledgeConnector {
           userId: request.context.userId,
           sessionId: request.context.sessionId,
           requestId: `req_${Date.now()}`,
-          priority: 'normal'
-        }
+          priority: 'normal',
+        },
       };
 
       // 使用ModelAdapter处理请求
@@ -347,7 +371,7 @@ export class KnowledgeConnector {
             intentType: 'general',
             confidence: 0.8,
             entities: request.prompt ? { description: request.prompt } : {},
-            constraints: {}
+            constraints: {},
           };
         }
       } else {
@@ -361,7 +385,7 @@ export class KnowledgeConnector {
               intentType: 'general',
               confidence: 0.8,
               entities: request.prompt ? { description: request.prompt } : {},
-              constraints: {}
+              constraints: {},
             };
           }
         } else {
@@ -369,7 +393,7 @@ export class KnowledgeConnector {
             intentType: 'general',
             confidence: 0.8,
             entities: request.prompt ? { description: request.prompt } : {},
-            constraints: {}
+            constraints: {},
           };
         }
       }
@@ -382,7 +406,7 @@ export class KnowledgeConnector {
         intentType: 'general',
         confidence: 0.7,
         entities: request.prompt ? { description: request.prompt } : {},
-        constraints: {}
+        constraints: {},
       };
     }
   }
@@ -402,7 +426,7 @@ export class ContextManager {
       environment: 'web',
       permissions: [],
       conversationHistory: [],
-      workingMemory: {}
+      workingMemory: {},
     };
   }
 
@@ -433,7 +457,7 @@ export class AgenticCore extends EventEmitter {
 
     // 初始化 ModelAdapter
     this.modelAdapter = new ModelAdapter();
-    
+
     // 配置并启动 ModelAdapter
     this.setupModelAdapter(config.modelAdapterConfig);
 
@@ -466,15 +490,15 @@ export class AgenticCore extends EventEmitter {
             retryDelay: 5000,
             exponentialBackoff: true,
             alternativeModels: ['gpt-3.5-turbo'],
-            fallbackOnErrors: ['rate_limit_exceeded', 'timeout', 'server_error']
-          }
+            fallbackOnErrors: ['rate_limit_exceeded', 'timeout', 'server_error'],
+          },
         },
         loadBalancing: {
           strategy: 'round_robin',
           weights: {},
           healthCheckInterval: 30000,
           unhealthyThreshold: 3,
-          healthyThreshold: 2
+          healthyThreshold: 2,
         },
         cache: {
           enabled: true,
@@ -482,7 +506,7 @@ export class AgenticCore extends EventEmitter {
           ttl: 3600000,
           strategy: 'lru',
           compressionEnabled: false,
-          encryptionEnabled: false
+          encryptionEnabled: false,
         },
         monitoring: {
           enabled: true,
@@ -493,9 +517,9 @@ export class AgenticCore extends EventEmitter {
             latency: 5000,
             cost: 100,
             queueDepth: 100,
-            resourceUsage: 0.8
+            resourceUsage: 0.8,
           },
-          retentionPeriod: 604800000
+          retentionPeriod: 604800000,
         },
         security: {
           encryptionEnabled: false,
@@ -507,9 +531,9 @@ export class AgenticCore extends EventEmitter {
             rbacEnabled: false,
             defaultPermissions: [],
             adminRoles: [],
-            userRoles: []
-          }
-        }
+            userRoles: [],
+          },
+        },
       });
 
       // 添加 OpenAI 模型配置
@@ -519,7 +543,7 @@ export class AgenticCore extends EventEmitter {
         provider: 'openai',
         model: config.openAIModel,
         credentials: {
-          apiKey: config.openAIKey
+          apiKey: config.openAIKey,
         },
         capabilities: {
           maxTokens: config.maxTokens || 8192,
@@ -531,14 +555,14 @@ export class AgenticCore extends EventEmitter {
           codeGeneration: true,
           reasoning: true,
           multilingual: true,
-          customInstructions: true
+          customInstructions: true,
         },
         pricing: {
           inputTokensPer1K: 0.03,
           outputTokensPer1K: 0.06,
           currency: 'USD',
-          unit: 'token'
-        }
+          unit: 'token',
+        },
       };
 
       // 添加模型到 ModelAdapter
@@ -578,8 +602,8 @@ export class AgenticCore extends EventEmitter {
         metrics: {
           startTime: Date.now(),
           complexity: this.calculateComplexity(subtasks),
-          progress: 0
-        }
+          progress: 0,
+        },
       };
 
       this.activeTasks.set(task.id, task);
@@ -592,15 +616,14 @@ export class AgenticCore extends EventEmitter {
         taskId: task.id,
         status: 'accepted',
         estimatedTime: this.estimateCompletionTime(task),
-        nextSteps: this.getNextStepsPreview(subtasks)
+        nextSteps: this.getNextStepsPreview(subtasks),
       };
-
     } catch (error) {
       this.emit('error', error);
       return {
         taskId: '',
         status: 'rejected',
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       };
     }
   }
@@ -637,7 +660,7 @@ export class AgenticCore extends EventEmitter {
           taskId,
           subtaskId: subtask.id,
           progress: this.calculateProgress(task.subtasks),
-          result
+          result,
         });
 
         // 检查是否需要中断
@@ -659,7 +682,6 @@ export class AgenticCore extends EventEmitter {
       await this.knowledgeConnector.storeExperience(task);
 
       this.emit('taskCompleted', task);
-
     } catch (error) {
       task.status = 'failed';
       if (task.metrics) {
@@ -683,7 +705,7 @@ export class AgenticCore extends EventEmitter {
     const analysis = await this.knowledgeConnector.analyzeWithLLM({
       prompt: this.buildIntentAnalysisPrompt(input),
       context: this.contextManager.getCurrentContext(),
-      tools: this.toolOrchestrator.getAvailableTools()
+      tools: this.toolOrchestrator.getAvailableTools(),
     });
 
     return {
@@ -693,8 +715,8 @@ export class AgenticCore extends EventEmitter {
       constraints: analysis.constraints,
       context: {
         ...this.contextManager.getCurrentContext(),
-        userIntent: analysis.intentType
-      }
+        userIntent: analysis.intentType,
+      },
     };
   }
 
@@ -707,7 +729,7 @@ export class AgenticCore extends EventEmitter {
       activeTasks: this.activeTasks.size,
       queuedTasks: this.taskQueue.length,
       memoryUsage: process.memoryUsage(),
-      performanceMetrics: this.collectPerformanceMetrics()
+      performanceMetrics: this.collectPerformanceMetrics(),
     };
   }
 
@@ -748,7 +770,7 @@ export class AgenticCore extends EventEmitter {
   }
 
   private getNextStepsPreview(subtasks: Subtask[]): string[] {
-    return subtasks.slice(0, 3).map(task => task.description);
+    return subtasks.slice(0, 3).map((task) => task.description);
   }
 
   /**
@@ -762,13 +784,16 @@ export class AgenticCore extends EventEmitter {
       let requestError: any = null;
 
       // 创建一个promise来等待请求完成
-      const requestPromise = this.modelAdapter.processStreamingRequest(request, (chunk: ModelResponse) => {
-        chunks.push(chunk);
-      }).catch((error: any) => {
-        requestError = error;
-      }).finally(() => {
-        requestComplete = true;
-      });
+      const requestPromise = this.modelAdapter
+        .processStreamingRequest(request, (chunk: ModelResponse) => {
+          chunks.push(chunk);
+        })
+        .catch((error: any) => {
+          requestError = error;
+        })
+        .finally(() => {
+          requestComplete = true;
+        });
 
       // 返回一个异步生成器
       return (async function* () {
@@ -785,7 +810,7 @@ export class AgenticCore extends EventEmitter {
           }
 
           // 否则，等待一段时间后再次检查
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
         }
 
         // 如果请求出错，抛出错误
@@ -800,7 +825,7 @@ export class AgenticCore extends EventEmitter {
   }
 
   private calculateProgress(subtasks: Subtask[]): number {
-    const completed = subtasks.filter(subtask => subtask.completed).length;
+    const completed = subtasks.filter((subtask) => subtask.completed).length;
     return (completed / subtasks.length) * 100;
   }
 
@@ -810,9 +835,9 @@ export class AgenticCore extends EventEmitter {
 
   private aggregateResults(subtasks: Subtask[]): unknown {
     return {
-      completedSubtasks: subtasks.filter(st => st.completed).length,
+      completedSubtasks: subtasks.filter((st) => st.completed).length,
       totalSubtasks: subtasks.length,
-      results: subtasks.map(st => st.result)
+      results: subtasks.map((st) => st.result),
     };
   }
 
@@ -828,10 +853,10 @@ export class AgenticCore extends EventEmitter {
       this.state = AgentState.IDLE;
       this.activeTasks.clear();
       this.taskQueue.length = 0;
-      
+
       // 停止ModelAdapter
       await this.modelAdapter.stop();
-      
+
       this.emit('stopped');
     } catch (error) {
       this.state = AgentState.ERROR;
@@ -846,7 +871,7 @@ export class AgenticCore extends EventEmitter {
       averageTaskTime: 0,
       successRate: 0,
       errorRate: 0,
-      throughput: 0
+      throughput: 0,
     };
   }
 }

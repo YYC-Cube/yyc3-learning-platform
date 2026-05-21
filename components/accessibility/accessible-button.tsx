@@ -5,31 +5,34 @@
  * @license MIT
  */
 
-"use client"
+'use client';
 
-import * as React from "react"
-import { Button, ButtonProps } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import * as React from 'react';
+import { Button, ButtonProps } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface AccessibleButtonProps extends Omit<ButtonProps, 'children'> {
-  loading?: boolean
-  loadingText?: string
-  description?: string
-  children: React.ReactNode
+  loading?: boolean;
+  loadingText?: string;
+  description?: string;
+  children: React.ReactNode;
 }
 
 const AccessibleButton = React.forwardRef<HTMLButtonElement, AccessibleButtonProps>(
-  ({
-    className,
-    children,
-    loading = false,
-    loadingText = "加载中...",
-    description,
-    disabled = false,
-    asChild = false,
-    ...props
-  }, ref) => {
-    const isDisabled = disabled || loading
+  (
+    {
+      className,
+      children,
+      loading = false,
+      loadingText = '加载中...',
+      description,
+      disabled = false,
+      asChild = false,
+      ...props
+    },
+    ref
+  ) => {
+    const isDisabled = disabled || loading;
 
     // Handle asChild case separately to avoid React.Children.only errors
     if (asChild) {
@@ -38,8 +41,8 @@ const AccessibleButton = React.forwardRef<HTMLButtonElement, AccessibleButtonPro
           ref={ref}
           asChild
           className={cn(
-            "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-            "transition-all duration-200",
+            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+            'transition-all duration-200',
             className
           )}
           disabled={isDisabled}
@@ -48,19 +51,19 @@ const AccessibleButton = React.forwardRef<HTMLButtonElement, AccessibleButtonPro
         >
           {children}
         </Button>
-      )
+      );
     }
 
     // Normal button case with additional features
-    const buttonId = props.id
-    const descriptionId = buttonId ? `${buttonId}-description` : undefined
+    const buttonId = props.id;
+    const descriptionId = buttonId ? `${buttonId}-description` : undefined;
 
     return (
       <Button
         ref={ref}
         className={cn(
-          "focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2",
-          "transition-all duration-200",
+          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+          'transition-all duration-200',
           className
         )}
         disabled={isDisabled}
@@ -84,10 +87,10 @@ const AccessibleButton = React.forwardRef<HTMLButtonElement, AccessibleButtonPro
           </span>
         )}
       </Button>
-    )
+    );
   }
-)
+);
 
-AccessibleButton.displayName = "AccessibleButton"
+AccessibleButton.displayName = 'AccessibleButton';
 
-export { AccessibleButton }
+export { AccessibleButton };

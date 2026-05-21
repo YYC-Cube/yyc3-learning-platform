@@ -25,7 +25,9 @@ describe('ValidationUtility', () => {
     });
 
     it('should enforce maximum length', () => {
-      const result: ValidationResult = validator.validateString('This is a very long string', { maxLength: 10 });
+      const result: ValidationResult = validator.validateString('This is a very long string', {
+        maxLength: 10,
+      });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('String must not exceed 10 characters');
     });
@@ -131,7 +133,9 @@ describe('ValidationUtility', () => {
     });
 
     it('should allow relative URLs when configured', () => {
-      const result: ValidationResult = validator.validateURL('/path/to/resource', { allowRelative: true });
+      const result: ValidationResult = validator.validateURL('/path/to/resource', {
+        allowRelative: true,
+      });
       expect(result.isValid).toBe(true);
     });
 
@@ -230,7 +234,7 @@ describe('ValidationUtility', () => {
 
     it('should validate array items with custom validator', () => {
       const result: ValidationResult = validator.validateArray([1, 2, 'three'], {
-        itemValidator: (item) => validator.validateNumber(item)
+        itemValidator: (item) => validator.validateNumber(item),
       });
       expect(result.isValid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -247,7 +251,7 @@ describe('ValidationUtility', () => {
     it('should validate a valid object', () => {
       const schema: Schema = {
         name: { type: 'string', required: true },
-        age: { type: 'number', required: true }
+        age: { type: 'number', required: true },
       };
 
       const result: ValidationResult = validator.validateObject({ name: 'John', age: 30 }, schema);
@@ -258,7 +262,7 @@ describe('ValidationUtility', () => {
     it('should enforce required fields', () => {
       const schema: Schema = {
         name: { type: 'string', required: true },
-        age: { type: 'number', required: true }
+        age: { type: 'number', required: true },
       };
 
       const result: ValidationResult = validator.validateObject({ name: 'John' }, schema);
@@ -269,17 +273,20 @@ describe('ValidationUtility', () => {
     it('should validate field types', () => {
       const schema: Schema = {
         name: { type: 'string', required: true },
-        age: { type: 'number', required: true }
+        age: { type: 'number', required: true },
       };
 
-      const result: ValidationResult = validator.validateObject({ name: 'John', age: 'thirty' }, schema);
+      const result: ValidationResult = validator.validateObject(
+        { name: 'John', age: 'thirty' },
+        schema
+      );
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('age: Value must be a valid number');
     });
 
     it('should enforce allowed values', () => {
       const schema: Schema = {
-        status: { type: 'string', required: true, allowedValues: ['active', 'inactive'] }
+        status: { type: 'string', required: true, allowedValues: ['active', 'inactive'] },
       };
 
       const result: ValidationResult = validator.validateObject({ status: 'pending' }, schema);
@@ -289,7 +296,11 @@ describe('ValidationUtility', () => {
 
     it('should use custom validators', () => {
       const schema: Schema = {
-        password: { type: 'string', required: true, customValidator: (value) => value.length >= 8 || 'Password too short' }
+        password: {
+          type: 'string',
+          required: true,
+          customValidator: (value) => value.length >= 8 || 'Password too short',
+        },
       };
 
       const result: ValidationResult = validator.validateObject({ password: 'short' }, schema);
@@ -393,13 +404,17 @@ describe('ValidationUtility', () => {
 
   describe('validateUUID', () => {
     it('should validate a valid UUID', () => {
-      const result: ValidationResult = validator.validateUUID('550e8400-e29b-41d4-a716-446655440000');
+      const result: ValidationResult = validator.validateUUID(
+        '550e8400-e29b-41d4-a716-446655440000'
+      );
       expect(result.isValid).toBe(true);
       expect(result.sanitized).toBe('550e8400-e29b-41d4-a716-446655440000');
     });
 
     it('should convert to lowercase', () => {
-      const result: ValidationResult = validator.validateUUID('550E8400-E29B-41D4-A716-446655440000');
+      const result: ValidationResult = validator.validateUUID(
+        '550E8400-E29B-41D4-A716-446655440000'
+      );
       expect(result.isValid).toBe(true);
       expect(result.sanitized).toBe('550e8400-e29b-41d4-a716-446655440000');
     });
@@ -418,7 +433,7 @@ describe('ValidationUtility', () => {
         requireUppercase: true,
         requireLowercase: true,
         requireNumbers: true,
-        requireSpecialChars: true
+        requireSpecialChars: true,
       });
       expect(result.isValid).toBe(true);
     });
@@ -430,25 +445,33 @@ describe('ValidationUtility', () => {
     });
 
     it('should enforce uppercase requirement', () => {
-      const result: ValidationResult = validator.validatePassword('lowercase', { requireUppercase: true });
+      const result: ValidationResult = validator.validatePassword('lowercase', {
+        requireUppercase: true,
+      });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Password must contain at least one uppercase letter');
     });
 
     it('should enforce lowercase requirement', () => {
-      const result: ValidationResult = validator.validatePassword('UPPERCASE', { requireLowercase: true });
+      const result: ValidationResult = validator.validatePassword('UPPERCASE', {
+        requireLowercase: true,
+      });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Password must contain at least one lowercase letter');
     });
 
     it('should enforce number requirement', () => {
-      const result: ValidationResult = validator.validatePassword('NoNumbers', { requireNumbers: true });
+      const result: ValidationResult = validator.validatePassword('NoNumbers', {
+        requireNumbers: true,
+      });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Password must contain at least one number');
     });
 
     it('should enforce special character requirement', () => {
-      const result: ValidationResult = validator.validatePassword('NoSpecialChars1', { requireSpecialChars: true });
+      const result: ValidationResult = validator.validatePassword('NoSpecialChars1', {
+        requireSpecialChars: true,
+      });
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Password must contain at least one special character');
     });

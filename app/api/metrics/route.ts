@@ -6,7 +6,12 @@
  */
 
 import { NextResponse } from 'next/server';
-import { formatPrometheusMetrics, getAllMetrics, getAllCounters, getSystemMetrics } from '@/lib/monitoring/metrics';
+import {
+  formatPrometheusMetrics,
+  getAllMetrics,
+  getAllCounters,
+  getSystemMetrics,
+} from '@/lib/monitoring/metrics';
 import { applySecurityHeadersToNextResponse } from '@/lib/security/headers';
 
 /**

@@ -78,7 +78,14 @@ export interface RouteConfig {
 }
 
 export interface SecurityEvent {
-  type: 'auth_success' | 'auth_failure' | 'authz_success' | 'authz_failure' | 'rate_limit_exceeded' | 'invalid_input' | 'security_violation';
+  type:
+    | 'auth_success'
+    | 'auth_failure'
+    | 'authz_success'
+    | 'authz_failure'
+    | 'rate_limit_exceeded'
+    | 'invalid_input'
+    | 'security_violation';
   timestamp: Date;
   request: APIRequest;
   userId?: string;
@@ -115,12 +122,12 @@ export class APIGuard extends EventEmitter {
       rateLimitConfig: config.rateLimitConfig || {
         windowMs: 60000,
         maxRequests: 100,
-        strategy: RateLimitStrategy.SLIDING_WINDOW
+        strategy: RateLimitStrategy.SLIDING_WINDOW,
       },
       ipWhitelist: config.ipWhitelist || [],
       ipBlacklist: config.ipBlacklist || [],
       jwtSecret: jwtSecret,
-      tokenExpiry: config.tokenExpiry || 3600000
+      tokenExpiry: config.tokenExpiry || 3600000,
     };
 
     this.rateLimiter = new RateLimiter(
@@ -132,7 +139,7 @@ export class APIGuard extends EventEmitter {
     this.encryption = EncryptionUtility.getInstance({
       algorithm: 'aes-256-gcm',
       keyLength: 32,
-      ivLength: 16
+      ivLength: 16,
     });
 
     this.ipWhitelist = new Set(this.config.ipWhitelist);
@@ -147,7 +154,7 @@ export class APIGuard extends EventEmitter {
         type: 'rate_limit_exceeded',
         timestamp: new Date(),
         request: data.limit as any,
-        details: { identifier: data.identifier }
+        details: { identifier: data.identifier },
       });
     });
   }
@@ -187,15 +194,19 @@ export class APIGuard extends EventEmitter {
         return {
           allowed: false,
           reason: 'IP address is blacklisted',
-          statusCode: 403
+          statusCode: 403,
         };
       }
 
-      if (this.config.enableIPWhitelist && this.ipWhitelist.size > 0 && !this.ipWhitelist.has(request.ip)) {
+      if (
+        this.config.enableIPWhitelist &&
+        this.ipWhitelist.size > 0 &&
+        !this.ipWhitelist.has(request.ip)
+      ) {
         return {
           allowed: false,
           reason: 'IP address is not whitelisted',
-          statusCode: 403
+          statusCode: 403,
         };
       }
 
@@ -204,8 +215,11 @@ export class APIGuard extends EventEmitter {
         const identifier = this.getRateLimitIdentifier(request);
 
         if (rateLimitConfig) {
-          const rateLimiter = routeConfig?.rateLimitOverride 
-            ? new RateLimiter(rateLimitConfig, (rateLimitConfig as any).strategy || RateLimitStrategy.SLIDING_WINDOW)
+          const rateLimiter = routeConfig?.rateLimitOverride
+            ? new RateLimiter(
+                rateLimitConfig,
+                (rateLimitConfig as any).strategy || RateLimitStrategy.SLIDING_WINDOW
+              )
             : this.rateLimiter;
 
           const rateLimitResult = await rateLimiter.check(identifier);
@@ -219,9 +233,9 @@ export class APIGuard extends EventEmitter {
                 'Retry-After': String(rateLimitResult.retryAfter),
                 'X-RateLimit-Limit': String(rateLimitResult.limit),
                 'X-RateLimit-Remaining': String(rateLimitResult.remaining),
-                'X-RateLimit-Reset': rateLimitResult.reset.toISOString()
+                'X-RateLimit-Reset': rateLimitResult.reset.toISOString(),
               },
-              rateLimitInfo: rateLimitResult
+              rateLimitInfo: rateLimitResult,
             };
           }
 
@@ -232,7 +246,7 @@ export class APIGuard extends EventEmitter {
       }
 
       let authContext: AuthContext = {
-        isAuthenticated: false
+        isAuthenticated: false,
       };
 
       if (this.config.enableAuthentication) {
@@ -242,12 +256,12 @@ export class APIGuard extends EventEmitter {
             type: 'auth_failure',
             timestamp: new Date(),
             request,
-            details: { reason: authResult.reason }
+            details: { reason: authResult.reason },
           });
           return {
             allowed: false,
             reason: authResult.reason,
-            statusCode: 401
+            statusCode: 401,
           };
         }
         authContext = authResult.context!;
@@ -256,7 +270,7 @@ export class APIGuard extends EventEmitter {
           type: 'auth_success',
           timestamp: new Date(),
           request,
-          userId: authContext.userId
+          userId: authContext.userId,
         });
       }
 
@@ -268,12 +282,12 @@ export class APIGuard extends EventEmitter {
             timestamp: new Date(),
             request,
             userId: authContext.userId,
-            details: { reason: authzResult.reason }
+            details: { reason: authzResult.reason },
           });
           return {
             allowed: false,
             reason: authzResult.reason,
-            statusCode: 403
+            statusCode: 403,
           };
         }
 
@@ -281,7 +295,7 @@ export class APIGuard extends EventEmitter {
           type: 'authz_success',
           timestamp: new Date(),
           request,
-          userId: authContext.userId
+          userId: authContext.userId,
         });
       }
 
@@ -293,13 +307,13 @@ export class APIGuard extends EventEmitter {
             timestamp: new Date(),
             request,
             userId: authContext.userId,
-            details: { errors: validationResult.errors }
+            details: { errors: validationResult.errors },
           });
           return {
             allowed: false,
             reason: 'Invalid input',
             statusCode: 400,
-            body: { errors: validationResult.errors }
+            body: { errors: validationResult.errors },
           };
         }
       }
@@ -310,26 +324,25 @@ export class APIGuard extends EventEmitter {
           return {
             allowed: false,
             reason: 'Invalid request signature',
-            statusCode: 401
+            statusCode: 401,
           };
         }
       }
 
       return {
-        allowed: true
+        allowed: true,
       };
-
     } catch (error) {
       this.recordSecurityEvent({
         type: 'security_violation',
         timestamp: new Date(),
         request,
-        details: { error: error instanceof Error ? error.message : 'Unknown error' }
+        details: { error: error instanceof Error ? error.message : 'Unknown error' },
       });
       return {
         allowed: false,
         reason: 'Internal security error',
-        statusCode: 500
+        statusCode: 500,
       };
     }
   }
@@ -339,7 +352,9 @@ export class APIGuard extends EventEmitter {
     return token || request.ip;
   }
 
-  private async authenticate(request: APIRequest): Promise<{ success: boolean; reason?: string; context?: AuthContext }> {
+  private async authenticate(
+    request: APIRequest
+  ): Promise<{ success: boolean; reason?: string; context?: AuthContext }> {
     const authHeader = request.headers['authorization'];
 
     if (!authHeader) {
@@ -370,17 +385,20 @@ export class APIGuard extends EventEmitter {
         roles: payload.roles || [],
         permissions: payload.permissions || [],
         token,
-        isAuthenticated: true
+        isAuthenticated: true,
       };
 
       return { success: true, context };
-
     } catch (error) {
       return { success: false, reason: 'Token verification failed' };
     }
   }
 
-  private async authorize(request: APIRequest, authContext: AuthContext, routeConfig?: RouteConfig): Promise<{ allowed: boolean; reason?: string }> {
+  private async authorize(
+    request: APIRequest,
+    authContext: AuthContext,
+    routeConfig?: RouteConfig
+  ): Promise<{ allowed: boolean; reason?: string }> {
     if (!routeConfig?.requireAuth) {
       return { allowed: true };
     }
@@ -390,7 +408,7 @@ export class APIGuard extends EventEmitter {
     }
 
     if (routeConfig.requiredRoles && routeConfig.requiredRoles.length > 0) {
-      const hasRequiredRole = routeConfig.requiredRoles.some(role => 
+      const hasRequiredRole = routeConfig.requiredRoles.some((role) =>
         authContext.roles?.includes(role)
       );
 
@@ -400,7 +418,7 @@ export class APIGuard extends EventEmitter {
     }
 
     if (routeConfig.requiredPermissions && routeConfig.requiredPermissions.length > 0) {
-      const hasRequiredPermission = routeConfig.requiredPermissions.some(permission =>
+      const hasRequiredPermission = routeConfig.requiredPermissions.some((permission) =>
         authContext.permissions?.includes(permission)
       );
 
@@ -412,7 +430,10 @@ export class APIGuard extends EventEmitter {
     return { allowed: true };
   }
 
-  private async validateInput(request: APIRequest, validationConfig: any): Promise<{ valid: boolean; errors?: string[] }> {
+  private async validateInput(
+    request: APIRequest,
+    validationConfig: any
+  ): Promise<{ valid: boolean; errors?: string[] }> {
     const errors: string[] = [];
 
     if (validationConfig.body && request.body) {
@@ -431,7 +452,7 @@ export class APIGuard extends EventEmitter {
 
     return {
       valid: errors.length === 0,
-      errors: errors.length > 0 ? errors : undefined
+      errors: errors.length > 0 ? errors : undefined,
     };
   }
 
@@ -465,7 +486,7 @@ export class APIGuard extends EventEmitter {
       roles,
       permissions,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor((Date.now() + this.config.tokenExpiry) / 1000)
+      exp: Math.floor((Date.now() + this.config.tokenExpiry) / 1000),
     };
 
     return this.encryption.generateJWT(payload, this.config.jwtSecret);
@@ -492,9 +513,7 @@ export class APIGuard extends EventEmitter {
   }
 
   async getSecurityEvents(limit?: number): Promise<SecurityEvent[]> {
-    return limit 
-      ? this.securityEvents.slice(-limit)
-      : [...this.securityEvents];
+    return limit ? this.securityEvents.slice(-limit) : [...this.securityEvents];
   }
 
   async getSecurityStats(): Promise<{
@@ -509,13 +528,13 @@ export class APIGuard extends EventEmitter {
   }> {
     return {
       totalEvents: this.securityEvents.length,
-      authSuccess: this.securityEvents.filter(e => e.type === 'auth_success').length,
-      authFailure: this.securityEvents.filter(e => e.type === 'auth_failure').length,
-      authzSuccess: this.securityEvents.filter(e => e.type === 'authz_success').length,
-      authzFailure: this.securityEvents.filter(e => e.type === 'authz_failure').length,
-      rateLimitExceeded: this.securityEvents.filter(e => e.type === 'rate_limit_exceeded').length,
-      invalidInput: this.securityEvents.filter(e => e.type === 'invalid_input').length,
-      securityViolations: this.securityEvents.filter(e => e.type === 'security_violation').length
+      authSuccess: this.securityEvents.filter((e) => e.type === 'auth_success').length,
+      authFailure: this.securityEvents.filter((e) => e.type === 'auth_failure').length,
+      authzSuccess: this.securityEvents.filter((e) => e.type === 'authz_success').length,
+      authzFailure: this.securityEvents.filter((e) => e.type === 'authz_failure').length,
+      rateLimitExceeded: this.securityEvents.filter((e) => e.type === 'rate_limit_exceeded').length,
+      invalidInput: this.securityEvents.filter((e) => e.type === 'invalid_input').length,
+      securityViolations: this.securityEvents.filter((e) => e.type === 'security_violation').length,
     };
   }
 

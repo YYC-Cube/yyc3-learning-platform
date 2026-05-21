@@ -6,12 +6,20 @@
 // Main component exports
 export {
   EnterpriseAIWidget,
-  type EnterpriseAIWidgetProps, type Message, type MessageAction, type MessageAttachment, type WidgetPosition, type WidgetState
+  type EnterpriseAIWidgetProps,
+  type Message,
+  type MessageAction,
+  type MessageAttachment,
+  type WidgetPosition,
+  type WidgetState,
 } from './EnterpriseAIWidget';
 
 // Re-export core system types for convenience
 export type {
-  AutonomousAIEngine, FiveDimensionalManagement, LearningSystem, ModelAdapter
+  AutonomousAIEngine,
+  FiveDimensionalManagement,
+  LearningSystem,
+  ModelAdapter,
 } from '@yyc3/five-dimensional-management';
 
 // ============================================================================
@@ -36,14 +44,14 @@ export const defaultWidgetConfig: Partial<EnterpriseAIWidgetProps> = {
     knowledge: true,
     analytics: true,
     goals: true,
-    settings: true
+    settings: true,
   },
   integrations: {
     autonomousEngine: true,
     modelAdapter: true,
     learningSystem: true,
-    fiveDimensionalManagement: true
-  }
+    fiveDimensionalManagement: true,
+  },
 };
 
 /**
@@ -61,17 +69,23 @@ export function createEnterpriseAIWidget(config: Partial<EnterpriseAIWidgetProps
  * Quick setup function for development
  */
 export function setupDevelopmentWidget(userId: string, organizationId?: string) {
-  return <EnterpriseAIWidget
-    userId={userId}
-    organizationId={organizationId || 'dev-org'}
-    {...defaultWidgetConfig}
-  />;
+  return (
+    <EnterpriseAIWidget
+      userId={userId}
+      organizationId={organizationId || 'dev-org'}
+      {...defaultWidgetConfig}
+    />
+  );
 }
 
 /**
  * Production setup with enterprise features enabled
  */
-export function setupProductionWidget(userId: string, organizationId: string, overrides: Partial<EnterpriseAIWidgetProps> = {}) {
+export function setupProductionWidget(
+  userId: string,
+  organizationId: string,
+  overrides: Partial<EnterpriseAIWidgetProps> = {}
+) {
   const productionConfig: Partial<EnterpriseAIWidgetProps> = {
     ...defaultWidgetConfig,
     mode: 'docked',
@@ -82,22 +96,20 @@ export function setupProductionWidget(userId: string, organizationId: string, ov
       knowledge: true,
       analytics: true,
       goals: true,
-      settings: true
+      settings: true,
     },
     integrations: {
       autonomousEngine: true,
       modelAdapter: true,
       learningSystem: true,
-      fiveDimensionalManagement: true
+      fiveDimensionalManagement: true,
     },
-    ...overrides
+    ...overrides,
   };
 
-  return <EnterpriseAIWidget
-    userId={userId}
-    organizationId={organizationId}
-    {...productionConfig}
-  />;
+  return (
+    <EnterpriseAIWidget userId={userId} organizationId={organizationId} {...productionConfig} />
+  );
 }
 
 // ============================================================================
@@ -114,12 +126,13 @@ export const VERSION = '2.0.0';
 export const BUILD_DATE = new Date().toISOString();
 export const COMPATIBILITY = {
   react: '>=18.0.0',
-  typescript: '>=5.0.0'
+  typescript: '>=5.0.0',
 };
 
 export const WIDGET_INFO = {
   name: '@yyc3/enterprise-ai-widget',
-  description: 'YYC³ Enterprise AI Widget - Advanced intelligent assistant with integrated management systems',
+  description:
+    'YYC³ Enterprise AI Widget - Advanced intelligent assistant with integrated management systems',
   version: VERSION,
   author: 'YYC³ AI Team',
   license: 'MIT',
@@ -133,14 +146,14 @@ export const WIDGET_INFO = {
     'Advanced customization options',
     'Responsive and accessible design',
     'High performance optimization',
-    'Production-ready deployment'
+    'Production-ready deployment',
   ],
   integrations: [
     'AutonomousAIEngine',
     'ModelAdapter',
     'LearningSystem',
-    'FiveDimensionalManagement'
-  ]
+    'FiveDimensionalManagement',
+  ],
 } as const;
 
 // Default export
@@ -151,5 +164,5 @@ export default {
   setupProductionWidget,
   defaultWidgetConfig,
   VERSION,
-  WIDGET_INFO
+  WIDGET_INFO,
 };

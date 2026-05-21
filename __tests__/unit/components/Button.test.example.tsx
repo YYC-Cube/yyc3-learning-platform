@@ -57,7 +57,11 @@ describe('Button Component', () => {
       const handleClick = vi.fn();
       const user = userEvent.setup();
 
-      render(<Button onClick={handleClick} disabled>Click me</Button>);
+      render(
+        <Button onClick={handleClick} disabled>
+          Click me
+        </Button>
+      );
 
       const button = screen.getByRole('button');
       await user.click(button);
@@ -69,7 +73,11 @@ describe('Button Component', () => {
       const handleClick = vi.fn();
       const user = userEvent.setup();
 
-      render(<Button onClick={handleClick} loading>Click me</Button>);
+      render(
+        <Button onClick={handleClick} loading>
+          Click me
+        </Button>
+      );
 
       const button = screen.getByRole('button');
       await user.click(button);

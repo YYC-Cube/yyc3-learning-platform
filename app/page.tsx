@@ -8,24 +8,25 @@
  * @copyright Copyright (c) 2025 YYC³
  * @license MIT
  */
-"use client";
+'use client';
 
-import { ResponsiveLayout } from "@/components/responsive-layout";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ResponsiveLayout } from '@/components/responsive-layout';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  BookOpen, Brain,
+  BookOpen,
+  Brain,
   CheckCircle,
   Clock,
   Play,
   Star,
   Target,
   Trophy,
-  Users
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+  Users,
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 // 类型定义（增强类型安全）
 type User = {
@@ -43,7 +44,7 @@ type Course = {
   progress: number;
   chapters: number;
   completed: number;
-  difficulty: "初级" | "中级" | "高级";
+  difficulty: '初级' | '中级' | '高级';
   duration: string;
   image: string;
   color: string;
@@ -59,9 +60,9 @@ type Activity = {
 export default function Dashboard() {
   // 静态数据无需状态管理，直接定义为常量
   const currentUser: User = {
-    name: "言语同学",
-    avatar: "/user/User_61.png",
-    level: "中级工程师",
+    name: '言语同学',
+    avatar: '/user/User_61.png',
+    level: '中级工程师',
     points: 2450,
     streak: 7,
   };
@@ -69,47 +70,47 @@ export default function Dashboard() {
   const courses: Course[] = [
     {
       id: 1,
-      title: "GPT模型基础与应用",
-      description: "深入理解大语言模型的原理和实际应用",
+      title: 'GPT模型基础与应用',
+      description: '深入理解大语言模型的原理和实际应用',
       progress: 75,
       chapters: 12,
       completed: 9,
-      difficulty: "初级",
-      duration: "8小时",
-      image: "/images/gpt-basics-course.png",
-      color: "bg-gradient-to-r from-green-500 to-emerald-600",
+      difficulty: '初级',
+      duration: '8小时',
+      image: '/images/gpt-basics-course.png',
+      color: 'bg-gradient-to-r from-green-500 to-emerald-600',
     },
     {
       id: 2,
-      title: "Prompt Engineering实战",
-      description: "掌握提示词工程的核心技巧和最佳实践",
+      title: 'Prompt Engineering实战',
+      description: '掌握提示词工程的核心技巧和最佳实践',
       progress: 45,
       chapters: 15,
       completed: 7,
-      difficulty: "中级",
-      duration: "12小时",
-      image: "/images/prompt-engineering-course.png",
-      color: "bg-gradient-to-r from-blue-500 to-indigo-600",
+      difficulty: '中级',
+      duration: '12小时',
+      image: '/images/prompt-engineering-course.png',
+      color: 'bg-gradient-to-r from-blue-500 to-indigo-600',
     },
     {
       id: 3,
-      title: "AI应用开发框架",
-      description: "学习主流AI应用开发框架和工具链",
+      title: 'AI应用开发框架',
+      description: '学习主流AI应用开发框架和工具链',
       progress: 20,
       chapters: 18,
       completed: 4,
-      difficulty: "高级",
-      duration: "16小时",
-      image: "/images/ai-development-course.png",
-      color: "bg-gradient-to-r from-purple-500 to-violet-600",
+      difficulty: '高级',
+      duration: '16小时',
+      image: '/images/ai-development-course.png',
+      color: 'bg-gradient-to-r from-purple-500 to-violet-600',
     },
   ];
 
   const recentActivities: Activity[] = [
-    { type: "完成章节", content: "GPT-4 API集成实践", time: "2小时前", icon: CheckCircle },
-    { type: "通过测试", content: "Prompt优化技巧测验", time: "1天前", icon: Trophy },
-    { type: "加入团队", content: "AI创新实验室", time: "3天前", icon: Users },
-    { type: "获得徽章", content: "连续学习7天", time: "1周前", icon: Star },
+    { type: '完成章节', content: 'GPT-4 API集成实践', time: '2小时前', icon: CheckCircle },
+    { type: '通过测试', content: 'Prompt优化技巧测验', time: '1天前', icon: Trophy },
+    { type: '加入团队', content: 'AI创新实验室', time: '3天前', icon: Users },
+    { type: '获得徽章', content: '连续学习7天', time: '1周前', icon: Star },
   ];
 
   return (
@@ -125,7 +126,9 @@ export default function Dashboard() {
 
         {/* 统计卡片 */}
         <section aria-labelledby="stats-heading" className="mb-6">
-          <h2 id="stats-heading" className="sr-only">学习统计概览</h2>
+          <h2 id="stats-heading" className="sr-only">
+            学习统计概览
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
               <CardContent className="p-4">
@@ -197,7 +200,7 @@ export default function Dashboard() {
                     <CardContent className="p-4">
                       <div className="flex items-start space-x-4">
                         <Image
-                          src={course.image || "/placeholder.svg"}
+                          src={course.image || '/placeholder.svg'}
                           alt={`${course.title}课程封面`}
                           width={80}
                           height={80}
@@ -210,8 +213,11 @@ export default function Dashboard() {
                             </h3>
                             <Badge
                               variant={
-                                course.difficulty === "初级" ? "default" :
-                                  course.difficulty === "中级" ? "secondary" : "destructive"
+                                course.difficulty === '初级'
+                                  ? 'default'
+                                  : course.difficulty === '中级'
+                                    ? 'secondary'
+                                    : 'destructive'
                               }
                             >
                               {course.difficulty}
@@ -220,7 +226,9 @@ export default function Dashboard() {
                           <p className="text-sm text-gray-600 mb-3">{course.description}</p>
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center space-x-4 text-sm text-gray-500">
-                              <span>{course.completed}/{course.chapters} 章节</span>
+                              <span>
+                                {course.completed}/{course.chapters} 章节
+                              </span>
                               <span>{course.duration}</span>
                             </div>
                           </div>
@@ -246,7 +254,10 @@ export default function Dashboard() {
                               className="bg-blue-600 hover:bg-blue-700 text-white"
                               asChild
                             >
-                              <Link href={`/courses/${course.id}`} className="inline-flex items-center justify-center">
+                              <Link
+                                href={`/courses/${course.id}`}
+                                className="inline-flex items-center justify-center"
+                              >
                                 <Play className="h-4 w-4 mr-1" />
                                 继续学习
                               </Link>
@@ -301,30 +312,19 @@ export default function Dashboard() {
                   <CardTitle id="quick-actions-heading">快速操作</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 flex-1 flex flex-col justify-center">
-                  <Button
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                    asChild
-                  >
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
                     <Link href="/practice" className="inline-flex items-center justify-center">
                       <Brain className="h-4 w-4 mr-2" />
                       开始练习
                     </Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-2 hover:bg-gray-50"
-                    asChild
-                  >
+                  <Button variant="outline" className="w-full border-2 hover:bg-gray-50" asChild>
                     <Link href="/courses" className="inline-flex items-center justify-center">
                       <BookOpen className="h-4 w-4 mr-2" />
                       浏览课程
                     </Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-2 hover:bg-gray-50"
-                    asChild
-                  >
+                  <Button variant="outline" className="w-full border-2 hover:bg-gray-50" asChild>
                     <Link href="/team" className="inline-flex items-center justify-center">
                       <Users className="h-4 w-4 mr-2" />
                       团队协作

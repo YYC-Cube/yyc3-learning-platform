@@ -1,10 +1,10 @@
 # YYC³ AILP 项目标准化审核与多维度分析报告
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ## 📋 文档信息
 
@@ -573,8 +573,8 @@ api/                # API路由 ✅
 
 ## 📊 标准化检查通过率统计
 
-| 检查类别     | 总项数 | 通过项数 | 通过率    | 评级       |
-| ------------ | ------ | -------- | --------- | ---------- |
+| 检查类别     | 总项数 | 通过项数 | 通过率    | 评级        |
+| ------------ | ------ | -------- | --------- | ----------- |
 | 项目级检查   | 24     | 24       | 100%      | ✅ 优秀     |
 | 代码文件检查 | 13     | 12       | 92.3%     | ✅ 良好     |
 | 文档文件检查 | 12     | 12       | 100%      | ✅ 优秀     |
@@ -777,7 +777,7 @@ coverage: {
 
 ---
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

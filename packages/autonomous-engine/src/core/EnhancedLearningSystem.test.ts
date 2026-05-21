@@ -9,11 +9,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 import { EnhancedLearningSystem } from './EnhancedLearningSystem';
-import type {
-  LearningData,
-  LearningSystemConfig,
-  Strategy
-} from './EnhancedLearningSystem';
+import type { LearningData, LearningSystemConfig, Strategy } from './EnhancedLearningSystem';
 
 describe('EnhancedLearningSystem', () => {
   let learningSystem: EnhancedLearningSystem;
@@ -35,9 +31,9 @@ describe('EnhancedLearningSystem', () => {
           aggregation: 'weighted_average',
           filtering: 'outlier_removal',
           validation: 'cross_validation',
-          integration: 'incremental'
-        }
-      }
+          integration: 'incremental',
+        },
+      },
     });
 
     mockExperience = {
@@ -49,7 +45,7 @@ describe('EnhancedLearningSystem', () => {
         complexity: 'simple',
         uncertainty: 'low',
         novelty: 'familiar',
-        criticality: 'low'
+        criticality: 'low',
       },
       actions: [
         {
@@ -57,8 +53,8 @@ describe('EnhancedLearningSystem', () => {
           type: 'test-action',
           description: 'Test action description',
           parameters: { param1: 'value1' },
-          reasoning: 'Test reasoning'
-        }
+          reasoning: 'Test reasoning',
+        },
       ],
       outcomes: [
         {
@@ -67,8 +63,8 @@ describe('EnhancedLearningSystem', () => {
           value: { success: true },
           quality: 'good',
           duration: 1000,
-          resourceUsage: { cpu: 0.5, memory: 512 }
-        }
+          resourceUsage: { cpu: 0.5, memory: 512 },
+        },
       ],
       feedback: {
         source: 'system',
@@ -76,7 +72,7 @@ describe('EnhancedLearningSystem', () => {
         content: 'Good performance',
         sentiment: 'positive',
         confidence: 0.9,
-        actionability: 'short_term'
+        actionability: 'short_term',
       },
       timestamp: new Date(),
       metadata: {
@@ -84,8 +80,8 @@ describe('EnhancedLearningSystem', () => {
         category: 'optimization',
         importance: 'medium',
         applicability: ['general', 'optimization'],
-        sharingConsent: true
-      }
+        sharingConsent: true,
+      },
     };
   });
 
@@ -103,7 +99,7 @@ describe('EnhancedLearningSystem', () => {
       const config: Partial<LearningSystemConfig> = {
         enableLearning: false,
         learningRate: 0.2,
-        explorationRate: 0.3
+        explorationRate: 0.3,
       };
       const system = new EnhancedLearningSystem(config);
       expect(system).toBeDefined();
@@ -125,7 +121,7 @@ describe('EnhancedLearningSystem', () => {
 
     it('should emit learning:started event', async () => {
       const emitSpy = jest.spyOn(learningSystem as any, 'emit');
-      
+
       await learningSystem.learnFromExperience(mockExperience);
 
       expect(emitSpy).toHaveBeenCalledWith('learning:started', expect.any(Object));
@@ -133,7 +129,7 @@ describe('EnhancedLearningSystem', () => {
 
     it('should emit learning:completed event', async () => {
       const emitSpy = jest.spyOn(learningSystem as any, 'emit');
-      
+
       await learningSystem.learnFromExperience(mockExperience);
 
       expect(emitSpy).toHaveBeenCalledWith('learning:completed', expect.any(Object));
@@ -141,9 +137,9 @@ describe('EnhancedLearningSystem', () => {
 
     it('should not learn when learning is disabled', async () => {
       const disabledSystem = new EnhancedLearningSystem({ enableLearning: false });
-      
+
       await expect(disabledSystem.learnFromExperience(mockExperience)).resolves.not.toThrow();
-      
+
       const progress = disabledSystem.getProgress();
       expect(progress.totalExperiences).toBe(0);
     });
@@ -175,12 +171,14 @@ describe('EnhancedLearningSystem', () => {
       await learningSystem.learnFromExperience(mockExperience);
 
       const updatedDomain = learningSystem.getKnowledgeDomain('general');
-      expect(updatedDomain?.lastUpdated.getTime()).toBeGreaterThan(initialTimestamp?.getTime() || 0);
+      expect(updatedDomain?.lastUpdated.getTime()).toBeGreaterThan(
+        initialTimestamp?.getTime() || 0
+      );
     });
 
     it('should emit domain:updated event', async () => {
       const emitSpy = jest.spyOn(learningSystem as any, 'emit');
-      
+
       await learningSystem.learnFromExperience(mockExperience);
 
       expect(emitSpy).toHaveBeenCalledWith('domain:updated', expect.any(Object));
@@ -197,7 +195,7 @@ describe('EnhancedLearningSystem', () => {
 
     it('should calculate lower impact for failure experience', async () => {
       const failureExperience = { ...mockExperience, type: 'failure' as const };
-      
+
       await learningSystem.learnFromExperience(failureExperience);
 
       const domain = learningSystem.getKnowledgeDomain('general');
@@ -206,7 +204,7 @@ describe('EnhancedLearningSystem', () => {
 
     it('should calculate moderate impact for partial success', async () => {
       const partialExperience = { ...mockExperience, type: 'partial' as const };
-      
+
       await learningSystem.learnFromExperience(partialExperience);
 
       const domain = learningSystem.getKnowledgeDomain('general');
@@ -216,9 +214,9 @@ describe('EnhancedLearningSystem', () => {
     it('should add novelty bonus for novel experiences', async () => {
       const novelExperience = {
         ...mockExperience,
-        situation: { ...mockExperience.situation, novelty: 'novel' as const }
+        situation: { ...mockExperience.situation, novelty: 'novel' as const },
       };
-      
+
       await learningSystem.learnFromExperience(novelExperience);
 
       const domain = learningSystem.getKnowledgeDomain('general');
@@ -247,9 +245,9 @@ describe('EnhancedLearningSystem', () => {
         ...mockExperience,
         id: 'exp-2',
         actions: [{ ...mockExperience.actions[0], type: 'unique-action' }],
-        outcomes: [{ ...mockExperience.outcomes[0], type: 'unique-result' }]
+        outcomes: [{ ...mockExperience.outcomes[0], type: 'unique-result' }],
       };
-      
+
       await learningSystem.learnFromExperience(mockExperience);
       await learningSystem.learnFromExperience(uniqueExperience);
 
@@ -300,7 +298,7 @@ describe('EnhancedLearningSystem', () => {
 
     it('should emit strategy:updated event', async () => {
       const emitSpy = jest.spyOn(learningSystem as any, 'emit');
-      
+
       await learningSystem.learnFromExperience(mockExperience);
 
       expect(emitSpy).toHaveBeenCalledWith('strategy:updated', expect.any(Object));
@@ -315,7 +313,7 @@ describe('EnhancedLearningSystem', () => {
         description: 'Test strategy',
         domain: 'general',
         effectiveness: 0.8,
-        confidence: 0.7
+        confidence: 0.7,
       };
 
       await expect(learningSystem.adaptStrategy(newStrategy)).resolves.not.toThrow();
@@ -330,7 +328,7 @@ describe('EnhancedLearningSystem', () => {
         id: 'update-strategy',
         name: 'Original Name',
         description: 'Original description',
-        domain: 'general'
+        domain: 'general',
       };
 
       await learningSystem.adaptStrategy(newStrategy);
@@ -338,7 +336,7 @@ describe('EnhancedLearningSystem', () => {
       const updatedStrategy: Partial<Strategy> = {
         id: 'update-strategy',
         name: 'Updated Name',
-        description: 'Updated description'
+        description: 'Updated description',
       };
 
       await learningSystem.adaptStrategy(updatedStrategy);
@@ -353,7 +351,7 @@ describe('EnhancedLearningSystem', () => {
         id: 'history-strategy',
         name: 'History Strategy',
         description: 'Test strategy',
-        domain: 'general'
+        domain: 'general',
       };
 
       await learningSystem.adaptStrategy(newStrategy);
@@ -366,7 +364,7 @@ describe('EnhancedLearningSystem', () => {
       const emitSpy = jest.spyOn(learningSystem as any, 'emit');
       const newStrategy: Partial<Strategy> = {
         name: 'Test Strategy',
-        domain: 'general'
+        domain: 'general',
       };
 
       await learningSystem.adaptStrategy(newStrategy);
@@ -387,7 +385,9 @@ describe('EnhancedLearningSystem', () => {
 
     it('should return correct competency level', async () => {
       const progress = learningSystem.getProgress();
-      expect(['beginner', 'intermediate', 'advanced', 'expert']).toContain(progress.competencyLevel);
+      expect(['beginner', 'intermediate', 'advanced', 'expert']).toContain(
+        progress.competencyLevel
+      );
     });
 
     it('should return areas of improvement', async () => {
@@ -415,7 +415,7 @@ describe('EnhancedLearningSystem', () => {
     it('should return beginner for low competency', () => {
       const system = new EnhancedLearningSystem({
         knowledgeDomains: ['test'],
-        learningRate: 0.01
+        learningRate: 0.01,
       });
 
       const progress = system.getProgress();
@@ -529,9 +529,9 @@ describe('EnhancedLearningSystem', () => {
     it('should return all knowledge domains', () => {
       const domains = learningSystem.getAllKnowledgeDomains();
       expect(domains.length).toBe(3);
-      expect(domains.map(d => d.name)).toContain('general');
-      expect(domains.map(d => d.name)).toContain('optimization');
-      expect(domains.map(d => d.name)).toContain('collaboration');
+      expect(domains.map((d) => d.name)).toContain('general');
+      expect(domains.map((d) => d.name)).toContain('optimization');
+      expect(domains.map((d) => d.name)).toContain('collaboration');
     });
   });
 
@@ -587,11 +587,11 @@ describe('EnhancedLearningSystem', () => {
       const oldExperience = {
         ...mockExperience,
         id: 'old-exp',
-        timestamp: new Date(Date.now() - 400 * 24 * 60 * 60 * 1000)
+        timestamp: new Date(Date.now() - 400 * 24 * 60 * 60 * 1000),
       };
 
       const shortRetentionSystem = new EnhancedLearningSystem({
-        experienceRetention: 365 * 24 * 60 * 60 * 1000
+        experienceRetention: 365 * 24 * 60 * 60 * 1000,
       });
 
       await shortRetentionSystem.learnFromExperience(oldExperience);
@@ -618,16 +618,18 @@ describe('EnhancedLearningSystem', () => {
     it('should handle experience with empty applicability', async () => {
       const emptyApplicabilityExperience = {
         ...mockExperience,
-        metadata: { ...mockExperience.metadata, applicability: [] }
+        metadata: { ...mockExperience.metadata, applicability: [] },
       };
 
-      await expect(learningSystem.learnFromExperience(emptyApplicabilityExperience)).resolves.not.toThrow();
+      await expect(
+        learningSystem.learnFromExperience(emptyApplicabilityExperience)
+      ).resolves.not.toThrow();
     });
 
     it('should handle experience with no outcomes', async () => {
       const noOutcomesExperience = {
         ...mockExperience,
-        outcomes: []
+        outcomes: [],
       };
 
       await expect(learningSystem.learnFromExperience(noOutcomesExperience)).resolves.not.toThrow();
@@ -636,7 +638,7 @@ describe('EnhancedLearningSystem', () => {
     it('should handle experience with no actions', async () => {
       const noActionsExperience = {
         ...mockExperience,
-        actions: []
+        actions: [],
       };
 
       await expect(learningSystem.learnFromExperience(noActionsExperience)).resolves.not.toThrow();

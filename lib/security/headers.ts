@@ -38,17 +38,16 @@ const DEFAULT_SECURITY_HEADERS: Record<string, string> = {
     'geolocation=(), microphone=(), camera=(), interest-cohort=(), fullscreen=(), payment=()',
 
   // Feature policy (legacy, for older browsers)
-  'Feature-Policy':
-    'geolocation \'none\'; microphone \'none\'; camera \'none\'; payment \'none\'',
+  'Feature-Policy': "geolocation 'none'; microphone 'none'; camera 'none'; payment 'none'",
 
   // Cache control
   'Cache-Control': 'no-cache, no-store, must-revalidate',
 
   // Pragma (legacy)
-  'Pragma': 'no-cache',
+  Pragma: 'no-cache',
 
   // Expires (legacy)
-  'Expires': '0',
+  Expires: '0',
 
   // X-Permitted-Cross-Domain-Policies
   'X-Permitted-Cross-Domain-Policies': 'none',
@@ -63,15 +62,12 @@ const DEFAULT_SECURITY_HEADERS: Record<string, string> = {
 /**
  * Get security headers for response
  */
-export function getSecurityHeaders(
-  config: SecurityHeadersConfig = {}
-): Record<string, string> {
+export function getSecurityHeaders(config: SecurityHeadersConfig = {}): Record<string, string> {
   const headers = { ...DEFAULT_SECURITY_HEADERS };
 
   // Add HSTS (HTTP Strict Transport Security)
   if (config.enableHSTS !== false) {
-    headers['Strict-Transport-Security'] =
-      'max-age=31536000; includeSubDomains; preload';
+    headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload';
   }
 
   // Add CSP (Content Security Policy)
@@ -79,20 +75,20 @@ export function getSecurityHeaders(
     const csp =
       config.cspDirectives ||
       "default-src 'self'; " +
-      "script-src 'self' 'strict-dynamic' 'unsafe-inline' https:; " +
-      "script-src-elem 'self' 'unsafe-inline'; " +
-      "style-src 'self' 'unsafe-inline'; " +
-      "img-src 'self' data: blob: https:; " +
-      "font-src 'self' data:; " +
-      "connect-src 'self' https: wss:; " +
-      "media-src 'self' data: https:; " +
-      "object-src 'none'; " +
-      "frame-ancestors 'none'; " +
-      "base-uri 'self'; " +
-      "form-action 'self'; " +
-      "frame-src 'self' https:; " +
-      "worker-src 'self' blob:; " +
-      "manifest-src 'self';";
+        "script-src 'self' 'strict-dynamic' 'unsafe-inline' https:; " +
+        "script-src-elem 'self' 'unsafe-inline'; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data: blob: https:; " +
+        "font-src 'self' data:; " +
+        "connect-src 'self' https: wss:; " +
+        "media-src 'self' data: https:; " +
+        "object-src 'none'; " +
+        "frame-ancestors 'none'; " +
+        "base-uri 'self'; " +
+        "form-action 'self'; " +
+        "frame-src 'self' https:; " +
+        "worker-src 'self' blob:; " +
+        "manifest-src 'self';";
 
     headers['Content-Security-Policy'] = csp;
   }
@@ -103,10 +99,7 @@ export function getSecurityHeaders(
 /**
  * Apply security headers to a Response object
  */
-export function applySecurityHeaders(
-  response: Response,
-  config?: SecurityHeadersConfig
-): Response {
+export function applySecurityHeaders(response: Response, config?: SecurityHeadersConfig): Response {
   const headers = getSecurityHeaders(config);
 
   // Create new Response with headers

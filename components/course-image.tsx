@@ -4,48 +4,48 @@
  * @version 1.0.0
  * @license MIT
  */
-import Image from "next/image"
-import { useState } from "react"
+import Image from 'next/image';
+import { useState } from 'react';
 
 interface CourseImageProps {
-  src: string
-  alt: string
-  title: string
-  color: string
-  className?: string
+  src: string;
+  alt: string;
+  title: string;
+  color: string;
+  className?: string;
 }
 
 function sanitizeText(text: string): string {
-  if (typeof text !== 'string') return ''
+  if (typeof text !== 'string') return '';
   return text
     .replace(/[<>]/g, '')
     .replace(/javascript:/gi, '')
     .replace(/on\w+=/gi, '')
     .trim()
-    .substring(0, 100)
+    .substring(0, 100);
 }
 
-export function CourseImage({ src, alt, title, color, className = "" }: CourseImageProps) {
-  const [imageError, setImageError] = useState(false)
+export function CourseImage({ src, alt, title, color, className = '' }: CourseImageProps) {
+  const [imageError, setImageError] = useState(false);
 
-  const sanitizedTitle = sanitizeText(title || '')
-  const sanitizedAlt = sanitizeText(alt || '')
-  const firstWord = sanitizedTitle.split(" ")[0] || ""
+  const sanitizedTitle = sanitizeText(title || '');
+  const sanitizedAlt = sanitizeText(alt || '');
+  const firstWord = sanitizedTitle.split(' ')[0] || '';
 
   const handleImageError = () => {
-    setImageError(true)
-  }
+    setImageError(true);
+  };
 
   // 使用设计系统CSS变量替代硬编码颜色
-  const cBlue = "var(--brand-blue)"
-  const cViolet = "var(--brand-violet)"
-  const cPink = "var(--brand-pink)"
-  const cWhite = "var(--svg-white)"
-  const cTextLight = "var(--brand-text-light)"
-  const cWhite80 = "var(--svg-white-80)"
+  const cBlue = 'var(--brand-blue)';
+  const cViolet = 'var(--brand-violet)';
+  const cPink = 'var(--brand-pink)';
+  const cWhite = 'var(--svg-white)';
+  const cTextLight = 'var(--brand-text-light)';
+  const cWhite80 = 'var(--svg-white-80)';
 
   // DeepSeek专用高级SVG设计
-  if (sanitizedTitle.includes("DeepSeek")) {
+  if (sanitizedTitle.includes('DeepSeek')) {
     return (
       <div className={`w-full h-48 relative overflow-hidden ${className}`}>
         {/* 动态背景渐变 */}
@@ -55,7 +55,13 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="1" opacity="0.3" />
+                  <path
+                    d="M 40 0 L 0 0 0 40"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="1"
+                    opacity="0.3"
+                  />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#grid)" />
@@ -67,15 +73,15 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
             <div className="absolute top-4 left-8 w-2 h-2 bg-white rounded-full opacity-60 animate-pulse"></div>
             <div
               className="absolute top-12 right-12 w-1 h-1 bg-white rounded-full opacity-40 animate-pulse"
-              style={{ animationDelay: "0.5s" }}
+              style={{ animationDelay: '0.5s' }}
             ></div>
             <div
               className="absolute bottom-8 left-16 w-1.5 h-1.5 bg-white rounded-full opacity-50 animate-pulse"
-              style={{ animationDelay: "1s" }}
+              style={{ animationDelay: '1s' }}
             ></div>
             <div
               className="absolute bottom-16 right-8 w-1 h-1 bg-white rounded-full opacity-30 animate-pulse"
-              style={{ animationDelay: "1.5s" }}
+              style={{ animationDelay: '1.5s' }}
             ></div>
           </div>
 
@@ -111,7 +117,15 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
                   {/* 中央AI核心 */}
                   <g transform="translate(80, 30)">
                     {/* 外圈 */}
-                    <circle cx="0" cy="0" r="25" fill="none" stroke="url(#logoGradient)" strokeWidth="3" opacity="0.8">
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="25"
+                      fill="none"
+                      stroke="url(#logoGradient)"
+                      strokeWidth="3"
+                      opacity="0.8"
+                    >
                       <animateTransform
                         attributeName="transform"
                         attributeType="XML"
@@ -124,7 +138,15 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
                     </circle>
 
                     {/* 中圈 */}
-                    <circle cx="0" cy="0" r="18" fill="none" stroke="url(#logoGradient)" strokeWidth="2" opacity="0.6">
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="18"
+                      fill="none"
+                      stroke="url(#logoGradient)"
+                      strokeWidth="2"
+                      opacity="0.6"
+                    >
                       <animateTransform
                         attributeName="transform"
                         attributeType="XML"
@@ -137,8 +159,20 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
                     </circle>
 
                     {/* 内核 */}
-                    <circle cx="0" cy="0" r="12" fill="url(#logoGradient)" opacity="0.9" filter="url(#glow)">
-                      <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite" />
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r="12"
+                      fill="url(#logoGradient)"
+                      opacity="0.9"
+                      filter="url(#glow)"
+                    >
+                      <animate
+                        attributeName="opacity"
+                        values="0.7;1;0.7"
+                        dur="3s"
+                        repeatCount="indefinite"
+                      />
                     </circle>
 
                     {/* AI符号 */}
@@ -165,7 +199,12 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
 
                       {/* 连接线到中心 */}
                       <path d="M 4 -10 Q 30 -5 55 0" opacity="0.6">
-                        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite" />
+                        <animate
+                          attributeName="opacity"
+                          values="0.3;0.8;0.3"
+                          dur="2s"
+                          repeatCount="indefinite"
+                        />
                       </path>
                       <path d="M 4 0 Q 30 0 55 0" opacity="0.6">
                         <animate
@@ -292,7 +331,7 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -306,7 +345,7 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
         </div>
       ) : (
         <Image
-          src={sanitizeText(src || "/placeholder.svg")}
+          src={sanitizeText(src || '/placeholder.svg')}
           alt={sanitizedAlt}
           width={800}
           height={192}
@@ -316,5 +355,5 @@ export function CourseImage({ src, alt, title, color, className = "" }: CourseIm
         />
       )}
     </div>
-  )
+  );
 }

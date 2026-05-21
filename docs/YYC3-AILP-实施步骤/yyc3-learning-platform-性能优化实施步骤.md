@@ -1,10 +1,10 @@
 # 🔖 YYC³ (Header)
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -66,16 +66,16 @@ export const performanceConfig = {
     largestContentfulPaint: 2.5, // 目标LCP 2.5s
     cumulativeLayoutShift: 0.1, // 目标CLS 0.1
     firstInputDelay: 100, // 目标FID 100ms
-    timeToInteractive: 3.5 // 目标TTI 3.5s
+    timeToInteractive: 3.5, // 目标TTI 3.5s
   },
   measurementPoints: [
     'IntelligentAIWidget',
     'ChatInterface',
     'ToolboxPanel',
     'InsightsDashboard',
-    'WorkflowDesigner'
-  ]
-}
+    'WorkflowDesigner',
+  ],
+};
 ```
 
 #### 步骤1.1.3：建立性能监控
@@ -83,11 +83,11 @@ export const performanceConfig = {
 创建文件：`/lib/performance-monitor.ts`
 
 ```typescript
-import { reportWebVitals } from 'next/web-vitals'
+import { reportWebVitals } from 'next/web-vitals';
 
 export function setupPerformanceMonitoring() {
   reportWebVitals((metric) => {
-    const { name, value, rating } = metric
+    const { name, value, rating } = metric;
 
     // 发送到分析服务
     if (typeof window !== 'undefined') {
@@ -99,16 +99,16 @@ export function setupPerformanceMonitoring() {
           value,
           rating,
           timestamp: Date.now(),
-          url: window.location.href
-        })
-      })
+          url: window.location.href,
+        }),
+      });
     }
 
     // 控制台输出（开发环境）
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[Performance] ${name}: ${value} (${rating})`)
+      console.log(`[Performance] ${name}: ${value} (${rating})`);
     }
-  })
+  });
 }
 ```
 
@@ -212,67 +212,76 @@ const InsightCard: React.FC<InsightCardProps> = memo(({ title, value, trend, pos
 export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = ({
   userId,
   initialPosition = 'bottom-right',
-  onClose
+  onClose,
 }) => {
   // 使用useCallback缓存事件处理函数
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (state.isFullscreen || state.isMinimized) return
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (state.isFullscreen || state.isMinimized) return;
 
-    dragStartPos.current = {
-      x: e.clientX - state.position.x,
-      y: e.clientY - state.position.y
-    }
+      dragStartPos.current = {
+        x: e.clientX - state.position.x,
+        y: e.clientY - state.position.y,
+      };
 
-    setState((prev: WidgetState) => ({ ...prev, isDragging: true }))
-  }, [state.isFullscreen, state.isMinimized, state.position.x, state.position.y])
+      setState((prev: WidgetState) => ({ ...prev, isDragging: true }));
+    },
+    [state.isFullscreen, state.isMinimized, state.position.x, state.position.y]
+  );
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!state.isDragging || !dragStartPos.current) return
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!state.isDragging || !dragStartPos.current) return;
 
-    const newX = e.clientX - dragStartPos.current.x
-    const newY = e.clientY - dragStartPos.current.y
+      const newX = e.clientX - dragStartPos.current.x;
+      const newY = e.clientY - dragStartPos.current.y;
 
-    const maxX = window.innerWidth - state.position.width
-    const maxY = window.innerHeight - state.position.height
+      const maxX = window.innerWidth - state.position.width;
+      const maxY = window.innerHeight - state.position.height;
 
-    setState((prev: WidgetState) => ({
-      ...prev,
-      position: {
-        ...prev.position,
-        x: Math.max(0, Math.min(newX, maxX)),
-        y: Math.max(0, Math.min(newY, maxY))
-      }
-    }))
-  }, [state.isDragging, state.position.width, state.position.height])
+      setState((prev: WidgetState) => ({
+        ...prev,
+        position: {
+          ...prev.position,
+          x: Math.max(0, Math.min(newX, maxX)),
+          y: Math.max(0, Math.min(newY, maxY)),
+        },
+      }));
+    },
+    [state.isDragging, state.position.width, state.position.height]
+  );
 
   const handleMouseUp = useCallback((e: MouseEvent) => {
-    setState((prev: WidgetState) => ({ ...prev, isDragging: false }))
-    dragStartPos.current = null
-  }, [])
+    setState((prev: WidgetState) => ({ ...prev, isDragging: false }));
+    dragStartPos.current = null;
+  }, []);
 
   // 使用useMemo缓存计算结果
-  const widgetClasses = useMemo(() => `
+  const widgetClasses = useMemo(
+    () => `
     fixed bg-white rounded-lg shadow-2xl overflow-hidden transition-all duration-300
     ${state.isDragging ? 'cursor-grabbing' : 'cursor-default'}
     ${state.isFullscreen ? 'inset-4' : ''}
     ${state.isMinimized ? 'h-14' : ''}
-  `, [state.isDragging, state.isFullscreen, state.isMinimized])
+  `,
+    [state.isDragging, state.isFullscreen, state.isMinimized]
+  );
 
   const widgetStyle = useMemo<CSSProperties>(() => {
     if (state.isFullscreen) {
-      return { zIndex: 9999 }
+      return { zIndex: 9999 };
     }
     return {
       left: state.position.x,
       top: state.position.y,
       width: state.position.width,
       height: state.isMinimized ? 56 : state.position.height,
-      zIndex: 9999
-    }
-  }, [state.isFullscreen, state.isMinimized, state.position])
+      zIndex: 9999,
+    };
+  }, [state.isFullscreen, state.isMinimized, state.position]);
 
   // 其他代码...
-}
+};
 ```
 
 #### 步骤1.2.3：虚拟化长列表
@@ -370,26 +379,32 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = (props) =
 ```typescript
 // 使用useReducer优化复杂状态
 interface WidgetStateAction {
-  type: 'SET_POSITION' | 'SET_DRAGGING' | 'SET_VIEW' | 'SET_MINIMIZE' | 'SET_FULLSCREEN' | 'SET_VISIBLE'
-  payload?: any
+  type:
+    | 'SET_POSITION'
+    | 'SET_DRAGGING'
+    | 'SET_VIEW'
+    | 'SET_MINIMIZE'
+    | 'SET_FULLSCREEN'
+    | 'SET_VISIBLE';
+  payload?: any;
 }
 
 function widgetReducer(state: WidgetState, action: WidgetStateAction): WidgetState {
   switch (action.type) {
     case 'SET_POSITION':
-      return { ...state, position: action.payload }
+      return { ...state, position: action.payload };
     case 'SET_DRAGGING':
-      return { ...state, isDragging: action.payload }
+      return { ...state, isDragging: action.payload };
     case 'SET_VIEW':
-      return { ...state, currentView: action.payload }
+      return { ...state, currentView: action.payload };
     case 'SET_MINIMIZE':
-      return { ...state, isMinimized: action.payload }
+      return { ...state, isMinimized: action.payload };
     case 'SET_FULLSCREEN':
-      return { ...state, isFullscreen: action.payload }
+      return { ...state, isFullscreen: action.payload };
     case 'SET_VISIBLE':
-      return { ...state, isVisible: action.payload }
+      return { ...state, isVisible: action.payload };
     default:
-      return state
+      return state;
   }
 }
 
@@ -402,23 +417,26 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = (props) =
     mode: 'floating',
     position: { x: 0, y: 0, width: 400, height: 600 },
     isDragging: false,
-    isResizing: false
-  })
+    isResizing: false,
+  });
 
   // 使用dispatch更新状态
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (state.isFullscreen || state.isMinimized) return
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (state.isFullscreen || state.isMinimized) return;
 
-    dragStartPos.current = {
-      x: e.clientX - state.position.x,
-      y: e.clientY - state.position.y
-    }
+      dragStartPos.current = {
+        x: e.clientX - state.position.x,
+        y: e.clientY - state.position.y,
+      };
 
-    dispatch({ type: 'SET_DRAGGING', payload: true })
-  }, [state.isFullscreen, state.isMinimized, state.position.x, state.position.y])
+      dispatch({ type: 'SET_DRAGGING', payload: true });
+    },
+    [state.isFullscreen, state.isMinimized, state.position.x, state.position.y]
+  );
 
   // 其他代码...
-}
+};
 ```
 
 **验收标准**：
@@ -441,45 +459,48 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = (props) =
 
 ```typescript
 export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = (props) => {
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number>();
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!state.isDragging || !dragStartPos.current) return
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!state.isDragging || !dragStartPos.current) return;
 
-    // 使用requestAnimationFrame优化拖拽性能
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current)
-    }
+      // 使用requestAnimationFrame优化拖拽性能
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
 
-    animationFrameRef.current = requestAnimationFrame(() => {
-      const newX = e.clientX - dragStartPos.current!.x
-      const newY = e.clientY - dragStartPos.current!.y
+      animationFrameRef.current = requestAnimationFrame(() => {
+        const newX = e.clientX - dragStartPos.current!.x;
+        const newY = e.clientY - dragStartPos.current!.y;
 
-      const maxX = window.innerWidth - state.position.width
-      const maxY = window.innerHeight - state.position.height
+        const maxX = window.innerWidth - state.position.width;
+        const maxY = window.innerHeight - state.position.height;
 
-      dispatch({
-        type: 'SET_POSITION',
-        payload: {
-          ...state.position,
-          x: Math.max(0, Math.min(newX, maxX)),
-          y: Math.max(0, Math.min(newY, maxY))
-        }
-      })
-    })
-  }, [state.isDragging, state.position.width, state.position.height])
+        dispatch({
+          type: 'SET_POSITION',
+          payload: {
+            ...state.position,
+            x: Math.max(0, Math.min(newX, maxX)),
+            y: Math.max(0, Math.min(newY, maxY)),
+          },
+        });
+      });
+    },
+    [state.isDragging, state.position.width, state.position.height]
+  );
 
   // 清理animation frame
   useEffect(() => {
     return () => {
       if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
+        cancelAnimationFrame(animationFrameRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
   // 其他代码...
-}
+};
 ```
 
 #### 步骤1.3.2：使用CSS transform代替top/left
@@ -487,45 +508,45 @@ export const IntelligentAIWidget: React.FC<IntelligentAIWidgetProps> = (props) =
 ```typescript
 const widgetStyle = useMemo<CSSProperties>(() => {
   if (state.isFullscreen) {
-    return { zIndex: 9999 }
+    return { zIndex: 9999 };
   }
   return {
     transform: `translate(${state.position.x}px, ${state.position.y}px)`,
     width: state.position.width,
     height: state.isMinimized ? 56 : state.position.height,
     zIndex: 9999,
-    willChange: state.isDragging ? 'transform' : 'auto'
-  }
-}, [state.isFullscreen, state.isMinimized, state.position, state.isDragging])
+    willChange: state.isDragging ? 'transform' : 'auto',
+  };
+}, [state.isFullscreen, state.isMinimized, state.position, state.isDragging]);
 ```
 
 #### 步骤1.3.3：节流和防抖
 
 ```typescript
-import { throttle, debounce } from 'lodash-es'
+import { throttle, debounce } from 'lodash-es';
 
 // 节流拖拽事件
 const throttledHandleMouseMove = useCallback(
   throttle((e: MouseEvent) => {
-    if (!state.isDragging || !dragStartPos.current) return
+    if (!state.isDragging || !dragStartPos.current) return;
 
-    const newX = e.clientX - dragStartPos.current.x
-    const newY = e.clientY - dragStartPos.current.y
+    const newX = e.clientX - dragStartPos.current.x;
+    const newY = e.clientY - dragStartPos.current.y;
 
-    const maxX = window.innerWidth - state.position.width
-    const maxY = window.innerHeight - state.position.height
+    const maxX = window.innerWidth - state.position.width;
+    const maxY = window.innerHeight - state.position.height;
 
     dispatch({
       type: 'SET_POSITION',
       payload: {
         ...state.position,
         x: Math.max(0, Math.min(newX, maxX)),
-        y: Math.max(0, Math.min(newY, maxY))
-      }
-    })
+        y: Math.max(0, Math.min(newY, maxY)),
+      },
+    });
   }, 16), // 60fps
   [state.isDragging, state.position]
-)
+);
 
 // 防抖resize事件
 const debouncedHandleResize = useCallback(
@@ -533,7 +554,7 @@ const debouncedHandleResize = useCallback(
     // 处理resize逻辑
   }, 200),
   []
-)
+);
 ```
 
 安装依赖：
@@ -601,7 +622,7 @@ const nextConfig = {
       },
     ],
   },
-}
+};
 ```
 
 **验收标准**：
@@ -625,14 +646,14 @@ const nextConfig = {
 优化文件：`/lib/database.ts`
 
 ```typescript
-import { Pool, PoolConfig, QueryResult, QueryResultRow } from 'pg'
-import { env } from './env'
+import { Pool, PoolConfig, QueryResult, QueryResultRow } from 'pg';
+import { env } from './env';
 
-const DB_PORT = 5432
-const DB_CONNECTION_LIMIT = 20
-const DB_IDLE_TIMEOUT = 30000
-const DB_MAX_LIFETIME = 600000
-const DB_SSL = env.DB_SSL === 'true'
+const DB_PORT = 5432;
+const DB_CONNECTION_LIMIT = 20;
+const DB_IDLE_TIMEOUT = 30000;
+const DB_MAX_LIFETIME = 600000;
+const DB_SSL = env.DB_SSL === 'true';
 
 const dbConfig: PoolConfig = {
   host: env.DB_HOST,
@@ -645,49 +666,47 @@ const dbConfig: PoolConfig = {
   maxLifetime: DB_MAX_LIFETIME,
   connectionTimeoutMillis: 5000,
   ssl: DB_SSL ? { rejectUnauthorized: false } : false,
-}
+};
 
-let pool: Pool | null = null
+let pool: Pool | null = null;
 
 export async function getPool(): Promise<Pool> {
   if (!pool) {
-    pool = new Pool(dbConfig)
-    
+    pool = new Pool(dbConfig);
+
     pool.on('error', (err) => {
-      console.error('Unexpected error on idle client', err)
-      process.exit(-1)
-    })
+      console.error('Unexpected error on idle client', err);
+      process.exit(-1);
+    });
   }
-  return pool
+  return pool;
 }
 
 export async function query<T extends QueryResultRow = Record<string, unknown>>(
   sql: string,
   params?: Array<string | number | boolean | null>
 ): Promise<T[]> {
-  const client = await getPool().connect()
+  const client = await getPool().connect();
   try {
-    const result: QueryResult<T> = await client.query<T>(sql, params)
-    return result.rows
+    const result: QueryResult<T> = await client.query<T>(sql, params);
+    return result.rows;
   } finally {
-    client.release()
+    client.release();
   }
 }
 
-export async function transaction<T>(
-  callback: (client: PoolClient) => Promise<T>
-): Promise<T> {
-  const client = await getPool().connect()
+export async function transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  const client = await getPool().connect();
   try {
-    await client.query('BEGIN')
-    const result = await callback(client)
-    await client.query('COMMIT')
-    return result
+    await client.query('BEGIN');
+    const result = await callback(client);
+    await client.query('COMMIT');
+    return result;
   } catch (error) {
-    await client.query('ROLLBACK')
-    throw error
+    await client.query('ROLLBACK');
+    throw error;
   } finally {
-    client.release()
+    client.release();
   }
 }
 ```
@@ -697,30 +716,30 @@ export async function transaction<T>(
 创建文件：`/lib/database-monitor.ts`
 
 ```typescript
-import { getPool } from './database'
+import { getPool } from './database';
 
 export function getPoolStats() {
-  const pool = getPool()
+  const pool = getPool();
   return {
     totalCount: pool.totalCount,
     idleCount: pool.idleCount,
     waitingCount: pool.waitingCount,
-  }
+  };
 }
 
 export function logPoolStats() {
-  const stats = getPoolStats()
+  const stats = getPoolStats();
   console.log('[Database Pool Stats]', {
     total: stats.totalCount,
     idle: stats.idleCount,
     waiting: stats.waitingCount,
     active: stats.totalCount - stats.idleCount,
-  })
+  });
 }
 
 export async function closePool() {
-  const pool = getPool()
-  await pool.end()
+  const pool = getPool();
+  await pool.end();
 }
 ```
 
@@ -772,7 +791,7 @@ CREATE INDEX IF NOT EXISTS idx_workflows_created_at ON workflows(created_at DESC
 创建文件：`/lib/queries.ts`
 
 ```typescript
-import { query } from './database'
+import { query } from './database';
 
 export const queries = {
   // 获取用户消息（分页）
@@ -783,8 +802,8 @@ export const queries = {
       WHERE user_id = $1
       ORDER BY created_at DESC
       LIMIT $2 OFFSET $3
-    `
-    return query(sql, [userId, limit, offset])
+    `;
+    return query(sql, [userId, limit, offset]);
   },
 
   // 获取用户统计信息
@@ -797,8 +816,8 @@ export const queries = {
         MAX(created_at) as last_activity
       FROM messages
       WHERE user_id = $1
-    `
-    return query(sql, [userId])
+    `;
+    return query(sql, [userId]);
   },
 
   // 获取活跃工具
@@ -808,8 +827,8 @@ export const queries = {
       FROM tools
       WHERE enabled = true
       ORDER BY category, name
-    `
-    return query(sql)
+    `;
+    return query(sql);
   },
 
   // 获取用户工作流
@@ -818,19 +837,19 @@ export const queries = {
       SELECT id, name, status, created_at, updated_at
       FROM workflows
       WHERE user_id = $1
-    `
-    const params: any[] = [userId]
-    
+    `;
+    const params: any[] = [userId];
+
     if (status) {
-      sql += ` AND status = $2`
-      params.push(status)
+      sql += ` AND status = $2`;
+      params.push(status);
     }
-    
-    sql += ` ORDER BY created_at DESC`
-    
-    return query(sql, params)
+
+    sql += ` ORDER BY created_at DESC`;
+
+    return query(sql, params);
   },
-}
+};
 ```
 
 #### 步骤2.2.3：使用查询缓存
@@ -838,31 +857,28 @@ export const queries = {
 创建文件：`/lib/query-cache.ts`
 
 ```typescript
-import { LRUCache } from 'lru-cache'
+import { LRUCache } from 'lru-cache';
 
 const queryCache = new LRUCache<string, any>({
   max: 500,
   ttl: 1000 * 60 * 5, // 5分钟
-})
+});
 
-export async function cachedQuery<T>(
-  key: string,
-  queryFn: () => Promise<T>
-): Promise<T> {
-  const cached = queryCache.get(key)
+export async function cachedQuery<T>(key: string, queryFn: () => Promise<T>): Promise<T> {
+  const cached = queryCache.get(key);
   if (cached) {
-    return cached as T
+    return cached as T;
   }
 
-  const result = await queryFn()
-  queryCache.set(key, result)
-  return result
+  const result = await queryFn();
+  queryCache.set(key, result);
+  return result;
 }
 
 export function invalidateCache(pattern: string) {
   for (const key of queryCache.keys()) {
     if (key.includes(pattern)) {
-      queryCache.delete(key)
+      queryCache.delete(key);
     }
   }
 }
@@ -925,21 +941,21 @@ L4: 远程缓存 (CDN)
 创建文件：`/lib/cache-manager.ts`
 
 ```typescript
-import { LRUCache } from 'lru-cache'
-import { Redis } from 'ioredis'
+import { LRUCache } from 'lru-cache';
+import { Redis } from 'ioredis';
 
 interface CacheConfig {
-  l1Size?: number
-  l1TTL?: number
-  l2TTL?: number
-  l3TTL?: number
-  l4TTL?: number
+  l1Size?: number;
+  l1TTL?: number;
+  l2TTL?: number;
+  l3TTL?: number;
+  l4TTL?: number;
 }
 
 export class CacheManager {
-  private l1Cache: LRUCache<string, any>
-  private l2Cache: Redis | null = null
-  private config: Required<CacheConfig>
+  private l1Cache: LRUCache<string, any>;
+  private l2Cache: Redis | null = null;
+  private config: Required<CacheConfig>;
 
   constructor(config: CacheConfig = {}) {
     this.config = {
@@ -948,67 +964,67 @@ export class CacheManager {
       l2TTL: config.l2TTL || 300000,
       l3TTL: config.l3TTL || 3600000,
       l4TTL: config.l4TTL || 86400000,
-    }
+    };
 
     this.l1Cache = new LRUCache({
       max: this.config.l1Size,
       ttl: this.config.l1TTL,
-    })
+    });
 
     if (process.env.REDIS_URL) {
-      this.l2Cache = new Redis(process.env.REDIS_URL)
+      this.l2Cache = new Redis(process.env.REDIS_URL);
     }
   }
 
   async get<T>(key: string): Promise<T | null> {
     // L1缓存
-    const l1Value = this.l1Cache.get(key)
+    const l1Value = this.l1Cache.get(key);
     if (l1Value !== undefined) {
-      return l1Value as T
+      return l1Value as T;
     }
 
     // L2缓存
     if (this.l2Cache) {
-      const l2Value = await this.l2Cache.get(key)
+      const l2Value = await this.l2Cache.get(key);
       if (l2Value !== null) {
-        const parsed = JSON.parse(l2Value)
-        this.l1Cache.set(key, parsed)
-        return parsed as T
+        const parsed = JSON.parse(l2Value);
+        this.l1Cache.set(key, parsed);
+        return parsed as T;
       }
     }
 
-    return null
+    return null;
   }
 
   async set(key: string, value: any, ttl?: number): Promise<void> {
-    const effectiveTTL = ttl || this.config.l1TTL
+    const effectiveTTL = ttl || this.config.l1TTL;
 
     // L1缓存
-    this.l1Cache.set(key, value, { ttl: effectiveTTL })
+    this.l1Cache.set(key, value, { ttl: effectiveTTL });
 
     // L2缓存
     if (this.l2Cache) {
-      await this.l2Cache.setex(key, Math.floor(effectiveTTL / 1000), JSON.stringify(value))
+      await this.l2Cache.setex(key, Math.floor(effectiveTTL / 1000), JSON.stringify(value));
     }
   }
 
   async delete(key: string): Promise<void> {
     // L1缓存
-    this.l1Cache.delete(key)
+    this.l1Cache.delete(key);
 
     // L2缓存
     if (this.l2Cache) {
-      await this.l2Cache.del(key)
+      await this.l2Cache.del(key);
     }
   }
 
   async clear(): Promise<void> {
     // L1缓存
-    this.l1Cache.clear()
+    this.l1Cache.clear();
 
     // L2缓存
     if (this.l2Cache) {
-      await this.l2Cache.flushdb()
+      await this.l2Cache.flushdb();
     }
   }
 
@@ -1020,11 +1036,11 @@ export class CacheManager {
         max: this.l1Cache.max,
       },
       l2: this.l2Cache ? 'connected' : 'disconnected',
-    }
+    };
   }
 }
 
-export const cacheManager = new CacheManager()
+export const cacheManager = new CacheManager();
 ```
 
 安装依赖：
@@ -1055,11 +1071,11 @@ pnpm add -D @types/ioredis
 创建文件：`/jest.config.js`
 
 ```javascript
-const nextJest = require('next/jest')
+const nextJest = require('next/jest');
 
 const createJestConfig = nextJest({
   dir: './',
-})
+});
 
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
@@ -1081,15 +1097,15 @@ const customJestConfig = {
       statements: 80,
     },
   },
-}
+};
 
-module.exports = createJestConfig(customJestConfig)
+module.exports = createJestConfig(customJestConfig);
 ```
 
 创建文件：`/jest.setup.js`
 
 ```javascript
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 ```
 
 #### 步骤4.1.2：编写组件测试
@@ -1179,56 +1195,56 @@ describe('IntelligentAIWidget', () => {
 创建文件：`/lib/__tests__/database.test.ts`
 
 ```typescript
-import { query, transaction } from '../database'
-import { getPool } from '../database'
+import { query, transaction } from '../database';
+import { getPool } from '../database';
 
-jest.mock('../database')
+jest.mock('../database');
 
 describe('Database', () => {
   beforeEach(() => {
-    jest.clearAllMocks()
-  })
+    jest.clearAllMocks();
+  });
 
   describe('query', () => {
     it('应该成功执行查询', async () => {
-      const mockResult = [{ id: 1, name: 'test' }]
-      ;(query as jest.Mock).mockResolvedValue(mockResult)
+      const mockResult = [{ id: 1, name: 'test' }];
+      (query as jest.Mock).mockResolvedValue(mockResult);
 
-      const result = await query('SELECT * FROM test')
-      expect(result).toEqual(mockResult)
-    })
+      const result = await query('SELECT * FROM test');
+      expect(result).toEqual(mockResult);
+    });
 
     it('应该正确处理参数', async () => {
-      const mockResult = [{ id: 1, name: 'test' }]
-      ;(query as jest.Mock).mockResolvedValue(mockResult)
+      const mockResult = [{ id: 1, name: 'test' }];
+      (query as jest.Mock).mockResolvedValue(mockResult);
 
-      await query('SELECT * FROM test WHERE id = $1', [1])
-      expect(query).toHaveBeenCalledWith('SELECT * FROM test WHERE id = $1', [1])
-    })
-  })
+      await query('SELECT * FROM test WHERE id = $1', [1]);
+      expect(query).toHaveBeenCalledWith('SELECT * FROM test WHERE id = $1', [1]);
+    });
+  });
 
   describe('transaction', () => {
     it('应该成功执行事务', async () => {
-      const mockResult = { success: true }
-      ;(transaction as jest.Mock).mockResolvedValue(mockResult)
+      const mockResult = { success: true };
+      (transaction as jest.Mock).mockResolvedValue(mockResult);
 
       const result = await transaction(async (client) => {
-        return { success: true }
-      })
-      expect(result).toEqual(mockResult)
-    })
+        return { success: true };
+      });
+      expect(result).toEqual(mockResult);
+    });
 
     it('应该在失败时回滚', async () => {
-      ;(transaction as jest.Mock).mockRejectedValue(new Error('Transaction failed'))
+      (transaction as jest.Mock).mockRejectedValue(new Error('Transaction failed'));
 
       await expect(
         transaction(async (client) => {
-          throw new Error('Transaction failed')
+          throw new Error('Transaction failed');
         })
-      ).rejects.toThrow('Transaction failed')
-    })
-  })
-})
+      ).rejects.toThrow('Transaction failed');
+    });
+  });
+});
 ```
 
 **验收标准**：
@@ -1250,7 +1266,7 @@ describe('Database', () => {
 创建文件：`/playwright.config.ts`
 
 ```typescript
-import { defineConfig, devices } from '@playwright/test'
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
@@ -1282,7 +1298,7 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
-})
+});
 ```
 
 #### 步骤4.2.2：编写集成测试
@@ -1290,55 +1306,55 @@ export default defineConfig({
 创建文件：`/e2e/intelligent-ai-widget.spec.ts`
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
 test.describe('IntelligentAIWidget Integration', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/')
-  })
+    await page.goto('/');
+  });
 
   test('应该能够打开AI助手', async ({ page }) => {
-    const widgetButton = page.getByRole('button', { name: 'AI助手' })
-    await widgetButton.click()
+    const widgetButton = page.getByRole('button', { name: 'AI助手' });
+    await widgetButton.click();
 
-    await expect(page.getByText('AI助手')).toBeVisible()
-  })
+    await expect(page.getByText('AI助手')).toBeVisible();
+  });
 
   test('应该能够发送和接收消息', async ({ page }) => {
-    const widgetButton = page.getByRole('button', { name: 'AI助手' })
-    await widgetButton.click()
+    const widgetButton = page.getByRole('button', { name: 'AI助手' });
+    await widgetButton.click();
 
-    const input = page.getByPlaceholderText('输入消息...')
-    const sendButton = page.getByRole('button', { name: '发送' })
+    const input = page.getByPlaceholderText('输入消息...');
+    const sendButton = page.getByRole('button', { name: '发送' });
 
-    await input.fill('测试消息')
-    await sendButton.click()
+    await input.fill('测试消息');
+    await sendButton.click();
 
-    await expect(page.getByText('测试消息')).toBeVisible()
+    await expect(page.getByText('测试消息')).toBeVisible();
 
-    await expect(page.getByText(/AI响应/)).toBeVisible({ timeout: 5000 })
-  })
+    await expect(page.getByText(/AI响应/)).toBeVisible({ timeout: 5000 });
+  });
 
   test('应该能够切换到工具视图', async ({ page }) => {
-    const widgetButton = page.getByRole('button', { name: 'AI助手' })
-    await widgetButton.click()
+    const widgetButton = page.getByRole('button', { name: 'AI助手' });
+    await widgetButton.click();
 
-    const toolsTab = page.getByRole('tab', { name: '工具' })
-    await toolsTab.click()
+    const toolsTab = page.getByRole('tab', { name: '工具' });
+    await toolsTab.click();
 
-    await expect(page.getByText('可用工具')).toBeVisible()
-  })
+    await expect(page.getByText('可用工具')).toBeVisible();
+  });
 
   test('应该能够切换到洞察视图', async ({ page }) => {
-    const widgetButton = page.getByRole('button', { name: 'AI助手' })
-    await widgetButton.click()
+    const widgetButton = page.getByRole('button', { name: 'AI助手' });
+    await widgetButton.click();
 
-    const insightsTab = page.getByRole('tab', { name: '洞察' })
-    await insightsTab.click()
+    const insightsTab = page.getByRole('tab', { name: '洞察' });
+    await insightsTab.click();
 
-    await expect(page.getByText('学习洞察')).toBeVisible()
-  })
-})
+    await expect(page.getByText('学习洞察')).toBeVisible();
+  });
+});
 ```
 
 安装依赖：
@@ -1366,60 +1382,60 @@ pnpm add -D @playwright/test
 创建文件：`/e2e/user-journey.spec.ts`
 
 ```typescript
-import { test, expect } from '@playwright/test'
+import { test, expect } from '@playwright/test';
 
 test.describe('User Journey', () => {
   test('完整用户学习流程', async ({ page }) => {
     // 1. 用户登录
-    await page.goto('/login')
-    await page.getByLabel('邮箱').fill('test@example.com')
-    await page.getByLabel('密码').fill('password123')
-    await page.getByRole('button', { name: '登录' }).click()
+    await page.goto('/login');
+    await page.getByLabel('邮箱').fill('test@example.com');
+    await page.getByLabel('密码').fill('password123');
+    await page.getByRole('button', { name: '登录' }).click();
 
     // 2. 打开AI助手
-    await page.getByRole('button', { name: 'AI助手' }).click()
-    await expect(page.getByText('AI助手')).toBeVisible()
+    await page.getByRole('button', { name: 'AI助手' }).click();
+    await expect(page.getByText('AI助手')).toBeVisible();
 
     // 3. 发送学习问题
-    const input = page.getByPlaceholderText('输入消息...')
-    await input.fill('如何学习React？')
-    await page.getByRole('button', { name: '发送' }).click()
+    const input = page.getByPlaceholderText('输入消息...');
+    await input.fill('如何学习React？');
+    await page.getByRole('button', { name: '发送' }).click();
 
     // 4. 等待AI响应
-    await expect(page.getByText(/React/)).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText(/React/)).toBeVisible({ timeout: 10000 });
 
     // 5. 查看学习洞察
-    const insightsTab = page.getByRole('tab', { name: '洞察' })
-    await insightsTab.click()
-    await expect(page.getByText('学习洞察')).toBeVisible()
+    const insightsTab = page.getByRole('tab', { name: '洞察' });
+    await insightsTab.click();
+    await expect(page.getByText('学习洞察')).toBeVisible();
 
     // 6. 使用学习工具
-    const toolsTab = page.getByRole('tab', { name: '工具' })
-    await toolsTab.click()
-    await expect(page.getByText('可用工具')).toBeVisible()
+    const toolsTab = page.getByRole('tab', { name: '工具' });
+    await toolsTab.click();
+    await expect(page.getByText('可用工具')).toBeVisible();
 
     // 7. 创建学习工作流
-    const toolCard = page.getByText('学习计划生成器').first()
-    await toolCard.click()
-    await expect(page.getByText('创建学习计划')).toBeVisible()
-  })
+    const toolCard = page.getByText('学习计划生成器').first();
+    await toolCard.click();
+    await expect(page.getByText('创建学习计划')).toBeVisible();
+  });
 
   test('用户个性化设置流程', async ({ page }) => {
-    await page.goto('/login')
-    await page.getByLabel('邮箱').fill('test@example.com')
-    await page.getByLabel('密码').fill('password123')
-    await page.getByRole('button', { name: '登录' }).click()
+    await page.goto('/login');
+    await page.getByLabel('邮箱').fill('test@example.com');
+    await page.getByLabel('密码').fill('password123');
+    await page.getByRole('button', { name: '登录' }).click();
 
-    await page.goto('/settings')
-    await page.getByRole('button', { name: '编辑资料' }).click()
+    await page.goto('/settings');
+    await page.getByRole('button', { name: '编辑资料' }).click();
 
-    await page.getByLabel('昵称').fill('测试用户')
-    await page.getByLabel('学习偏好').selectOption('视觉学习')
-    await page.getByRole('button', { name: '保存' }).click()
+    await page.getByLabel('昵称').fill('测试用户');
+    await page.getByLabel('学习偏好').selectOption('视觉学习');
+    await page.getByRole('button', { name: '保存' }).click();
 
-    await expect(page.getByText('保存成功')).toBeVisible()
-  })
-})
+    await expect(page.getByText('保存成功')).toBeVisible();
+  });
+});
 ```
 
 **验收标准**：
@@ -1444,13 +1460,13 @@ test.describe('User Journey', () => {
 
 ```typescript
 interface DegradationLevel {
-  level: 'normal' | 'degraded' | 'minimal'
+  level: 'normal' | 'degraded' | 'minimal';
   features: {
-    aiChat: boolean
-    insights: boolean
-    tools: boolean
-    workflows: boolean
-  }
+    aiChat: boolean;
+    insights: boolean;
+    tools: boolean;
+    workflows: boolean;
+  };
 }
 
 export class DegradationManager {
@@ -1461,8 +1477,8 @@ export class DegradationManager {
       insights: true,
       tools: true,
       workflows: true,
-    }
-  }
+    },
+  };
 
   setLevel(level: DegradationLevel['level']) {
     switch (level) {
@@ -1474,9 +1490,9 @@ export class DegradationManager {
             insights: true,
             tools: true,
             workflows: true,
-          }
-        }
-        break
+          },
+        };
+        break;
       case 'degraded':
         this.currentLevel = {
           level: 'degraded',
@@ -1485,9 +1501,9 @@ export class DegradationManager {
             insights: false,
             tools: true,
             workflows: false,
-          }
-        }
-        break
+          },
+        };
+        break;
       case 'minimal':
         this.currentLevel = {
           level: 'minimal',
@@ -1496,18 +1512,18 @@ export class DegradationManager {
             insights: false,
             tools: false,
             workflows: false,
-          }
-        }
-        break
+          },
+        };
+        break;
     }
   }
 
   isFeatureEnabled(feature: keyof DegradationLevel['features']): boolean {
-    return this.currentLevel.features[feature]
+    return this.currentLevel.features[feature];
   }
 }
 
-export const degradationManager = new DegradationManager()
+export const degradationManager = new DegradationManager();
 ```
 
 #### 步骤5.1.2：实现重试机制
@@ -1516,43 +1532,35 @@ export const degradationManager = new DegradationManager()
 
 ```typescript
 interface RetryOptions {
-  maxAttempts?: number
-  delay?: number
-  backoff?: boolean
-  onRetry?: (attempt: number, error: Error) => void
+  maxAttempts?: number;
+  delay?: number;
+  backoff?: boolean;
+  onRetry?: (attempt: number, error: Error) => void;
 }
 
-export async function retry<T>(
-  fn: () => Promise<T>,
-  options: RetryOptions = {}
-): Promise<T> {
-  const {
-    maxAttempts = 3,
-    delay = 1000,
-    backoff = true,
-    onRetry
-  } = options
+export async function retry<T>(fn: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
+  const { maxAttempts = 3, delay = 1000, backoff = true, onRetry } = options;
 
-  let lastError: Error
+  let lastError: Error;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      return await fn()
+      return await fn();
     } catch (error) {
-      lastError = error as Error
+      lastError = error as Error;
 
       if (attempt < maxAttempts) {
-        const waitTime = backoff ? delay * attempt : delay
-        await new Promise(resolve => setTimeout(resolve, waitTime))
+        const waitTime = backoff ? delay * attempt : delay;
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
 
         if (onRetry) {
-          onRetry(attempt, lastError)
+          onRetry(attempt, lastError);
         }
       }
     }
   }
 
-  throw lastError!
+  throw lastError!;
 }
 ```
 
@@ -1562,60 +1570,60 @@ export async function retry<T>(
 
 ```typescript
 interface CircuitBreakerOptions {
-  threshold?: number
-  timeout?: number
-  resetTimeout?: number
+  threshold?: number;
+  timeout?: number;
+  resetTimeout?: number;
 }
 
 export class CircuitBreaker {
-  private failures = 0
-  private lastFailureTime: number | null = null
-  private state: 'closed' | 'open' | 'half-open' = 'closed'
+  private failures = 0;
+  private lastFailureTime: number | null = null;
+  private state: 'closed' | 'open' | 'half-open' = 'closed';
 
   constructor(private options: CircuitBreakerOptions = {}) {
     this.options = {
       threshold: options.threshold || 5,
       timeout: options.timeout || 60000,
       resetTimeout: options.resetTimeout || 30000,
-    }
+    };
   }
 
   async execute<T>(fn: () => Promise<T>): Promise<T> {
     if (this.state === 'open') {
       if (this.shouldAttemptReset()) {
-        this.state = 'half-open'
+        this.state = 'half-open';
       } else {
-        throw new Error('Circuit breaker is open')
+        throw new Error('Circuit breaker is open');
       }
     }
 
     try {
-      const result = await fn()
-      this.onSuccess()
-      return result
+      const result = await fn();
+      this.onSuccess();
+      return result;
     } catch (error) {
-      this.onFailure()
-      throw error
+      this.onFailure();
+      throw error;
     }
   }
 
   private onSuccess() {
-    this.failures = 0
-    this.state = 'closed'
+    this.failures = 0;
+    this.state = 'closed';
   }
 
   private onFailure() {
-    this.failures++
-    this.lastFailureTime = Date.now()
+    this.failures++;
+    this.lastFailureTime = Date.now();
 
     if (this.failures >= this.options.threshold!) {
-      this.state = 'open'
+      this.state = 'open';
     }
   }
 
   private shouldAttemptReset(): boolean {
-    if (!this.lastFailureTime) return false
-    return Date.now() - this.lastFailureTime > this.options.resetTimeout!
+    if (!this.lastFailureTime) return false;
+    return Date.now() - this.lastFailureTime > this.options.resetTimeout!;
   }
 }
 ```
@@ -1640,9 +1648,9 @@ export class CircuitBreaker {
 创建文件：`/app/api/health/route.ts`
 
 ```typescript
-import { NextResponse } from 'next/server'
-import { getPoolStats } from '@/lib/database-monitor'
-import { cacheManager } from '@/lib/cache-manager'
+import { NextResponse } from 'next/server';
+import { getPoolStats } from '@/lib/database-monitor';
+import { cacheManager } from '@/lib/cache-manager';
 
 export async function GET() {
   const health = {
@@ -1657,43 +1665,43 @@ export async function GET() {
       database: getPoolStats(),
       cache: cacheManager.getStats(),
     },
-  }
+  };
 
-  const isHealthy = Object.values(health.services).every(s => s.status === 'healthy')
+  const isHealthy = Object.values(health.services).every((s) => s.status === 'healthy');
 
   return NextResponse.json(health, {
     status: isHealthy ? 200 : 503,
-  })
+  });
 }
 
 async function checkDatabase() {
   try {
-    const { query } = await import('@/lib/database')
-    await query('SELECT 1')
-    return { status: 'healthy', latency: Date.now() }
+    const { query } = await import('@/lib/database');
+    await query('SELECT 1');
+    return { status: 'healthy', latency: Date.now() };
   } catch (error) {
-    return { status: 'unhealthy', error: String(error) }
+    return { status: 'unhealthy', error: String(error) };
   }
 }
 
 async function checkCache() {
   try {
-    await cacheManager.set('health-check', 'ok', 1000)
-    const value = await cacheManager.get('health-check')
-    return { status: value === 'ok' ? 'healthy' : 'unhealthy' }
+    await cacheManager.set('health-check', 'ok', 1000);
+    const value = await cacheManager.get('health-check');
+    return { status: value === 'ok' ? 'healthy' : 'unhealthy' };
   } catch (error) {
-    return { status: 'unhealthy', error: String(error) }
+    return { status: 'unhealthy', error: String(error) };
   }
 }
 
 async function checkRedis() {
   try {
-    const redis = cacheManager['l2Cache']
-    if (!redis) return { status: 'disabled' }
-    await redis.ping()
-    return { status: 'healthy' }
+    const redis = cacheManager['l2Cache'];
+    if (!redis) return { status: 'disabled' };
+    await redis.ping();
+    return { status: 'healthy' };
   } catch (error) {
-    return { status: 'unhealthy', error: String(error) }
+    return { status: 'unhealthy', error: String(error) };
   }
 }
 ```
@@ -1831,46 +1839,46 @@ export default function MonitoringDashboard() {
 创建文件：`/lib/encryption.ts`
 
 ```typescript
-import crypto from 'crypto'
+import crypto from 'crypto';
 
-const ALGORITHM = 'aes-256-gcm'
-const KEY_LENGTH = 32
-const IV_LENGTH = 16
-const SALT_LENGTH = 64
-const TAG_LENGTH = 16
-const TAG_POSITION = SALT_LENGTH + IV_LENGTH
-const ENCRYPTED_POSITION = TAG_POSITION + TAG_LENGTH
+const ALGORITHM = 'aes-256-gcm';
+const KEY_LENGTH = 32;
+const IV_LENGTH = 16;
+const SALT_LENGTH = 64;
+const TAG_LENGTH = 16;
+const TAG_POSITION = SALT_LENGTH + IV_LENGTH;
+const ENCRYPTED_POSITION = TAG_POSITION + TAG_LENGTH;
 
 export function encrypt(text: string, password: string): string {
-  const salt = crypto.randomBytes(SALT_LENGTH)
-  const key = crypto.pbkdf2Sync(password, salt, 100000, KEY_LENGTH, 'sha512')
-  const iv = crypto.randomBytes(IV_LENGTH)
-  const cipher = crypto.createCipheriv(ALGORITHM, key, iv)
+  const salt = crypto.randomBytes(SALT_LENGTH);
+  const key = crypto.pbkdf2Sync(password, salt, 100000, KEY_LENGTH, 'sha512');
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
-  let encrypted = cipher.update(text, 'utf8', 'hex')
-  encrypted += cipher.final('hex')
+  let encrypted = cipher.update(text, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
 
-  const tag = cipher.getAuthTag()
+  const tag = cipher.getAuthTag();
 
-  return Buffer.concat([salt, iv, tag, Buffer.from(encrypted, 'hex')]).toString('base64')
+  return Buffer.concat([salt, iv, tag, Buffer.from(encrypted, 'hex')]).toString('base64');
 }
 
 export function decrypt(encryptedData: string, password: string): string {
-  const buffer = Buffer.from(encryptedData, 'base64')
+  const buffer = Buffer.from(encryptedData, 'base64');
 
-  const salt = buffer.subarray(0, SALT_LENGTH)
-  const iv = buffer.subarray(SALT_LENGTH, TAG_POSITION)
-  const tag = buffer.subarray(TAG_POSITION, ENCRYPTED_POSITION)
-  const encrypted = buffer.subarray(ENCRYPTED_POSITION)
+  const salt = buffer.subarray(0, SALT_LENGTH);
+  const iv = buffer.subarray(SALT_LENGTH, TAG_POSITION);
+  const tag = buffer.subarray(TAG_POSITION, ENCRYPTED_POSITION);
+  const encrypted = buffer.subarray(ENCRYPTED_POSITION);
 
-  const key = crypto.pbkdf2Sync(password, salt, 100000, KEY_LENGTH, 'sha512')
-  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv)
-  decipher.setAuthTag(tag)
+  const key = crypto.pbkdf2Sync(password, salt, 100000, KEY_LENGTH, 'sha512');
+  const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
+  decipher.setAuthTag(tag);
 
-  let decrypted = decipher.update(encrypted)
-  decrypted = Buffer.concat([decrypted, decipher.final()])
+  let decrypted = decipher.update(encrypted);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
 
-  return decrypted.toString('utf8')
+  return decrypted.toString('utf8');
 }
 ```
 
@@ -1880,43 +1888,43 @@ export function decrypt(encryptedData: string, password: string): string {
 
 ```typescript
 export function maskEmail(email: string): string {
-  const [username, domain] = email.split('@')
+  const [username, domain] = email.split('@');
   if (username.length <= 2) {
-    return `${username[0]}***@${domain}`
+    return `${username[0]}***@${domain}`;
   }
-  return `${username.slice(0, 2)}***@${domain}`
+  return `${username.slice(0, 2)}***@${domain}`;
 }
 
 export function maskPhone(phone: string): string {
-  if (phone.length < 7) return phone
-  return phone.slice(0, 3) + '****' + phone.slice(-4)
+  if (phone.length < 7) return phone;
+  return phone.slice(0, 3) + '****' + phone.slice(-4);
 }
 
 export function maskId(id: string): string {
-  if (id.length <= 4) return id
-  return id.slice(0, 2) + '****' + id.slice(-2)
+  if (id.length <= 4) return id;
+  return id.slice(0, 2) + '****' + id.slice(-2);
 }
 
 export function maskData(data: any, sensitiveFields: string[]): any {
-  if (typeof data !== 'object' || data === null) return data
+  if (typeof data !== 'object' || data === null) return data;
 
-  const masked = { ...data }
+  const masked = { ...data };
 
   for (const field of sensitiveFields) {
     if (field in masked) {
       if (field.includes('email')) {
-        masked[field] = maskEmail(masked[field])
+        masked[field] = maskEmail(masked[field]);
       } else if (field.includes('phone')) {
-        masked[field] = maskPhone(masked[field])
+        masked[field] = maskPhone(masked[field]);
       } else if (field.includes('id')) {
-        masked[field] = maskId(masked[field])
+        masked[field] = maskId(masked[field]);
       } else {
-        masked[field] = '****'
+        masked[field] = '****';
       }
     }
   }
 
-  return masked
+  return masked;
 }
 ```
 
@@ -1940,36 +1948,36 @@ export function maskData(data: any, sensitiveFields: string[]): any {
 创建文件：`/lib/rate-limit.ts`
 
 ```typescript
-import { LRUCache } from 'lru-cache'
+import { LRUCache } from 'lru-cache';
 
 interface RateLimitOptions {
-  windowMs?: number
-  maxRequests?: number
+  windowMs?: number;
+  maxRequests?: number;
 }
 
 export class RateLimiter {
-  private cache: LRUCache<string, { count: number; resetTime: number }>
-  private windowMs: number
-  private maxRequests: number
+  private cache: LRUCache<string, { count: number; resetTime: number }>;
+  private windowMs: number;
+  private maxRequests: number;
 
   constructor(options: RateLimitOptions = {}) {
-    this.windowMs = options.windowMs || 60000 // 1分钟
-    this.maxRequests = options.maxRequests || 100
+    this.windowMs = options.windowMs || 60000; // 1分钟
+    this.maxRequests = options.maxRequests || 100;
 
     this.cache = new LRUCache({
       max: 10000,
       ttl: this.windowMs,
-    })
+    });
   }
 
   check(identifier: string): { allowed: boolean; remaining: number; resetTime: number } {
-    const now = Date.now()
-    const record = this.cache.get(identifier)
+    const now = Date.now();
+    const record = this.cache.get(identifier);
 
     if (!record || now > record.resetTime) {
-      const resetTime = now + this.windowMs
-      this.cache.set(identifier, { count: 1, resetTime })
-      return { allowed: true, remaining: this.maxRequests - 1, resetTime }
+      const resetTime = now + this.windowMs;
+      this.cache.set(identifier, { count: 1, resetTime });
+      return { allowed: true, remaining: this.maxRequests - 1, resetTime };
     }
 
     if (record.count >= this.maxRequests) {
@@ -1977,29 +1985,29 @@ export class RateLimiter {
         allowed: false,
         remaining: 0,
         resetTime: record.resetTime,
-      }
+      };
     }
 
-    record.count++
-    this.cache.set(identifier, record)
+    record.count++;
+    this.cache.set(identifier, record);
 
     return {
       allowed: true,
       remaining: this.maxRequests - record.count,
       resetTime: record.resetTime,
-    }
+    };
   }
 }
 
 export const apiRateLimiter = new RateLimiter({
   windowMs: 60000,
   maxRequests: 100,
-})
+});
 
 export const authRateLimiter = new RateLimiter({
   windowMs: 900000, // 15分钟
   maxRequests: 5,
-})
+});
 ```
 
 #### 步骤6.2.2：实现API中间件
@@ -2007,17 +2015,17 @@ export const authRateLimiter = new RateLimiter({
 创建文件：`/lib/api-middleware.ts`
 
 ```typescript
-import { NextRequest, NextResponse } from 'next/server'
-import { apiRateLimiter, authRateLimiter } from './rate-limit'
+import { NextRequest, NextResponse } from 'next/server';
+import { apiRateLimiter, authRateLimiter } from './rate-limit';
 
 export async function rateLimitMiddleware(
   request: NextRequest,
   type: 'api' | 'auth' = 'api'
 ): Promise<NextResponse | null> {
-  const identifier = request.ip || request.headers.get('x-forwarded-for') || 'unknown'
-  const limiter = type === 'auth' ? authRateLimiter : apiRateLimiter
+  const identifier = request.ip || request.headers.get('x-forwarded-for') || 'unknown';
+  const limiter = type === 'auth' ? authRateLimiter : apiRateLimiter;
 
-  const result = limiter.check(identifier)
+  const result = limiter.check(identifier);
 
   if (!result.allowed) {
     return NextResponse.json(
@@ -2034,31 +2042,29 @@ export async function rateLimitMiddleware(
           'Retry-After': Math.ceil((result.resetTime - Date.now()) / 1000).toString(),
         },
       }
-    )
+    );
   }
 
-  return null
+  return null;
 }
 
 export async function corsMiddleware(
   request: NextRequest,
   response: NextResponse
 ): Promise<NextResponse> {
-  response.headers.set('Access-Control-Allow-Origin', '*')
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  return response
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  return response;
 }
 
-export async function securityHeadersMiddleware(
-  response: NextResponse
-): Promise<NextResponse> {
-  response.headers.set('X-Content-Type-Options', 'nosniff')
-  response.headers.set('X-Frame-Options', 'DENY')
-  response.headers.set('X-XSS-Protection', '1; mode=block')
-  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
-  response.headers.set('Content-Security-Policy', "default-src 'self'")
-  return response
+export async function securityHeadersMiddleware(response: NextResponse): Promise<NextResponse> {
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  response.headers.set('Content-Security-Policy', "default-src 'self'");
+  return response;
 }
 ```
 
@@ -2088,89 +2094,89 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [18.x, 20.x]
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
-    
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-    
-    - name: Run linter
-      run: pnpm lint
-    
-    - name: Run type check
-      run: pnpm typecheck
-    
-    - name: Run unit tests
-      run: pnpm test:unit --coverage
-    
-    - name: Run integration tests
-      run: pnpm test:integration
-    
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
-      with:
-        files: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-umbrella
-    
-    - name: Build
-      run: pnpm build
-    
-    - name: Run E2E tests
-      run: pnpm test:e2e
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linter
+        run: pnpm lint
+
+      - name: Run type check
+        run: pnpm typecheck
+
+      - name: Run unit tests
+        run: pnpm test:unit --coverage
+
+      - name: Run integration tests
+        run: pnpm test:integration
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+      - name: Build
+        run: pnpm build
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
 
   deploy:
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v3
-      with:
-        node-version: 20.x
-        cache: 'pnpm'
-    
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
-    
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-    
-    - name: Build
-      run: pnpm build
-    
-    - name: Deploy to production
-      run: |
-        echo "Deploying to production..."
-        # 添加部署脚本
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production..."
+          # 添加部署脚本
 ```
 
 #### 步骤7.1.2：配置自动化测试
@@ -2219,44 +2225,44 @@ jobs:
 创建文件：`/lib/intelligent-cache.ts`
 
 ```typescript
-import { cacheManager } from './cache-manager'
+import { cacheManager } from './cache-manager';
 
 interface CachePattern {
-  key: string
-  frequency: number
-  lastAccess: number
-  size: number
+  key: string;
+  frequency: number;
+  lastAccess: number;
+  size: number;
 }
 
 export class IntelligentCacheManager {
-  private patterns: Map<string, CachePattern> = new Map()
-  private analysisInterval: NodeJS.Timeout | null = null
+  private patterns: Map<string, CachePattern> = new Map();
+  private analysisInterval: NodeJS.Timeout | null = null;
 
   constructor() {
-    this.startAnalysis()
+    this.startAnalysis();
   }
 
   async get<T>(key: string): Promise<T | null> {
-    const value = await cacheManager.get<T>(key)
-    
+    const value = await cacheManager.get<T>(key);
+
     if (value !== null) {
-      this.recordAccess(key)
+      this.recordAccess(key);
     }
-    
-    return value
+
+    return value;
   }
 
   async set(key: string, value: any, ttl?: number): Promise<void> {
-    await cacheManager.set(key, value, ttl)
-    this.recordPattern(key, value)
+    await cacheManager.set(key, value, ttl);
+    this.recordPattern(key, value);
   }
 
   private recordAccess(key: string): void {
-    const pattern = this.patterns.get(key)
+    const pattern = this.patterns.get(key);
     if (pattern) {
-      pattern.frequency++
-      pattern.lastAccess = Date.now()
-      this.patterns.set(key, pattern)
+      pattern.frequency++;
+      pattern.lastAccess = Date.now();
+      this.patterns.set(key, pattern);
     }
   }
 
@@ -2266,41 +2272,41 @@ export class IntelligentCacheManager {
       frequency: 1,
       lastAccess: Date.now(),
       size: JSON.stringify(value).length,
-    }
-    this.patterns.set(key, pattern)
+    };
+    this.patterns.set(key, pattern);
   }
 
   private startAnalysis(): void {
     this.analysisInterval = setInterval(() => {
-      this.analyzePatterns()
-      this.preloadHighFrequencyItems()
-    }, 60000) // 每分钟分析一次
+      this.analyzePatterns();
+      this.preloadHighFrequencyItems();
+    }, 60000); // 每分钟分析一次
   }
 
   private analyzePatterns(): void {
-    const patterns = Array.from(this.patterns.values())
-    
+    const patterns = Array.from(this.patterns.values());
+
     // 分析访问频率
-    const highFrequency = patterns.filter(p => p.frequency > 10)
-    const mediumFrequency = patterns.filter(p => p.frequency > 5 && p.frequency <= 10)
-    const lowFrequency = patterns.filter(p => p.frequency <= 5)
-    
+    const highFrequency = patterns.filter((p) => p.frequency > 10);
+    const mediumFrequency = patterns.filter((p) => p.frequency > 5 && p.frequency <= 10);
+    const lowFrequency = patterns.filter((p) => p.frequency <= 5);
+
     console.log('[Cache Analysis]', {
       high: highFrequency.length,
       medium: mediumFrequency.length,
       low: lowFrequency.length,
-    })
+    });
   }
 
   private async preloadHighFrequencyItems(): Promise<void> {
-    const patterns = Array.from(this.patterns.values())
+    const patterns = Array.from(this.patterns.values());
     const highFrequency = patterns
-      .filter(p => p.frequency > 10)
+      .filter((p) => p.frequency > 10)
       .sort((a, b) => b.frequency - a.frequency)
-      .slice(0, 20) // 预加载前20个高频项
-    
-    console.log('[Cache Preload]', `Preloading ${highFrequency.length} high-frequency items`)
-    
+      .slice(0, 20); // 预加载前20个高频项
+
+    console.log('[Cache Preload]', `Preloading ${highFrequency.length} high-frequency items`);
+
     // 这里可以实现具体的预加载逻辑
     for (const pattern of highFrequency) {
       // 预加载逻辑
@@ -2308,25 +2314,25 @@ export class IntelligentCacheManager {
   }
 
   getRecommendations(): string[] {
-    const patterns = Array.from(this.patterns.values())
-    const recommendations: string[] = []
-    
+    const patterns = Array.from(this.patterns.values());
+    const recommendations: string[] = [];
+
     // 基于访问模式推荐缓存策略
-    const highFrequency = patterns.filter(p => p.frequency > 10)
+    const highFrequency = patterns.filter((p) => p.frequency > 10);
     if (highFrequency.length > 50) {
-      recommendations.push('考虑增加L1缓存容量')
+      recommendations.push('考虑增加L1缓存容量');
     }
-    
-    const largeItems = patterns.filter(p => p.size > 10240) // >10KB
+
+    const largeItems = patterns.filter((p) => p.size > 10240); // >10KB
     if (largeItems.length > 20) {
-      recommendations.push('考虑对大对象进行压缩')
+      recommendations.push('考虑对大对象进行压缩');
     }
-    
-    return recommendations
+
+    return recommendations;
   }
 }
 
-export const intelligentCacheManager = new IntelligentCacheManager()
+export const intelligentCacheManager = new IntelligentCacheManager();
 ```
 
 #### 步骤8.1.2：实现智能性能预测
@@ -2335,94 +2341,111 @@ export const intelligentCacheManager = new IntelligentCacheManager()
 
 ```typescript
 interface PerformanceMetric {
-  timestamp: number
-  renderTime: number
-  queryTime: number
-  cacheHitRate: number
-  memoryUsage: number
+  timestamp: number;
+  renderTime: number;
+  queryTime: number;
+  cacheHitRate: number;
+  memoryUsage: number;
 }
 
 export class PerformancePredictor {
-  private metrics: PerformanceMetric[] = []
-  private maxMetrics = 1000
+  private metrics: PerformanceMetric[] = [];
+  private maxMetrics = 1000;
 
   recordMetric(metric: PerformanceMetric): void {
-    this.metrics.push(metric)
-    
+    this.metrics.push(metric);
+
     if (this.metrics.length > this.maxMetrics) {
-      this.metrics.shift()
+      this.metrics.shift();
     }
   }
 
   predictPerformance(): {
-    renderTime: { current: number; predicted: number; trend: 'improving' | 'stable' | 'degrading' }
-    queryTime: { current: number; predicted: number; trend: 'improving' | 'stable' | 'degrading' }
-    cacheHitRate: { current: number; predicted: number; trend: 'improving' | 'stable' | 'degrading' }
+    renderTime: { current: number; predicted: number; trend: 'improving' | 'stable' | 'degrading' };
+    queryTime: { current: number; predicted: number; trend: 'improving' | 'stable' | 'degrading' };
+    cacheHitRate: {
+      current: number;
+      predicted: number;
+      trend: 'improving' | 'stable' | 'degrading';
+    };
   } {
     if (this.metrics.length < 10) {
       return {
         renderTime: { current: 0, predicted: 0, trend: 'stable' },
         queryTime: { current: 0, predicted: 0, trend: 'stable' },
         cacheHitRate: { current: 0, predicted: 0, trend: 'stable' },
-      }
+      };
     }
 
-    const recent = this.metrics.slice(-10)
-    const older = this.metrics.slice(-20, -10)
+    const recent = this.metrics.slice(-10);
+    const older = this.metrics.slice(-20, -10);
 
-    const renderTime = this.analyzeMetric(recent.map(m => m.renderTime), older.map(m => m.renderTime))
-    const queryTime = this.analyzeMetric(recent.map(m => m.queryTime), older.map(m => m.queryTime))
-    const cacheHitRate = this.analyzeMetric(recent.map(m => m.cacheHitRate), older.map(m => m.cacheHitRate))
+    const renderTime = this.analyzeMetric(
+      recent.map((m) => m.renderTime),
+      older.map((m) => m.renderTime)
+    );
+    const queryTime = this.analyzeMetric(
+      recent.map((m) => m.queryTime),
+      older.map((m) => m.queryTime)
+    );
+    const cacheHitRate = this.analyzeMetric(
+      recent.map((m) => m.cacheHitRate),
+      older.map((m) => m.cacheHitRate)
+    );
 
     return {
       renderTime,
       queryTime,
       cacheHitRate,
-    }
+    };
   }
 
-  private analyzeMetric(recent: number[], older: number[]): {
-    current: number
-    predicted: number
-    trend: 'improving' | 'stable' | 'degrading'
+  private analyzeMetric(
+    recent: number[],
+    older: number[]
+  ): {
+    current: number;
+    predicted: number;
+    trend: 'improving' | 'stable' | 'degrading';
   } {
-    const current = recent[recent.length - 1]
-    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length
-    const olderAvg = older.reduce((a, b) => a + b, 0) / older.length
+    const current = recent[recent.length - 1];
+    const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
+    const olderAvg = older.reduce((a, b) => a + b, 0) / older.length;
 
-    const trend = recentAvg < olderAvg ? 'improving' : recentAvg > olderAvg ? 'degrading' : 'stable'
+    const trend =
+      recentAvg < olderAvg ? 'improving' : recentAvg > olderAvg ? 'degrading' : 'stable';
 
     // 简单的线性预测
-    const predicted = recentAvg + (recentAvg - olderAvg)
+    const predicted = recentAvg + (recentAvg - olderAvg);
 
     return {
       current,
       predicted,
       trend,
-    }
+    };
   }
 
   getOptimizationSuggestions(): string[] {
-    const predictions = this.predictPerformance()
-    const suggestions: string[] = []
+    const predictions = this.predictPerformance();
+    const suggestions: string[] = [];
 
     if (predictions.renderTime.trend === 'degrading') {
-      suggestions.push('渲染性能下降，建议检查组件渲染优化')
+      suggestions.push('渲染性能下降，建议检查组件渲染优化');
     }
 
     if (predictions.queryTime.trend === 'degrading') {
-      suggestions.push('查询性能下降，建议检查数据库索引和查询优化')
+      suggestions.push('查询性能下降，建议检查数据库索引和查询优化');
     }
 
     if (predictions.cacheHitRate.trend === 'degrading') {
-      suggestions.push('缓存命中率下降，建议检查缓存策略和预热机制')
+      suggestions.push('缓存命中率下降，建议检查缓存策略和预热机制');
     }
 
-    return suggestions
+    return suggestions;
   }
 }
 
-export const performancePredictor = new PerformancePredictor()
+export const performancePredictor = new PerformancePredictor();
 ```
 
 **验收标准**：
@@ -2600,7 +2623,7 @@ export const performancePredictor = new PerformancePredictor()
 
 ## 📄 文档标尾 (Footer)
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

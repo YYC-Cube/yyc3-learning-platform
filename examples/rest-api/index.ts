@@ -59,9 +59,9 @@ class YYC3Client {
     const response = await fetch(`${this.baseUrl}/api/v1/auth/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
 
     const data: AuthResponse = await response.json();
@@ -74,17 +74,14 @@ class YYC3Client {
     }
   }
 
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.token}`,
-        ...options.headers
-      }
+        Authorization: `Bearer ${this.token}`,
+        ...options.headers,
+      },
     });
 
     if (!response.ok) {
@@ -106,7 +103,7 @@ class YYC3Client {
     console.log('🧠 发起智能推理请求...');
     const response = await this.request<ReasoningResponse>('/api/v1/engine/reason', {
       method: 'POST',
-      body: JSON.stringify(params)
+      body: JSON.stringify(params),
     });
     console.log('✅ 推理完成');
     return response;
@@ -116,7 +113,7 @@ class YYC3Client {
     console.log('🤖 发起文本生成请求...');
     const response = await this.request('/api/v1/model/generate', {
       method: 'POST',
-      body: JSON.stringify({ prompt, maxTokens })
+      body: JSON.stringify({ prompt, maxTokens }),
     });
     console.log('✅ 生成完成');
     return response;
@@ -151,8 +148,8 @@ async function restApiExample() {
       objectives: ['效率提升', '质量保证'],
       options: {
         depth: 'deep',
-        timeout: 30000
-      }
+        timeout: 30000,
+      },
     });
 
     console.log('\n📊 推理结果:');
@@ -161,10 +158,7 @@ async function restApiExample() {
     console.log(`处理时间: ${reasoningResult.data.metadata.processingTime}ms`);
     console.log(`使用Token: ${reasoningResult.data.metadata.tokensUsed}`);
 
-    const generationResult = await client.generateText(
-      '请简述敏捷开发的核心原则',
-      500
-    );
+    const generationResult = await client.generateText('请简述敏捷开发的核心原则', 500);
 
     console.log('\n🤖 生成结果:');
     console.log(generationResult.data.text);
@@ -176,7 +170,6 @@ async function restApiExample() {
     const learningData = await client.getLearningData();
     console.log('\n🧠 学习数据:');
     console.log(JSON.stringify(learningData, null, 2));
-
   } catch (error) {
     console.error('❌ 错误:', error);
   }

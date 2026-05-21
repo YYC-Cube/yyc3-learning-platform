@@ -26,8 +26,8 @@ const defaultTheme: Theme = {
     accent: '#0066ff',
     secondary: '#666666',
     border: '#e0e0e0',
-    hover: '#f5f5f5'
-  }
+    hover: '#f5f5f5',
+  },
 };
 
 const darkTheme: Theme = {
@@ -38,8 +38,8 @@ const darkTheme: Theme = {
     accent: '#0099ff',
     secondary: '#aaaaaa',
     border: '#333333',
-    hover: '#2a2a2a'
-  }
+    hover: '#2a2a2a',
+  },
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -57,7 +57,10 @@ interface ThemeProviderProps {
   initialTheme?: Theme['mode'];
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialTheme = 'auto' }) => {
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+  children,
+  initialTheme = 'auto',
+}) => {
   const [theme, setTheme] = useState<Theme>(() => {
     if (initialTheme === 'auto') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -67,7 +70,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialT
   });
 
   const toggleTheme = () => {
-    setTheme(prev => {
+    setTheme((prev) => {
       if (prev.mode === 'light') {
         return darkTheme;
       }

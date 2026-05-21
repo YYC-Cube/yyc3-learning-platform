@@ -18,7 +18,7 @@ import {
   Task,
   TaskResult,
   TaskStatus,
-  TaskType
+  TaskType,
 } from './IAutonomousAIEngine';
 
 // EventEmitter mocking is handled through subsystem mocks
@@ -33,7 +33,7 @@ const mockMessageBus = {
   isRunning: false,
   start: jest.fn().mockResolvedValue(undefined),
   stop: jest.fn().mockResolvedValue(undefined),
-  reconfigure: jest.fn().mockResolvedValue(undefined)
+  reconfigure: jest.fn().mockResolvedValue(undefined),
 };
 
 const mockTaskScheduler = {
@@ -48,7 +48,7 @@ const mockTaskScheduler = {
   stop: jest.fn().mockImplementation(async () => {
     mockTaskScheduler.isRunning = false;
   }),
-  reconfigure: jest.fn().mockResolvedValue(undefined)
+  reconfigure: jest.fn().mockResolvedValue(undefined),
 };
 
 const mockStateManager = {
@@ -79,7 +79,7 @@ const mockStateManager = {
   }),
   isRunning: false,
   configuration: {},
-  _state: new Map()
+  _state: new Map(),
 };
 
 const mockDecisionEngine = {
@@ -119,97 +119,111 @@ const mockDecisionEngine = {
         stakeholderSatisfaction: 0.88,
         innovation: 0.7,
         adaptability: 0.8,
-        sustainability: 0.9
+        sustainability: 0.9,
       },
       lessons: ['Great decision', 'Could be more efficient'],
       recommendations: ['Consider more alternatives next time', 'Monitor implementation closely'],
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   }),
-  makeDecision: jest.fn().mockImplementation((context: DecisionContext, options: DecisionOption[]) => {
-    let decision;
-    if (options.length === 0) {
-      decision = {
-        id: 'decision_123',
-        contextId: context.id,
-        selectedOption: '',
-        reasoning: {
-          criteria: ['efficiency', 'quality', 'risk'],
-          weights: { efficiency: 0.4, quality: 0.4, risk: 0.2 },
-          scores: { efficiency: 0.8, quality: 0.7, risk: 0.6 },
-          methodology: 'utility_theory',
-          assumptions: ['Current trends continue']
-        },
-        confidence: 0,
-        alternatives: [],
-        expectedValue: 0,
-        riskAssessment: {
-          overall: 'medium',
-          factors: [],
-          mitigation: [],
-          contingencyPlans: []
-        },
-        implementationPlan: {
-          phases: [],
-          resources: { cpu: { min: 0.1, unit: 'cores' }, memory: { min: 128, unit: 'MB' }, storage: { min: 0, unit: 'GB' }, network: { min: 0, unit: 'Mbps' }, specialized: [] },
-          timeline: {
-            start: new Date(),
-            end: new Date(Date.now() + 86400000),
-            milestones: [],
-            criticalPath: []
+  makeDecision: jest
+    .fn()
+    .mockImplementation((context: DecisionContext, options: DecisionOption[]) => {
+      let decision;
+      if (options.length === 0) {
+        decision = {
+          id: 'decision_123',
+          contextId: context.id,
+          selectedOption: '',
+          reasoning: {
+            criteria: ['efficiency', 'quality', 'risk'],
+            weights: { efficiency: 0.4, quality: 0.4, risk: 0.2 },
+            scores: { efficiency: 0.8, quality: 0.7, risk: 0.6 },
+            methodology: 'utility_theory',
+            assumptions: ['Current trends continue'],
           },
-          dependencies: [],
-          milestones: []
-        },
-        timestamp: new Date()
-      };
-    } else {
-      decision = {
-        id: 'decision_123',
-        contextId: context.id,
-        selectedOption: options[0].id,
-        reasoning: {
-          criteria: ['efficiency', 'quality', 'risk'],
-          weights: { efficiency: 0.4, quality: 0.4, risk: 0.2 },
-          scores: { efficiency: 0.8, quality: 0.7, risk: 0.6 },
-          methodology: 'utility_theory',
-          assumptions: ['Current trends continue']
-        },
-        confidence: 0.75,
-        alternatives: options.map(o => o.id),
-        expectedValue: 0.75,
-        riskAssessment: {
-          overall: 'medium',
-          factors: [],
-          mitigation: [],
-          contingencyPlans: []
-        },
-        implementationPlan: {
-          phases: [],
-          resources: { cpu: { min: 0.1, unit: 'cores' }, memory: { min: 128, unit: 'MB' }, storage: { min: 0, unit: 'GB' }, network: { min: 0, unit: 'Mbps' }, specialized: [] },
-          timeline: {
-            start: new Date(),
-            end: new Date(Date.now() + 86400000),
-            milestones: [],
-            criticalPath: []
+          confidence: 0,
+          alternatives: [],
+          expectedValue: 0,
+          riskAssessment: {
+            overall: 'medium',
+            factors: [],
+            mitigation: [],
+            contingencyPlans: [],
           },
-          dependencies: [],
-          milestones: []
-        },
-        timestamp: new Date()
-      };
-    }
+          implementationPlan: {
+            phases: [],
+            resources: {
+              cpu: { min: 0.1, unit: 'cores' },
+              memory: { min: 128, unit: 'MB' },
+              storage: { min: 0, unit: 'GB' },
+              network: { min: 0, unit: 'Mbps' },
+              specialized: [],
+            },
+            timeline: {
+              start: new Date(),
+              end: new Date(Date.now() + 86400000),
+              milestones: [],
+              criticalPath: [],
+            },
+            dependencies: [],
+            milestones: [],
+          },
+          timestamp: new Date(),
+        };
+      } else {
+        decision = {
+          id: 'decision_123',
+          contextId: context.id,
+          selectedOption: options[0].id,
+          reasoning: {
+            criteria: ['efficiency', 'quality', 'risk'],
+            weights: { efficiency: 0.4, quality: 0.4, risk: 0.2 },
+            scores: { efficiency: 0.8, quality: 0.7, risk: 0.6 },
+            methodology: 'utility_theory',
+            assumptions: ['Current trends continue'],
+          },
+          confidence: 0.75,
+          alternatives: options.map((o) => o.id),
+          expectedValue: 0.75,
+          riskAssessment: {
+            overall: 'medium',
+            factors: [],
+            mitigation: [],
+            contingencyPlans: [],
+          },
+          implementationPlan: {
+            phases: [],
+            resources: {
+              cpu: { min: 0.1, unit: 'cores' },
+              memory: { min: 128, unit: 'MB' },
+              storage: { min: 0, unit: 'GB' },
+              network: { min: 0, unit: 'Mbps' },
+              specialized: [],
+            },
+            timeline: {
+              start: new Date(),
+              end: new Date(Date.now() + 86400000),
+              milestones: [],
+              criticalPath: [],
+            },
+            dependencies: [],
+            milestones: [],
+          },
+          timestamp: new Date(),
+        };
+      }
 
-    // Emit decision.made event to match real implementation
-    if (mockDecisionEngine.emit) {
-      mockDecisionEngine.emit('decision.made', { decision });
-    }
+      // Emit decision.made event to match real implementation
+      if (mockDecisionEngine.emit) {
+        mockDecisionEngine.emit('decision.made', { decision });
+      }
 
-    return decision;
-  }),
+      return decision;
+    }),
   reconfigure: jest.fn().mockImplementation(async (config) => {
     mockDecisionEngine.configuration = config;
-  })
+  }),
 };
 
 const mockLearningSystem = {
@@ -232,7 +246,7 @@ const mockLearningSystem = {
       competencyLevel: 'intermediate',
       areasOfImprovement: ['decision_making', 'collaboration'],
       recentInsights: [],
-      nextMilestones: []
+      nextMilestones: [],
     };
   }),
   adaptStrategy: jest.fn().mockImplementation(async (strategy) => {
@@ -247,7 +261,7 @@ const mockLearningSystem = {
   }),
   reconfigure: jest.fn().mockImplementation(async (config) => {
     mockLearningSystem.configuration = config;
-  })
+  }),
 };
 
 const mockCollaborationManager = {
@@ -256,8 +270,8 @@ const mockCollaborationManager = {
       taskId: task.id,
       outcome: {
         success: true,
-        results: []
-      }
+        results: [],
+      },
     });
   }),
   initiateCollaboration: jest.fn().mockImplementation(async () => {
@@ -269,9 +283,9 @@ const mockCollaborationManager = {
       resources: [],
       timeline: {
         start: new Date(),
-        end: new Date(Date.now() + 86400000) // 1 day from now
+        end: new Date(Date.now() + 86400000), // 1 day from now
       },
-      goals: []
+      goals: [],
     };
   }),
   getCollaborationStatus: jest.fn().mockImplementation((collaborationId) => {
@@ -283,9 +297,9 @@ const mockCollaborationManager = {
       resources: [],
       timeline: {
         start: new Date(),
-        end: new Date(Date.now() + 86400000) // 1 day from now
+        end: new Date(Date.now() + 86400000), // 1 day from now
       },
-      goals: []
+      goals: [],
     };
   }),
   sendMessage: jest.fn().mockResolvedValue(undefined),
@@ -293,13 +307,15 @@ const mockCollaborationManager = {
   isRunning: false,
   start: jest.fn().mockResolvedValue(undefined),
   stop: jest.fn().mockResolvedValue(undefined),
-  reconfigure: jest.fn().mockResolvedValue(undefined)
+  reconfigure: jest.fn().mockResolvedValue(undefined),
 };
 
 // Define proper types for mock objects
 interface MockResourceManagerType {
   isRunning: boolean;
-  configuration: { maxResources: { cpu: number; memory: number; storage: number; network: number } };
+  configuration: {
+    maxResources: { cpu: number; memory: number; storage: number; network: number };
+  };
   allocations: Map<string, ResourceAllocation>;
   usage: Map<string, ResourceUsage>;
   on: jest.Mock;
@@ -345,9 +361,9 @@ const mockResourceManager: MockResourceManagerType = {
         { type: 'memory', amount: memoryAmount, unit: requirements.memory?.unit || 'MB' },
         { type: 'storage', amount: storageAmount, unit: requirements.storage?.unit || 'GB' },
         { type: 'network', amount: networkAmount, unit: requirements.network?.unit || 'Mbps' },
-        ...(requirements.specialized || [])
+        ...(requirements.specialized || []),
       ],
-      expiresAt: new Date(Date.now() + 3600000) // 1 hour from now
+      expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
     };
 
     mockResourceManager.allocations.set(allocationId, allocation);
@@ -358,7 +374,7 @@ const mockResourceManager: MockResourceManagerType = {
       memory: memoryAmount * 0.5,
       storage: storageAmount * 0.5,
       network: networkAmount * 0.5,
-      specialized: {}
+      specialized: {},
     });
 
     return allocation;
@@ -408,27 +424,27 @@ const mockResourceManager: MockResourceManagerType = {
         allocated: totalAllocatedCpu,
         used: totalUsedCpu,
         available: 100 - totalAllocatedCpu,
-        percentage: (totalAllocatedCpu / 100) * 100
+        percentage: (totalAllocatedCpu / 100) * 100,
       },
       memory: {
         allocated: totalAllocatedMemory,
         used: totalUsedMemory,
         available: 100 - totalAllocatedMemory,
-        percentage: (totalAllocatedMemory / 100) * 100
+        percentage: (totalAllocatedMemory / 100) * 100,
       },
       storage: {
         allocated: totalAllocatedStorage,
         used: totalUsedStorage,
         available: 100 - totalAllocatedStorage,
-        percentage: (totalAllocatedStorage / 100) * 100
+        percentage: (totalAllocatedStorage / 100) * 100,
       },
       network: {
         allocated: totalAllocatedNetwork,
         used: totalUsedNetwork,
         available: 100 - totalAllocatedNetwork,
-        percentage: (totalAllocatedNetwork / 100) * 100
+        percentage: (totalAllocatedNetwork / 100) * 100,
       },
-      specialized: [] as SpecializedUtilization[]
+      specialized: [] as SpecializedUtilization[],
     };
   }),
   getUsage: jest.fn().mockImplementation((allocationId) => {
@@ -439,7 +455,7 @@ const mockResourceManager: MockResourceManagerType = {
     // Ensure the usage object includes specialized record
     return {
       ...usage,
-      specialized: {}
+      specialized: {},
     };
   }),
   getCurrentUsage: jest.fn().mockImplementation(() => {
@@ -448,7 +464,7 @@ const mockResourceManager: MockResourceManagerType = {
       memory: 200,
       storage: 1.5,
       network: 1.2,
-      specialized: {}
+      specialized: {},
     };
   }),
   start: jest.fn().mockImplementation(async () => {
@@ -459,21 +475,21 @@ const mockResourceManager: MockResourceManagerType = {
   }),
   reconfigure: jest.fn().mockImplementation(async (config) => {
     mockResourceManager.configuration = config;
-  })
+  }),
 };
 
 const mockMonitoringSystem = {
   collectMetrics: jest.fn().mockReturnValue({}),
   getDiagnostics: jest.fn().mockReturnValue({}),
   getDiagnosticInfo: jest.fn().mockReturnValue({}),
-  getHealthStatus: jest.fn().mockReturnValue({ 
+  getHealthStatus: jest.fn().mockReturnValue({
     overall: 'healthy',
-    components: []
+    components: [],
   }),
   isRunning: false,
   start: jest.fn().mockResolvedValue(undefined),
   stop: jest.fn().mockResolvedValue(undefined),
-  reconfigure: jest.fn().mockResolvedValue(undefined)
+  reconfigure: jest.fn().mockResolvedValue(undefined),
 };
 
 const mockSecurityManager = {
@@ -484,7 +500,7 @@ const mockSecurityManager = {
   isRunning: false,
   start: jest.fn().mockResolvedValue(undefined),
   stop: jest.fn().mockResolvedValue(undefined),
-  reconfigure: jest.fn().mockResolvedValue(undefined)
+  reconfigure: jest.fn().mockResolvedValue(undefined),
 };
 
 // We'll mock the initializeSubsystems method to prevent it from creating real subsystem instances
@@ -518,7 +534,6 @@ const mockSubsystems = (engine: AutonomousAIEngine) => {
   (engine as any).isShuttingDown = false;
 
   // Don't mock learnFromExperience - we want to test the actual implementation
-
 };
 
 // Create a test subclass that doesn't override private methods
@@ -532,7 +547,7 @@ async function createAutonomousEngine(config?: any) {
   const defaultConfig = {
     maxConcurrentTasks: 10,
     healthCheckInterval: 30000,
-    resourceAllocationStrategy: 'balanced'
+    resourceAllocationStrategy: 'balanced',
   };
 
   const engine = new AutonomousAIEngine(config || defaultConfig);
@@ -613,7 +628,7 @@ describe('AutonomousAIEngine', () => {
   const mockConfig = {
     maxConcurrentTasks: 10,
     healthCheckInterval: 30000,
-    resourceAllocationStrategy: 'balanced'
+    resourceAllocationStrategy: 'balanced',
   };
 
   beforeEach(() => {
@@ -645,11 +660,11 @@ describe('AutonomousAIEngine', () => {
           stakeholderSatisfaction: 0.88,
           innovation: 0.7,
           adaptability: 0.8,
-          sustainability: 0.9
+          sustainability: 0.9,
         },
         lessons: ['Great decision', 'Could be more efficient'],
         recommendations: ['Consider more alternatives next time', 'Monitor implementation closely'],
-        timestamp: new Date()
+        timestamp: new Date(),
       });
     });
 
@@ -667,7 +682,7 @@ describe('AutonomousAIEngine', () => {
         competencyLevel: 'intermediate',
         areasOfImprovement: ['decision_making', 'collaboration'],
         recentInsights: [],
-        nextMilestones: []
+        nextMilestones: [],
       };
     });
 
@@ -681,9 +696,9 @@ describe('AutonomousAIEngine', () => {
         resources: [],
         timeline: {
           start: new Date(),
-          end: new Date(Date.now() + 86400000) // 1 day from now
+          end: new Date(Date.now() + 86400000), // 1 day from now
         },
-        goals: []
+        goals: [],
       };
     });
 
@@ -696,9 +711,9 @@ describe('AutonomousAIEngine', () => {
         resources: [],
         timeline: {
           start: new Date(),
-          end: new Date(Date.now() + 86400000) // 1 day from now
+          end: new Date(Date.now() + 86400000), // 1 day from now
         },
-        goals: []
+        goals: [],
       };
     });
 
@@ -707,8 +722,8 @@ describe('AutonomousAIEngine', () => {
         taskId: task.id,
         outcome: {
           success: true,
-          results: []
-        }
+          results: [],
+        },
       });
     });
 
@@ -724,7 +739,9 @@ describe('AutonomousAIEngine', () => {
       let totalUsedNetwork = 0;
 
       // Calculate real allocated resources from allocations
-      const allocations = Array.from((mockResourceManager as any).allocations.values()) as ResourceAllocation[];
+      const allocations = Array.from(
+        (mockResourceManager as any).allocations.values()
+      ) as ResourceAllocation[];
       for (const allocation of allocations) {
         const cpuResource = allocation.resources.find((r: any) => r.type === 'cpu');
         const memoryResource = allocation.resources.find((r: any) => r.type === 'memory');
@@ -754,27 +771,27 @@ describe('AutonomousAIEngine', () => {
           allocated: totalAllocatedCpu,
           used: totalUsedCpu,
           available: 100 - totalAllocatedCpu,
-          percentage: (totalAllocatedCpu / 100) * 100
+          percentage: (totalAllocatedCpu / 100) * 100,
         },
         memory: {
           allocated: totalAllocatedMemory,
           used: totalUsedMemory,
           available: 1000 - totalAllocatedMemory,
-          percentage: (totalAllocatedMemory / 1000) * 100
+          percentage: (totalAllocatedMemory / 1000) * 100,
         },
         storage: {
           allocated: totalAllocatedStorage,
           used: totalUsedStorage,
           available: 100 - totalAllocatedStorage,
-          percentage: (totalAllocatedStorage / 100) * 100
+          percentage: (totalAllocatedStorage / 100) * 100,
         },
         network: {
           allocated: totalAllocatedNetwork,
           used: totalUsedNetwork,
           available: 100 - totalAllocatedNetwork,
-          percentage: (totalAllocatedNetwork / 100) * 100
+          percentage: (totalAllocatedNetwork / 100) * 100,
         },
-        specialized: []
+        specialized: [],
       };
     });
 
@@ -784,7 +801,7 @@ describe('AutonomousAIEngine', () => {
         memory: 200,
         storage: 1.5,
         network: 1.2,
-        specialized: {}
+        specialized: {},
       };
     });
 
@@ -795,7 +812,7 @@ describe('AutonomousAIEngine', () => {
       }
       return {
         ...usage,
-        specialized: {}
+        specialized: {},
       };
     });
 
@@ -825,9 +842,9 @@ describe('AutonomousAIEngine', () => {
           { type: 'memory', amount: memoryAmount, unit: requirements.memory?.unit || 'MB' },
           { type: 'storage', amount: storageAmount, unit: requirements.storage?.unit || 'GB' },
           { type: 'network', amount: networkAmount, unit: requirements.network?.unit || 'Mbps' },
-          ...(requirements.specialized || [])
+          ...(requirements.specialized || []),
         ],
-        expiresAt: new Date(Date.now() + 3600000) // 1 hour from now
+        expiresAt: new Date(Date.now() + 3600000), // 1 hour from now
       };
 
       (mockResourceManager as any).allocations.set(allocationId, allocation);
@@ -837,7 +854,7 @@ describe('AutonomousAIEngine', () => {
         cpu: cpuAmount * 0.5, // 50% utilization
         memory: memoryAmount * 0.5,
         storage: storageAmount * 0.5,
-        network: networkAmount * 0.5
+        network: networkAmount * 0.5,
       });
 
       return allocation;
@@ -861,17 +878,17 @@ describe('AutonomousAIEngine', () => {
           { name: 'monitoringSystem', status: 'healthy' },
           { name: 'securityManager', status: 'healthy' },
           { name: 'collaborationManager', status: 'healthy' },
-          { name: 'messageBus', status: 'healthy' }
+          { name: 'messageBus', status: 'healthy' },
         ],
         metrics: {
           uptime: '10h 30m 45s',
           cpuUsage: 25,
           memoryUsage: 40,
           activeTasks: 5,
-          collaborationSessions: 2
+          collaborationSessions: 2,
         },
         alerts: [],
-        lastCheck: new Date()
+        lastCheck: new Date(),
       };
     });
 
@@ -881,7 +898,7 @@ describe('AutonomousAIEngine', () => {
           os: 'Linux',
           nodeVersion: 'v18.16.0',
           bunVersion: '1.0.0',
-          architecture: 'x64'
+          architecture: 'x64',
         },
         engine: {
           version: '1.0.0',
@@ -895,49 +912,49 @@ describe('AutonomousAIEngine', () => {
             monitoringSystem: 'running',
             securityManager: 'running',
             collaborationManager: 'running',
-            messageBus: 'running'
+            messageBus: 'running',
           },
-          configuration: mockConfig
+          configuration: mockConfig,
         },
         resources: {
           currentUsage: {
             cpu: 25,
             memory: 40,
             storage: 15,
-            network: 5
+            network: 5,
           },
           peakUsage: {
             cpu: 60,
             memory: 85,
             storage: 30,
-            network: 20
+            network: 20,
           },
           available: {
             cpu: 75,
             memory: 60,
             storage: 85,
-            network: 95
-          }
+            network: 95,
+          },
         },
         performance: {
           averageResponseTime: 150,
           throughput: 100,
           errorRate: 0.1,
-          taskCompletionRate: 99.5
+          taskCompletionRate: 99.5,
         },
         logs: [
           {
             timestamp: new Date(Date.now() - 3600000),
             level: 'info',
-            message: 'Engine started successfully'
+            message: 'Engine started successfully',
           },
           {
             timestamp: new Date(Date.now() - 1800000),
             level: 'info',
-            message: 'Learning system completed training'
-          }
+            message: 'Learning system completed training',
+          },
         ],
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     });
 
@@ -1080,10 +1097,12 @@ describe('AutonomousAIEngine', () => {
         memory: { min: 50, max: 100, unit: 'MB' },
         storage: { min: 1, max: 10, unit: 'GB' },
         network: { min: 1, max: 10, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       };
 
-      const allocation = await resourceManager.allocateResources(testRequirements) as ResourceAllocation;
+      const allocation = (await resourceManager.allocateResources(
+        testRequirements
+      )) as ResourceAllocation;
 
       // Verify allocation properties
       expect(allocation).toHaveProperty('id');
@@ -1115,7 +1134,7 @@ describe('AutonomousAIEngine', () => {
         memory: { min: 10, max: 10, unit: 'MB' },
         storage: { min: 1, max: 1, unit: 'GB' },
         network: { min: 1, max: 1, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       };
 
       await resourceManager.allocateResources(highRequirements);
@@ -1126,10 +1145,12 @@ describe('AutonomousAIEngine', () => {
         memory: { min: 1, max: 1, unit: 'MB' },
         storage: { min: 1, max: 1, unit: 'GB' },
         network: { min: 1, max: 1, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       };
 
-      await expect(resourceManager.allocateResources(additionalRequirements)).rejects.toThrow('Insufficient resources available');
+      await expect(resourceManager.allocateResources(additionalRequirements)).rejects.toThrow(
+        'Insufficient resources available'
+      );
     });
 
     it('should release resources correctly', async () => {
@@ -1138,11 +1159,13 @@ describe('AutonomousAIEngine', () => {
         memory: { min: 128, max: 256, unit: 'MB' },
         storage: { min: 1, max: 10, unit: 'GB' },
         network: { min: 1, max: 10, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       };
 
       // Allocate resources first
-      const allocation = await resourceManager.allocateResources(testRequirements) as ResourceAllocation;
+      const allocation = (await resourceManager.allocateResources(
+        testRequirements
+      )) as ResourceAllocation;
       const allocationId = allocation.id;
 
       // Verify allocation exists
@@ -1200,11 +1223,13 @@ describe('AutonomousAIEngine', () => {
         memory: { min: 128, max: 256, unit: 'MB' },
         storage: { min: 1, max: 10, unit: 'GB' },
         network: { min: 1, max: 10, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       };
 
       // Allocate resources
-      const allocation = await resourceManager.allocateResources(testRequirements) as ResourceAllocation;
+      const allocation = (await resourceManager.allocateResources(
+        testRequirements
+      )) as ResourceAllocation;
 
       // Modify resource utilization for testing
       allocation.resources.forEach((resource: any) => {
@@ -1279,15 +1304,43 @@ describe('AutonomousAIEngine', () => {
         description: 'Test decision context',
         parameters: { userLevel: 'intermediate', timeAvailable: 60 },
         constraints: [
-          { type: 'time', description: 'Time limit constraint', parameters: { maxTime: 60 }, severity: 'warning' },
-          { type: 'resource', description: 'Resource limit constraint', parameters: { maxMemory: 1000 }, severity: 'error' }
+          {
+            type: 'time',
+            description: 'Time limit constraint',
+            parameters: { maxTime: 60 },
+            severity: 'warning',
+          },
+          {
+            type: 'resource',
+            description: 'Resource limit constraint',
+            parameters: { maxMemory: 1000 },
+            severity: 'error',
+          },
         ],
         objectives: [
-          { name: 'maximize_learning', weight: 0.7, target: 0.9, unit: 'score', optimization: 'maximize' },
-          { name: 'minimize_frustration', weight: 0.3, target: 0.1, unit: 'score', optimization: 'minimize' }
+          {
+            name: 'maximize_learning',
+            weight: 0.7,
+            target: 0.9,
+            unit: 'score',
+            optimization: 'maximize',
+          },
+          {
+            name: 'minimize_frustration',
+            weight: 0.3,
+            target: 0.1,
+            unit: 'score',
+            optimization: 'minimize',
+          },
         ],
         stakeholders: ['user-123', 'system'],
-        metadata: { source: 'test', category: 'learning', tags: [], historicalData: false, requiredConfidence: 0.7 }
+        metadata: {
+          source: 'test',
+          category: 'learning',
+          tags: [],
+          historicalData: false,
+          requiredConfidence: 0.7,
+        },
       };
 
       const testOptions: DecisionOption[] = [
@@ -1301,14 +1354,24 @@ describe('AutonomousAIEngine', () => {
               memory: { min: 128, unit: 'MB' },
               storage: { min: 0, unit: 'GB' },
               network: { min: 0, unit: 'Mbps' },
-              specialized: []
-            }
+              specialized: [],
+            },
           },
-          expectedOutcomes: [{ metric: 'learning_gain', value: 0.8, probability: 0.9, timeHorizon: 30 }],
-          risks: [{ type: 'resource_constraint', description: 'Resource constraint risk', probability: 0.1, impact: 'low', mitigation: 'allocate_additional_resources' }],
+          expectedOutcomes: [
+            { metric: 'learning_gain', value: 0.8, probability: 0.9, timeHorizon: 30 },
+          ],
+          risks: [
+            {
+              type: 'resource_constraint',
+              description: 'Resource constraint risk',
+              probability: 0.1,
+              impact: 'low',
+              mitigation: 'allocate_additional_resources',
+            },
+          ],
           costs: { computational: 10, financial: 0, time: 5, opportunity: 0 },
           benefits: { efficiency: 0.8, quality: 0.7, innovation: 0.6, collaboration: 0.5 },
-          confidence: 0.9
+          confidence: 0.9,
         },
         {
           id: 'option-2',
@@ -1320,15 +1383,25 @@ describe('AutonomousAIEngine', () => {
               memory: { min: 256, unit: 'MB' },
               storage: { min: 0, unit: 'GB' },
               network: { min: 0, unit: 'Mbps' },
-              specialized: []
-            }
+              specialized: [],
+            },
           },
-          expectedOutcomes: [{ metric: 'learning_gain', value: 0.7, probability: 0.8, timeHorizon: 30 }],
-          risks: [{ type: 'resource_constraint', description: 'Resource constraint risk', probability: 0.05, impact: 'low', mitigation: 'allocate_additional_resources' }],
+          expectedOutcomes: [
+            { metric: 'learning_gain', value: 0.7, probability: 0.8, timeHorizon: 30 },
+          ],
+          risks: [
+            {
+              type: 'resource_constraint',
+              description: 'Resource constraint risk',
+              probability: 0.05,
+              impact: 'low',
+              mitigation: 'allocate_additional_resources',
+            },
+          ],
           costs: { computational: 15, financial: 0, time: 7, opportunity: 0 },
           benefits: { efficiency: 0.7, quality: 0.6, innovation: 0.5, collaboration: 0.4 },
-          confidence: 0.8
-        }
+          confidence: 0.8,
+        },
       ];
 
       const decision = await decisionEngine.makeDecision(testContext, testOptions);
@@ -1338,7 +1411,7 @@ describe('AutonomousAIEngine', () => {
       expect(decision.id).toMatch(/^decision_/);
       expect(decision.contextId).toBe(testContext.id);
       expect(decision.selectedOption).toBe(testOptions[0].id);
-      expect(decision.alternatives).toEqual(testOptions.map(o => o.id));
+      expect(decision.alternatives).toEqual(testOptions.map((o) => o.id));
       expect(decision.confidence).toBe(0.75);
       expect(decision.expectedValue).toBe(0.75);
 
@@ -1368,15 +1441,43 @@ describe('AutonomousAIEngine', () => {
         priority: 'medium',
         parameters: { userLevel: 'intermediate', timeAvailable: 60 },
         constraints: [
-          { type: 'time', description: 'Time limit constraint', parameters: { maxTime: 60 }, severity: 'warning' },
-          { type: 'resource', description: 'Resource limit constraint', parameters: { maxMemory: 1000 }, severity: 'error' }
+          {
+            type: 'time',
+            description: 'Time limit constraint',
+            parameters: { maxTime: 60 },
+            severity: 'warning',
+          },
+          {
+            type: 'resource',
+            description: 'Resource limit constraint',
+            parameters: { maxMemory: 1000 },
+            severity: 'error',
+          },
         ],
         objectives: [
-          { name: 'maximize_learning', weight: 0.7, target: 0.9, unit: 'score', optimization: 'maximize' },
-          { name: 'minimize_frustration', weight: 0.3, target: 0.1, unit: 'score', optimization: 'minimize' }
+          {
+            name: 'maximize_learning',
+            weight: 0.7,
+            target: 0.9,
+            unit: 'score',
+            optimization: 'maximize',
+          },
+          {
+            name: 'minimize_frustration',
+            weight: 0.3,
+            target: 0.1,
+            unit: 'score',
+            optimization: 'minimize',
+          },
         ],
         stakeholders: ['user-123', 'system'],
-        metadata: { source: 'test', category: 'learning', tags: [], historicalData: false, requiredConfidence: 0.7 }
+        metadata: {
+          source: 'test',
+          category: 'learning',
+          tags: [],
+          historicalData: false,
+          requiredConfidence: 0.7,
+        },
       };
 
       const testOptions: DecisionOption[] = [];
@@ -1402,7 +1503,7 @@ describe('AutonomousAIEngine', () => {
           weights: { efficiency: 0.6, quality: 0.4 },
           scores: { efficiency: 0.8, quality: 0.7 },
           methodology: 'utility_theory',
-          assumptions: ['Current trends continue']
+          assumptions: ['Current trends continue'],
         },
         confidence: 0.75,
         alternatives: ['option-1', 'option-2'],
@@ -1411,7 +1512,7 @@ describe('AutonomousAIEngine', () => {
           overall: 'medium',
           factors: [],
           mitigation: [],
-          contingencyPlans: []
+          contingencyPlans: [],
         },
         implementationPlan: {
           phases: [],
@@ -1420,18 +1521,18 @@ describe('AutonomousAIEngine', () => {
             memory: { min: 128, max: 1024, unit: 'MB' },
             storage: { min: 1, max: 10, unit: 'GB' },
             network: { min: 1, max: 100, unit: 'Mbps' },
-            specialized: []
+            specialized: [],
           },
           timeline: {
             start: new Date(),
             end: new Date(Date.now() + 86400000),
             milestones: [],
-            criticalPath: []
+            criticalPath: [],
           },
           dependencies: [],
-          milestones: []
+          milestones: [],
         },
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       const evaluation = await decisionEngine.evaluateDecision(testDecision);
@@ -1584,18 +1685,20 @@ describe('AutonomousAIEngine', () => {
         memory: { min: 128, max: 1024, unit: 'MB' },
         storage: { min: 1, max: 10, unit: 'GB' },
         network: { min: 1, max: 100, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       },
-      steps: [{
-        id: 'step-1',
-        name: 'Test Step',
-        description: 'Test step description',
-        type: 'data_processing',
-        parameters: {},
-        dependencies: [],
-        estimatedDuration: 60,
-        requiredResources: ['cpu', 'memory']
-      }],
+      steps: [
+        {
+          id: 'step-1',
+          name: 'Test Step',
+          description: 'Test step description',
+          type: 'data_processing',
+          parameters: {},
+          dependencies: [],
+          estimatedDuration: 60,
+          requiredResources: ['cpu', 'memory'],
+        },
+      ],
       metadata: {
         source: 'test',
         category: 'learning',
@@ -1604,18 +1707,18 @@ describe('AutonomousAIEngine', () => {
           maxAttempts: 3,
           backoffStrategy: 'exponential',
           baseDelay: 1000,
-          maxDelay: 10000
+          maxDelay: 10000,
         },
         timeout: 300000,
         qualityRequirements: {
           accuracy: 0.9,
           precision: 0.85,
           recall: 0.8,
-          latency: 5000
-        }
+          latency: 5000,
+        },
       },
       createdAt: new Date(),
-      scheduledAt: new Date()
+      scheduledAt: new Date(),
     };
 
     it('should schedule a task', () => {
@@ -1641,8 +1744,6 @@ describe('AutonomousAIEngine', () => {
       const taskId = (engine as any).taskScheduler.schedule(testTask);
       expect(taskId).toBe(testTask.id);
     });
-
-
 
     it('should reconfigure with new max concurrent tasks', async () => {
       await (engine as any).taskScheduler.reconfigure({ maxConcurrentTasks: 20 });
@@ -1764,7 +1865,15 @@ describe('AutonomousAIEngine', () => {
       updatedAt: new Date(),
       objective: 'Main test objective',
       keyResults: [
-        { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0, unit: '%', weight: 0.5, status: 'pending' }
+        {
+          id: 'kr-1',
+          description: 'Key Result 1',
+          target: 100,
+          current: 0,
+          unit: '%',
+          weight: 0.5,
+          status: 'pending',
+        },
       ],
       constraints: [],
       dependencies: [],
@@ -1774,13 +1883,13 @@ describe('AutonomousAIEngine', () => {
         tags: [],
         category: 'test',
         requiredResources: [],
-        successCriteria: []
-      }
+        successCriteria: [],
+      },
     };
 
     it('should set a goal successfully', async () => {
       // Mock the validateGoal method
-      jest.spyOn(engine as any, 'validateGoal').mockImplementation(() => { });
+      jest.spyOn(engine as any, 'validateGoal').mockImplementation(() => {});
 
       // Mock the processGoal method
       jest.spyOn(engine as any, 'processGoal').mockResolvedValue(undefined);
@@ -1801,7 +1910,7 @@ describe('AutonomousAIEngine', () => {
       (engine as any)._goals.set('goal-456', {
         ...testGoal,
         id: 'goal-456',
-        status: 'completed'
+        status: 'completed',
       });
 
       const activeGoals = engine.getActiveGoals();
@@ -1834,17 +1943,21 @@ describe('AutonomousAIEngine', () => {
         memory: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
         storage: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
         network: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
-        specialized: []
+        specialized: [],
       });
       const mockCurrentUsage = mockResourceManager.getCurrentUsage.mockReturnValue({
         cpu: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
         memory: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
         storage: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
         network: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
-        specialized: []
+        specialized: [],
       });
-      const mockGetGoalCriticality = jest.spyOn(engine as any, 'getGoalCriticality').mockReturnValue('high');
-      const mockLearnFromExperience = jest.spyOn(mockLearningSystem, 'learnFromExperience').mockResolvedValue({});
+      const mockGetGoalCriticality = jest
+        .spyOn(engine as any, 'getGoalCriticality')
+        .mockReturnValue('high');
+      const mockLearnFromExperience = jest
+        .spyOn(mockLearningSystem, 'learnFromExperience')
+        .mockResolvedValue({});
       const mockEmit = jest.spyOn(engine, 'emit').mockImplementation();
 
       // Call completeGoal
@@ -1872,7 +1985,9 @@ describe('AutonomousAIEngine', () => {
     });
 
     it('should throw error when completing non-existent goal', async () => {
-      await expect(engine.completeGoal('non-existent-goal', { success: true })).rejects.toThrow('Goal not found: non-existent-goal');
+      await expect(engine.completeGoal('non-existent-goal', { success: true })).rejects.toThrow(
+        'Goal not found: non-existent-goal'
+      );
     });
 
     it('should update goal progress correctly', async () => {
@@ -1894,7 +2009,7 @@ describe('AutonomousAIEngine', () => {
       expect(mockEmit).toHaveBeenCalledWith('goal.progress.updated', {
         goal: updatedGoal,
         progress: 75,
-        timestamp: expect.any(Date)
+        timestamp: expect.any(Date),
       });
 
       // Restore mock
@@ -1902,7 +2017,9 @@ describe('AutonomousAIEngine', () => {
     });
 
     it('should throw error when updating progress for non-existent goal', async () => {
-      await expect(engine.updateGoalProgress('non-existent-goal', 50)).rejects.toThrow('Goal not found: non-existent-goal');
+      await expect(engine.updateGoalProgress('non-existent-goal', 50)).rejects.toThrow(
+        'Goal not found: non-existent-goal'
+      );
     });
 
     it('should throw error when updating progress with invalid value', async () => {
@@ -1910,10 +2027,14 @@ describe('AutonomousAIEngine', () => {
       (engine as any)._goals.set(testGoal.id, testGoal);
 
       // Test with progress < 0
-      await expect(engine.updateGoalProgress(testGoal.id, -10)).rejects.toThrow('Progress must be between 0 and 100');
+      await expect(engine.updateGoalProgress(testGoal.id, -10)).rejects.toThrow(
+        'Progress must be between 0 and 100'
+      );
 
       // Test with progress > 100
-      await expect(engine.updateGoalProgress(testGoal.id, 110)).rejects.toThrow('Progress must be between 0 and 100');
+      await expect(engine.updateGoalProgress(testGoal.id, 110)).rejects.toThrow(
+        'Progress must be between 0 and 100'
+      );
     });
 
     it('should auto-complete goal when progress reaches 100%', async () => {
@@ -1938,9 +2059,25 @@ describe('AutonomousAIEngine', () => {
       const goalWithKeyResults: Goal = {
         ...testGoal,
         keyResults: [
-          { id: 'kr-1', description: 'KR 1', target: 100, current: 0, unit: '%', weight: 0.5, status: 'pending' },
-          { id: 'kr-2', description: 'KR 2', target: 200, current: 0, unit: 'users', weight: 0.5, status: 'pending' }
-        ]
+          {
+            id: 'kr-1',
+            description: 'KR 1',
+            target: 100,
+            current: 0,
+            unit: '%',
+            weight: 0.5,
+            status: 'pending',
+          },
+          {
+            id: 'kr-2',
+            description: 'KR 2',
+            target: 200,
+            current: 0,
+            unit: 'users',
+            weight: 0.5,
+            status: 'pending',
+          },
+        ],
       };
 
       // Add to engine
@@ -1960,9 +2097,25 @@ describe('AutonomousAIEngine', () => {
       const goalWithKeyResults: Goal = {
         ...testGoal,
         keyResults: [
-          { id: 'kr-1', description: 'KR 1', target: 100, current: 75, unit: '%', weight: 0.5, status: 'in_progress' },
-          { id: 'kr-2', description: 'KR 2', target: 200, current: 150, unit: 'users', weight: 0.5, status: 'in_progress' }
-        ]
+          {
+            id: 'kr-1',
+            description: 'KR 1',
+            target: 100,
+            current: 75,
+            unit: '%',
+            weight: 0.5,
+            status: 'in_progress',
+          },
+          {
+            id: 'kr-2',
+            description: 'KR 2',
+            target: 200,
+            current: 150,
+            unit: 'users',
+            weight: 0.5,
+            status: 'in_progress',
+          },
+        ],
       };
 
       // Add to engine
@@ -1983,9 +2136,25 @@ describe('AutonomousAIEngine', () => {
       const goalWithKeyResults: Goal = {
         ...testGoal,
         keyResults: [
-          { id: 'kr-1', description: 'KR 1', target: 100, current: 0, unit: '%', weight: 0.5, status: 'pending' },
-          { id: 'kr-2', description: 'KR 2', target: 200, current: 0, unit: 'users', weight: 0.5, status: 'pending' }
-        ]
+          {
+            id: 'kr-1',
+            description: 'KR 1',
+            target: 100,
+            current: 0,
+            unit: '%',
+            weight: 0.5,
+            status: 'pending',
+          },
+          {
+            id: 'kr-2',
+            description: 'KR 2',
+            target: 200,
+            current: 0,
+            unit: 'users',
+            weight: 0.5,
+            status: 'pending',
+          },
+        ],
       };
 
       // Add to engine
@@ -2006,10 +2175,34 @@ describe('AutonomousAIEngine', () => {
       const goalWithKeyResults: Goal = {
         ...testGoal,
         keyResults: [
-          { id: 'kr-1', description: 'KR 1', target: 100, current: 0, unit: '%', weight: 0.4, status: 'pending' },
-          { id: 'kr-2', description: 'KR 2', target: 200, current: 0, unit: 'users', weight: 0.4, status: 'pending' },
-          { id: 'kr-3', description: 'KR 3', target: 50, current: 0, unit: 'days', weight: 0.2, status: 'pending' }
-        ]
+          {
+            id: 'kr-1',
+            description: 'KR 1',
+            target: 100,
+            current: 0,
+            unit: '%',
+            weight: 0.4,
+            status: 'pending',
+          },
+          {
+            id: 'kr-2',
+            description: 'KR 2',
+            target: 200,
+            current: 0,
+            unit: 'users',
+            weight: 0.4,
+            status: 'pending',
+          },
+          {
+            id: 'kr-3',
+            description: 'KR 3',
+            target: 50,
+            current: 0,
+            unit: 'days',
+            weight: 0.2,
+            status: 'pending',
+          },
+        ],
       };
 
       // Add to engine
@@ -2033,7 +2226,7 @@ describe('AutonomousAIEngine', () => {
       // Create a goal with no key results
       const goalWithoutKeyResults: Goal = {
         ...testGoal,
-        keyResults: []
+        keyResults: [],
       };
 
       // Add to engine
@@ -2053,9 +2246,25 @@ describe('AutonomousAIEngine', () => {
       const goalWithKeyResults: Goal = {
         ...testGoal,
         keyResults: [
-          { id: 'kr-1', description: 'KR 1', target: 100, current: 0, unit: '%', weight: 0.6, status: 'pending' },
-          { id: 'kr-2', description: 'KR 2', target: 75, current: 0, unit: 'points', weight: 0.4, status: 'pending' }
-        ]
+          {
+            id: 'kr-1',
+            description: 'KR 1',
+            target: 100,
+            current: 0,
+            unit: '%',
+            weight: 0.6,
+            status: 'pending',
+          },
+          {
+            id: 'kr-2',
+            description: 'KR 2',
+            target: 75,
+            current: 0,
+            unit: 'points',
+            weight: 0.4,
+            status: 'pending',
+          },
+        ],
       };
 
       // Add to engine
@@ -2076,7 +2285,9 @@ describe('AutonomousAIEngine', () => {
       (engine as any)._goals.set(testGoal.id, testGoal);
 
       // Mock learnFromExperience method
-      const mockLearnFromExperience = jest.spyOn(mockLearningSystem, 'learnFromExperience').mockResolvedValue(undefined);
+      const mockLearnFromExperience = jest
+        .spyOn(mockLearningSystem, 'learnFromExperience')
+        .mockResolvedValue(undefined);
 
       // Complete the goal
       await engine.completeGoal(testGoal.id, { success: true });
@@ -2129,7 +2340,7 @@ describe('AutonomousAIEngine', () => {
         memory: { min: 128, max: 1024, unit: 'MB' },
         storage: { min: 1, max: 10, unit: 'GB' },
         network: { min: 1, max: 100, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       },
       steps: [],
       metadata: {
@@ -2140,20 +2351,20 @@ describe('AutonomousAIEngine', () => {
           maxAttempts: 3,
           backoffStrategy: 'exponential',
           baseDelay: 1000,
-          maxDelay: 10000
+          maxDelay: 10000,
         },
         timeout: 30000,
-        qualityRequirements: {}
+        qualityRequirements: {},
       },
       createdAt: new Date(),
       scheduledAt: new Date(),
       startedAt: undefined,
-      completedAt: undefined
+      completedAt: undefined,
     };
 
     it('should execute a task successfully', async () => {
       // Mock validateTask method
-      jest.spyOn(engine as any, 'validateTask').mockImplementation(() => { });
+      jest.spyOn(engine as any, 'validateTask').mockImplementation(() => {});
 
       // Mock executeTaskSteps method
       jest.spyOn(engine as any, 'executeTaskSteps').mockResolvedValue([]);
@@ -2192,8 +2403,8 @@ describe('AutonomousAIEngine', () => {
         category: 'test',
         tags: [],
         historicalData: false,
-        requiredConfidence: 0.8
-      }
+        requiredConfidence: 0.8,
+      },
     };
 
     const testDecisionOptions: DecisionOption[] = [
@@ -2206,7 +2417,7 @@ describe('AutonomousAIEngine', () => {
         risks: [],
         costs: { computational: 50, financial: 100, time: 0.5, opportunity: 25 },
         benefits: { efficiency: 0.8, quality: 0.9, innovation: 0.7, collaboration: 0.6 },
-        confidence: 0.8
+        confidence: 0.8,
       },
       {
         id: 'option-2',
@@ -2217,8 +2428,8 @@ describe('AutonomousAIEngine', () => {
         risks: [],
         costs: { computational: 75, financial: 150, time: 1.0, opportunity: 50 },
         benefits: { efficiency: 0.9, quality: 0.8, innovation: 0.6, collaboration: 0.7 },
-        confidence: 0.7
-      }
+        confidence: 0.7,
+      },
     ];
 
     const mockDecision: Decision = {
@@ -2230,7 +2441,7 @@ describe('AutonomousAIEngine', () => {
         weights: { efficiency: 0.4, cost: 0.3, quality: 0.3 },
         scores: { efficiency: 0.8, cost: 0.7, quality: 0.9 },
         methodology: 'utility_theory',
-        assumptions: ['stable environment', 'accurate data']
+        assumptions: ['stable environment', 'accurate data'],
       },
       confidence: 0.9,
       alternatives: [testDecisionOptions[1].id],
@@ -2239,11 +2450,16 @@ describe('AutonomousAIEngine', () => {
         overall: 'low',
         factors: [],
         mitigation: [],
-        contingencyPlans: []
+        contingencyPlans: [],
       },
       implementationPlan: {
         phases: [],
-        timeline: { start: new Date(), end: new Date(Date.now() + 86400000), milestones: [], criticalPath: [] },
+        timeline: {
+          start: new Date(),
+          end: new Date(Date.now() + 86400000),
+          milestones: [],
+          criticalPath: [],
+        },
         dependencies: [],
         milestones: [],
         resources: {
@@ -2251,26 +2467,36 @@ describe('AutonomousAIEngine', () => {
           memory: { min: 128, max: 1024, unit: 'MB' },
           storage: { min: 1, max: 10, unit: 'GB' },
           network: { min: 1, max: 100, unit: 'Mbps' },
-          specialized: []
-        }
+          specialized: [],
+        },
       },
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     it('should make a decision successfully', async () => {
       // Mock the decision engine's makeDecision method
-      const mockDecisionEngineMakeDecision = jest.spyOn(mockDecisionEngine, 'makeDecision').mockResolvedValue(mockDecision as any);
+      const mockDecisionEngineMakeDecision = jest
+        .spyOn(mockDecisionEngine, 'makeDecision')
+        .mockResolvedValue(mockDecision as any);
 
-      const result = await engine.makeDecision(testDecisionContext as any, testDecisionOptions as any);
+      const result = await engine.makeDecision(
+        testDecisionContext as any,
+        testDecisionOptions as any
+      );
       expect(result).toEqual(mockDecision);
-      expect(mockDecisionEngineMakeDecision).toHaveBeenCalledWith(testDecisionContext, testDecisionOptions);
+      expect(mockDecisionEngineMakeDecision).toHaveBeenCalledWith(
+        testDecisionContext,
+        testDecisionOptions
+      );
 
       mockDecisionEngineMakeDecision.mockRestore();
     });
 
     it('should store decision in internal collection', async () => {
       // Mock the decision engine's makeDecision method
-      const mockDecisionEngineMakeDecision = jest.spyOn(mockDecisionEngine, 'makeDecision').mockResolvedValue(mockDecision as any);
+      const mockDecisionEngineMakeDecision = jest
+        .spyOn(mockDecisionEngine, 'makeDecision')
+        .mockResolvedValue(mockDecision as any);
 
       await engine.makeDecision(testDecisionContext as any, testDecisionOptions as any);
 
@@ -2289,14 +2515,22 @@ describe('AutonomousAIEngine', () => {
       const mockEvaluation: DecisionEvaluation = {
         decisionId: mockDecision.id,
         actualOutcomes: [],
-        effectiveness: { goalAlignment: 0.8, efficiency: 0.9, stakeholderSatisfaction: 0.85, innovation: 0.7, adaptability: 0.8 },
+        effectiveness: {
+          goalAlignment: 0.8,
+          efficiency: 0.9,
+          stakeholderSatisfaction: 0.85,
+          innovation: 0.7,
+          adaptability: 0.8,
+        },
         lessons: [],
         recommendations: [],
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       // Mock the decision engine's evaluateDecision method
-      const mockDecisionEngineEvaluateDecision = jest.spyOn(mockDecisionEngine, 'evaluateDecision').mockResolvedValue(mockEvaluation as any);
+      const mockDecisionEngineEvaluateDecision = jest
+        .spyOn(mockDecisionEngine, 'evaluateDecision')
+        .mockResolvedValue(mockEvaluation as any);
 
       const result = await engine.evaluateDecision(mockDecision.id);
       expect(result).toEqual(mockEvaluation);
@@ -2306,7 +2540,9 @@ describe('AutonomousAIEngine', () => {
     });
 
     it('should throw error when evaluating non-existent decision', async () => {
-      await expect(engine.evaluateDecision('non-existent-decision')).rejects.toThrow('Decision not found: non-existent-decision');
+      await expect(engine.evaluateDecision('non-existent-decision')).rejects.toThrow(
+        'Decision not found: non-existent-decision'
+      );
     });
 
     it('should handle empty options when making decision', async () => {
@@ -2320,7 +2556,7 @@ describe('AutonomousAIEngine', () => {
           weights: { availability: 1.0 },
           scores: { availability: 0.0 },
           methodology: 'utility_theory',
-          assumptions: ['no options available']
+          assumptions: ['no options available'],
         },
         confidence: 0.5,
         alternatives: [],
@@ -2329,25 +2565,32 @@ describe('AutonomousAIEngine', () => {
           overall: 'high',
           factors: [],
           mitigation: [],
-          contingencyPlans: []
+          contingencyPlans: [],
         },
         implementationPlan: {
           phases: [],
-          timeline: { start: new Date(), end: new Date(Date.now() + 86400000), milestones: [], criticalPath: [] },
+          timeline: {
+            start: new Date(),
+            end: new Date(Date.now() + 86400000),
+            milestones: [],
+            criticalPath: [],
+          },
           resources: {
             cpu: { min: 0.1, max: 1, unit: 'cores' },
             memory: { min: 128, max: 1024, unit: 'MB' },
             storage: { min: 1, max: 10, unit: 'GB' },
             network: { min: 1, max: 100, unit: 'Mbps' },
-            specialized: []
+            specialized: [],
           },
           dependencies: [],
-          milestones: []
+          milestones: [],
         },
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      const mockDecisionEngineMakeDecision = jest.spyOn(mockDecisionEngine, 'makeDecision').mockResolvedValue(emptyOptionsDecision as any);
+      const mockDecisionEngineMakeDecision = jest
+        .spyOn(mockDecisionEngine, 'makeDecision')
+        .mockResolvedValue(emptyOptionsDecision as any);
 
       const result = await engine.makeDecision(testDecisionContext as any, [] as any);
       expect(result).toEqual(emptyOptionsDecision);
@@ -2366,7 +2609,7 @@ describe('AutonomousAIEngine', () => {
           weights: { value: 0.6, confidence: 0.4 },
           scores: { value: 0.9, confidence: 0.95 },
           methodology: 'utility_theory',
-          assumptions: ['high value option']
+          assumptions: ['high value option'],
         },
         confidence: 0.95,
         alternatives: [testDecisionOptions[0].id],
@@ -2375,27 +2618,37 @@ describe('AutonomousAIEngine', () => {
           overall: 'low',
           factors: [],
           mitigation: [],
-          contingencyPlans: []
+          contingencyPlans: [],
         },
         implementationPlan: {
           phases: [],
-          timeline: { start: new Date(), end: new Date(Date.now() + 86400000), milestones: [], criticalPath: [] },
+          timeline: {
+            start: new Date(),
+            end: new Date(Date.now() + 86400000),
+            milestones: [],
+            criticalPath: [],
+          },
           resources: {
             cpu: { min: 0.1, max: 1, unit: 'cores' },
             memory: { min: 128, max: 1024, unit: 'MB' },
             storage: { min: 1, max: 10, unit: 'GB' },
             network: { min: 1, max: 100, unit: 'Mbps' },
-            specialized: []
+            specialized: [],
           },
           dependencies: [],
-          milestones: []
+          milestones: [],
         },
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      const mockDecisionEngineMakeDecision = jest.spyOn(mockDecisionEngine, 'makeDecision').mockResolvedValue(highConfidenceDecision as any);
+      const mockDecisionEngineMakeDecision = jest
+        .spyOn(mockDecisionEngine, 'makeDecision')
+        .mockResolvedValue(highConfidenceDecision as any);
 
-      const result = await engine.makeDecision(testDecisionContext as any, testDecisionOptions as any);
+      const result = await engine.makeDecision(
+        testDecisionContext as any,
+        testDecisionOptions as any
+      );
       expect(result).toEqual(highConfidenceDecision);
       expect(result.confidence).toBeGreaterThanOrEqual(0.9);
 
@@ -2412,7 +2665,7 @@ describe('AutonomousAIEngine', () => {
           weights: { uncertainty: 0.7, safety: 0.3 },
           scores: { uncertainty: 0.6, safety: 0.8 },
           methodology: 'utility_theory',
-          assumptions: ['high uncertainty environment']
+          assumptions: ['high uncertainty environment'],
         },
         confidence: 0.4,
         alternatives: [testDecisionOptions[1].id],
@@ -2421,27 +2674,37 @@ describe('AutonomousAIEngine', () => {
           overall: 'high',
           factors: [],
           mitigation: [],
-          contingencyPlans: []
+          contingencyPlans: [],
         },
         implementationPlan: {
           phases: [],
-          timeline: { start: new Date(), end: new Date(Date.now() + 86400000), milestones: [], criticalPath: [] },
+          timeline: {
+            start: new Date(),
+            end: new Date(Date.now() + 86400000),
+            milestones: [],
+            criticalPath: [],
+          },
           resources: {
             cpu: { min: 0.1, max: 1, unit: 'cores' },
             memory: { min: 128, max: 1024, unit: 'MB' },
             storage: { min: 1, max: 10, unit: 'GB' },
             network: { min: 1, max: 100, unit: 'Mbps' },
-            specialized: []
+            specialized: [],
           },
           dependencies: [],
-          milestones: []
+          milestones: [],
         },
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      const mockDecisionEngineMakeDecision = jest.spyOn(mockDecisionEngine, 'makeDecision').mockResolvedValue(lowConfidenceDecision as any);
+      const mockDecisionEngineMakeDecision = jest
+        .spyOn(mockDecisionEngine, 'makeDecision')
+        .mockResolvedValue(lowConfidenceDecision as any);
 
-      const result = await engine.makeDecision(testDecisionContext as any, testDecisionOptions as any);
+      const result = await engine.makeDecision(
+        testDecisionContext as any,
+        testDecisionOptions as any
+      );
       expect(result).toEqual(lowConfidenceDecision);
       expect(result.confidence).toBeLessThan(0.5);
 
@@ -2461,17 +2724,17 @@ describe('AutonomousAIEngine', () => {
           memory: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
           storage: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
           network: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
-          specialized: []
+          specialized: [],
         },
         environment: { type: 'production', load: 0, conditions: {}, externalFactors: [] },
-        stakeholders: []
+        stakeholders: [],
       },
       situation: {
         description: 'Test situation',
         complexity: 'simple',
         uncertainty: 'low',
         novelty: 'familiar',
-        criticality: 'low'
+        criticality: 'low',
       },
       actions: [],
       outcomes: [],
@@ -2481,7 +2744,7 @@ describe('AutonomousAIEngine', () => {
         content: 'Test feedback',
         sentiment: 'positive',
         confidence: 1.0,
-        actionability: 'immediate'
+        actionability: 'immediate',
       },
       timestamp: new Date(),
       metadata: {
@@ -2489,8 +2752,8 @@ describe('AutonomousAIEngine', () => {
         category: 'performance',
         importance: 'medium',
         applicability: [],
-        sharingConsent: true
-      }
+        sharingConsent: true,
+      },
     };
 
     const testStrategy = {
@@ -2504,13 +2767,18 @@ describe('AutonomousAIEngine', () => {
         successCriteria: [],
         metrics: [],
         reviewSchedule: { frequency: 'weekly' as const, nextReview: new Date(), responsible: [] },
-        feedbackMechanisms: []
+        feedbackMechanisms: [],
       },
       adaptation: {
         triggers: [],
         conditions: [],
         strategies: [],
-        evaluation: { criteria: [], timeline: 30, responsible: 'system', rollbackPlan: { triggers: [], procedures: [], responsible: 'system', timeline: 30 } }
+        evaluation: {
+          criteria: [],
+          timeline: 30,
+          responsible: 'system',
+          rollbackPlan: { triggers: [], procedures: [], responsible: 'system', timeline: 30 },
+        },
       },
       metadata: {
         version: '1.0.0',
@@ -2519,8 +2787,8 @@ describe('AutonomousAIEngine', () => {
         lastModified: new Date(),
         tags: [],
         category: 'test',
-        scope: 'test'
-      }
+        scope: 'test',
+      },
     };
 
     const testLearningProgress = {
@@ -2532,12 +2800,14 @@ describe('AutonomousAIEngine', () => {
       adaptationQuality: 'high',
       knowledgeGrowth: 0.75,
       lastAdaptation: new Date(),
-      metrics: {}
+      metrics: {},
     };
 
     it('should learn from experience successfully', async () => {
       // Mock learnFromExperience method
-      const mockLearnFromExperience = jest.spyOn(mockLearningSystem, 'learnFromExperience').mockResolvedValue(undefined);
+      const mockLearnFromExperience = jest
+        .spyOn(mockLearningSystem, 'learnFromExperience')
+        .mockResolvedValue(undefined);
       const mockEmit = jest.spyOn(engine, 'emit').mockImplementation();
 
       await engine.learnFromExperience(testExperience);
@@ -2550,10 +2820,13 @@ describe('AutonomousAIEngine', () => {
       expect(mockLearnFromExperience).toHaveBeenCalledWith(testExperience);
 
       // Verify event emission
-      expect(mockEmit).toHaveBeenCalledWith('learning.completed', expect.objectContaining({
-        experience: testExperience,
-        timestamp: expect.any(Date)
-      }));
+      expect(mockEmit).toHaveBeenCalledWith(
+        'learning.completed',
+        expect.objectContaining({
+          experience: testExperience,
+          timestamp: expect.any(Date),
+        })
+      );
 
       // Restore mocks
       mockLearnFromExperience.mockRestore();
@@ -2562,7 +2835,9 @@ describe('AutonomousAIEngine', () => {
 
     it('should adapt strategy successfully', async () => {
       // Mock adaptStrategy method
-      const mockAdaptStrategy = jest.spyOn(mockLearningSystem, 'adaptStrategy').mockResolvedValue(undefined);
+      const mockAdaptStrategy = jest
+        .spyOn(mockLearningSystem, 'adaptStrategy')
+        .mockResolvedValue(undefined);
       const mockEmit = jest.spyOn(engine, 'emit').mockImplementation();
 
       await engine.adaptStrategy(testStrategy);
@@ -2575,10 +2850,13 @@ describe('AutonomousAIEngine', () => {
       expect(mockAdaptStrategy).toHaveBeenCalledWith(testStrategy);
 
       // Verify event emission
-      expect(mockEmit).toHaveBeenCalledWith('strategy.adapted', expect.objectContaining({
-        strategy: testStrategy,
-        timestamp: expect.any(Date)
-      }));
+      expect(mockEmit).toHaveBeenCalledWith(
+        'strategy.adapted',
+        expect.objectContaining({
+          strategy: testStrategy,
+          timestamp: expect.any(Date),
+        })
+      );
 
       // Restore mocks
       mockAdaptStrategy.mockRestore();
@@ -2587,7 +2865,9 @@ describe('AutonomousAIEngine', () => {
 
     it('should get learning progress successfully', () => {
       // Mock getProgress method
-      const mockGetProgress = jest.spyOn(mockLearningSystem, 'getProgress').mockReturnValue(testLearningProgress as any);
+      const mockGetProgress = jest
+        .spyOn(mockLearningSystem, 'getProgress')
+        .mockReturnValue(testLearningProgress as any);
 
       const progress = engine.getLearningProgress();
 
@@ -2608,13 +2888,15 @@ describe('AutonomousAIEngine', () => {
       const exp3 = { ...testExperience, id: 'exp-3', type: 'task_execution' as ExperienceType };
 
       // Mock learnFromExperience method
-      const mockLearnFromExperience = jest.spyOn(mockLearningSystem, 'learnFromExperience').mockResolvedValue(undefined);
+      const mockLearnFromExperience = jest
+        .spyOn(mockLearningSystem, 'learnFromExperience')
+        .mockResolvedValue(undefined);
 
       // Learn from all experiences
       await Promise.all([
         engine.learnFromExperience(exp1),
         engine.learnFromExperience(exp2),
-        engine.learnFromExperience(exp3)
+        engine.learnFromExperience(exp3),
       ]);
 
       // Verify all experiences were stored
@@ -2634,16 +2916,22 @@ describe('AutonomousAIEngine', () => {
       // Create multiple strategies
       const strategy1 = { ...testStrategy, id: 'strategy-1', type: 'learning' as StrategyType };
       const strategy2 = { ...testStrategy, id: 'strategy-2', type: 'performance' as StrategyType };
-      const strategy3 = { ...testStrategy, id: 'strategy-3', type: 'collaboration' as StrategyType };
+      const strategy3 = {
+        ...testStrategy,
+        id: 'strategy-3',
+        type: 'collaboration' as StrategyType,
+      };
 
       // Mock adaptStrategy method
-      const mockAdaptStrategy = jest.spyOn(mockLearningSystem, 'adaptStrategy').mockResolvedValue(undefined);
+      const mockAdaptStrategy = jest
+        .spyOn(mockLearningSystem, 'adaptStrategy')
+        .mockResolvedValue(undefined);
 
       // Adapt all strategies
       await Promise.all([
         engine.adaptStrategy(strategy1),
         engine.adaptStrategy(strategy2),
-        engine.adaptStrategy(strategy3)
+        engine.adaptStrategy(strategy3),
       ]);
 
       // Verify all strategies were stored
@@ -2693,18 +2981,34 @@ describe('AutonomousAIEngine', () => {
           memory: { min: 128, max: 1024, unit: 'MB' },
           storage: { min: 1, max: 10, unit: 'GB' },
           network: { min: 1, max: 100, unit: 'Mbps' },
-          specialized: []
+          specialized: [],
         },
-        steps: [{ id: 'step-1', name: 'Test Step', description: 'Test step description', type: 'data_processing' as const, parameters: {}, dependencies: [], estimatedDuration: 60, requiredResources: [] }],
+        steps: [
+          {
+            id: 'step-1',
+            name: 'Test Step',
+            description: 'Test step description',
+            type: 'data_processing' as const,
+            parameters: {},
+            dependencies: [],
+            estimatedDuration: 60,
+            requiredResources: [],
+          },
+        ],
         dependencies: [],
         metadata: {
           source: 'test',
           category: 'test',
           tags: [],
-          retryPolicy: { maxAttempts: 3, backoffStrategy: 'exponential', baseDelay: 1000, maxDelay: 10000 },
+          retryPolicy: {
+            maxAttempts: 3,
+            backoffStrategy: 'exponential',
+            baseDelay: 1000,
+            maxDelay: 10000,
+          },
           timeout: 30000,
-          qualityRequirements: {}
-        }
+          qualityRequirements: {},
+        },
       };
 
       const result = await engine.scheduleTask(testTask);
@@ -2732,10 +3036,21 @@ describe('AutonomousAIEngine', () => {
           memory: { min: 128, max: 1024, unit: 'MB' },
           storage: { min: 1, max: 10, unit: 'GB' },
           network: { min: 1, max: 100, unit: 'Mbps' },
-          specialized: []
+          specialized: [],
         },
-        steps: [{ id: 'step-1', name: 'Test Step', description: 'Test step description', type: 'data_processing' as const, parameters: {}, dependencies: [], estimatedDuration: 60, requiredResources: [] }],
-        dependencies: []
+        steps: [
+          {
+            id: 'step-1',
+            name: 'Test Step',
+            description: 'Test step description',
+            type: 'data_processing' as const,
+            parameters: {},
+            dependencies: [],
+            estimatedDuration: 60,
+            requiredResources: [],
+          },
+        ],
+        dependencies: [],
       });
 
       await engine.cancelTask(taskId);
@@ -2762,11 +3077,22 @@ describe('AutonomousAIEngine', () => {
           memory: { min: 128, max: 1024, unit: 'MB' },
           storage: { min: 1, max: 10, unit: 'GB' },
           network: { min: 1, max: 100, unit: 'Mbps' },
-          specialized: []
+          specialized: [],
         },
-        steps: [{ id: 'step-1', name: 'Test Step', description: 'Test step description', type: 'data_processing' as const, parameters: {}, dependencies: [], estimatedDuration: 60, requiredResources: [] }],
+        steps: [
+          {
+            id: 'step-1',
+            name: 'Test Step',
+            description: 'Test step description',
+            type: 'data_processing' as const,
+            parameters: {},
+            dependencies: [],
+            estimatedDuration: 60,
+            requiredResources: [],
+          },
+        ],
         dependencies: [],
-        metrics: []
+        metrics: [],
       });
 
       const status = engine.getTaskStatus(taskId);
@@ -2774,7 +3100,16 @@ describe('AutonomousAIEngine', () => {
     });
 
     it('should execute step successfully', async () => {
-      const step = { id: 'step-1', name: 'Test Step', description: 'Test step description', type: 'data_processing', parameters: {}, dependencies: [], estimatedDuration: 100, requiredResources: [] };
+      const step = {
+        id: 'step-1',
+        name: 'Test Step',
+        description: 'Test step description',
+        type: 'data_processing',
+        parameters: {},
+        dependencies: [],
+        estimatedDuration: 100,
+        requiredResources: [],
+      };
       const result = await engine['executeStep'](step);
 
       expect(result).toHaveProperty('stepId', 'step-1');
@@ -2789,10 +3124,19 @@ describe('AutonomousAIEngine', () => {
         stepId: 'step-1',
         duration: 100,
         resourceUsage: { cpu: 0.1, memory: 50, storage: 0, network: 0, specialized: {} },
-        result: { success: false, error: 'Step execution failed' }
+        result: { success: false, error: 'Step execution failed' },
       });
 
-      const step = { id: 'step-1', name: 'Test Step', description: 'Test step description', type: 'data_processing', parameters: {}, dependencies: [], estimatedDuration: 100, requiredResources: [] };
+      const step = {
+        id: 'step-1',
+        name: 'Test Step',
+        description: 'Test step description',
+        type: 'data_processing',
+        parameters: {},
+        dependencies: [],
+        estimatedDuration: 100,
+        requiredResources: [],
+      };
       const result = await engine['executeStep'](step);
 
       expect(result).toHaveProperty('stepId', 'step-1');
@@ -2807,17 +3151,19 @@ describe('AutonomousAIEngine', () => {
       const mockExecuteStep = jest.spyOn(engine, 'executeStep' as any);
 
       // Return different results for each step
-      mockExecuteStep.mockResolvedValueOnce({
-        stepId: 'step-1',
-        duration: 100,
-        resourceUsage: { cpu: 0.1, memory: 50, storage: 0, network: 0, specialized: {} },
-        result: { success: true, data: 'Step 1 completed' }
-      }).mockResolvedValueOnce({
-        stepId: 'step-2',
-        duration: 150,
-        resourceUsage: { cpu: 0.1, memory: 50, storage: 0, network: 0, specialized: {} },
-        result: { success: true, data: 'Step 2 completed' }
-      });
+      mockExecuteStep
+        .mockResolvedValueOnce({
+          stepId: 'step-1',
+          duration: 100,
+          resourceUsage: { cpu: 0.1, memory: 50, storage: 0, network: 0, specialized: {} },
+          result: { success: true, data: 'Step 1 completed' },
+        })
+        .mockResolvedValueOnce({
+          stepId: 'step-2',
+          duration: 150,
+          resourceUsage: { cpu: 0.1, memory: 50, storage: 0, network: 0, specialized: {} },
+          result: { success: true, data: 'Step 2 completed' },
+        });
 
       const task: Task = {
         id: 'test-task',
@@ -2833,21 +3179,44 @@ describe('AutonomousAIEngine', () => {
           memory: { min: 128, max: 1024, unit: 'MB' },
           storage: { min: 1, max: 10, unit: 'GB' },
           network: { min: 1, max: 100, unit: 'Mbps' },
-          specialized: []
+          specialized: [],
         },
         steps: [
-          { id: 'step-1', name: 'Step 1', description: 'Step 1 description', type: 'data_processing', parameters: {}, dependencies: [], estimatedDuration: 100, requiredResources: [] },
-          { id: 'step-2', name: 'Step 2', description: 'Step 2 description', type: 'data_processing', parameters: {}, dependencies: [], estimatedDuration: 100, requiredResources: [] }
+          {
+            id: 'step-1',
+            name: 'Step 1',
+            description: 'Step 1 description',
+            type: 'data_processing',
+            parameters: {},
+            dependencies: [],
+            estimatedDuration: 100,
+            requiredResources: [],
+          },
+          {
+            id: 'step-2',
+            name: 'Step 2',
+            description: 'Step 2 description',
+            type: 'data_processing',
+            parameters: {},
+            dependencies: [],
+            estimatedDuration: 100,
+            requiredResources: [],
+          },
         ],
         metadata: {
           source: 'system',
           category: 'test',
           tags: [],
-          retryPolicy: { maxAttempts: 3, backoffStrategy: 'exponential', baseDelay: 1000, maxDelay: 10000 },
+          retryPolicy: {
+            maxAttempts: 3,
+            backoffStrategy: 'exponential',
+            baseDelay: 1000,
+            maxDelay: 10000,
+          },
           timeout: 30000,
-          qualityRequirements: {}
+          qualityRequirements: {},
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       };
 
       const results = await engine['executeTaskSteps'](task);
@@ -2865,7 +3234,7 @@ describe('AutonomousAIEngine', () => {
     it('should aggregate step results correctly with all successful steps', async () => {
       const stepResults = [
         { stepId: 'step-1', result: { success: true, data: 'result-1' } },
-        { stepId: 'step-2', result: { success: true, data: 'result-2' } }
+        { stepId: 'step-2', result: { success: true, data: 'result-2' } },
       ];
 
       const aggregated = engine['aggregateStepResults'](stepResults);
@@ -2876,7 +3245,7 @@ describe('AutonomousAIEngine', () => {
         failedSteps: 0,
         overallSuccess: true,
         data: ['result-1', 'result-2'],
-        errors: []
+        errors: [],
       });
     });
 
@@ -2884,7 +3253,7 @@ describe('AutonomousAIEngine', () => {
       const stepResults = [
         { stepId: 'step-1', result: { success: true, data: 'result-1' } },
         { stepId: 'step-2', result: { success: false, error: 'error-1' } },
-        { stepId: 'step-3', result: { success: false, error: 'error-2' } }
+        { stepId: 'step-3', result: { success: false, error: 'error-2' } },
       ];
 
       const aggregated = engine['aggregateStepResults'](stepResults);
@@ -2895,7 +3264,7 @@ describe('AutonomousAIEngine', () => {
         failedSteps: 2,
         overallSuccess: false,
         data: ['result-1'],
-        errors: ['error-1', 'error-2']
+        errors: ['error-1', 'error-2'],
       });
     });
 
@@ -2910,14 +3279,14 @@ describe('AutonomousAIEngine', () => {
         failedSteps: 0,
         overallSuccess: true,
         data: [],
-        errors: []
+        errors: [],
       });
     });
 
     it('should aggregate step results correctly with only failed steps', async () => {
       const stepResults = [
         { stepId: 'step-1', result: { success: false, error: 'error-1' } },
-        { stepId: 'step-2', result: { success: false, error: 'error-2' } }
+        { stepId: 'step-2', result: { success: false, error: 'error-2' } },
       ];
 
       const aggregated = engine['aggregateStepResults'](stepResults);
@@ -2928,14 +3297,14 @@ describe('AutonomousAIEngine', () => {
         failedSteps: 2,
         overallSuccess: false,
         data: [],
-        errors: ['error-1', 'error-2']
+        errors: ['error-1', 'error-2'],
       });
     });
 
     it('should calculate task quality correctly with all successful steps', async () => {
       const stepResults = [
         { stepId: 'step-1', result: { success: true, data: 'result-1' } },
-        { stepId: 'step-2', result: { success: true, data: 'result-2' } }
+        { stepId: 'step-2', result: { success: true, data: 'result-2' } },
       ];
 
       const quality = engine['calculateTaskQuality'](stepResults);
@@ -2945,7 +3314,7 @@ describe('AutonomousAIEngine', () => {
         completeness: 1,
         relevance: 0.9,
         reliability: 1,
-        usability: 0.8
+        usability: 0.8,
       });
     });
 
@@ -2953,7 +3322,7 @@ describe('AutonomousAIEngine', () => {
       const stepResults = [
         { stepId: 'step-1', result: { success: true, data: 'result-1' } },
         { stepId: 'step-2', result: { success: true, data: 'result-2' } },
-        { stepId: 'step-3', result: { success: false, error: 'error-1' } }
+        { stepId: 'step-3', result: { success: false, error: 'error-1' } },
       ];
 
       const quality = engine['calculateTaskQuality'](stepResults);
@@ -2963,14 +3332,14 @@ describe('AutonomousAIEngine', () => {
         completeness: 2 / 3,
         relevance: 0.9,
         reliability: 2 / 3,
-        usability: 0.8
+        usability: 0.8,
       });
     });
 
     it('should calculate task quality correctly with all failed steps', async () => {
       const stepResults = [
         { stepId: 'step-1', result: { success: false, error: 'error-1' } },
-        { stepId: 'step-2', result: { success: false, error: 'error-2' } }
+        { stepId: 'step-2', result: { success: false, error: 'error-2' } },
       ];
 
       const quality = engine['calculateTaskQuality'](stepResults);
@@ -2980,7 +3349,7 @@ describe('AutonomousAIEngine', () => {
         completeness: 0,
         relevance: 0.9,
         reliability: 0,
-        usability: 0.8
+        usability: 0.8,
       });
     });
 
@@ -2995,7 +3364,7 @@ describe('AutonomousAIEngine', () => {
         completeness: 0,
         relevance: 0.9,
         reliability: 0,
-        usability: 0.8
+        usability: 0.8,
       });
     });
   });
@@ -3007,7 +3376,7 @@ describe('AutonomousAIEngine', () => {
         memory: { min: 128, max: 1024, unit: 'MB' },
         storage: { min: 1, max: 10, unit: 'GB' },
         network: { min: 1, max: 100, unit: 'Mbps' },
-        specialized: []
+        specialized: [],
       };
 
       const mockAllocation = { id: 'alloc-789' };
@@ -3030,12 +3399,12 @@ describe('AutonomousAIEngine', () => {
     });
 
     it('should get resource utilization', () => {
-      const mockUtilization = { 
+      const mockUtilization = {
         cpu: { allocated: 50, used: 30, available: 20, efficiency: 0.6, fragmentation: 0.1 },
         memory: { allocated: 60, used: 40, available: 20, efficiency: 0.7, fragmentation: 0.1 },
         storage: { allocated: 70, used: 50, available: 20, efficiency: 0.8, fragmentation: 0.1 },
         network: { allocated: 80, used: 60, available: 20, efficiency: 0.9, fragmentation: 0.1 },
-        specialized: []
+        specialized: [],
       };
       mockResourceManager.getResourceUtilization.mockReturnValue(mockUtilization);
 
@@ -3072,7 +3441,9 @@ describe('AutonomousAIEngine', () => {
 
       // Add decision to the engine
       (engine as any)._decisions.set(decisionId, mockDecision as any);
-      const evaluateDecisionSpy = jest.spyOn(mockDecisionEngine, 'evaluateDecision').mockResolvedValue(mockEvaluation as any);
+      const evaluateDecisionSpy = jest
+        .spyOn(mockDecisionEngine, 'evaluateDecision')
+        .mockResolvedValue(mockEvaluation as any);
 
       const result = await engine.evaluateDecision(decisionId);
       expect(result).toBe(mockEvaluation);
@@ -3092,7 +3463,7 @@ describe('AutonomousAIEngine', () => {
       const testContext = { id: 'context-123', description: 'Test Context' };
       const testOptions = [
         { id: 'option-1', description: 'Option 1', value: 100 },
-        { id: 'option-2', description: 'Option 2', value: 200 }
+        { id: 'option-2', description: 'Option 2', value: 200 },
       ];
 
       const mockDecision = {
@@ -3100,7 +3471,7 @@ describe('AutonomousAIEngine', () => {
         contextId: testContext.id,
         optionId: 'option-1',
         reasoning: 'Selected option 1',
-        confidence: 0.85
+        confidence: 0.85,
       };
 
       mockDecisionEngine.makeDecision.mockResolvedValue(mockDecision as any);
@@ -3126,12 +3497,12 @@ describe('AutonomousAIEngine', () => {
           successCriteria: [],
           metrics: [],
           reviewSchedule: { frequency: 'weekly', nextReview: new Date(), responsible: [] },
-          feedbackMechanisms: []
+          feedbackMechanisms: [],
         },
         adaptation: {
           triggers: [],
           actions: [],
-          evaluation: { successCriteria: [], metrics: [] }
+          evaluation: { successCriteria: [], metrics: [] },
         },
         metadata: {
           version: '1.0.0',
@@ -3140,8 +3511,8 @@ describe('AutonomousAIEngine', () => {
           lastModified: new Date(),
           tags: [],
           category: 'test',
-          scope: 'test'
-        }
+          scope: 'test',
+        },
       };
 
       await engine.adaptStrategy(testStrategy as any);
@@ -3201,7 +3572,9 @@ describe('AutonomousAIEngine', () => {
 
       mockCollaborationManager.collaborate.mockRejectedValue(mockError);
 
-      await expect(engine.collaborateWith(otherEngines, testTask as any)).rejects.toThrow('Collaboration failed');
+      await expect(engine.collaborateWith(otherEngines, testTask as any)).rejects.toThrow(
+        'Collaboration failed'
+      );
       expect(mockCollaborationManager.collaborate).toHaveBeenCalledWith(otherEngines, testTask);
     });
 
@@ -3209,7 +3582,7 @@ describe('AutonomousAIEngine', () => {
       const testMessages = [
         { id: 'msg-1', content: 'Message 1' },
         { id: 'msg-2', content: 'Message 2' },
-        { id: 'msg-3', content: 'Message 3' }
+        { id: 'msg-3', content: 'Message 3' },
       ];
 
       for (const message of testMessages) {
@@ -3218,7 +3591,7 @@ describe('AutonomousAIEngine', () => {
 
       expect((engine as any)._messages).toEqual(testMessages);
       expect(mockCollaborationManager.sendMessage).toHaveBeenCalledTimes(3);
-      testMessages.forEach(message => {
+      testMessages.forEach((message) => {
         expect(mockCollaborationManager.sendMessage).toHaveBeenCalledWith(message);
       });
     });
@@ -3239,20 +3612,22 @@ describe('AutonomousAIEngine', () => {
         participants: ['engine-1', 'engine-2'],
         goals: ['goal-1'],
         resources: [],
-        constraints: []
+        constraints: [],
       };
 
       const mockCollaborationResult = {
         id: 'collab-123',
         participants: collaborationConfig.participants,
-        status: 'initialized'
+        status: 'initialized',
       };
 
       mockCollaborationManager.initiateCollaboration.mockResolvedValue(mockCollaborationResult);
 
       const result = await engine.initiateCollaboration(collaborationConfig as any);
       expect(result).toEqual(mockCollaborationResult);
-      expect(mockCollaborationManager.initiateCollaboration).toHaveBeenCalledWith(collaborationConfig);
+      expect(mockCollaborationManager.initiateCollaboration).toHaveBeenCalledWith(
+        collaborationConfig
+      );
     });
 
     it('should get collaboration status', async () => {
@@ -3261,7 +3636,7 @@ describe('AutonomousAIEngine', () => {
         id: collaborationId,
         status: 'active',
         participants: ['engine-1', 'engine-2'],
-        progress: 50
+        progress: 50,
       };
 
       mockCollaborationManager.getCollaborationStatus.mockResolvedValue(mockStatus);
@@ -3277,7 +3652,9 @@ describe('AutonomousAIEngine', () => {
 
       mockCollaborationManager.getCollaborationStatus.mockRejectedValue(mockError);
 
-      await expect(engine.getCollaborationStatus(collaborationId)).rejects.toThrow('Collaboration not found');
+      await expect(engine.getCollaborationStatus(collaborationId)).rejects.toThrow(
+        'Collaboration not found'
+      );
       expect(mockCollaborationManager.getCollaborationStatus).toHaveBeenCalledWith(collaborationId);
     });
   });
@@ -3374,13 +3751,13 @@ describe('AutonomousAIEngine', () => {
         subsystems: {
           messageBus: 'healthy',
           taskScheduler: 'warning',
-          stateManager: 'error'
+          stateManager: 'error',
         },
         components: [
           { component: 'taskScheduler', status: 'warning', details: {} },
-          { component: 'stateManager', status: 'error', details: {} }
+          { component: 'stateManager', status: 'error', details: {} },
         ],
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
       mockMonitoringSystem.getHealthStatus.mockReturnValue(mockHealthStatus);
 
@@ -3415,7 +3792,15 @@ describe('AutonomousAIEngine', () => {
           updatedAt: new Date(),
           objective: 'Critical objective',
           keyResults: [
-            { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0, unit: '%', weight: 1.0, status: 'pending' }
+            {
+              id: 'kr-1',
+              description: 'Key Result 1',
+              target: 100,
+              current: 0,
+              unit: '%',
+              weight: 1.0,
+              status: 'pending',
+            },
           ],
           constraints: [],
           dependencies: [],
@@ -3425,8 +3810,8 @@ describe('AutonomousAIEngine', () => {
             tags: [],
             category: 'test',
             requiredResources: [],
-            successCriteria: []
-          }
+            successCriteria: [],
+          },
         },
         {
           id: 'goal-high',
@@ -3439,7 +3824,15 @@ describe('AutonomousAIEngine', () => {
           updatedAt: new Date(),
           objective: 'High priority objective',
           keyResults: [
-            { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0, unit: '%', weight: 1.0, status: 'pending' }
+            {
+              id: 'kr-1',
+              description: 'Key Result 1',
+              target: 100,
+              current: 0,
+              unit: '%',
+              weight: 1.0,
+              status: 'pending',
+            },
           ],
           constraints: [],
           dependencies: [],
@@ -3449,8 +3842,8 @@ describe('AutonomousAIEngine', () => {
             tags: [],
             category: 'test',
             requiredResources: [],
-            successCriteria: []
-          }
+            successCriteria: [],
+          },
         },
         {
           id: 'goal-medium',
@@ -3463,7 +3856,15 @@ describe('AutonomousAIEngine', () => {
           updatedAt: new Date(),
           objective: 'Medium priority objective',
           keyResults: [
-            { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0, unit: 'percentage', weight: 1, status: 'pending' }
+            {
+              id: 'kr-1',
+              description: 'Key Result 1',
+              target: 100,
+              current: 0,
+              unit: 'percentage',
+              weight: 1,
+              status: 'pending',
+            },
           ],
           constraints: [],
           dependencies: [],
@@ -3473,8 +3874,8 @@ describe('AutonomousAIEngine', () => {
             tags: [],
             category: 'test',
             requiredResources: [],
-            successCriteria: []
-          }
+            successCriteria: [],
+          },
         },
         {
           id: 'goal-low',
@@ -3487,7 +3888,15 @@ describe('AutonomousAIEngine', () => {
           updatedAt: new Date(),
           objective: 'Low priority objective',
           keyResults: [
-            { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0, unit: '%', weight: 1.0, status: 'pending' }
+            {
+              id: 'kr-1',
+              description: 'Key Result 1',
+              target: 100,
+              current: 0,
+              unit: '%',
+              weight: 1.0,
+              status: 'pending',
+            },
           ],
           constraints: [],
           dependencies: [],
@@ -3497,9 +3906,9 @@ describe('AutonomousAIEngine', () => {
             tags: [],
             category: 'test',
             requiredResources: [],
-            successCriteria: []
-          }
-        }
+            successCriteria: [],
+          },
+        },
       ];
 
       expect((engine as any).getGoalCriticality(testGoals[0])).toBe('critical');
@@ -3528,7 +3937,15 @@ describe('AutonomousAIEngine', () => {
         updatedAt: new Date(),
         objective: 'Main test objective',
         keyResults: [
-          { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0, unit: '%', weight: 1.0, status: 'pending' }
+          {
+            id: 'kr-1',
+            description: 'Key Result 1',
+            target: 100,
+            current: 0,
+            unit: '%',
+            weight: 1.0,
+            status: 'pending',
+          },
         ],
         constraints: [],
         dependencies: [],
@@ -3538,8 +3955,8 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           category: 'test',
           requiredResources: [],
-          successCriteria: []
-        }
+          successCriteria: [],
+        },
       };
 
       expect(() => (engine as any).validateGoal(validGoal)).not.toThrow();
@@ -3555,9 +3972,7 @@ describe('AutonomousAIEngine', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         objective: 'Main test objective',
-        keyResults: [
-          { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0 }
-        ],
+        keyResults: [{ id: 'kr-1', description: 'Key Result 1', target: 100, current: 0 }],
         constraints: [],
         dependencies: [],
         progress: 0,
@@ -3566,11 +3981,13 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           category: 'test',
           requiredResources: [],
-          successCriteria: []
-        }
+          successCriteria: [],
+        },
       };
 
-      expect(() => (engine as any).validateGoal(invalidGoal)).toThrow('Goal must have id, name, and objective');
+      expect(() => (engine as any).validateGoal(invalidGoal)).toThrow(
+        'Goal must have id, name, and objective'
+      );
     });
 
     it('should validate goal correctly with invalid goal (missing name)', () => {
@@ -3583,9 +4000,7 @@ describe('AutonomousAIEngine', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         objective: 'Main test objective',
-        keyResults: [
-          { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0 }
-        ],
+        keyResults: [{ id: 'kr-1', description: 'Key Result 1', target: 100, current: 0 }],
         constraints: [],
         dependencies: [],
         progress: 0,
@@ -3594,11 +4009,13 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           category: 'test',
           requiredResources: [],
-          successCriteria: []
-        }
+          successCriteria: [],
+        },
       };
 
-      expect(() => (engine as any).validateGoal(invalidGoal)).toThrow('Goal must have id, name, and objective');
+      expect(() => (engine as any).validateGoal(invalidGoal)).toThrow(
+        'Goal must have id, name, and objective'
+      );
     });
 
     it('should validate goal correctly with invalid goal (missing objective)', () => {
@@ -3611,9 +4028,7 @@ describe('AutonomousAIEngine', () => {
         status: 'active',
         createdAt: new Date(),
         updatedAt: new Date(),
-        keyResults: [
-          { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0 }
-        ],
+        keyResults: [{ id: 'kr-1', description: 'Key Result 1', target: 100, current: 0 }],
         constraints: [],
         dependencies: [],
         progress: 0,
@@ -3622,11 +4037,13 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           category: 'test',
           requiredResources: [],
-          successCriteria: []
-        }
+          successCriteria: [],
+        },
       };
 
-      expect(() => (engine as any).validateGoal(invalidGoal)).toThrow('Goal must have id, name, and objective');
+      expect(() => (engine as any).validateGoal(invalidGoal)).toThrow(
+        'Goal must have id, name, and objective'
+      );
     });
 
     it('should validate goal correctly with invalid goal (no key results)', () => {
@@ -3649,11 +4066,13 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           category: 'test',
           requiredResources: [],
-          successCriteria: []
-        }
+          successCriteria: [],
+        },
       };
 
-      expect(() => (engine as any).validateGoal(invalidGoal)).toThrow('Goal must have at least one key result');
+      expect(() => (engine as any).validateGoal(invalidGoal)).toThrow(
+        'Goal must have at least one key result'
+      );
     });
 
     it('should validate task correctly', () => {
@@ -3690,18 +4109,34 @@ describe('AutonomousAIEngine', () => {
           memory: { min: 128, max: 1024, unit: 'MB' },
           storage: { min: 1, max: 10, unit: 'GB' },
           network: { min: 1, max: 100, unit: 'Mbps' },
-          specialized: []
+          specialized: [],
         },
-        steps: [{ id: 'step-1', name: 'Test Step', description: 'Test step description', type: 'data_processing' as const, parameters: {}, dependencies: [], estimatedDuration: 60, requiredResources: [] }],
+        steps: [
+          {
+            id: 'step-1',
+            name: 'Test Step',
+            description: 'Test step description',
+            type: 'data_processing' as const,
+            parameters: {},
+            dependencies: [],
+            estimatedDuration: 60,
+            requiredResources: [],
+          },
+        ],
         dependencies: [],
         metadata: {
           source: 'test',
           category: 'test',
           tags: [],
-          retryPolicy: { maxAttempts: 3, backoffStrategy: 'exponential', baseDelay: 1000, maxDelay: 10000 },
+          retryPolicy: {
+            maxAttempts: 3,
+            backoffStrategy: 'exponential',
+            baseDelay: 1000,
+            maxDelay: 10000,
+          },
           timeout: 30000,
-          qualityRequirements: {}
-        }
+          qualityRequirements: {},
+        },
       };
 
       const stepResults = [{ result: { success: true }, duration: 100 }];
@@ -3735,7 +4170,7 @@ describe('AutonomousAIEngine', () => {
       const stepResults = [
         { result: { success: true, data: 'Step 1' } },
         { result: { success: true, data: 'Step 2' } },
-        { result: { success: false, error: 'Error' } }
+        { result: { success: false, error: 'Error' } },
       ];
 
       const result = (engine as any).aggregateStepResults(stepResults);
@@ -3802,12 +4237,14 @@ describe('AutonomousAIEngine', () => {
         subsystems: {
           messageBus: 'healthy',
           taskScheduler: 'healthy',
-          stateManager: 'healthy'
+          stateManager: 'healthy',
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
-      const mockGetHealthStatus = jest.spyOn(mockMonitoringSystem, 'getHealthStatus').mockReturnValue(mockHealthStatus);
+      const mockGetHealthStatus = jest
+        .spyOn(mockMonitoringSystem, 'getHealthStatus')
+        .mockReturnValue(mockHealthStatus);
       const mockUpdateMetrics = jest.spyOn(engine as any, 'updateMetrics').mockImplementation();
 
       (engine as any).performHealthCheck();
@@ -3830,17 +4267,19 @@ describe('AutonomousAIEngine', () => {
         rss: 1024 * 1024 * 200, // 200MB
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 50, // 50MB
-        external: 1024 * 1024 * 10 // 10MB
+        external: 1024 * 1024 * 10, // 10MB
       }) as any;
 
       // Mock resourceManager.getResourceUtilization
-      const mockResourceUtilization = jest.spyOn(mockResourceManager, 'getResourceUtilization').mockReturnValue({
-        cpu: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
-        memory: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
-        storage: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
-        network: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
-        specialized: []
-      });
+      const mockResourceUtilization = jest
+        .spyOn(mockResourceManager, 'getResourceUtilization')
+        .mockReturnValue({
+          cpu: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
+          memory: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
+          storage: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
+          network: { allocated: 0.5, used: 0.3, available: 0.2, percentage: 60 },
+          specialized: [],
+        });
 
       // Set initial metrics
       (engine as any)._metrics = {
@@ -3851,7 +4290,7 @@ describe('AutonomousAIEngine', () => {
         errorRate: 0,
         averageResponseTime: 0,
         resourceUtilization: { cpu: 0, memory: 0 },
-        taskSuccessRate: 0
+        taskSuccessRate: 0,
       };
 
       (engine as any).updateMetrics();
@@ -3883,7 +4322,7 @@ describe('AutonomousAIEngine', () => {
           percentage: 60,
           used: 0.3,
         },
-        specialized: []
+        specialized: [],
       });
 
       // Restore original functions
@@ -3897,7 +4336,9 @@ describe('AutonomousAIEngine', () => {
       const mockSetInterval = jest.fn();
       global.setInterval = mockSetInterval;
 
-      const mockPerformHealthCheck = jest.spyOn(engine as any, 'performHealthCheck').mockImplementation();
+      const mockPerformHealthCheck = jest
+        .spyOn(engine as any, 'performHealthCheck')
+        .mockImplementation();
 
       (engine as any).startHealthChecking();
 
@@ -3931,7 +4372,7 @@ describe('AutonomousAIEngine', () => {
         (engine as any)._metrics = {
           totalTasksExecuted: 0,
           successfulTasks: 0,
-          failedTasks: 0
+          failedTasks: 0,
         };
 
         // Mock console.log
@@ -3941,7 +4382,7 @@ describe('AutonomousAIEngine', () => {
 
         const testEvent = {
           result: { status: 'completed' },
-          task: { name: 'Test Task' }
+          task: { name: 'Test Task' },
         };
 
         // Test successful task
@@ -3967,7 +4408,13 @@ describe('AutonomousAIEngine', () => {
           id: 'decision-456',
           contextId: 'context-123',
           selectedOption: 'option-1',
-          reasoning: { criteria: ['Test reasoning'], weights: { 'factor1': 0.9 }, scores: { 'factor1': 0.8 }, methodology: 'utility_theory', assumptions: ['Test assumption'] },
+          reasoning: {
+            criteria: ['Test reasoning'],
+            weights: { factor1: 0.9 },
+            scores: { factor1: 0.8 },
+            methodology: 'utility_theory',
+            assumptions: ['Test assumption'],
+          },
           confidence: 0.9,
           alternatives: ['option-2', 'option-3'],
           expectedValue: 0.8,
@@ -3979,13 +4426,13 @@ describe('AutonomousAIEngine', () => {
               memory: { min: 512, unit: 'MB' },
               storage: { min: 1024, unit: 'MB' },
               network: { min: 1, unit: 'Mbps' },
-              specialized: []
+              specialized: [],
             },
             timeline: { start: new Date(), end: new Date(), milestones: [], criticalPath: [] },
             dependencies: [],
-            milestones: []
+            milestones: [],
           },
-          timestamp: new Date()
+          timestamp: new Date(),
         };
 
         // Mock console.log
@@ -4015,22 +4462,22 @@ describe('AutonomousAIEngine', () => {
               memory: { allocated: 8192, used: 4096, available: 4096, percentage: 50 },
               storage: { allocated: 1024, used: 512, available: 512, percentage: 50 },
               network: { allocated: 1000, used: 500, available: 500, percentage: 50 },
-              specialized: []
+              specialized: [],
             },
             environment: {
               type: 'development',
               load: 0.5,
               conditions: {},
-              externalFactors: []
+              externalFactors: [],
             },
-            stakeholders: ['test-user']
+            stakeholders: ['test-user'],
           },
           situation: {
             description: 'Test situation',
             complexity: 'complicated',
             uncertainty: 'low',
             novelty: 'familiar',
-            criticality: 'medium'
+            criticality: 'medium',
           },
           actions: [],
           outcomes: [],
@@ -4040,7 +4487,7 @@ describe('AutonomousAIEngine', () => {
             content: 'Test feedback',
             sentiment: 'positive',
             confidence: 0.9,
-            actionability: 'immediate'
+            actionability: 'immediate',
           },
           timestamp: new Date(),
           metadata: {
@@ -4048,8 +4495,8 @@ describe('AutonomousAIEngine', () => {
             category: 'test',
             importance: 'medium',
             applicability: ['test'],
-            sharingConsent: false
-          }
+            sharingConsent: false,
+          },
         };
 
         // Mock console.log
@@ -4060,7 +4507,9 @@ describe('AutonomousAIEngine', () => {
         (engine as any).handleLearningCompleted({ experience: testExperience });
 
         // Verify console log was called
-        expect(mockLog).toHaveBeenCalledWith(`🎓 Learning completed from experience: ${testExperience.id}`);
+        expect(mockLog).toHaveBeenCalledWith(
+          `🎓 Learning completed from experience: ${testExperience.id}`
+        );
 
         // Restore original console.log
         console.log = originalLog;
@@ -4080,21 +4529,21 @@ describe('AutonomousAIEngine', () => {
           requirements: {
             cpu: {
               min: 1,
-              unit: 'core'
+              unit: 'core',
             },
             memory: {
               min: 512,
-              unit: 'MB'
+              unit: 'MB',
             },
             storage: {
               min: 1024,
-              unit: 'MB'
+              unit: 'MB',
             },
             network: {
               min: 100,
-              unit: 'Mbps'
+              unit: 'Mbps',
             },
-            specialized: []
+            specialized: [],
           },
           createdAt: new Date(),
           metadata: {
@@ -4105,7 +4554,7 @@ describe('AutonomousAIEngine', () => {
               maxAttempts: 3,
               backoffStrategy: 'exponential',
               baseDelay: 1000,
-              maxDelay: 10000
+              maxDelay: 10000,
             },
             timeout: 30000,
             qualityRequirements: {
@@ -4113,9 +4562,9 @@ describe('AutonomousAIEngine', () => {
               precision: 0.8,
               recall: 0.85,
               latency: 100,
-              throughput: 1000
-            }
-          }
+              throughput: 1000,
+            },
+          },
         };
 
         // Mock console.log
@@ -4137,7 +4586,7 @@ describe('AutonomousAIEngine', () => {
         (engine as any)._metrics = {
           totalTasksExecuted: 5,
           failedTasks: 2,
-          errorRate: 0
+          errorRate: 0,
         };
 
         // Mock console.error
@@ -4158,7 +4607,7 @@ describe('AutonomousAIEngine', () => {
         (engine as any)._metrics = {
           totalTasksExecuted: 0,
           failedTasks: 1,
-          errorRate: 0
+          errorRate: 0,
         };
 
         (engine as any).handleError(testError);
@@ -4311,51 +4760,55 @@ describe('AutonomousAIEngine', () => {
             memory: { allocated: 8192, used: 4096, available: 4096, percentage: 50 },
             storage: { allocated: 1024, used: 512, available: 512, percentage: 50 },
             network: { allocated: 1000, used: 500, available: 500, percentage: 50 },
-            specialized: []
+            specialized: [],
           },
           environment: {
             type: 'development',
             load: 0.5,
             conditions: {},
-            externalFactors: []
+            externalFactors: [],
           },
-          stakeholders: ['test-user']
+          stakeholders: ['test-user'],
         },
         situation: {
           description: 'Test situation',
           complexity: 'complicated',
           uncertainty: 'low',
           novelty: 'familiar',
-          criticality: 'medium'
+          criticality: 'medium',
         },
-        actions: [{
-          id: 'action-1',
-          type: 'adaptation',
-          description: 'Test action',
-          parameters: {},
-          reasoning: 'Test reasoning'
-        }],
-        outcomes: [{
-          id: 'outcome-1',
-          type: 'success',
-          value: { accuracy: 0.9 },
-          quality: 'good',
-          duration: 1000,
-          resourceUsage: {
-            cpu: 50,
-            memory: 1024,
-            storage: 512,
-            network: 100,
-            specialized: {}
-          }
-        }],
+        actions: [
+          {
+            id: 'action-1',
+            type: 'adaptation',
+            description: 'Test action',
+            parameters: {},
+            reasoning: 'Test reasoning',
+          },
+        ],
+        outcomes: [
+          {
+            id: 'outcome-1',
+            type: 'success',
+            value: { accuracy: 0.9 },
+            quality: 'good',
+            duration: 1000,
+            resourceUsage: {
+              cpu: 50,
+              memory: 1024,
+              storage: 512,
+              network: 100,
+              specialized: {},
+            },
+          },
+        ],
         feedback: {
           source: 'test',
           type: 'user',
           content: 'Test feedback',
           sentiment: 'positive',
           confidence: 0.9,
-          actionability: 'immediate'
+          actionability: 'immediate',
         },
         timestamp: new Date(),
         metadata: {
@@ -4363,8 +4816,8 @@ describe('AutonomousAIEngine', () => {
           category: 'performance',
           importance: 'medium',
           applicability: [],
-          sharingConsent: true
-        }
+          sharingConsent: true,
+        },
       };
 
       // Mock the emit method
@@ -4387,18 +4840,36 @@ describe('AutonomousAIEngine', () => {
         tactics: [],
         evaluation: {
           metrics: [
-            { name: 'effectiveness', type: 'lagging', measurement: 'ratio', target: 1, current: 0.8 },
+            {
+              name: 'effectiveness',
+              type: 'lagging',
+              measurement: 'ratio',
+              target: 1,
+              current: 0.8,
+            },
             { name: 'efficiency', type: 'lagging', measurement: 'ratio', target: 1, current: 0.7 },
-            { name: 'adaptability', type: 'leading', measurement: 'ratio', target: 1, current: 0.9 },
-            { name: 'sustainability', type: 'leading', measurement: 'ratio', target: 1, current: 0.6 }
+            {
+              name: 'adaptability',
+              type: 'leading',
+              measurement: 'ratio',
+              target: 1,
+              current: 0.9,
+            },
+            {
+              name: 'sustainability',
+              type: 'leading',
+              measurement: 'ratio',
+              target: 1,
+              current: 0.6,
+            },
           ],
           reviewSchedule: {
             frequency: 'weekly',
             nextReview: new Date(),
-            responsible: ['system']
+            responsible: ['system'],
           },
           successCriteria: [],
-          feedbackMechanisms: []
+          feedbackMechanisms: [],
         },
         adaptation: {
           triggers: [],
@@ -4412,9 +4883,9 @@ describe('AutonomousAIEngine', () => {
               triggers: [],
               procedures: [],
               responsible: 'system',
-              timeline: 60
-            }
-          }
+              timeline: 60,
+            },
+          },
         },
         metadata: {
           version: '1.0',
@@ -4423,8 +4894,8 @@ describe('AutonomousAIEngine', () => {
           lastModified: new Date(),
           tags: [],
           category: 'test',
-          scope: 'local'
-        }
+          scope: 'local',
+        },
       };
 
       // Mock the emit method
@@ -4531,7 +5002,15 @@ describe('AutonomousAIEngine', () => {
         updatedAt: new Date(),
         objective: 'Test objective',
         keyResults: [
-          { id: 'kr-1', description: 'Key Result 1', target: 100, current: 0, unit: '%', weight: 1.0, status: 'pending' }
+          {
+            id: 'kr-1',
+            description: 'Key Result 1',
+            target: 100,
+            current: 0,
+            unit: '%',
+            weight: 1.0,
+            status: 'pending',
+          },
         ],
         constraints: [],
         dependencies: [],
@@ -4541,8 +5020,8 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           category: 'test',
           requiredResources: [],
-          successCriteria: []
-        }
+          successCriteria: [],
+        },
       };
 
       // Call the method
@@ -4550,11 +5029,13 @@ describe('AutonomousAIEngine', () => {
 
       // Verify executeTask was called with the created task
       expect(executeTaskMock).toHaveBeenCalledTimes(1);
-      expect(executeTaskMock).toHaveBeenCalledWith(expect.objectContaining({
-        name: 'Execute goal: Test Goal',
-        goalId: 'goal-1',
-        priority: 'medium'
-      }));
+      expect(executeTaskMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Execute goal: Test Goal',
+          goalId: 'goal-1',
+          priority: 'medium',
+        })
+      );
     });
 
     it('should record task experience correctly', async () => {
@@ -4566,7 +5047,7 @@ describe('AutonomousAIEngine', () => {
         cpu: { usage: 0.5, capacity: 4 },
         memory: { usage: 1024, capacity: 8192 },
         storage: { usage: 10240, capacity: 102400 },
-        network: { usage: 10, capacity: 100 }
+        network: { usage: 10, capacity: 100 },
       });
       (engine as any).resourceManager.getResourceUtilization = getResourceUtilizationMock;
 
@@ -4590,7 +5071,7 @@ describe('AutonomousAIEngine', () => {
           memory: { min: 128, unit: 'MB' },
           storage: { min: 0, unit: 'GB' },
           network: { min: 0, unit: 'Mbps' },
-          specialized: []
+          specialized: [],
         },
         steps: [
           {
@@ -4601,8 +5082,8 @@ describe('AutonomousAIEngine', () => {
             parameters: { target: 100 },
             dependencies: [],
             estimatedDuration: 60000,
-            requiredResources: []
-          }
+            requiredResources: [],
+          },
         ],
         metadata: {
           source: 'goal_execution',
@@ -4612,17 +5093,17 @@ describe('AutonomousAIEngine', () => {
             maxAttempts: 3,
             backoffStrategy: 'exponential',
             baseDelay: 1000,
-            maxDelay: 10000
+            maxDelay: 10000,
           },
           timeout: 3600000,
           qualityRequirements: {
             accuracy: 0.9,
-            latency: 1000
-          }
+            latency: 1000,
+          },
         },
         createdAt: new Date(),
         startedAt: new Date(),
-        completedAt: new Date()
+        completedAt: new Date(),
       };
 
       const testTaskResult: TaskResult = {
@@ -4636,17 +5117,17 @@ describe('AutonomousAIEngine', () => {
             memory: 256,
             storage: 0,
             network: 5,
-            specialized: {}
+            specialized: {},
           },
           quality: {
             accuracy: 0.9,
             completeness: 1.0,
             relevance: 1.0,
             reliability: 1.0,
-            usability: 1.0
+            usability: 1.0,
           },
           errors: [],
-          warnings: []
+          warnings: [],
         },
         artifacts: [],
         metrics: {
@@ -4656,16 +5137,22 @@ describe('AutonomousAIEngine', () => {
             memory: { allocated: 512, used: 256, available: 256, percentage: 50 },
             storage: { allocated: 1024, used: 0, available: 1024, percentage: 0 },
             network: { allocated: 10, used: 5, available: 5, percentage: 50 },
-            specialized: []
+            specialized: [],
           },
           stepMetrics: [],
           performance: {
             throughput: 100,
             latency: { p50: 1000, p95: 1500, p99: 2000, average: 1000, min: 500, max: 2000 },
-            memory: { total: 512, used: 256, free: 256, cached: 0, heap: { total: 512, used: 256, limit: 1024 } },
-            cpu: { utilization: 0.2, loadAverage: [0.5, 0.7, 0.9] }
-          }
-        }
+            memory: {
+              total: 512,
+              used: 256,
+              free: 256,
+              cached: 0,
+              heap: { total: 512, used: 256, limit: 1024 },
+            },
+            cpu: { utilization: 0.2, loadAverage: [0.5, 0.7, 0.9] },
+          },
+        },
       };
 
       // Call the method
@@ -4673,15 +5160,17 @@ describe('AutonomousAIEngine', () => {
 
       // Verify methods were called
       expect(learnFromExperienceMock).toHaveBeenCalledTimes(1);
-      expect(learnFromExperienceMock).toHaveBeenCalledWith(expect.objectContaining({
-        type: 'success',
-        context: expect.objectContaining({
-          goals: ['goal-1']
-        }),
-        situation: expect.objectContaining({
-          description: 'Task executed: Test Task'
+      expect(learnFromExperienceMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'success',
+          context: expect.objectContaining({
+            goals: ['goal-1'],
+          }),
+          situation: expect.objectContaining({
+            description: 'Task executed: Test Task',
+          }),
         })
-      }));
+      );
     });
 
     it('should connect subsystem events correctly', async () => {
@@ -4718,9 +5207,9 @@ describe('AutonomousAIEngine', () => {
             cpu: 0.2,
             memory: 128,
             storage: 0,
-            network: 5
+            network: 5,
           },
-          result: { value: 100 }
+          result: { value: 100 },
         },
         {
           stepId: 'step-2',
@@ -4729,10 +5218,10 @@ describe('AutonomousAIEngine', () => {
             cpu: 0.4,
             memory: 256,
             storage: 0,
-            network: 10
+            network: 10,
           },
-          result: { value: 200 }
-        }
+          result: { value: 200 },
+        },
       ];
 
       const metrics = (engine as any).calculatePerformanceMetrics(stepResults);
@@ -4774,7 +5263,7 @@ describe('AutonomousAIEngine', () => {
     it('should get task criticality correctly', async () => {
       const engine = await createAutonomousEngine();
 
-      const criticalTask = { 
+      const criticalTask = {
         id: 'task-critical',
         name: 'Critical Task',
         description: 'A critical task',
@@ -4782,7 +5271,13 @@ describe('AutonomousAIEngine', () => {
         priority: 'critical' as const,
         status: 'pending' as const,
         dependencies: [],
-        requirements: { cpu: { min: 2, unit: 'cores' }, memory: { min: 1024, unit: 'MB' }, storage: { min: 1, unit: 'GB' }, network: { min: 100, unit: 'Mbps' }, specialized: [] },
+        requirements: {
+          cpu: { min: 2, unit: 'cores' },
+          memory: { min: 1024, unit: 'MB' },
+          storage: { min: 1, unit: 'GB' },
+          network: { min: 100, unit: 'Mbps' },
+          specialized: [],
+        },
         steps: [],
         metadata: {
           source: 'test',
@@ -4790,11 +5285,11 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           retryPolicy: { maxAttempts: 3, backoffMs: 1000 },
           timeout: 5000,
-          qualityRequirements: { accuracy: 0.95, latency: 1000, throughput: 100 }
+          qualityRequirements: { accuracy: 0.95, latency: 1000, throughput: 100 },
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       } as Task;
-      const highTask = { 
+      const highTask = {
         id: 'task-high',
         name: 'High Task',
         description: 'A high priority task',
@@ -4802,7 +5297,13 @@ describe('AutonomousAIEngine', () => {
         priority: 'high' as const,
         status: 'pending' as const,
         dependencies: [],
-        requirements: { cpu: { min: 1, unit: 'cores' }, memory: { min: 512, unit: 'MB' }, storage: { min: 1, unit: 'GB' }, network: { min: 50, unit: 'Mbps' }, specialized: [] },
+        requirements: {
+          cpu: { min: 1, unit: 'cores' },
+          memory: { min: 512, unit: 'MB' },
+          storage: { min: 1, unit: 'GB' },
+          network: { min: 50, unit: 'Mbps' },
+          specialized: [],
+        },
         steps: [],
         metadata: {
           source: 'test',
@@ -4810,11 +5311,11 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           retryPolicy: { maxAttempts: 3, backoffMs: 1000 },
           timeout: 5000,
-          qualityRequirements: { accuracy: 0.95, latency: 1000, throughput: 100 }
+          qualityRequirements: { accuracy: 0.95, latency: 1000, throughput: 100 },
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       } as Task;
-      const mediumTask = { 
+      const mediumTask = {
         id: 'task-medium',
         name: 'Medium Task',
         description: 'A medium priority task',
@@ -4822,7 +5323,13 @@ describe('AutonomousAIEngine', () => {
         priority: 'medium' as const,
         status: 'pending' as const,
         dependencies: [],
-        requirements: { cpu: { min: 1, unit: 'cores' }, memory: { min: 256, unit: 'MB' }, storage: { min: 1, unit: 'GB' }, network: { min: 10, unit: 'Mbps' }, specialized: [] },
+        requirements: {
+          cpu: { min: 1, unit: 'cores' },
+          memory: { min: 256, unit: 'MB' },
+          storage: { min: 1, unit: 'GB' },
+          network: { min: 10, unit: 'Mbps' },
+          specialized: [],
+        },
         steps: [],
         metadata: {
           source: 'test',
@@ -4830,11 +5337,11 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           retryPolicy: { maxAttempts: 3, backoffMs: 1000 },
           timeout: 5000,
-          qualityRequirements: { accuracy: 0.95, latency: 1000, throughput: 100 }
+          qualityRequirements: { accuracy: 0.95, latency: 1000, throughput: 100 },
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       } as Task;
-      const lowTask = { 
+      const lowTask = {
         id: 'task-low',
         name: 'Low Task',
         description: 'A low priority task',
@@ -4842,7 +5349,13 @@ describe('AutonomousAIEngine', () => {
         priority: 'low' as const,
         status: 'pending' as const,
         dependencies: [],
-        requirements: { cpu: { min: 0.5, unit: 'cores' }, memory: { min: 128, unit: 'MB' }, storage: { min: 0.5, unit: 'GB' }, network: { min: 1, unit: 'Mbps' }, specialized: [] },
+        requirements: {
+          cpu: { min: 0.5, unit: 'cores' },
+          memory: { min: 128, unit: 'MB' },
+          storage: { min: 0.5, unit: 'GB' },
+          network: { min: 1, unit: 'Mbps' },
+          specialized: [],
+        },
         steps: [],
         metadata: {
           source: 'test',
@@ -4850,9 +5363,9 @@ describe('AutonomousAIEngine', () => {
           tags: [],
           retryPolicy: { maxAttempts: 3, backoffMs: 1000 },
           timeout: 5000,
-          qualityRequirements: { accuracy: 0.95, latency: 1000, throughput: 100 }
+          qualityRequirements: { accuracy: 0.95, latency: 1000, throughput: 100 },
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       } as Task;
       const defaultTask = { priority: 'unknown' } as any;
 
@@ -4874,10 +5387,16 @@ describe('AutonomousAIEngine', () => {
         priority: 'medium',
         status: 'running',
         dependencies: [],
-        requirements: { cpu: { min: 1, unit: 'cores' }, memory: { min: 512, unit: 'MB' }, storage: { min: 1, unit: 'GB' }, network: { min: 1, unit: 'Mbps' }, specialized: [] },
+        requirements: {
+          cpu: { min: 1, unit: 'cores' },
+          memory: { min: 512, unit: 'MB' },
+          storage: { min: 1, unit: 'GB' },
+          network: { min: 1, unit: 'Mbps' },
+          specialized: [],
+        },
         steps: [],
         metadata: { version: '1.0', tags: [] },
-        createdAt: new Date()
+        createdAt: new Date(),
       } as Task;
 
       const task2 = {
@@ -4888,10 +5407,16 @@ describe('AutonomousAIEngine', () => {
         priority: 'high',
         status: 'running',
         dependencies: [],
-        requirements: { cpu: { min: 2, unit: 'cores' }, memory: { min: 1024, unit: 'MB' }, storage: { min: 1, unit: 'GB' }, network: { min: 1, unit: 'Mbps' }, specialized: [] },
+        requirements: {
+          cpu: { min: 2, unit: 'cores' },
+          memory: { min: 1024, unit: 'MB' },
+          storage: { min: 1, unit: 'GB' },
+          network: { min: 1, unit: 'Mbps' },
+          specialized: [],
+        },
         steps: [],
         metadata: { version: '1.0', tags: [] },
-        createdAt: new Date()
+        createdAt: new Date(),
       } as Task;
 
       const task3 = {
@@ -4902,10 +5427,16 @@ describe('AutonomousAIEngine', () => {
         priority: 'low',
         status: 'completed',
         dependencies: [],
-        requirements: { cpu: { min: 1, unit: 'cores' }, memory: { min: 256, unit: 'MB' }, storage: { min: 1, unit: 'GB' }, network: { min: 1, unit: 'Mbps' }, specialized: [] },
+        requirements: {
+          cpu: { min: 1, unit: 'cores' },
+          memory: { min: 256, unit: 'MB' },
+          storage: { min: 1, unit: 'GB' },
+          network: { min: 1, unit: 'Mbps' },
+          specialized: [],
+        },
         steps: [],
         metadata: { version: '1.0', tags: [] },
-        createdAt: new Date()
+        createdAt: new Date(),
       } as Task;
 
       // Add tasks to engine
@@ -4931,14 +5462,20 @@ describe('AutonomousAIEngine', () => {
 
       // Verify events were emitted
       expect(emitSpy).toHaveBeenCalledTimes(2);
-      expect(emitSpy).toHaveBeenCalledWith('task.cancelled', expect.objectContaining({
-        task: expect.objectContaining({ id: 'task-1' }),
-        reason: 'Engine shutdown'
-      }));
-      expect(emitSpy).toHaveBeenCalledWith('task.cancelled', expect.objectContaining({
-        task: expect.objectContaining({ id: 'task-2' }),
-        reason: 'Engine shutdown'
-      }));
+      expect(emitSpy).toHaveBeenCalledWith(
+        'task.cancelled',
+        expect.objectContaining({
+          task: expect.objectContaining({ id: 'task-1' }),
+          reason: 'Engine shutdown',
+        })
+      );
+      expect(emitSpy).toHaveBeenCalledWith(
+        'task.cancelled',
+        expect.objectContaining({
+          task: expect.objectContaining({ id: 'task-2' }),
+          reason: 'Engine shutdown',
+        })
+      );
 
       emitSpy.mockRestore();
     });
@@ -4958,13 +5495,13 @@ describe('AutonomousAIEngine', () => {
       (engine as any)._metrics = {
         totalTasksExecuted: 0,
         successfulTasks: 0,
-        failedTasks: 0
+        failedTasks: 0,
       };
 
       // Test with completed status
       (engine as any).handleTaskCompleted({
         result: { status: 'completed' },
-        task: { name: 'Test Task' }
+        task: { name: 'Test Task' },
       });
 
       expect((engine as any)._metrics.totalTasksExecuted).toBe(1);
@@ -4974,7 +5511,7 @@ describe('AutonomousAIEngine', () => {
       // Test with failed status
       (engine as any).handleTaskCompleted({
         result: { status: 'failed' },
-        task: { name: 'Test Task 2' }
+        task: { name: 'Test Task 2' },
       });
 
       expect((engine as any)._metrics.totalTasksExecuted).toBe(2);
@@ -5007,7 +5544,18 @@ describe('AutonomousAIEngine', () => {
       const engine = await createAutonomousEngine();
 
       // Call the event handler directly
-      (engine as any).handleCollaborationCompleted({ task: { name: 'Test Task', requirements: { cpu: { min: 1, unit: 'cores' }, memory: { min: 256, unit: 'MB' }, storage: { min: 1, unit: 'GB' }, network: { min: 10, unit: 'Mbps' }, specialized: [] } } as Task });
+      (engine as any).handleCollaborationCompleted({
+        task: {
+          name: 'Test Task',
+          requirements: {
+            cpu: { min: 1, unit: 'cores' },
+            memory: { min: 256, unit: 'MB' },
+            storage: { min: 1, unit: 'GB' },
+            network: { min: 10, unit: 'Mbps' },
+            specialized: [],
+          },
+        } as Task,
+      });
 
       // Since this method only logs, we just need to ensure it doesn't throw
       expect(true).toBe(true); // Dummy assertion
@@ -5071,7 +5619,7 @@ describe('AutonomousAIEngine', () => {
       (engine as any)._metrics = {
         uptime: 0,
         memory: {},
-        cpu: {}
+        cpu: {},
       };
 
       // Call updateMetrics
@@ -5130,7 +5678,7 @@ describe('AutonomousAIEngine', () => {
           return { success: true };
         },
         dependencies: [],
-        metadata: {}
+        metadata: {},
       };
 
       const taskId = taskScheduler.schedule(testTask);
@@ -5149,7 +5697,7 @@ describe('AutonomousAIEngine', () => {
           return { success: true };
         },
         dependencies: [],
-        metadata: {}
+        metadata: {},
       };
 
       taskScheduler.schedule(testTask);
@@ -5199,12 +5747,12 @@ describe('AutonomousAIEngine', () => {
         id: 'context-1',
         currentState: 'idle',
         pendingTasks: ['task-1', 'task-2'],
-        availableResources: { memory: 500, cpu: 0.3 }
+        availableResources: { memory: 500, cpu: 0.3 },
       };
 
       const options = [
         { id: 'option-1', action: 'execute-task-1', estimatedCost: 10 },
-        { id: 'option-2', action: 'execute-task-2', estimatedCost: 20 }
+        { id: 'option-2', action: 'execute-task-2', estimatedCost: 20 },
       ];
 
       const decision = await decisionEngine.makeDecision(context, options);
@@ -5226,7 +5774,7 @@ describe('AutonomousAIEngine', () => {
           weights: { efficiency: 0.4, quality: 0.4, risk: 0.2 },
           scores: { efficiency: 0.8, quality: 0.7, risk: 0.6 },
           methodology: 'utility_theory',
-          assumptions: ['Current trends continue']
+          assumptions: ['Current trends continue'],
         },
         confidence: 0.75,
         alternatives: ['option-1', 'option-2'],
@@ -5235,21 +5783,27 @@ describe('AutonomousAIEngine', () => {
           overall: 'medium',
           factors: [],
           mitigation: [],
-          contingencyPlans: []
+          contingencyPlans: [],
         },
         implementationPlan: {
           phases: [],
-          resources: { cpu: { min: 0.1, unit: 'cores' }, memory: { min: 128, unit: 'MB' }, storage: { min: 0, unit: 'GB' }, network: { min: 0, unit: 'Mbps' }, specialized: [] },
+          resources: {
+            cpu: { min: 0.1, unit: 'cores' },
+            memory: { min: 128, unit: 'MB' },
+            storage: { min: 0, unit: 'GB' },
+            network: { min: 0, unit: 'Mbps' },
+            specialized: [],
+          },
           timeline: {
             start: new Date(),
             end: new Date(Date.now() + 86400000),
             milestones: [],
-            criticalPath: []
+            criticalPath: [],
           },
           dependencies: [],
-          milestones: []
+          milestones: [],
         },
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       const evaluation = await decisionEngine.evaluateDecision(decision);
@@ -5392,10 +5946,12 @@ describe('AutonomousAIEngine', () => {
         cpu: { min: 10, max: 50, unit: 'percent' },
         memory: { min: 200, max: 500, unit: 'mb' },
         storage: { min: 1000, max: 5000, unit: 'mb' },
-        network: { min: 10, max: 100, unit: 'mbps' }
+        network: { min: 10, max: 100, unit: 'mbps' },
       };
 
-      const allocation = await resourceManager.allocateResources(requirements) as ResourceAllocation;
+      const allocation = (await resourceManager.allocateResources(
+        requirements
+      )) as ResourceAllocation;
       expect(resourceManager.allocateResources).toHaveBeenCalledWith(requirements);
       expect(allocation).toHaveProperty('id');
       expect(allocation).toHaveProperty('status', 'active');

@@ -33,27 +33,27 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   constructor(props: ErrorBoundaryProps) {
     super(props);
     this.state = {
-      hasError: false
+      hasError: false,
     };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return {
       hasError: true,
-      error
+      error,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({
-      errorInfo
+      errorInfo,
     });
 
     const errorMessage = error.message || '未知错误';
 
     logError(errorMessage, error, {
       context: 'ErrorBoundary',
-      componentStack: errorInfo.componentStack
+      componentStack: errorInfo.componentStack,
     });
 
     console.error('应用发生错误', errorMessage);
@@ -63,7 +63,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     this.setState({
       hasError: false,
       error: undefined,
-      errorInfo: undefined
+      errorInfo: undefined,
     });
     window.location.reload();
   };
@@ -90,11 +90,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 {this.state.error?.message || '很抱歉，应用发生了意外错误。'}
               </p>
               <div className="space-y-2">
-                <Button
-                  onClick={this.handleReset}
-                  className="w-full"
-                  size="lg"
-                >
+                <Button onClick={this.handleReset} className="w-full" size="lg">
                   <RefreshCcw className="mr-2 h-4 w-4" />
                   重新加载应用
                 </Button>
@@ -113,7 +109,9 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                     <summary className="font-medium">查看详细错误信息</summary>
                     <pre className="mt-2 p-3 overflow-auto rounded bg-muted text-xs">
                       {this.state.error.stack?.split('\n').map((line, index) => (
-                        <div key={index} className="whitespace-pre-wrap">{line}</div>
+                        <div key={index} className="whitespace-pre-wrap">
+                          {line}
+                        </div>
                       ))}
                     </pre>
                   </details>

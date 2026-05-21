@@ -111,23 +111,33 @@ describe('cn - className合并工具', () => {
     });
 
     it('应该处理对象形式的条件类名', () => {
-      expect(cn({
-        'text-red': true,
-        'font-bold': true,
-        'hidden': false,
-      })).toBe('text-red font-bold');
+      expect(
+        cn({
+          'text-red': true,
+          'font-bold': true,
+          hidden: false,
+        })
+      ).toBe('text-red font-bold');
 
-      expect(cn({
-        'text-red': false,
-        'font-bold': true,
-      })).toBe('font-bold');
+      expect(
+        cn({
+          'text-red': false,
+          'font-bold': true,
+        })
+      ).toBe('font-bold');
     });
 
     it('应该混合处理字符串和对象', () => {
-      expect(cn('text-sm', {
-        'font-bold': true,
-        'hidden': false,
-      }, 'text-red')).toBe('text-sm font-bold text-red');
+      expect(
+        cn(
+          'text-sm',
+          {
+            'font-bold': true,
+            hidden: false,
+          },
+          'text-red'
+        )
+      ).toBe('text-sm font-bold text-red');
     });
 
     it('应该处理数组形式的类名', () => {
@@ -136,12 +146,11 @@ describe('cn - className合并工具', () => {
     });
 
     it('应该混合处理不同形式的输入', () => {
-      expect(cn(
-        'text-sm',
-        ['text-red', { 'font-bold': true }],
-        false && 'hidden',
-        { 'text-blue': false }
-      )).toBe('text-sm text-red font-bold');
+      expect(
+        cn('text-sm', ['text-red', { 'font-bold': true }], false && 'hidden', {
+          'text-blue': false,
+        })
+      ).toBe('text-sm text-red font-bold');
     });
   });
 
@@ -159,7 +168,7 @@ describe('cn - className合并工具', () => {
     });
 
     it('应该处理函数返回的类名', () => {
-      const getErrorClass = (hasError: boolean) => hasError ? 'text-red-500' : 'text-green-500';
+      const getErrorClass = (hasError: boolean) => (hasError ? 'text-red-500' : 'text-green-500');
       expect(cn(getErrorClass(true))).toBe('text-red-500');
       expect(cn(getErrorClass(false))).toBe('text-green-500');
     });
@@ -167,12 +176,16 @@ describe('cn - className合并工具', () => {
 
   describe('Tailwind变体和修饰符', () => {
     it('应该正确处理前缀', () => {
-      expect(cn('hover:text-red-500', 'hover:bg-blue-500')).toBe('hover:text-red-500 hover:bg-blue-500');
+      expect(cn('hover:text-red-500', 'hover:bg-blue-500')).toBe(
+        'hover:text-red-500 hover:bg-blue-500'
+      );
       expect(cn('focus:ring-2', 'focus:ring-blue-500')).toBe('focus:ring-2 focus:ring-blue-500');
     });
 
     it('应该正确处理响应式修饰符', () => {
-      expect(cn('sm:text-sm', 'md:text-base', 'lg:text-lg')).toBe('sm:text-sm md:text-base lg:text-lg');
+      expect(cn('sm:text-sm', 'md:text-base', 'lg:text-lg')).toBe(
+        'sm:text-sm md:text-base lg:text-lg'
+      );
     });
 
     it('应该正确处理暗色模式', () => {
@@ -181,7 +194,9 @@ describe('cn - className合并工具', () => {
     });
 
     it('应该正确处理组合修饰符', () => {
-      expect(cn('md:hover:text-red-500', 'lg:focus:bg-blue-500')).toBe('md:hover:text-red-500 lg:focus:bg-blue-500');
+      expect(cn('md:hover:text-red-500', 'lg:focus:bg-blue-500')).toBe(
+        'md:hover:text-red-500 lg:focus:bg-blue-500'
+      );
     });
   });
 
@@ -267,7 +282,9 @@ describe('cn - className合并工具', () => {
         isFocused && 'ring-2'
       );
 
-      expect(inputClass).toBe('w-full px-3 py-2 border rounded-md border-gray-300 focus:ring-blue-500 ring-2');
+      expect(inputClass).toBe(
+        'w-full px-3 py-2 border rounded-md border-gray-300 focus:ring-blue-500 ring-2'
+      );
     });
 
     it('应该正确处理响应式布局类名', () => {
@@ -279,7 +296,9 @@ describe('cn - className合并工具', () => {
         'xl:grid-cols-4'
       );
 
-      expect(layoutClass).toBe('grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4');
+      expect(layoutClass).toBe(
+        'grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+      );
     });
 
     it('应该正确处理动画类名', () => {

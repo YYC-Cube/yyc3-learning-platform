@@ -3,6 +3,7 @@
 ## 🎯 目标
 
 将现有的基础AgenticCore升级为企业级智能代理核心，集成5大基础架构组件：
+
 - MessageBus（消息总线）
 - TaskScheduler（任务调度器）
 - StateManager（状态管理器）
@@ -36,7 +37,7 @@ import {
   EventPriority,
   subsystemRegistry,
   SubsystemCategory,
-  SubsystemStatus
+  SubsystemStatus,
 } from '@yyc3/core-engine';
 ```
 
@@ -58,24 +59,26 @@ export class AgenticCore {
 
   constructor(config: Partial<AgentConfig> = {}) {
     super();
-    
+
     // 初始化上下文
-    this.context = { /* ... */ };
-    
+    this.context = {
+      /* ... */
+    };
+
     // 初始化状态管理器
     this.stateManager = new StateManager(this.context, {
       enableAutoSave: true,
       autoSaveIntervalMs: 5000,
       maxSnapshots: 50,
-      persistenceAdapter: new MemoryPersistenceAdapter()
+      persistenceAdapter: new MemoryPersistenceAdapter(),
     });
 
     // 注册子系统
     this.registerSubsystems();
-    
+
     // 订阅事件
     this.subscribeToEvents();
-    
+
     // 订阅消息
     this.subscribeToMessages();
   }
@@ -167,7 +170,7 @@ private subscribeToMessages(): void {
   this.messageBus.subscribe('tool:invoke', async (message) => {
     const { toolName, args } = message.payload;
     const result = await this.toolOrchestrator.execute(toolName, args);
-    
+
     // 回复结果
     this.messageBus.publish(
       message.correlationId!,
@@ -180,7 +183,7 @@ private subscribeToMessages(): void {
   this.messageBus.subscribe('knowledge:query', async (message) => {
     const { query } = message.payload;
     const result = await this.knowledgeConnector.search(query);
-    
+
     this.messageBus.publish(
       message.correlationId!,
       { result },
@@ -364,7 +367,7 @@ async recoverFromCrash(): Promise<void> {
     if (lastSnapshot) {
       // 恢复状态
       this.stateManager.restoreSnapshot(lastSnapshot.id);
-      
+
       // 发布恢复事件
       await this.eventDispatcher.publish(
         'system:recovered',
@@ -397,35 +400,35 @@ const agenticCore = new AgenticCore({
   // 原有配置
   maxConcurrentGoals: 3,
   contextWindowSize: 1000,
-  
+
   // 新增：基础架构配置
   messageBus: {
     maxRetries: 3,
     retryDelayMs: 1000,
-    maxDeadLetterSize: 100
+    maxDeadLetterSize: 100,
   },
-  
+
   taskScheduler: {
     maxConcurrentTasks: 10,
-    timeoutMs: 30000
+    timeoutMs: 30000,
   },
-  
+
   stateManager: {
     enableAutoSave: true,
     autoSaveIntervalMs: 5000,
-    maxSnapshots: 50
+    maxSnapshots: 50,
   },
-  
+
   eventDispatcher: {
     enableReplay: true,
-    maxReplayEvents: 1000
+    maxReplayEvents: 1000,
   },
-  
+
   subsystemRegistry: {
     enableHealthCheck: true,
     healthCheckIntervalMs: 30000,
-    enableAutoRecovery: true
-  }
+    enableAutoRecovery: true,
+  },
 });
 ```
 
@@ -446,33 +449,30 @@ class AgenticCore {
       eventDispatcher: this.eventDispatcher.getMetrics(),
       subsystemRegistry: this.subsystemRegistry.getMetrics(),
       stateManager: this.stateManager.getStats(),
-      
+
       // AgenticCore自身指标
       activeGoals: this.context.goals.length,
-      completedTasks: this.tasks.filter(t => t.status === 'completed').length,
-      averageResponseTime: this.calculateAverageResponseTime()
+      completedTasks: this.tasks.filter((t) => t.status === 'completed').length,
+      averageResponseTime: this.calculateAverageResponseTime(),
     };
   }
 
   // 健康检查端点
   async healthCheck(): Promise<HealthCheckResult> {
     const subsystems = this.subsystemRegistry.getAll();
-    const unhealthySubsystems = subsystems.filter(
-      s => s.status === SubsystemStatus.ERROR
-    );
+    const unhealthySubsystems = subsystems.filter((s) => s.status === SubsystemStatus.ERROR);
 
     return {
       healthy: unhealthySubsystems.length === 0,
-      message: unhealthySubsystems.length > 0 
-        ? `${unhealthySubsystems.length}个子系统异常`
-        : '系统健康',
+      message:
+        unhealthySubsystems.length > 0 ? `${unhealthySubsystems.length}个子系统异常` : '系统健康',
       details: {
         totalSubsystems: subsystems.length,
-        activeSubsystems: subsystems.filter(s => s.status === SubsystemStatus.ACTIVE).length,
+        activeSubsystems: subsystems.filter((s) => s.status === SubsystemStatus.ACTIVE).length,
         errorSubsystems: unhealthySubsystems.length,
         queuedTasks: this.taskScheduler.getQueueStatus().queued,
-        activeMessages: this.messageBus.getMetrics().totalMessages
-      }
+        activeMessages: this.messageBus.getMetrics().totalMessages,
+      },
     };
   }
 }
@@ -500,11 +500,11 @@ describe('AgenticCore with Infrastructure', () => {
     const input = {
       text: '帮我分析一下这段代码',
       context: {},
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     const response = await core.processUserInput(input);
-    
+
     expect(response.success).toBe(true);
     expect(response.processingTime).toBeGreaterThan(0);
   });
@@ -518,10 +518,9 @@ describe('AgenticCore with Infrastructure', () => {
   });
 
   test('应该正确调度任务', async () => {
-    const taskId = await core.getTaskScheduler().submitTask(
-      async () => 'test result',
-      { name: 'test-task' }
-    );
+    const taskId = await core
+      .getTaskScheduler()
+      .submitTask(async () => 'test result', { name: 'test-task' });
 
     const result = await core.getTaskScheduler().waitForTask(taskId);
     expect(result).toBe('test result');
@@ -535,7 +534,7 @@ describe('AgenticCore with Infrastructure', () => {
     });
 
     await core.getEventDispatcher().publish('test:event', {});
-    
+
     expect(eventReceived).toBe(true);
   });
 });
@@ -552,21 +551,19 @@ describe('AgenticCore with Infrastructure', () => {
 const messages = [
   { type: 'log:info', payload: { message: 'Step 1' } },
   { type: 'log:info', payload: { message: 'Step 2' } },
-  { type: 'log:info', payload: { message: 'Step 3' } }
+  { type: 'log:info', payload: { message: 'Step 3' } },
 ];
 
-await this.messageBus.publishBatch(
-  messages.map(m => ({ type: m.type, payload: m.payload }))
-);
+await this.messageBus.publishBatch(messages.map((m) => ({ type: m.type, payload: m.payload })));
 ```
 
 ### 2. 任务批量提交
 
 ```typescript
 // 批量提交任务
-const tasks = plan.steps.map(step => ({
+const tasks = plan.steps.map((step) => ({
   executor: async () => this.executeStep(step),
-  options: { name: step.name, priority: TaskPriority.NORMAL }
+  options: { name: step.name, priority: TaskPriority.NORMAL },
 }));
 
 const taskIds = await this.taskScheduler.submitBatch(tasks);
@@ -576,11 +573,10 @@ const taskIds = await this.taskScheduler.submitBatch(tasks);
 
 ```typescript
 // 批量更新状态
-this.stateManager.batchUpdate([
-  { currentStep: 1 },
-  { progress: 25 },
-  { status: 'processing' }
-], 'batch_progress_update');
+this.stateManager.batchUpdate(
+  [{ currentStep: 1 }, { progress: 25 }, { status: 'processing' }],
+  'batch_progress_update'
+);
 ```
 
 ---
@@ -639,26 +635,20 @@ class AgenticCore {
 ### 1. 使用TypeScript类型
 
 ```typescript
-import type {
-  Task,
-  TaskPriority,
-  MessageEnvelope,
-  Event,
-  Subsystem
-} from '@yyc3/core-engine';
+import type { Task, TaskPriority, MessageEnvelope, Event, Subsystem } from '@yyc3/core-engine';
 ```
 
 ### 2. 合理设置优先级
 
 ```typescript
 // 用户交互 - 高优先级
-await eventDispatcher.publish('user:click', data, { 
-  priority: EventPriority.HIGH 
+await eventDispatcher.publish('user:click', data, {
+  priority: EventPriority.HIGH,
 });
 
 // 后台任务 - 低优先级
-await taskScheduler.submitTask(backgroundTask, { 
-  priority: TaskPriority.LOW 
+await taskScheduler.submitTask(backgroundTask, {
+  priority: TaskPriority.LOW,
 });
 ```
 
@@ -698,6 +688,7 @@ try {
 ---
 
 **集成完成后，AgenticCore将具备**:
+
 - ✅ 企业级可靠性
 - ✅ 高性能任务调度
 - ✅ 完整状态管理
@@ -707,6 +698,7 @@ try {
 - ✅ 全面监控指标
 
 **预计提升**:
+
 - 🚀 响应速度: 30-50%
 - 📈 吞吐量: 3-5倍
 - 🛡️ 可靠性: 99.9%+

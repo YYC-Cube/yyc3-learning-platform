@@ -36,7 +36,7 @@ export class EncryptionUtility {
       ivLength: config.ivLength || 16,
       authTagLength: config.authTagLength || 16,
       saltLength: config.saltLength || 64,
-      iterations: config.iterations || 100000
+      iterations: config.iterations || 100000,
     };
   }
 
@@ -48,7 +48,13 @@ export class EncryptionUtility {
   }
 
   private generateKey(password: string, salt: Buffer): Buffer {
-    return crypto.pbkdf2Sync(password, salt, this.config.iterations, this.config.keyLength, 'sha512');
+    return crypto.pbkdf2Sync(
+      password,
+      salt,
+      this.config.iterations,
+      this.config.keyLength,
+      'sha512'
+    );
   }
 
   private generateIV(): Buffer {
@@ -76,7 +82,7 @@ export class EncryptionUtility {
       salt: salt.toString('hex'),
       ciphertext,
       authTag: authTag.toString('hex'),
-      algorithm: this.config.algorithm
+      algorithm: this.config.algorithm,
     };
   }
 
@@ -121,7 +127,7 @@ export class EncryptionUtility {
       hash: hash.toString('hex'),
       salt: passwordSalt.toString('hex'),
       iterations: this.config.iterations,
-      algorithm: 'pbkdf2-sha512'
+      algorithm: 'pbkdf2-sha512',
     };
   }
 
@@ -156,9 +162,17 @@ export class EncryptionUtility {
     return crypto.createHmac(algorithm, secret).update(data).digest('hex');
   }
 
-  verifyHMAC(data: string, signature: string, secret: string, algorithm: string = 'sha256'): boolean {
+  verifyHMAC(
+    data: string,
+    signature: string,
+    secret: string,
+    algorithm: string = 'sha256'
+  ): boolean {
     const expectedSignature = this.generateHMAC(data, secret, algorithm);
-    return crypto.timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expectedSignature, 'hex'));
+    return crypto.timingSafeEqual(
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    );
   }
 
   generateToken(length: number = 32, encoding: BufferEncoding = 'hex'): string {
@@ -172,14 +186,14 @@ export class EncryptionUtility {
   generateJWT(payload: Record<string, any>, secret: string, expiresIn: string = '1h'): string {
     const header = {
       alg: 'HS256',
-      typ: 'JWT'
+      typ: 'JWT',
     };
 
     const now = Math.floor(Date.now() / 1000);
     const tokenPayload = {
       ...payload,
       iat: now,
-      exp: now + this.parseExpiration(expiresIn)
+      exp: now + this.parseExpiration(expiresIn),
     };
 
     const encodedHeader = this.base64UrlEncode(JSON.stringify(header));
@@ -199,7 +213,12 @@ export class EncryptionUtility {
       const [encodedHeader, encodedPayload, signature] = parts;
 
       const expectedSignature = this.generateHMAC(`${encodedHeader}.${encodedPayload}`, secret);
-      if (!crypto.timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expectedSignature, 'hex'))) {
+      if (
+        !crypto.timingSafeEqual(
+          Buffer.from(signature, 'hex'),
+          Buffer.from(expectedSignature, 'hex')
+        )
+      ) {
         return { valid: false, error: 'Invalid signature' };
       }
 
@@ -228,7 +247,7 @@ export class EncryptionUtility {
       s: 1,
       m: 60,
       h: 3600,
-      d: 86400
+      d: 86400,
     };
 
     return value * unitToSeconds[unit];
@@ -255,12 +274,12 @@ export class EncryptionUtility {
       modulusLength: 2048,
       publicKeyEncoding: {
         type: 'spki',
-        format: 'pem'
+        format: 'pem',
       },
       privateKeyEncoding: {
         type: 'pkcs8',
-        format: 'pem'
-      }
+        format: 'pem',
+      },
     });
 
     return { publicKey, privateKey };
@@ -272,7 +291,7 @@ export class EncryptionUtility {
       {
         key: publicKey,
         padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-        oaepHash: 'sha256'
+        oaepHash: 'sha256',
       },
       buffer
     );
@@ -286,7 +305,7 @@ export class EncryptionUtility {
       {
         key: privateKey,
         padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-        oaepHash: 'sha256'
+        oaepHash: 'sha256',
       },
       buffer
     );
@@ -325,7 +344,7 @@ export class EncryptionUtility {
   generateSecureRandom(min: number = 0, max: number = Number.MAX_SAFE_INTEGER): number {
     const range = max - min;
     const bytesNeeded = Math.ceil(Math.log2(range) / 8);
-    const cutoff = Math.floor((256 ** bytesNeeded) / range) * range;
+    const cutoff = Math.floor(256 ** bytesNeeded / range) * range;
     const buffer = crypto.randomBytes(bytesNeeded);
 
     let value = 0;

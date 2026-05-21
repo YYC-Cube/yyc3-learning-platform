@@ -4,17 +4,17 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 import {
   ArrowLeft,
   Camera,
@@ -33,27 +33,27 @@ import {
   Settings,
   CheckCircle,
   AlertCircle,
-} from "lucide-react"
-import Link from "next/link"
-import { ResponsiveLayout } from "@/components/responsive-layout"
-import { AccessibleButton } from "@/components/accessibility/accessible-button"
+} from 'lucide-react';
+import Link from 'next/link';
+import { ResponsiveLayout } from '@/components/responsive-layout';
+import { AccessibleButton } from '@/components/accessibility/accessible-button';
 
 export default function EditProfilePage() {
   const [currentUser] = useState({
-    id: "1",
-    name: "YanYu同学",
-    email: "yanyu@smartcloud.com",
-    avatar: "/placeholder.svg?height=80&width=80&text=YY",
-    bio: "专注于AI技术研发与应用，致力于推动人工智能在各行业的落地实践。",
-    phone: "+86 138-0000-0000",
-    location: "北京市海淀区",
-    company: "YanYu智能科技",
-    position: "AI算法工程师",
-    skills: ["机器学习", "深度学习", "自然语言处理", "计算机视觉", "Python", "TensorFlow"],
-    level: "advanced",
+    id: '1',
+    name: 'YanYu同学',
+    email: 'yanyu@smartcloud.com',
+    avatar: '/placeholder.svg?height=80&width=80&text=YY',
+    bio: '专注于AI技术研发与应用，致力于推动人工智能在各行业的落地实践。',
+    phone: '+86 138-0000-0000',
+    location: '北京市海淀区',
+    company: 'YanYu智能科技',
+    position: 'AI算法工程师',
+    skills: ['机器学习', '深度学习', '自然语言处理', '计算机视觉', 'Python', 'TensorFlow'],
+    level: 'advanced',
     points: 5000,
     streak: 42,
-    joinDate: "2023-09-15",
+    joinDate: '2023-09-15',
     studyPoints: 2450,
     studyDays: 77,
     completedCourses: 12,
@@ -61,29 +61,29 @@ export default function EditProfilePage() {
     certificates: 5,
     rank: 3,
     profile: {
-      bio: "专注于AI技术研发与应用，致力于推动人工智能在各行业的落地实践。",
-      location: "北京市海淀区",
-      website: "",
-      github: "",
-      linkedin: ""
+      bio: '专注于AI技术研发与应用，致力于推动人工智能在各行业的落地实践。',
+      location: '北京市海淀区',
+      website: '',
+      github: '',
+      linkedin: '',
     },
     learningStats: {
       totalCourses: 15,
       completedCourses: 12,
       totalHours: 156,
       currentStreak: 42,
-      longestStreak: 60
+      longestStreak: 60,
     },
     enrolledCourses: [],
     achievements: [],
     preferences: {},
-    progress: {}
-  })
+    progress: {},
+  });
 
-  const [formData, setFormData] = useState(currentUser)
-  const [newSkill, setNewSkill] = useState("")
-  const [isUploading, setIsUploading] = useState(false)
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle")
+  const [formData, setFormData] = useState(currentUser);
+  const [newSkill, setNewSkill] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
   // 隐私设置状态
   const [privacySettings, setPrivacySettings] = useState({
@@ -95,67 +95,67 @@ export default function EditProfilePage() {
     allowMessages: true,
     showOnlineStatus: true,
     publicProfile: true,
-  })
+  });
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-    }))
-  }
+    }));
+  };
 
   const handlePrivacyChange = (setting: string, value: boolean) => {
     setPrivacySettings((prev) => ({
       ...prev,
       [setting]: value,
-    }))
-  }
+    }));
+  };
 
   const addSkill = () => {
     if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
       setFormData((prev) => ({
         ...prev,
         skills: [...prev.skills, newSkill.trim()],
-      }))
-      setNewSkill("")
+      }));
+      setNewSkill('');
     }
-  }
+  };
 
   const removeSkill = (skillToRemove: string) => {
     setFormData((prev) => ({
       ...prev,
       skills: prev.skills.filter((skill) => skill !== skillToRemove),
-    }))
-  }
+    }));
+  };
 
   const handleAvatarUpload = () => {
-    setIsUploading(true)
+    setIsUploading(true);
     // 模拟上传过程
     setTimeout(() => {
-      setIsUploading(false)
+      setIsUploading(false);
       // 这里可以处理实际的文件上传逻辑
-    }, 2000)
-  }
+    }, 2000);
+  };
 
   const handleSave = async () => {
-    setSaveStatus("saving")
+    setSaveStatus('saving');
 
     // 模拟保存过程
     setTimeout(() => {
-      setSaveStatus("success")
+      setSaveStatus('success');
 
       // 3秒后重置状态
       setTimeout(() => {
-        setSaveStatus("idle")
-      }, 3000)
-    }, 1500)
-  }
+        setSaveStatus('idle');
+      }, 3000);
+    }, 1500);
+  };
 
   return (
     <ResponsiveLayout title="编辑资料" user={currentUser}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* 页面状态提示 */}
-        {saveStatus === "success" && (
+        {saveStatus === 'success' && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
             <div className="flex items-center">
               <CheckCircle className="h-5 w-5 mr-2" />
@@ -164,7 +164,7 @@ export default function EditProfilePage() {
           </div>
         )}
 
-        {saveStatus === "error" && (
+        {saveStatus === 'error' && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
             <div className="flex items-center">
               <AlertCircle className="h-5 w-5 mr-2" />
@@ -198,7 +198,7 @@ export default function EditProfilePage() {
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
             <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
-              <AvatarImage src={formData.avatar || "/placeholder.svg"} alt={formData.name} />
+              <AvatarImage src={formData.avatar || '/placeholder.svg'} alt={formData.name} />
               <AvatarFallback className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white">
                 YY
               </AvatarFallback>
@@ -248,7 +248,7 @@ export default function EditProfilePage() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
                   placeholder="请输入您的姓名"
                   className="border-2 border-gray-200 focus:border-green-400"
                 />
@@ -262,7 +262,7 @@ export default function EditProfilePage() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="请输入您的邮箱"
                   className="border-2 border-gray-200 focus:border-green-400"
                 />
@@ -278,7 +278,7 @@ export default function EditProfilePage() {
                 <Input
                   id="phone"
                   value={formData.phone}
-                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="请输入您的手机号"
                   className="border-2 border-gray-200 focus:border-green-400"
                 />
@@ -291,7 +291,7 @@ export default function EditProfilePage() {
                 <Input
                   id="location"
                   value={formData.location}
-                  onChange={(e) => handleInputChange("location", e.target.value)}
+                  onChange={(e) => handleInputChange('location', e.target.value)}
                   placeholder="请输入您的所在地"
                   className="border-2 border-gray-200 focus:border-green-400"
                 />
@@ -306,7 +306,7 @@ export default function EditProfilePage() {
               <Textarea
                 id="bio"
                 value={formData.bio}
-                onChange={(e) => handleInputChange("bio", e.target.value)}
+                onChange={(e) => handleInputChange('bio', e.target.value)}
                 placeholder="介绍一下您自己..."
                 rows={4}
                 className="border-2 border-gray-200 focus:border-green-400 resize-none"
@@ -332,7 +332,7 @@ export default function EditProfilePage() {
                 <Input
                   id="company"
                   value={formData.company}
-                  onChange={(e) => handleInputChange("company", e.target.value)}
+                  onChange={(e) => handleInputChange('company', e.target.value)}
                   placeholder="请输入您的公司名称"
                   className="border-2 border-gray-200 focus:border-purple-400"
                 />
@@ -342,7 +342,7 @@ export default function EditProfilePage() {
                 <Input
                   id="position"
                   value={formData.position}
-                  onChange={(e) => handleInputChange("position", e.target.value)}
+                  onChange={(e) => handleInputChange('position', e.target.value)}
                   placeholder="请输入您的职位"
                   className="border-2 border-gray-200 focus:border-purple-400"
                 />
@@ -368,7 +368,7 @@ export default function EditProfilePage() {
                 onChange={(e) => setNewSkill(e.target.value)}
                 placeholder="输入新技能..."
                 className="flex-1 border-2 border-gray-200 focus:border-yellow-400"
-                onKeyPress={(e) => e.key === "Enter" && addSkill()}
+                onKeyPress={(e) => e.key === 'Enter' && addSkill()}
               />
               <AccessibleButton
                 onClick={addSkill}
@@ -392,7 +392,10 @@ export default function EditProfilePage() {
                   >
                     <div>
                       <span>{skill}</span>
-                      <button onClick={() => removeSkill(skill)} className="ml-2 hover:text-red-600 transition-colors">
+                      <button
+                        onClick={() => removeSkill(skill)}
+                        className="ml-2 hover:text-red-600 transition-colors"
+                      >
                         <X className="h-3 w-3" />
                       </button>
                     </div>
@@ -431,7 +434,7 @@ export default function EditProfilePage() {
                   </div>
                   <Switch
                     checked={privacySettings.showEmail}
-                    onCheckedChange={(checked) => handlePrivacyChange("showEmail", checked)}
+                    onCheckedChange={(checked) => handlePrivacyChange('showEmail', checked)}
                   />
                 </div>
 
@@ -442,7 +445,7 @@ export default function EditProfilePage() {
                   </div>
                   <Switch
                     checked={privacySettings.showPhone}
-                    onCheckedChange={(checked) => handlePrivacyChange("showPhone", checked)}
+                    onCheckedChange={(checked) => handlePrivacyChange('showPhone', checked)}
                   />
                 </div>
 
@@ -453,7 +456,7 @@ export default function EditProfilePage() {
                   </div>
                   <Switch
                     checked={privacySettings.showLocation}
-                    onCheckedChange={(checked) => handlePrivacyChange("showLocation", checked)}
+                    onCheckedChange={(checked) => handlePrivacyChange('showLocation', checked)}
                   />
                 </div>
 
@@ -464,7 +467,7 @@ export default function EditProfilePage() {
                   </div>
                   <Switch
                     checked={privacySettings.showCompany}
-                    onCheckedChange={(checked) => handlePrivacyChange("showCompany", checked)}
+                    onCheckedChange={(checked) => handlePrivacyChange('showCompany', checked)}
                   />
                 </div>
               </div>
@@ -487,7 +490,9 @@ export default function EditProfilePage() {
                   </div>
                   <Switch
                     checked={privacySettings.showLearningProgress}
-                    onCheckedChange={(checked) => handlePrivacyChange("showLearningProgress", checked)}
+                    onCheckedChange={(checked) =>
+                      handlePrivacyChange('showLearningProgress', checked)
+                    }
                   />
                 </div>
 
@@ -498,7 +503,7 @@ export default function EditProfilePage() {
                   </div>
                   <Switch
                     checked={privacySettings.allowMessages}
-                    onCheckedChange={(checked) => handlePrivacyChange("allowMessages", checked)}
+                    onCheckedChange={(checked) => handlePrivacyChange('allowMessages', checked)}
                   />
                 </div>
 
@@ -509,7 +514,7 @@ export default function EditProfilePage() {
                   </div>
                   <Switch
                     checked={privacySettings.showOnlineStatus}
-                    onCheckedChange={(checked) => handlePrivacyChange("showOnlineStatus", checked)}
+                    onCheckedChange={(checked) => handlePrivacyChange('showOnlineStatus', checked)}
                   />
                 </div>
 
@@ -520,7 +525,7 @@ export default function EditProfilePage() {
                   </div>
                   <Switch
                     checked={privacySettings.publicProfile}
-                    onCheckedChange={(checked) => handlePrivacyChange("publicProfile", checked)}
+                    onCheckedChange={(checked) => handlePrivacyChange('publicProfile', checked)}
                   />
                 </div>
               </div>
@@ -535,7 +540,7 @@ export default function EditProfilePage() {
           </AccessibleButton>
           <AccessibleButton
             onClick={handleSave}
-            loading={saveStatus === "saving"}
+            loading={saveStatus === 'saving'}
             loadingText="保存中..."
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-8"
           >
@@ -545,5 +550,5 @@ export default function EditProfilePage() {
         </div>
       </div>
     </ResponsiveLayout>
-  )
+  );
 }

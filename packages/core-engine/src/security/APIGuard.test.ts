@@ -6,7 +6,7 @@ describe('APIGuard', () => {
   let apiGuard: APIGuard;
   const defaultConfig = {
     jwtSecret: 'test-secret-key-for-testing',
-    tokenExpiry: 3600000
+    tokenExpiry: 3600000,
   };
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe('APIGuard', () => {
       const customGuard = new APIGuard({
         jwtSecret: 'custom-secret',
         enableRateLimiting: false,
-        enableAuthentication: false
+        enableAuthentication: false,
       });
       expect(customGuard).toBeDefined();
       customGuard.destroy();
@@ -39,7 +39,7 @@ describe('APIGuard', () => {
         path: '/api/test',
         method: 'GET',
         requireAuth: true,
-        requiredRoles: ['admin']
+        requiredRoles: ['admin'],
       });
 
       const result = await apiGuard.guard({
@@ -49,7 +49,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -62,7 +62,7 @@ describe('APIGuard', () => {
       apiGuard.registerRoute({
         path: '/api/test',
         method: 'GET',
-        requireAuth: true
+        requireAuth: true,
       });
 
       apiGuard.unregisterRoute('GET', '/api/test');
@@ -74,7 +74,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(true);
@@ -85,7 +85,7 @@ describe('APIGuard', () => {
     it('should allow request without authentication when disabled', async () => {
       const noAuthGuard = new APIGuard({
         ...defaultConfig,
-        enableAuthentication: false
+        enableAuthentication: false,
       });
 
       const result = await noAuthGuard.guard({
@@ -95,7 +95,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(true);
@@ -113,7 +113,7 @@ describe('APIGuard', () => {
         ip: '192.168.1.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -125,7 +125,7 @@ describe('APIGuard', () => {
       const whitelistGuard = new APIGuard({
         ...defaultConfig,
         enableIPWhitelist: true,
-        ipWhitelist: ['192.168.1.1']
+        ipWhitelist: ['192.168.1.1'],
       });
 
       const result = await whitelistGuard.guard({
@@ -135,7 +135,7 @@ describe('APIGuard', () => {
         ip: '192.168.1.2',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -148,7 +148,7 @@ describe('APIGuard', () => {
       const whitelistGuard = new APIGuard({
         ...defaultConfig,
         enableIPWhitelist: true,
-        ipWhitelist: ['192.168.1.1']
+        ipWhitelist: ['192.168.1.1'],
       });
 
       const result = await whitelistGuard.guard({
@@ -158,7 +158,7 @@ describe('APIGuard', () => {
         ip: '192.168.1.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(true);
@@ -174,7 +174,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -190,7 +190,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -207,7 +207,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(true);
@@ -221,7 +221,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -233,7 +233,7 @@ describe('APIGuard', () => {
         path: '/api/admin',
         method: 'GET',
         requireAuth: true,
-        requiredRoles: ['admin']
+        requiredRoles: ['admin'],
       });
 
       const userToken = apiGuard.generateToken('user123', ['user'], ['read']);
@@ -245,7 +245,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -257,7 +257,7 @@ describe('APIGuard', () => {
         path: '/api/admin',
         method: 'GET',
         requireAuth: true,
-        requiredRoles: ['admin']
+        requiredRoles: ['admin'],
       });
 
       const adminToken = apiGuard.generateToken('admin123', ['admin'], ['read', 'write']);
@@ -269,7 +269,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(true);
@@ -280,7 +280,7 @@ describe('APIGuard', () => {
         path: '/api/write',
         method: 'POST',
         requireAuth: true,
-        requiredPermissions: ['write']
+        requiredPermissions: ['write'],
       });
 
       const readToken = apiGuard.generateToken('user123', ['user'], ['read']);
@@ -292,7 +292,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -304,7 +304,7 @@ describe('APIGuard', () => {
         path: '/api/write',
         method: 'POST',
         requireAuth: true,
-        requiredPermissions: ['write']
+        requiredPermissions: ['write'],
       });
 
       const writeToken = apiGuard.generateToken('user123', ['user'], ['read', 'write']);
@@ -316,7 +316,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(true);
@@ -329,9 +329,9 @@ describe('APIGuard', () => {
         inputValidation: {
           body: {
             name: { type: 'string', required: true },
-            email: { type: 'email', required: true }
-          }
-        }
+            email: { type: 'email', required: true },
+          },
+        },
       });
 
       const token = apiGuard.generateToken('user123', ['user'], ['write']);
@@ -344,7 +344,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(false);
@@ -359,9 +359,9 @@ describe('APIGuard', () => {
         inputValidation: {
           body: {
             name: { type: 'string', required: true },
-            email: { type: 'email', required: true }
-          }
-        }
+            email: { type: 'email', required: true },
+          },
+        },
       });
 
       const token = apiGuard.generateToken('user123', ['user'], ['write']);
@@ -374,7 +374,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(result.allowed).toBe(true);
@@ -387,8 +387,8 @@ describe('APIGuard', () => {
         rateLimitConfig: {
           windowMs: 60000,
           maxRequests: 5,
-          strategy: RateLimitStrategy.SLIDING_WINDOW
-        }
+          strategy: RateLimitStrategy.SLIDING_WINDOW,
+        },
       });
 
       const request = {
@@ -398,7 +398,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       };
 
       for (let i = 0; i < 5; i++) {
@@ -423,7 +423,11 @@ describe('APIGuard', () => {
     });
 
     it('should generate token with custom roles and permissions', () => {
-      const token = apiGuard.generateToken('admin123', ['admin', 'user'], ['read', 'write', 'delete']);
+      const token = apiGuard.generateToken(
+        'admin123',
+        ['admin', 'user'],
+        ['read', 'write', 'delete']
+      );
       expect(token).toBeDefined();
     });
   });
@@ -463,7 +467,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       const events = await apiGuard.getSecurityEvents();
@@ -480,7 +484,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       const events = await apiGuard.getSecurityEvents(1);
@@ -512,7 +516,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       const stats = await apiGuard.getSecurityStats();
@@ -527,7 +531,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       const stats = await apiGuard.getSecurityStats();
@@ -546,7 +550,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       await apiGuard.clearSecurityEvents();
@@ -582,7 +586,7 @@ describe('APIGuard', () => {
         ip: '127.0.0.1',
         userAgent: 'test',
         timestamp: Date.now(),
-        requestId: 'test-123'
+        requestId: 'test-123',
       });
 
       expect(handler).toHaveBeenCalled();
@@ -595,7 +599,7 @@ describe('APIGuard', () => {
       apiGuard.registerRoute({
         path: '/api/test',
         method: 'GET',
-        requireAuth: true
+        requireAuth: true,
       });
 
       expect(handler).toHaveBeenCalled();

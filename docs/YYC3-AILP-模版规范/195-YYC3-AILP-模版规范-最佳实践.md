@@ -1,21 +1,21 @@
 # YYC³ 最佳实践指南
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
 ## 📋 文档信息
 
-| 属性         | 内容                                           |
-| ------------ | ---------------------------------------------- |
-| **文档标题** | YYC³ 最佳实践指南                               |
-| **文档版本** | v1.0.0                                         |
-| **创建时间** | 2025-12-31                                     |
-| **适用范围** | YYC³ 团队所有项目和开发者                       |
+| 属性         | 内容                      |
+| ------------ | ------------------------- |
+| **文档标题** | YYC³ 最佳实践指南         |
+| **文档版本** | v1.0.0                    |
+| **创建时间** | 2025-12-31                |
+| **适用范围** | YYC³ 团队所有项目和开发者 |
 
 ---
 
@@ -57,7 +57,7 @@ class AuthManager {
     const response = await fetch('/api/v1/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await response.json();
@@ -79,15 +79,15 @@ class AuthManager {
   private async refreshToken(): Promise<void> {
     const encryptionUtility = EncryptionUtility.getInstance();
     const encryptedToken = localStorage.getItem('yyc3_token');
-    
+
     if (encryptedToken) {
       const decryptedToken = await encryptionUtility.decrypt(encryptedToken);
       const response = await fetch('/api/v1/auth/refresh', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${decryptedToken}`
-        }
+          Authorization: `Bearer ${decryptedToken}`,
+        },
       });
 
       const data = await response.json();
@@ -125,14 +125,14 @@ if (!token) {
 enum UserRole {
   ADMIN = 'admin',
   USER = 'user',
-  GUEST = 'guest'
+  GUEST = 'guest',
 }
 
 class PermissionManager {
   private static permissions: Map<UserRole, Set<string>> = new Map([
     [UserRole.ADMIN, new Set(['read', 'write', 'delete', 'admin'])],
     [UserRole.USER, new Set(['read', 'write'])],
-    [UserRole.GUEST, new Set(['read'])]
+    [UserRole.GUEST, new Set(['read'])],
   ]);
 
   static hasPermission(role: UserRole, action: string): boolean {
@@ -159,7 +159,7 @@ enum ErrorCode {
   AUTHORIZATION_FAILED = 'AUTH_002',
   RATE_LIMIT_EXCEEDED = 'RATE_001',
   VALIDATION_ERROR = 'VAL_001',
-  INTERNAL_ERROR = 'INT_001'
+  INTERNAL_ERROR = 'INT_001',
 }
 
 class YYC3Error extends Error {
@@ -176,7 +176,7 @@ class YYC3Error extends Error {
     return {
       code: this.code,
       message: this.message,
-      details: this.details
+      details: this.details,
     };
   }
 }
@@ -194,9 +194,7 @@ class ErrorHandler {
     return new YYC3Error(ErrorCode.INTERNAL_ERROR, '未知错误');
   }
 
-  static async handleAsync<T>(
-    fn: () => Promise<T>
-  ): Promise<[T | null, YYC3Error | null]> {
+  static async handleAsync<T>(fn: () => Promise<T>): Promise<[T | null, YYC3Error | null]> {
     try {
       const result = await fn();
       return [result, null];
@@ -211,35 +209,24 @@ class ErrorHandler {
 
 ```typescript
 class APIClient {
-  async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<T> {
+  async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     try {
       const response = await fetch(endpoint, {
         ...options,
         headers: {
           'Content-Type': 'application/json',
-          ...options.headers
-        }
+          ...options.headers,
+        },
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        
+
         switch (response.status) {
           case 401:
-            throw new YYC3Error(
-              ErrorCode.AUTHENTICATION_FAILED,
-              '认证失败，请重新登录',
-              errorData
-            );
+            throw new YYC3Error(ErrorCode.AUTHENTICATION_FAILED, '认证失败，请重新登录', errorData);
           case 403:
-            throw new YYC3Error(
-              ErrorCode.AUTHORIZATION_FAILED,
-              '权限不足',
-              errorData
-            );
+            throw new YYC3Error(ErrorCode.AUTHORIZATION_FAILED, '权限不足', errorData);
           case 429:
             throw new YYC3Error(
               ErrorCode.RATE_LIMIT_EXCEEDED,
@@ -247,11 +234,7 @@ class APIClient {
               errorData
             );
           case 400:
-            throw new YYC3Error(
-              ErrorCode.VALIDATION_ERROR,
-              '请求参数错误',
-              errorData
-            );
+            throw new YYC3Error(ErrorCode.VALIDATION_ERROR, '请求参数错误', errorData);
           default:
             throw new YYC3Error(
               ErrorCode.INTERNAL_ERROR,
@@ -285,7 +268,7 @@ class CacheManager {
     this.cache = new IntelligentCacheLayer({
       maxSize: 1000,
       ttl: 60000,
-      strategy: 'lru'
+      strategy: 'lru',
     });
   }
 
@@ -332,9 +315,7 @@ class BatchRequestManager {
 
     while (this.queue.length > 0) {
       const batch = this.queue.splice(0, 10);
-      const results = await Promise.allSettled(
-        batch.map(item => item.request())
-      );
+      const results = await Promise.allSettled(batch.map((item) => item.request()));
 
       results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
@@ -359,7 +340,7 @@ function debounce<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout | null = null;
 
-  return function(this: any, ...args: Parameters<T>) {
+  return function (this: any, ...args: Parameters<T>) {
     if (timeoutId) {
       clearTimeout(timeoutId);
     }
@@ -376,7 +357,7 @@ function throttle<T extends (...args: any[]) => any>(
 ): (...args: Parameters<T>) => void {
   let lastTime = 0;
 
-  return function(this: any, ...args: Parameters<T>) {
+  return function (this: any, ...args: Parameters<T>) {
     const now = Date.now();
     if (now - lastTime >= interval) {
       lastTime = now;
@@ -436,10 +417,7 @@ class DataSecurity {
     return this.encryption.hash(password);
   }
 
-  static async verifyPassword(
-    password: string,
-    hash: string
-  ): Promise<boolean> {
+  static async verifyPassword(password: string, hash: string): Promise<boolean> {
     return this.encryption.verify(password, hash);
   }
 
@@ -458,7 +436,7 @@ class RateLimitManager {
   private static limiter = new RateLimiter({
     maxRequests: 100,
     windowMs: 60000,
-    strategy: RateLimitStrategy.TOKEN_BUCKET
+    strategy: RateLimitStrategy.TOKEN_BUCKET,
   });
 
   static async checkRateLimit(identifier: string): Promise<boolean> {
@@ -489,15 +467,11 @@ enum LogLevel {
   DEBUG = 'debug',
   INFO = 'info',
   WARN = 'warn',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 class Logger {
-  private static formatMessage(
-    level: LogLevel,
-    message: string,
-    meta?: any
-  ): string {
+  private static formatMessage(level: LogLevel, message: string, meta?: any): string {
     const timestamp = new Date().toISOString();
     const metaStr = meta ? ` ${JSON.stringify(meta)}` : '';
     return `[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}`;
@@ -541,10 +515,7 @@ class PerformanceMonitor {
     return this.monitor.getMetrics();
   }
 
-  static async measurePerformance<T>(
-    name: string,
-    fn: () => Promise<T>
-  ): Promise<T> {
+  static async measurePerformance<T>(name: string, fn: () => Promise<T>): Promise<T> {
     const startTime = Date.now();
     const startMemory = process.memoryUsage().heapUsed;
 
@@ -556,7 +527,7 @@ class PerformanceMonitor {
       Logger.info('性能指标', {
         name,
         duration: endTime - startTime,
-        memoryUsed: endMemory - startMemory
+        memoryUsed: endMemory - startMemory,
       });
 
       return result;
@@ -626,7 +597,7 @@ describe('API集成测试', () => {
     const result = await apiClient.reason({
       context: '测试推理',
       constraints: [],
-      objectives: []
+      objectives: [],
     });
 
     expect(result.success).toBe(true);
@@ -653,7 +624,7 @@ interface User {
 // ✅ 使用枚举
 enum UserRole {
   ADMIN = 'admin',
-  USER = 'user'
+  USER = 'user',
 }
 
 // ✅ 使用泛型
@@ -715,24 +686,33 @@ interface EnvironmentConfig {
 
 class ConfigManager {
   private static configs: Map<string, EnvironmentConfig> = new Map([
-    ['development', {
-      apiUrl: 'http://localhost:3200',
-      apiKey: process.env.DEV_API_KEY || '',
-      maxRetries: 3,
-      timeout: 5000
-    }],
-    ['staging', {
-      apiUrl: 'https://staging-api.yyc3.com',
-      apiKey: process.env.STAGING_API_KEY || '',
-      maxRetries: 3,
-      timeout: 5000
-    }],
-    ['production', {
-      apiUrl: 'https://api.yyc3.com',
-      apiKey: process.env.PROD_API_KEY || '',
-      maxRetries: 5,
-      timeout: 10000
-    }]
+    [
+      'development',
+      {
+        apiUrl: 'http://localhost:3200',
+        apiKey: process.env.DEV_API_KEY || '',
+        maxRetries: 3,
+        timeout: 5000,
+      },
+    ],
+    [
+      'staging',
+      {
+        apiUrl: 'https://staging-api.yyc3.com',
+        apiKey: process.env.STAGING_API_KEY || '',
+        maxRetries: 3,
+        timeout: 5000,
+      },
+    ],
+    [
+      'production',
+      {
+        apiUrl: 'https://api.yyc3.com',
+        apiKey: process.env.PROD_API_KEY || '',
+        maxRetries: 5,
+        timeout: 10000,
+      },
+    ],
   ]);
 
   static getConfig(): EnvironmentConfig {
@@ -764,7 +744,7 @@ CMD ["node", "dist/index.js"]
 
 ## 📄 文档标尾 (Footer)
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

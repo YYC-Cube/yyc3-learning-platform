@@ -38,22 +38,37 @@ const DEFAULT_CONFIG: FileUploadConfig = {
   maxSize: 20 * 1024 * 1024, // 20MB
   allowedTypes: [
     // 文档类
-    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.txt',
+    '.pdf',
+    '.doc',
+    '.docx',
+    '.xls',
+    '.xlsx',
+    '.txt',
     // 图片类
-    '.jpg', '.jpeg', '.png', '.gif', '.webp',
+    '.jpg',
+    '.jpeg',
+    '.png',
+    '.gif',
+    '.webp',
     // 视频类
-    '.mp4', '.mov', '.avi', '.mkv',
+    '.mp4',
+    '.mov',
+    '.avi',
+    '.mkv',
     // 音频类
-    '.mp3', '.wav', '.m4a', '.aac'
+    '.mp3',
+    '.wav',
+    '.m4a',
+    '.aac',
   ],
-  multiple: true
+  multiple: true,
 };
 
 export const FileUpload: React.FC<FileUploadProps> = ({
   config = DEFAULT_CONFIG,
   onUpload,
   onRemove,
-  className = ''
+  className = '',
 }) => {
   const [isDragging, setIsDragging] = React.useState(false);
   const [uploadedFiles, setUploadedFiles] = React.useState<UploadedFile[]>([]);
@@ -61,7 +76,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const getFileTypeIcon = (fileName: string) => {
     const ext = '.' + fileName.split('.').pop()?.toLowerCase();
-    
+
     if (['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)) {
       return <Image className="w-5 h-5 text-blue-500" />;
     }
@@ -71,7 +86,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     if (['.mp3', '.wav', '.m4a', '.aac'].includes(ext)) {
       return <Music className="w-5 h-5 text-green-500" />;
     }
-    
+
     return <FileText className="w-5 h-5 text-gray-500" />;
   };
 
@@ -84,78 +99,76 @@ export const FileUpload: React.FC<FileUploadProps> = ({
 
   const validateFile = (file: File): { valid: boolean; error?: string } => {
     const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-    
+
     if (!config.allowedTypes?.includes(ext)) {
       return { valid: false, error: '不支持的文件类型' };
     }
-    
+
     if (config.maxSize && file.size > config.maxSize) {
       return { valid: false, error: '文件大小超过20MB限制' };
     }
-    
+
     return { valid: true };
   };
 
   const handleFileSelect = (files: FileList) => {
     const validFiles: UploadedFile[] = [];
-    
+
     Array.from(files).forEach((file) => {
       const validation = validateFile(file);
-      
+
       if (!validation.valid) {
         validFiles.push({
           id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 9),
           file,
           progress: 0,
           status: 'error',
-          error: validation.error
+          error: validation.error,
         });
         return;
       }
-      
+
       const uploadedFile: UploadedFile = {
         id: Date.now().toString() + '_' + Math.random().toString(36).substr(2, 9),
         file,
         progress: 0,
-        status: 'uploading'
+        status: 'uploading',
       };
-      
+
       validFiles.push(uploadedFile);
       simulateUpload(uploadedFile);
     });
-    
-    setUploadedFiles(prev => [...prev, ...validFiles]);
+
+    setUploadedFiles((prev) => [...prev, ...validFiles]);
   };
 
   const simulateUpload = (uploadedFile: UploadedFile) => {
     let progress = 0;
     const interval = setInterval(() => {
       progress += Math.random() * 20;
-      
+
       if (progress >= 100) {
         progress = 100;
         clearInterval(interval);
-        
-        setUploadedFiles(prev => 
-          prev.map(f => 
-            f.id === uploadedFile.id 
-              ? { ...f, progress: 100, status: 'completed' as const }
-              : f
+
+        setUploadedFiles((prev) =>
+          prev.map((f) =>
+            f.id === uploadedFile.id ? { ...f, progress: 100, status: 'completed' as const } : f
           )
         );
-        
+
         if (onUpload) {
-          onUpload([{
-            ...uploadedFile,
-            progress: 100,
-            status: 'completed'
-          }]);
+          onUpload([
+            {
+              ...uploadedFile,
+              progress: 100,
+              status: 'completed',
+            },
+          ]);
         }
       } else {
-        setUploadedFiles(prev => 
-          prev.map(f => 
-            f.id === uploadedFile.id ? { ...f, progress } : f
-          )
+        setUploadedFiles((prev) =>
+          prev.map((f) => (f.id === uploadedFile.id ? { ...f, progress } : f))
         );
       }
     }, 200);
@@ -174,7 +187,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       handleFileSelect(files);
@@ -186,7 +199,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     if (files && files.length > 0) {
       handleFileSelect(files);
     }
-    
+
     // 重置文件输入
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -194,7 +207,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   const handleRemoveFile = (fileId: string) => {
-    setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
+    setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
     if (onRemove) {
       onRemove(fileId);
     }
@@ -216,9 +229,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         className={`
           border-2 border-dashed rounded-lg p-6 text-center cursor-pointer
           transition-all duration-200
-          ${isDragging 
-            ? 'border-indigo-500 bg-indigo-50' 
-            : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+          ${
+            isDragging
+              ? 'border-indigo-500 bg-indigo-50'
+              : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
           }
         `}
         onClick={() => fileInputRef.current?.click()}
@@ -231,14 +245,10 @@ export const FileUpload: React.FC<FileUploadProps> = ({
           onChange={handleInputChange}
           className="hidden"
         />
-        
+
         <Upload className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-        <p className="text-sm text-gray-600 mb-1">
-          点击选择文件或拖放文件到此处
-        </p>
-        <p className="text-xs text-gray-400">
-          支持文档、图片、视频、音频文件，最大20MB
-        </p>
+        <p className="text-sm text-gray-600 mb-1">点击选择文件或拖放文件到此处</p>
+        <p className="text-xs text-gray-400">支持文档、图片、视频、音频文件，最大20MB</p>
       </div>
 
       {/* 已上传文件列表 */}
@@ -246,15 +256,16 @@ export const FileUpload: React.FC<FileUploadProps> = ({
         <div className="space-y-2">
           {uploadedFiles.map((uploadedFile) => {
             const thumbnail = getFileThumbnail(uploadedFile.file);
-            
+
             return (
               <div
                 key={uploadedFile.id}
                 className={`
                   flex items-center gap-3 p-3 rounded-lg border
-                  ${uploadedFile.status === 'error' 
-                    ? 'border-red-300 bg-red-50' 
-                    : 'border-gray-200 bg-white'
+                  ${
+                    uploadedFile.status === 'error'
+                      ? 'border-red-300 bg-red-50'
+                      : 'border-gray-200 bg-white'
                   }
                 `}
               >
@@ -276,10 +287,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {uploadedFile.file.name}
                   </p>
-                  <p className="text-xs text-gray-500">
-                    {formatFileSize(uploadedFile.file.size)}
-                  </p>
-                  
+                  <p className="text-xs text-gray-500">{formatFileSize(uploadedFile.file.size)}</p>
+
                   {/* 上传进度条 */}
                   {uploadedFile.status === 'uploading' && (
                     <div className="mt-2">
@@ -295,7 +304,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
                       </div>
                     </div>
                   )}
-                  
+
                   {/* 错误信息 */}
                   {uploadedFile.status === 'error' && (
                     <div className="mt-1 flex items-center gap-1 text-xs text-red-600">

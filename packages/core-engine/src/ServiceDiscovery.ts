@@ -7,7 +7,7 @@ export enum ServiceStatus {
   HEALTHY = 'healthy',
   DEGRADED = 'degraded',
   UNHEALTHY = 'unhealthy',
-  UNKNOWN = 'unknown'
+  UNKNOWN = 'unknown',
 }
 
 export enum ServiceType {
@@ -20,7 +20,7 @@ export enum ServiceType {
   API_GATEWAY = 'api_gateway',
   AUTH_SERVICE = 'auth_service',
   WORKER = 'worker',
-  SCHEDULER = 'scheduler'
+  SCHEDULER = 'scheduler',
 }
 
 export interface ServiceInstance {
@@ -129,7 +129,7 @@ export class ServiceDiscovery extends EventEmitter {
       persistencePath: config.persistencePath || './services.json',
       enableMetrics: config.enableMetrics !== false,
       enableCaching: config.enableCaching !== false,
-      cacheTTL: config.cacheTTL || 5000
+      cacheTTL: config.cacheTTL || 5000,
     };
 
     this.metrics = this.initializeMetrics();
@@ -158,15 +158,17 @@ export class ServiceDiscovery extends EventEmitter {
       registrationCount: 0,
       deregistrationCount: 0,
       heartbeatCount: 0,
-      healthCheckCount: 0
+      healthCheckCount: 0,
     };
   }
 
-  async register(service: Omit<ServiceInstance, 'registeredAt' | 'lastHeartbeat'>): Promise<string> {
+  async register(
+    service: Omit<ServiceInstance, 'registeredAt' | 'lastHeartbeat'>
+  ): Promise<string> {
     const serviceInstance: ServiceInstance = {
       ...service,
       registeredAt: Date.now(),
-      lastHeartbeat: Date.now()
+      lastHeartbeat: Date.now(),
     };
 
     const serviceId = serviceInstance.id;
@@ -276,7 +278,7 @@ export class ServiceDiscovery extends EventEmitter {
       if (this.config.enableCaching) {
         this.queryCache.set(cacheKey, {
           result: results,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
 
@@ -301,7 +303,10 @@ export class ServiceDiscovery extends EventEmitter {
     return results[0];
   }
 
-  async discoverByType(type: ServiceType, options: { healthyOnly?: boolean } = {}): Promise<ServiceInstance[]> {
+  async discoverByType(
+    type: ServiceType,
+    options: { healthyOnly?: boolean } = {}
+  ): Promise<ServiceInstance[]> {
     const query: ServiceQuery = { type };
     if (options.healthyOnly) {
       query.status = ServiceStatus.HEALTHY;
@@ -309,7 +314,10 @@ export class ServiceDiscovery extends EventEmitter {
     return this.discover(query);
   }
 
-  async discoverByName(name: string, options: { healthyOnly?: boolean } = {}): Promise<ServiceInstance[]> {
+  async discoverByName(
+    name: string,
+    options: { healthyOnly?: boolean } = {}
+  ): Promise<ServiceInstance[]> {
     const query: ServiceQuery = { name };
     if (options.healthyOnly) {
       query.status = ServiceStatus.HEALTHY;
@@ -317,7 +325,10 @@ export class ServiceDiscovery extends EventEmitter {
     return this.discover(query);
   }
 
-  async discoverByTag(tag: string, options: { healthyOnly?: boolean } = {}): Promise<ServiceInstance[]> {
+  async discoverByTag(
+    tag: string,
+    options: { healthyOnly?: boolean } = {}
+  ): Promise<ServiceInstance[]> {
     const query: ServiceQuery = { tags: [tag] };
     if (options.healthyOnly) {
       query.status = ServiceStatus.HEALTHY;
@@ -396,7 +407,7 @@ export class ServiceDiscovery extends EventEmitter {
       return [];
     }
     return Array.from(serviceIds)
-      .map(id => this.services.get(id))
+      .map((id) => this.services.get(id))
       .filter((service): service is ServiceInstance => service !== undefined);
   }
 
@@ -406,7 +417,7 @@ export class ServiceDiscovery extends EventEmitter {
       return [];
     }
     return Array.from(serviceIds)
-      .map(id => this.services.get(id))
+      .map((id) => this.services.get(id))
       .filter((service): service is ServiceInstance => service !== undefined);
   }
 
@@ -443,33 +454,31 @@ export class ServiceDiscovery extends EventEmitter {
     let results = Array.from(this.services.values());
 
     if (query.type) {
-      results = results.filter(s => s.type === query.type);
+      results = results.filter((s) => s.type === query.type);
     }
 
     if (query.name) {
-      results = results.filter(s => s.name === query.name);
+      results = results.filter((s) => s.name === query.name);
     }
 
     if (query.status) {
-      results = results.filter(s => s.status === query.status);
+      results = results.filter((s) => s.status === query.status);
     }
 
     if (query.tags && query.tags.length > 0) {
-      results = results.filter(s =>
-        query.tags!.every(tag => s.tags.includes(tag))
-      );
+      results = results.filter((s) => query.tags!.every((tag) => s.tags.includes(tag)));
     }
 
     if (query.region) {
-      results = results.filter(s => s.metadata.region === query.region);
+      results = results.filter((s) => s.metadata.region === query.region);
     }
 
     if (query.environment) {
-      results = results.filter(s => s.metadata.environment === query.environment);
+      results = results.filter((s) => s.metadata.environment === query.environment);
     }
 
     if (query.version) {
-      results = results.filter(s => s.version === query.version);
+      results = results.filter((s) => s.version === query.version);
     }
 
     if (query.customFilter) {
@@ -608,12 +617,12 @@ export class ServiceDiscovery extends EventEmitter {
       const url = `${service.protocol}://${service.host}:${service.port}${service.healthCheck.endpoint}`;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), service.healthCheck.timeout);
-      
+
       const response = await fetch(url, {
         method: 'GET',
-        signal: controller.signal
+        signal: controller.signal,
       });
-      
+
       clearTimeout(timeoutId);
 
       return response.ok;

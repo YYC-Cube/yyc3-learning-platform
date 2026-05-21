@@ -62,7 +62,7 @@ export class VectorKnowledgeBase {
   private embeddings: Map<string, VectorEmbedding> = new Map();
   private knowledgeGraph: KnowledgeGraph = {
     nodes: new Map(),
-    edges: new Map()
+    edges: new Map(),
   };
   private embeddingDimension: number = 384; // 默认维度
 
@@ -85,10 +85,10 @@ export class VectorKnowledgeBase {
     const id = this.generateId();
     const embedding: VectorEmbedding = {
       id,
-      vector: vector || await this.generateEmbedding(text),
+      vector: vector || (await this.generateEmbedding(text)),
       metadata,
       text,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.embeddings.set(id, embedding);
@@ -142,21 +142,19 @@ export class VectorKnowledgeBase {
       }
 
       const score = this.cosineSimilarity(queryVector, embedding.vector);
-      
+
       if (score >= threshold) {
         results.push({
           id,
           score,
           embedding,
-          snippet: this.generateSnippet(embedding.text, query)
+          snippet: this.generateSnippet(embedding.text, query),
         });
       }
     }
 
     // 按相似度排序并返回 topK 结果
-    return results
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topK);
+    return results.sort((a, b) => b.score - a.score).slice(0, topK);
   }
 
   /**
@@ -174,21 +172,21 @@ export class VectorKnowledgeBase {
     // 合并结果
     const combined = new Map<string, SearchResult>();
 
-    vectorResults.forEach(result => {
+    vectorResults.forEach((result) => {
       combined.set(result.id, {
         ...result,
-        score: result.score * vectorWeight
+        score: result.score * vectorWeight,
       });
     });
 
-    keywordResults.forEach(result => {
+    keywordResults.forEach((result) => {
       const existing = combined.get(result.id);
       if (existing) {
         existing.score += result.score * keywordWeight;
       } else {
         combined.set(result.id, {
           ...result,
-          score: result.score * keywordWeight
+          score: result.score * keywordWeight,
         });
       }
     });
@@ -231,14 +229,14 @@ export class VectorKnowledgeBase {
 
     while (queue.length > 0) {
       const current = queue.shift()!;
-      
+
       if (visited.has(current.id) || current.depth > maxDepth) {
         continue;
       }
 
       visited.add(current.id);
       const node = this.getNode(current.id);
-      
+
       if (node && current.depth > 0) {
         results.push(node);
       }
@@ -260,9 +258,13 @@ export class VectorKnowledgeBase {
   /**
    * 路径查询
    */
-  public findPath(sourceId: string, targetId: string, maxDepth: number = 5): KnowledgeEdge[] | null {
+  public findPath(
+    sourceId: string,
+    targetId: string,
+    maxDepth: number = 5
+  ): KnowledgeEdge[] | null {
     const queue: Array<{ nodeId: string; path: KnowledgeEdge[]; depth: number }> = [
-      { nodeId: sourceId, path: [], depth: 0 }
+      { nodeId: sourceId, path: [], depth: 0 },
     ];
     const visited = new Set<string>();
 
@@ -284,7 +286,7 @@ export class VectorKnowledgeBase {
           queue.push({
             nodeId: edge.target,
             path: [...current.path, edge],
-            depth: current.depth + 1
+            depth: current.depth + 1,
           });
         }
       }
@@ -311,14 +313,12 @@ export class VectorKnowledgeBase {
       return {
         answer: '抱歉，没有找到相关信息。',
         sources: [],
-        confidence: 0
+        confidence: 0,
       };
     }
 
     // 2. 构建上下文
-    const contextText = searchResults
-      .map(result => result.embedding.text)
-      .join('\n\n');
+    const contextText = searchResults.map((result) => result.embedding.text).join('\n\n');
 
     // 3. 生成答案（这里是简化版，实际应调用 LLM）
     const answer = await this.generateAnswer(context.query, contextText);
@@ -330,7 +330,7 @@ export class VectorKnowledgeBase {
       answer,
       sources: searchResults,
       confidence,
-      reasoning: `基于 ${searchResults.length} 个相关来源生成答案`
+      reasoning: `基于 ${searchResults.length} 个相关来源生成答案`,
     };
   }
 
@@ -351,7 +351,7 @@ export class VectorKnowledgeBase {
 
     for (let hop = 0; hop < maxHops; hop++) {
       const results = await this.semanticSearch(currentQuery, 5);
-      
+
       if (results.length === 0) break;
 
       allSources.push(...results);
@@ -361,12 +361,15 @@ export class VectorKnowledgeBase {
       currentQuery = this.extractNextQuery(results);
     }
 
-    const answer = await this.generateAnswer(query, allSources.map(s => s.embedding.text).join('\n'));
+    const answer = await this.generateAnswer(
+      query,
+      allSources.map((s) => s.embedding.text).join('\n')
+    );
 
     return {
       answer,
       reasoning,
-      sources: allSources
+      sources: allSources,
     };
   }
 
@@ -379,7 +382,7 @@ export class VectorKnowledgeBase {
     // 实际应使用真实的嵌入模型（如 Sentence Transformers）
     // 这里使用简单的哈希+归一化作为演示
     const vector = new Array(this.embeddingDimension).fill(0);
-    
+
     for (let i = 0; i < text.length; i++) {
       const charCode = text.charCodeAt(i);
       const index = (charCode * (i + 1)) % this.embeddingDimension;
@@ -388,7 +391,7 @@ export class VectorKnowledgeBase {
 
     // 归一化
     const magnitude = Math.sqrt(vector.reduce((sum, val) => sum + val * val, 0));
-    return magnitude > 0 ? vector.map(val => val / magnitude) : vector;
+    return magnitude > 0 ? vector.map((val) => val / magnitude) : vector;
   }
 
   /**
@@ -430,7 +433,7 @@ export class VectorKnowledgeBase {
       const text = embedding.text.toLowerCase();
       let score = 0;
 
-      keywords.forEach(keyword => {
+      keywords.forEach((keyword) => {
         const matches = (text.match(new RegExp(keyword, 'g')) || []).length;
         score += matches;
       });
@@ -440,7 +443,7 @@ export class VectorKnowledgeBase {
           id,
           score: score / keywords.length, // 归一化
           embedding,
-          snippet: this.generateSnippet(embedding.text, query)
+          snippet: this.generateSnippet(embedding.text, query),
         });
       }
     }
@@ -471,7 +474,7 @@ export class VectorKnowledgeBase {
 
     const start = Math.max(0, index - contextLength / 2);
     const end = Math.min(text.length, index + lowerQuery.length + contextLength / 2);
-    
+
     let snippet = text.substring(start, end);
     if (start > 0) snippet = '...' + snippet;
     if (end < text.length) snippet = snippet + '...';
@@ -501,11 +504,11 @@ export class VectorKnowledgeBase {
    */
   private calculateConfidence(results: SearchResult[]): number {
     if (results.length === 0) return 0;
-    
+
     const avgScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
     const topScore = results[0]?.score || 0;
-    
-    return (avgScore * 0.6 + topScore * 0.4);
+
+    return avgScore * 0.6 + topScore * 0.4;
   }
 
   /**
@@ -534,7 +537,7 @@ export class VectorKnowledgeBase {
       totalNodes: this.knowledgeGraph.nodes.size,
       totalEdges: this.knowledgeGraph.edges.size,
       dimension: this.embeddingDimension,
-      memoryUsage: this.estimateMemoryUsage()
+      memoryUsage: this.estimateMemoryUsage(),
     };
   }
 
@@ -565,7 +568,7 @@ export class VectorKnowledgeBase {
       embeddings: Array.from(this.embeddings.entries()),
       nodes: Array.from(this.knowledgeGraph.nodes.entries()),
       edges: Array.from(this.knowledgeGraph.edges.entries()),
-      dimension: this.embeddingDimension
+      dimension: this.embeddingDimension,
     };
   }
 

@@ -95,18 +95,18 @@ export interface ResourceMonitorConfig {
 const DEFAULT_THRESHOLDS: ResourceThresholds = {
   memory: {
     warning: 70,
-    critical: 85
+    critical: 85,
   },
   cpu: {
     warning: 70,
-    critical: 85
+    critical: 85,
   },
   network: {
     warningLatency: 500,
     criticalLatency: 1000,
     warningErrorRate: 0.05,
-    criticalErrorRate: 0.1
-  }
+    criticalErrorRate: 0.1,
+  },
 };
 
 export class ResourceMonitor extends EventEmitter {
@@ -131,7 +131,7 @@ export class ResourceMonitor extends EventEmitter {
       historySize: config.historySize || 100,
       thresholds: config.thresholds || DEFAULT_THRESHOLDS,
       enableAlerts: config.enableAlerts !== false,
-      enableOptimization: config.enableOptimization !== false
+      enableOptimization: config.enableOptimization !== false,
     };
 
     this.previousCPUUsage = process.cpuUsage();
@@ -142,7 +142,7 @@ export class ResourceMonitor extends EventEmitter {
       requestCount: 0,
       responseCount: 0,
       errorCount: 0,
-      latencies: []
+      latencies: [],
     };
   }
 
@@ -176,7 +176,7 @@ export class ResourceMonitor extends EventEmitter {
       memory: memoryMetrics,
       cpu: cpuMetrics,
       network: networkMetrics,
-      system: systemMetrics
+      system: systemMetrics,
     };
 
     this.addToHistory(metrics);
@@ -202,7 +202,7 @@ export class ResourceMonitor extends EventEmitter {
       external: memoryUsage.external,
       arrayBuffers: memoryUsage.arrayBuffers,
       heapUsageLimit: heapUsageLimit,
-      heapUsageLimitPercentage: (memoryUsage.heapUsed / heapUsageLimit) * 100
+      heapUsageLimitPercentage: (memoryUsage.heapUsed / heapUsageLimit) * 100,
     };
   }
 
@@ -223,19 +223,19 @@ export class ResourceMonitor extends EventEmitter {
       systemCPUTime: currentCPUUsage.system,
       loadAverage: process.platform !== 'win32' ? require('os').loadavg() : [0, 0, 0],
       cpuCount: require('os').cpus().length,
-      processCPUUsage: usage
+      processCPUUsage: usage,
     };
   }
 
   private collectNetworkMetrics(): NetworkMetrics {
     const latencies = this.networkMetrics.latencies;
-    const averageLatency = latencies.length > 0
-      ? latencies.reduce((sum, lat) => sum + lat, 0) / latencies.length
-      : 0;
+    const averageLatency =
+      latencies.length > 0 ? latencies.reduce((sum, lat) => sum + lat, 0) / latencies.length : 0;
 
-    const errorRate = this.networkMetrics.requestCount > 0
-      ? this.networkMetrics.errorCount / this.networkMetrics.requestCount
-      : 0;
+    const errorRate =
+      this.networkMetrics.requestCount > 0
+        ? this.networkMetrics.errorCount / this.networkMetrics.requestCount
+        : 0;
 
     return {
       bytesReceived: this.networkMetrics.bytesReceived,
@@ -245,7 +245,7 @@ export class ResourceMonitor extends EventEmitter {
       errorCount: this.networkMetrics.errorCount,
       averageLatency,
       bandwidthUsage: this.networkMetrics.bytesReceived + this.networkMetrics.bytesSent,
-      connectionCount: this.networkMetrics.requestCount
+      connectionCount: this.networkMetrics.requestCount,
     };
   }
 
@@ -259,7 +259,7 @@ export class ResourceMonitor extends EventEmitter {
       nodeVersion: process.version,
       totalMemory: os.totalmem(),
       freeMemory: os.freemem(),
-      freeMemoryPercentage: (os.freemem() / os.totalmem()) * 100
+      freeMemoryPercentage: (os.freemem() / os.totalmem()) * 100,
     };
   }
 
@@ -281,7 +281,7 @@ export class ResourceMonitor extends EventEmitter {
         message: `内存使用率严重: ${metrics.memory.heapUsedPercentage.toFixed(2)}%`,
         metrics: metrics.memory,
         timestamp: metrics.timestamp,
-        recommendation: '建议立即清理缓存、释放未使用资源或增加内存分配'
+        recommendation: '建议立即清理缓存、释放未使用资源或增加内存分配',
       });
     } else if (metrics.memory.heapUsedPercentage > this.config.thresholds.memory.warning) {
       alerts.push({
@@ -290,7 +290,7 @@ export class ResourceMonitor extends EventEmitter {
         message: `内存使用率较高: ${metrics.memory.heapUsedPercentage.toFixed(2)}%`,
         metrics: metrics.memory,
         timestamp: metrics.timestamp,
-        recommendation: '建议优化内存使用、清理缓存或考虑增加内存分配'
+        recommendation: '建议优化内存使用、清理缓存或考虑增加内存分配',
       });
     }
 
@@ -301,7 +301,7 @@ export class ResourceMonitor extends EventEmitter {
         message: `CPU使用率严重: ${metrics.cpu.usage.toFixed(2)}%`,
         metrics: metrics.cpu,
         timestamp: metrics.timestamp,
-        recommendation: '建议优化CPU密集型操作、增加并发处理能力或扩展服务器资源'
+        recommendation: '建议优化CPU密集型操作、增加并发处理能力或扩展服务器资源',
       });
     } else if (metrics.cpu.usage > this.config.thresholds.cpu.warning) {
       alerts.push({
@@ -310,13 +310,14 @@ export class ResourceMonitor extends EventEmitter {
         message: `CPU使用率较高: ${metrics.cpu.usage.toFixed(2)}%`,
         metrics: metrics.cpu,
         timestamp: metrics.timestamp,
-        recommendation: '建议优化CPU使用、减少不必要的计算或增加处理能力'
+        recommendation: '建议优化CPU使用、减少不必要的计算或增加处理能力',
       });
     }
 
-    const errorRate = metrics.network.requestCount > 0
-      ? metrics.network.errorCount / metrics.network.requestCount
-      : 0;
+    const errorRate =
+      metrics.network.requestCount > 0
+        ? metrics.network.errorCount / metrics.network.requestCount
+        : 0;
 
     if (errorRate > this.config.thresholds.network.criticalErrorRate) {
       alerts.push({
@@ -325,7 +326,7 @@ export class ResourceMonitor extends EventEmitter {
         message: `网络错误率严重: ${(errorRate * 100).toFixed(2)}%`,
         metrics: metrics.network,
         timestamp: metrics.timestamp,
-        recommendation: '建议检查网络连接、优化错误处理或增加重试机制'
+        recommendation: '建议检查网络连接、优化错误处理或增加重试机制',
       });
     } else if (errorRate > this.config.thresholds.network.warningErrorRate) {
       alerts.push({
@@ -334,7 +335,7 @@ export class ResourceMonitor extends EventEmitter {
         message: `网络错误率较高: ${(errorRate * 100).toFixed(2)}%`,
         metrics: metrics.network,
         timestamp: metrics.timestamp,
-        recommendation: '建议优化网络请求处理、增加错误监控或改进重试策略'
+        recommendation: '建议优化网络请求处理、增加错误监控或改进重试策略',
       });
     }
 
@@ -345,7 +346,7 @@ export class ResourceMonitor extends EventEmitter {
         message: `网络延迟严重: ${metrics.network.averageLatency.toFixed(2)}ms`,
         metrics: metrics.network,
         timestamp: metrics.timestamp,
-        recommendation: '建议优化网络请求、使用CDN加速或增加服务器带宽'
+        recommendation: '建议优化网络请求、使用CDN加速或增加服务器带宽',
       });
     } else if (metrics.network.averageLatency > this.config.thresholds.network.warningLatency) {
       alerts.push({
@@ -354,7 +355,7 @@ export class ResourceMonitor extends EventEmitter {
         message: `网络延迟较高: ${metrics.network.averageLatency.toFixed(2)}ms`,
         metrics: metrics.network,
         timestamp: metrics.timestamp,
-        recommendation: '建议优化网络请求、减少数据传输量或使用缓存'
+        recommendation: '建议优化网络请求、减少数据传输量或使用缓存',
       });
     }
 
@@ -391,8 +392,8 @@ export class ResourceMonitor extends EventEmitter {
       return [...this.metricsHistory];
     }
 
-    return this.metricsHistory.filter(metrics =>
-      metrics.timestamp >= timeRange.start && metrics.timestamp <= timeRange.end
+    return this.metricsHistory.filter(
+      (metrics) => metrics.timestamp >= timeRange.start && metrics.timestamp <= timeRange.end
     );
   }
 
@@ -411,26 +412,29 @@ export class ResourceMonitor extends EventEmitter {
       memory: this.averageMemoryMetrics(relevantMetrics),
       cpu: this.averageCPUMetrics(relevantMetrics),
       network: this.averageNetworkMetrics(relevantMetrics),
-      system: relevantMetrics[relevantMetrics.length - 1].system
+      system: relevantMetrics[relevantMetrics.length - 1].system,
     };
   }
 
   private averageMemoryMetrics(metrics: ResourceMetrics[]): MemoryMetrics {
-    const sum = metrics.reduce((acc, m) => ({
-      heapUsed: acc.heapUsed + m.memory.heapUsed,
-      heapTotal: acc.heapTotal + m.memory.heapTotal,
-      rss: acc.rss + m.memory.rss,
-      external: acc.external + m.memory.external,
-      arrayBuffers: acc.arrayBuffers + m.memory.arrayBuffers,
-      heapUsageLimit: acc.heapUsageLimit + m.memory.heapUsageLimit
-    }), {
-      heapUsed: 0,
-      heapTotal: 0,
-      rss: 0,
-      external: 0,
-      arrayBuffers: 0,
-      heapUsageLimit: 0
-    });
+    const sum = metrics.reduce(
+      (acc, m) => ({
+        heapUsed: acc.heapUsed + m.memory.heapUsed,
+        heapTotal: acc.heapTotal + m.memory.heapTotal,
+        rss: acc.rss + m.memory.rss,
+        external: acc.external + m.memory.external,
+        arrayBuffers: acc.arrayBuffers + m.memory.arrayBuffers,
+        heapUsageLimit: acc.heapUsageLimit + m.memory.heapUsageLimit,
+      }),
+      {
+        heapUsed: 0,
+        heapTotal: 0,
+        rss: 0,
+        external: 0,
+        arrayBuffers: 0,
+        heapUsageLimit: 0,
+      }
+    );
 
     const count = metrics.length;
     return {
@@ -441,20 +445,23 @@ export class ResourceMonitor extends EventEmitter {
       external: sum.external / count,
       arrayBuffers: sum.arrayBuffers / count,
       heapUsageLimit: sum.heapUsageLimit / count,
-      heapUsageLimitPercentage: (sum.heapUsed / sum.heapUsageLimit) * 100
+      heapUsageLimitPercentage: (sum.heapUsed / sum.heapUsageLimit) * 100,
     };
   }
 
   private averageCPUMetrics(metrics: ResourceMetrics[]): CPUMetrics {
-    const sum = metrics.reduce((acc, m) => ({
-      usage: acc.usage + m.cpu.usage,
-      userCPUTime: acc.userCPUTime + m.cpu.userCPUTime,
-      systemCPUTime: acc.systemCPUTime + m.cpu.systemCPUTime
-    }), {
-      usage: 0,
-      userCPUTime: 0,
-      systemCPUTime: 0
-    });
+    const sum = metrics.reduce(
+      (acc, m) => ({
+        usage: acc.usage + m.cpu.usage,
+        userCPUTime: acc.userCPUTime + m.cpu.userCPUTime,
+        systemCPUTime: acc.systemCPUTime + m.cpu.systemCPUTime,
+      }),
+      {
+        usage: 0,
+        userCPUTime: 0,
+        systemCPUTime: 0,
+      }
+    );
 
     const count = metrics.length;
     const latestMetrics = metrics[metrics.length - 1];
@@ -465,26 +472,29 @@ export class ResourceMonitor extends EventEmitter {
       systemCPUTime: sum.systemCPUTime / count,
       loadAverage: latestMetrics.cpu.loadAverage,
       cpuCount: latestMetrics.cpu.cpuCount,
-      processCPUUsage: sum.usage / count
+      processCPUUsage: sum.usage / count,
     };
   }
 
   private averageNetworkMetrics(metrics: ResourceMetrics[]): NetworkMetrics {
-    const sum = metrics.reduce((acc, m) => ({
-      bytesReceived: acc.bytesReceived + m.network.bytesReceived,
-      bytesSent: acc.bytesSent + m.network.bytesSent,
-      requestCount: acc.requestCount + m.network.requestCount,
-      responseCount: acc.responseCount + m.network.responseCount,
-      errorCount: acc.errorCount + m.network.errorCount,
-      averageLatency: acc.averageLatency + m.network.averageLatency
-    }), {
-      bytesReceived: 0,
-      bytesSent: 0,
-      requestCount: 0,
-      responseCount: 0,
-      errorCount: 0,
-      averageLatency: 0
-    });
+    const sum = metrics.reduce(
+      (acc, m) => ({
+        bytesReceived: acc.bytesReceived + m.network.bytesReceived,
+        bytesSent: acc.bytesSent + m.network.bytesSent,
+        requestCount: acc.requestCount + m.network.requestCount,
+        responseCount: acc.responseCount + m.network.responseCount,
+        errorCount: acc.errorCount + m.network.errorCount,
+        averageLatency: acc.averageLatency + m.network.averageLatency,
+      }),
+      {
+        bytesReceived: 0,
+        bytesSent: 0,
+        requestCount: 0,
+        responseCount: 0,
+        errorCount: 0,
+        averageLatency: 0,
+      }
+    );
 
     const count = metrics.length;
     const latestMetrics = metrics[metrics.length - 1];
@@ -497,7 +507,7 @@ export class ResourceMonitor extends EventEmitter {
       errorCount: sum.errorCount / count,
       averageLatency: sum.averageLatency / count,
       bandwidthUsage: (sum.bytesReceived + sum.bytesSent) / count,
-      connectionCount: sum.requestCount / count
+      connectionCount: sum.requestCount / count,
     };
   }
 
@@ -514,9 +524,13 @@ export class ResourceMonitor extends EventEmitter {
         type: 'memory',
         currentUsage: latestMetrics.memory.heapUsedPercentage,
         threshold: this.config.thresholds.memory.warning,
-        recommendation: '优化内存使用：清理未使用的对象、实现对象池、使用流式处理大文件、启用垃圾回收优化',
-        priority: latestMetrics.memory.heapUsedPercentage > this.config.thresholds.memory.critical ? 'high' : 'medium',
-        estimatedImpact: '可减少20-40%内存使用'
+        recommendation:
+          '优化内存使用：清理未使用的对象、实现对象池、使用流式处理大文件、启用垃圾回收优化',
+        priority:
+          latestMetrics.memory.heapUsedPercentage > this.config.thresholds.memory.critical
+            ? 'high'
+            : 'medium',
+        estimatedImpact: '可减少20-40%内存使用',
       });
     }
 
@@ -527,13 +541,14 @@ export class ResourceMonitor extends EventEmitter {
         threshold: this.config.thresholds.cpu.warning,
         recommendation: '优化CPU使用：使用异步处理、实现任务队列、优化算法复杂度、使用缓存减少计算',
         priority: latestMetrics.cpu.usage > this.config.thresholds.cpu.critical ? 'high' : 'medium',
-        estimatedImpact: '可减少30-50%CPU使用'
+        estimatedImpact: '可减少30-50%CPU使用',
       });
     }
 
-    const errorRate = latestMetrics.network.requestCount > 0
-      ? latestMetrics.network.errorCount / latestMetrics.network.requestCount
-      : 0;
+    const errorRate =
+      latestMetrics.network.requestCount > 0
+        ? latestMetrics.network.errorCount / latestMetrics.network.requestCount
+        : 0;
 
     if (errorRate > this.config.thresholds.network.warningErrorRate) {
       recommendations.push({
@@ -542,7 +557,7 @@ export class ResourceMonitor extends EventEmitter {
         threshold: this.config.thresholds.network.warningErrorRate * 100,
         recommendation: '优化网络请求：实现重试机制、使用连接池、优化数据传输格式、启用压缩',
         priority: errorRate > this.config.thresholds.network.criticalErrorRate ? 'high' : 'medium',
-        estimatedImpact: '可减少50-70%网络错误'
+        estimatedImpact: '可减少50-70%网络错误',
       });
     }
 
@@ -552,8 +567,11 @@ export class ResourceMonitor extends EventEmitter {
         currentUsage: latestMetrics.network.averageLatency,
         threshold: this.config.thresholds.network.warningLatency,
         recommendation: '优化网络延迟：使用CDN加速、减少请求数量、实现本地缓存、优化DNS解析',
-        priority: latestMetrics.network.averageLatency > this.config.thresholds.network.criticalLatency ? 'high' : 'medium',
-        estimatedImpact: '可减少40-60%网络延迟'
+        priority:
+          latestMetrics.network.averageLatency > this.config.thresholds.network.criticalLatency
+            ? 'high'
+            : 'medium',
+        estimatedImpact: '可减少40-60%网络延迟',
       });
     }
 
@@ -585,11 +603,15 @@ export class ResourceMonitor extends EventEmitter {
 
     let status: 'healthy' | 'warning' | 'critical' = 'healthy';
 
-    if (latestMetrics.memory.heapUsedPercentage > this.config.thresholds.memory.critical ||
-        latestMetrics.cpu.usage > this.config.thresholds.cpu.critical) {
+    if (
+      latestMetrics.memory.heapUsedPercentage > this.config.thresholds.memory.critical ||
+      latestMetrics.cpu.usage > this.config.thresholds.cpu.critical
+    ) {
       status = 'critical';
-    } else if (latestMetrics.memory.heapUsedPercentage > this.config.thresholds.memory.warning ||
-               latestMetrics.cpu.usage > this.config.thresholds.cpu.warning) {
+    } else if (
+      latestMetrics.memory.heapUsedPercentage > this.config.thresholds.memory.warning ||
+      latestMetrics.cpu.usage > this.config.thresholds.cpu.warning
+    ) {
       status = 'warning';
     }
 
@@ -599,12 +621,12 @@ export class ResourceMonitor extends EventEmitter {
       summary: {
         status,
         uptime: latestMetrics.system.uptime,
-        lastUpdate: latestMetrics.timestamp
+        lastUpdate: latestMetrics.timestamp,
       },
       metrics: latestMetrics,
       trends,
       alerts,
-      recommendations
+      recommendations,
     };
   }
 
@@ -617,7 +639,7 @@ export class ResourceMonitor extends EventEmitter {
       return {
         memory: 'stable',
         cpu: 'stable',
-        network: 'stable'
+        network: 'stable',
       };
     }
 
@@ -625,7 +647,8 @@ export class ResourceMonitor extends EventEmitter {
     const firstMetrics = recentMetrics[0];
     const lastMetrics = recentMetrics[recentMetrics.length - 1];
 
-    const memoryTrend = lastMetrics.memory.heapUsedPercentage - firstMetrics.memory.heapUsedPercentage;
+    const memoryTrend =
+      lastMetrics.memory.heapUsedPercentage - firstMetrics.memory.heapUsedPercentage;
     const cpuTrend = lastMetrics.cpu.usage - firstMetrics.cpu.usage;
     const networkTrend = lastMetrics.network.bandwidthUsage - firstMetrics.network.bandwidthUsage;
 
@@ -638,7 +661,7 @@ export class ResourceMonitor extends EventEmitter {
     return {
       memory: getTrend(memoryTrend),
       cpu: getTrend(cpuTrend),
-      network: getTrend(networkTrend)
+      network: getTrend(networkTrend),
     };
   }
 
@@ -674,7 +697,7 @@ export class ResourceMonitor extends EventEmitter {
       requestCount: 0,
       responseCount: 0,
       errorCount: 0,
-      latencies: []
+      latencies: [],
     };
   }
 

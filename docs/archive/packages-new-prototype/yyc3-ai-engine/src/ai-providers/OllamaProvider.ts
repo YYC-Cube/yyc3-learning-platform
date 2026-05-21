@@ -4,7 +4,13 @@
  */
 
 import { EventEmitter } from 'events';
-import { type IChatProvider, type ChatRequest, type ChatResponse, type ModelInfo, type ModelMetrics } from '../types/ai-providers';
+import {
+  type IChatProvider,
+  type ChatRequest,
+  type ChatResponse,
+  type ModelInfo,
+  type ModelMetrics,
+} from '../types/ai-providers';
 import { createLogger } from '../utils/logger';
 
 const logger = createLogger('OllamaProvider');
@@ -90,11 +96,11 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
 
     // 根据可用模型设置默认模型（性能优化版本）
     this.defaultModels = config.defaultModels || {
-      chat: 'llama3.2:1b',                      // 对话使用1B模型（最快响应）
-      code: 'qwen2.5-coder:1.5b',              // 代码生成使用1.5B模型（专业）
-      analysis: 'llama3.2:1b',                  // 分析使用1B模型（轻量）
-      reasoning: 'qwen2.5-coder:1.5b',          // 复杂推理使用1.5B模型（平衡）
-      fallback: 'llama3.2:1b'                 // 降级使用最快模型
+      chat: 'llama3.2:1b', // 对话使用1B模型（最快响应）
+      code: 'qwen2.5-coder:1.5b', // 代码生成使用1.5B模型（专业）
+      analysis: 'llama3.2:1b', // 分析使用1B模型（轻量）
+      reasoning: 'qwen2.5-coder:1.5b', // 复杂推理使用1.5B模型（平衡）
+      fallback: 'llama3.2:1b', // 降级使用最快模型
     };
   }
 
@@ -118,7 +124,6 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
 
       this.isInitialized = true;
       this.emit('initialized');
-
     } catch (error) {
       logger.error('Failed to initialize Ollama Provider', error);
       throw error;
@@ -132,7 +137,7 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
     try {
       const response = await fetch(`${this.baseUrl}/api/tags`, {
         method: 'GET',
-        signal: AbortSignal.timeout(5000)
+        signal: AbortSignal.timeout(5000),
       });
 
       if (!response.ok) {
@@ -163,7 +168,6 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
         // 更新模型信息映射
         this.updateModelMetrics(model.name);
       }
-
     } catch (error) {
       throw new Error(`Failed to load Ollama models: ${error.message}`);
     }
@@ -194,7 +198,7 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
       totalTokens: existingMetrics?.totalTokens || 0,
       totalCost: 0, // 本地模型无API成本
       lastUsed: existingMetrics?.lastUsed || null,
-      successRate: existingMetrics?.successRate || 1.0
+      successRate: existingMetrics?.successRate || 1.0,
     });
   }
 
@@ -227,15 +231,15 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
           totalTokens: 0,
           totalCost: 0,
           lastUsed: null,
-          successRate: 1.0
+          successRate: 1.0,
         },
         metadata: {
           parameterSize: model.details.parameter_size,
           quantization: model.details.quantization_level,
           family: model.details.family,
           size: model.size,
-          modified: model.modified_at
-        }
+          modified: model.modified_at,
+        },
       });
     }
 
@@ -276,7 +280,7 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
       'llama3.2:3b-instruct-q4_K_M': 'Llama 3.2 3B Instruct',
       'qwen3-coder:30b': 'Qwen3 Coder 30B',
       'qwen2.5-coder:1.5b': 'Qwen2.5 Coder 1.5B',
-      'llama3.2:1b': 'Llama 3.2 1B'
+      'llama3.2:1b': 'Llama 3.2 1B',
     };
 
     return nameMap[modelName] || modelName;
@@ -291,7 +295,7 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
       'llama3.2:3b-instruct-q4_K_M': '轻量级3B对话模型，适合基础对话和指令跟随',
       'qwen3-coder:30b': '专业30B编程模型，精通多种编程语言和框架',
       'qwen2.5-coder:1.5b': '超轻量级1.5B代码模型，快速响应基础编程需求',
-      'llama3.2:1b': '迷你1B模型，极快响应速度，适合简单任务'
+      'llama3.2:1b': '迷你1B模型，极快响应速度，适合简单任务',
     };
 
     return descriptions[modelName] || `本地模型: ${modelName}`;
@@ -307,7 +311,10 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
     if (family.includes('llama')) {
       return family.includes('3') ? 8192 : 4096;
     } else if (family.includes('qwen')) {
-      return model.details.parameter_size.includes('30') || model.details.parameter_size.includes('33') ? 8192 : 4096;
+      return model.details.parameter_size.includes('30') ||
+        model.details.parameter_size.includes('33')
+        ? 8192
+        : 4096;
     } else if (family.includes('deepseek')) {
       return 8192;
     }
@@ -352,7 +359,7 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
         usage: {
           promptTokens: response.prompt_eval_count || 0,
           completionTokens: response.eval_count || 0,
-          totalTokens: (response.prompt_eval_count || 0) + (response.eval_count || 0)
+          totalTokens: (response.prompt_eval_count || 0) + (response.eval_count || 0),
         },
         finishReason: response.done ? 'stop' : 'length',
         metadata: {
@@ -360,13 +367,12 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
           responseTime,
           loadDuration: response.load_duration,
           evalDuration: response.eval_duration,
-          totalDuration: response.total_duration
-        }
+          totalDuration: response.total_duration,
+        },
       };
 
       this.emit('response', chatResponse);
       return chatResponse;
-
     } catch (error) {
       // 更新错误指标
       this.updateRequestMetrics(modelName, 'error');
@@ -405,7 +411,10 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
   /**
    * 调用Ollama API (with intelligent fallback)
    */
-  private async callOllamaAPI(modelName: string, request: ChatRequest): Promise<OllamaGenerateResponse> {
+  private async callOllamaAPI(
+    modelName: string,
+    request: ChatRequest
+  ): Promise<OllamaGenerateResponse> {
     // 构建prompt
     const prompt = this.buildPrompt(request.messages || []);
 
@@ -428,8 +437,8 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
           temperature: request.temperature || 0.7,
           top_p: request.topP || 0.9,
           num_predict: request.maxTokens || 2048,
-          ...(request.seed !== undefined && { seed: request.seed })
-        }
+          ...(request.seed !== undefined && { seed: request.seed }),
+        },
       };
 
       for (let attempt = 0; attempt < this.retryAttempts; attempt++) {
@@ -440,7 +449,7 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify(ollamaRequest),
-            signal: AbortSignal.timeout(this.timeout)
+            signal: AbortSignal.timeout(this.timeout),
           });
 
           if (!response.ok) {
@@ -454,27 +463,33 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
           }
 
           return data;
-
         } catch (error) {
           lastError = error;
 
           if (attempt < this.retryAttempts - 1) {
-            logger.warn(`Ollama request failed for model ${modelToUse} (attempt ${attempt + 1}/${this.retryAttempts}), retrying...`, error);
-            await new Promise(resolve => setTimeout(resolve, this.retryDelay * (attempt + 1)));
+            logger.warn(
+              `Ollama request failed for model ${modelToUse} (attempt ${attempt + 1}/${this.retryAttempts}), retrying...`,
+              error
+            );
+            await new Promise((resolve) => setTimeout(resolve, this.retryDelay * (attempt + 1)));
           }
         }
       }
 
-      logger.warn(`Model ${modelToUse} failed after ${this.retryAttempts} attempts, trying next model...`);
+      logger.warn(
+        `Model ${modelToUse} failed after ${this.retryAttempts} attempts, trying next model...`
+      );
     }
 
-    throw new Error(`All Ollama models failed after ${this.retryAttempts} attempts: ${lastError.message}`);
+    throw new Error(
+      `All Ollama models failed after ${this.retryAttempts} attempts: ${lastError.message}`
+    );
   }
 
   /**
    * 构建prompt
    */
-  private buildPrompt(messages: Array<{role: string; content: string}>): string {
+  private buildPrompt(messages: Array<{ role: string; content: string }>): string {
     if (messages.length === 0) {
       return '';
     }
@@ -483,10 +498,14 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
     let prompt = '';
 
     for (const message of messages) {
-      const rolePrefix = message.role === 'system' ? 'System:' :
-                        message.role === 'user' ? 'User:' :
-                        message.role === 'assistant' ? 'Assistant:' :
-                        'User:';
+      const rolePrefix =
+        message.role === 'system'
+          ? 'System:'
+          : message.role === 'user'
+            ? 'User:'
+            : message.role === 'assistant'
+              ? 'Assistant:'
+              : 'User:';
 
       prompt += `${rolePrefix} ${message.content}\n\n`;
     }
@@ -499,7 +518,11 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
   /**
    * 更新请求指标
    */
-  private updateRequestMetrics(modelName: string, type: 'request' | 'success' | 'error', responseTime?: number): void {
+  private updateRequestMetrics(
+    modelName: string,
+    type: 'request' | 'success' | 'error',
+    responseTime?: number
+  ): void {
     const metrics = this.metrics.get(modelName);
     if (!metrics) return;
 
@@ -509,7 +532,8 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
       if (responseTime) {
         // 计算平均响应时间
         const totalRequests = metrics.requests || 1;
-        metrics.avgResponseTime = (metrics.avgResponseTime * (totalRequests - 1) + responseTime) / totalRequests;
+        metrics.avgResponseTime =
+          (metrics.avgResponseTime * (totalRequests - 1) + responseTime) / totalRequests;
       }
       metrics.lastUsed = new Date();
     } else if (type === 'error') {
@@ -517,8 +541,8 @@ export class OllamaProvider extends EventEmitter implements IChatProvider {
     }
 
     // 计算成功率
-    metrics.successRate = metrics.requests > 0 ?
-      (metrics.requests - metrics.errors) / metrics.requests : 1.0;
+    metrics.successRate =
+      metrics.requests > 0 ? (metrics.requests - metrics.errors) / metrics.requests : 1.0;
   }
 
   /**

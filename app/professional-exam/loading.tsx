@@ -29,5 +29,5 @@ export default function ProfessionalExamLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

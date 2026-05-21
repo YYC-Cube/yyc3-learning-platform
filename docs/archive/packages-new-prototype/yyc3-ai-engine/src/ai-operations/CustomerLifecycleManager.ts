@@ -26,7 +26,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       objectives: ['增加品牌曝光', '收集潜在客户', '建立初步联系'],
       aiCapabilities: ['意图识别', '个性化推荐', '自动化跟进'],
       metrics: ['线索数量', '获客成本', '转化率'],
-      automationLevel: 0.8
+      automationLevel: 0.8,
     });
 
     this.stages.set('nurturing', {
@@ -35,7 +35,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       objectives: ['建立信任', '价值传递', '需求挖掘'],
       aiCapabilities: ['内容个性化', '时机预测', '多渠道协调'],
       metrics: ['参与度', '响应率', '培育进度'],
-      automationLevel: 0.9
+      automationLevel: 0.9,
     });
 
     this.stages.set('conversion', {
@@ -44,7 +44,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       objectives: ['消除疑虑', '促成决策', '完成签约'],
       aiCapabilities: ['异议处理', '谈判辅助', '风险评估'],
       metrics: ['转化率', '平均客单价', '销售周期'],
-      automationLevel: 0.7
+      automationLevel: 0.7,
     });
 
     this.stages.set('retention', {
@@ -53,7 +53,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       objectives: ['提升满意度', '预防流失', '价值深化'],
       aiCapabilities: ['满意度预测', '流失预警', '个性化服务'],
       metrics: ['留存率', '满意度', '复购率'],
-      automationLevel: 0.85
+      automationLevel: 0.85,
     });
 
     this.stages.set('expansion', {
@@ -62,7 +62,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       objectives: ['挖掘需求', '交叉销售', '向上销售'],
       aiCapabilities: ['需求预测', '推荐算法', '机会识别'],
       metrics: ['增购率', '客单价增长', 'LTV'],
-      automationLevel: 0.75
+      automationLevel: 0.75,
     });
   }
 
@@ -91,12 +91,11 @@ export class CustomerLifecycleManager extends EventEmitter {
         outcomes: executionResults,
         metrics: this.calculateStageMetrics(executionResults, stage),
         nextActions: this.generateNextActions(customerAnalysis, optimizationResults),
-        aiInsights: customerAnalysis.insights
+        aiInsights: customerAnalysis.insights,
       };
 
       this.emit('lifecycle-processed', result);
       return result;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -115,8 +114,8 @@ export class CustomerLifecycleManager extends EventEmitter {
         customer: customerData,
         behavior: behaviorData,
         prediction: predictionData,
-        stage: config.stage
-      }
+        stage: config.stage,
+      },
     });
 
     return {
@@ -126,7 +125,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       insights,
       riskScore: this.calculateRiskScore(predictionData),
       opportunityScore: this.calculateOpportunityScore(predictionData),
-      nextBestAction: await this.determineNextBestAction(insights)
+      nextBestAction: await this.determineNextBestAction(insights),
     };
   }
 
@@ -144,9 +143,9 @@ export class CustomerLifecycleManager extends EventEmitter {
         constraints: {
           budget: stage.automationLevel > 0.8 ? 'high' : 'medium',
           timeline: 'optimal',
-          resources: 'auto-allocated'
-        }
-      }
+          resources: 'auto-allocated',
+        },
+      },
     });
 
     return {
@@ -155,7 +154,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       channels: strategy.channels,
       timing: strategy.timing,
       personalization: strategy.personalization,
-      automationLevel: stage.automationLevel
+      automationLevel: stage.automationLevel,
     };
   }
 
@@ -194,7 +193,10 @@ export class CustomerLifecycleManager extends EventEmitter {
   }
 
   // 执行营销活动
-  private async executeCampaign(campaign: CampaignConfig, config: LifecycleConfig): Promise<ExecutionResult> {
+  private async executeCampaign(
+    campaign: CampaignConfig,
+    config: LifecycleConfig
+  ): Promise<ExecutionResult> {
     const campaignId = `campaign_${Date.now()}`;
 
     // AI优化活动参数
@@ -202,7 +204,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       type: 'campaign-optimization',
       campaign: campaign,
       customerContext: config,
-      objectives: ['转化最大化', '成本最小化']
+      objectives: ['转化最大化', '成本最小化'],
     });
 
     // 个性化内容生成
@@ -217,7 +219,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       channels: optimizedCampaign.channels,
       budget: optimizedCampaign.budget,
       expectedROI: optimizedCampaign.expectedROI,
-      executionStatus: 'executing'
+      executionStatus: 'executing',
     };
 
     // 存储活动信息
@@ -225,7 +227,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       id: campaignId,
       config: optimizedCampaign,
       execution: execution,
-      startTime: new Date()
+      startTime: new Date(),
     });
 
     return execution;
@@ -246,8 +248,8 @@ export class CustomerLifecycleManager extends EventEmitter {
         customerProfile,
         contextData,
         template: contentConfig.template,
-        personalization: contentConfig.personalization
-      }
+        personalization: contentConfig.personalization,
+      },
     });
 
     const execution: ExecutionResult = {
@@ -258,13 +260,13 @@ export class CustomerLifecycleManager extends EventEmitter {
         callToAction: content.callToAction || '',
         personalizationTokens: content.personalizationTokens || [],
         media: content.media || [],
-        variant: content.variant || 'primary'
+        variant: content.variant || 'primary',
       },
       executionStatus: 'completed',
       metrics: {
         generatedAt: new Date(),
-        personalizationLevel: contentConfig.personalization.level || 'basic'
-      }
+        personalizationLevel: contentConfig.personalization.level || 'basic',
+      },
     };
 
     return execution;
@@ -285,8 +287,8 @@ export class CustomerLifecycleManager extends EventEmitter {
         campaign,
         contextData,
         tone: campaign.tone || 'professional',
-        format: campaign.format || 'mixed'
-      }
+        format: campaign.format || 'mixed',
+      },
     });
 
     return {
@@ -295,7 +297,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       callToAction: content.callToAction,
       personalizationTokens: content.personalizationTokens,
       media: content.media || [],
-      variant: content.variant || 'primary'
+      variant: content.variant || 'primary',
     };
   }
 
@@ -313,7 +315,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       journeyPath,
       behaviorScore: this.calculateBehaviorScore(engagementPatterns),
       preferredChannels: this.identifyPreferredChannels(interactions),
-      optimalContactTime: this.predictOptimalContactTime(engagementPatterns)
+      optimalContactTime: this.predictOptimalContactTime(engagementPatterns),
     };
   }
 
@@ -333,8 +335,8 @@ export class CustomerLifecycleManager extends EventEmitter {
         behaviorData,
         historicalData,
         marketTrends,
-        seasonality
-      }
+        seasonality,
+      },
     });
 
     return {
@@ -343,12 +345,14 @@ export class CustomerLifecycleManager extends EventEmitter {
       estimatedTimeToConversion: predictions.estimatedTimeToConversion,
       churnRisk: predictions.churnRisk,
       expansionOpportunity: predictions.expansionOpportunity,
-      confidence: predictions.confidence
+      confidence: predictions.confidence,
     };
   }
 
   // 监控和优化
-  private async monitorAndOptimize(executionResults: ExecutionResult[]): Promise<OptimizationResult> {
+  private async monitorAndOptimize(
+    executionResults: ExecutionResult[]
+  ): Promise<OptimizationResult> {
     const performanceData = await this.collectPerformanceData(executionResults);
     const optimizationOpportunities = await this.identifyOptimizationOpportunities(performanceData);
 
@@ -357,8 +361,8 @@ export class CustomerLifecycleManager extends EventEmitter {
       return {
         optimizationsApplied: optimizations,
         performanceImprovement: this.calculateImprovement(optimizations),
-        recommendedActions: optimizations.map(opt => opt.recommendations).flat(),
-        nextOptimizationCycle: this.scheduleNextOptimization()
+        recommendedActions: optimizations.map((opt) => opt.recommendations).flat(),
+        nextOptimizationCycle: this.scheduleNextOptimization(),
       };
     }
 
@@ -366,7 +370,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       optimizationsApplied: [],
       performanceImprovement: 0,
       recommendedActions: [],
-      nextOptimizationCycle: new Date(Date.now() + 24 * 60 * 60 * 1000)
+      nextOptimizationCycle: new Date(Date.now() + 24 * 60 * 60 * 1000),
     };
   }
 
@@ -383,7 +387,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       stageMetrics,
       campaignPerformance,
       trends,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
   }
 
@@ -394,7 +398,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       demographics: await this.getDemographics(config.customerId),
       firmographics: await this.getFirmographics(config.customerId),
       psychographics: await this.getPsychographics(config.customerId),
-      transactional: await this.getTransactionalData(config.customerId)
+      transactional: await this.getTransactionalData(config.customerId),
     };
   }
 
@@ -403,7 +407,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       marketConditions: await this.getMarketConditions(),
       competitorActions: await this.getCompetitorActions(),
       seasonality: await this.getCurrentSeasonality(),
-      economicIndicators: await this.getEconomicIndicators()
+      economicIndicators: await this.getEconomicIndicators(),
     };
   }
 
@@ -417,7 +421,7 @@ export class CustomerLifecycleManager extends EventEmitter {
       preferences: behavior.preferences,
       behavior: behavior.behaviorScore,
       journey: behavior.journeyPath,
-      segments: this.identifyCustomerSegments(data, behavior)
+      segments: this.identifyCustomerSegments(data, behavior),
     };
   }
 
@@ -431,17 +435,21 @@ export class CustomerLifecycleManager extends EventEmitter {
       communicationStyle: 'professional',
       preferredTime: 'morning',
       channelPreference: ['email', 'phone'],
-      contentPreference: ['detailed', 'data-driven']
+      contentPreference: ['detailed', 'data-driven'],
     };
   }
 
-  private async identifyEngagementPatterns(interactions: Interaction[]): Promise<EngagementPattern[]> {
-    return [{
-      type: 'high_engagement',
-      frequency: 'weekly',
-      duration: 'long',
-      responsiveness: 'quick'
-    }];
+  private async identifyEngagementPatterns(
+    interactions: Interaction[]
+  ): Promise<EngagementPattern[]> {
+    return [
+      {
+        type: 'high_engagement',
+        frequency: 'weekly',
+        duration: 'long',
+        responsiveness: 'quick',
+      },
+    ];
   }
 
   private async reconstructCustomerJourney(interactions: Interaction[]): Promise<JourneyPath> {
@@ -449,29 +457,35 @@ export class CustomerLifecycleManager extends EventEmitter {
       stages: ['awareness', 'consideration', 'evaluation'],
       touchpoints: 15,
       avgTimeInStage: { awareness: 7, consideration: 14, evaluation: 21 },
-      conversionProbability: 0.65
+      conversionProbability: 0.65,
     };
   }
 
   private calculateBehaviorScore(patterns: EngagementPattern[]): number {
-    return patterns.reduce((score, pattern) => {
-      switch (pattern.type) {
-        case 'high_engagement': return score + 0.8;
-        case 'medium_engagement': return score + 0.5;
-        case 'low_engagement': return score + 0.2;
-        default: return score;
-      }
-    }, 0) / patterns.length;
+    return (
+      patterns.reduce((score, pattern) => {
+        switch (pattern.type) {
+          case 'high_engagement':
+            return score + 0.8;
+          case 'medium_engagement':
+            return score + 0.5;
+          case 'low_engagement':
+            return score + 0.2;
+          default:
+            return score;
+        }
+      }, 0) / patterns.length
+    );
   }
 
   private identifyPreferredChannels(interactions: Interaction[]): string[] {
     const channelCounts: Record<string, number> = {};
-    interactions.forEach(interaction => {
+    interactions.forEach((interaction) => {
       channelCounts[interaction.channel] = (channelCounts[interaction.channel] || 0) + 1;
     });
 
     return Object.entries(channelCounts)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 3)
       .map(([channel]) => channel);
   }
@@ -492,7 +506,7 @@ export class CustomerLifecycleManager extends EventEmitter {
     return {
       industry: 'growing',
       competition: 'high',
-      technology: 'rapidly_changing'
+      technology: 'rapidly_changing',
     };
   }
 
@@ -500,7 +514,7 @@ export class CustomerLifecycleManager extends EventEmitter {
     return {
       seasonal: true,
       peakMonths: [3, 9, 11],
-      lowMonths: [1, 7, 12]
+      lowMonths: [1, 7, 12],
     };
   }
 
@@ -509,9 +523,11 @@ export class CustomerLifecycleManager extends EventEmitter {
   }
 
   private calculateOpportunityScore(predictionData: PredictionData): number {
-    return predictionData.likelihoodToPurchase * 0.4 +
-           predictionData.expansionOpportunity * 0.3 +
-           predictionData.predictedPurchaseValue / 100000 * 0.3;
+    return (
+      predictionData.likelihoodToPurchase * 0.4 +
+      predictionData.expansionOpportunity * 0.3 +
+      (predictionData.predictedPurchaseValue / 100000) * 0.3
+    );
   }
 
   private async determineNextBestAction(insights: any): Promise<string> {
@@ -524,19 +540,21 @@ export class CustomerLifecycleManager extends EventEmitter {
       conversionRate: 0.12,
       costPerAcquisition: 450,
       engagementScore: 0.78,
-      satisfactionIndex: 4.2
+      satisfactionIndex: 4.2,
     };
   }
 
-  private generateNextActions(analysis: CustomerAnalysis, optimization: OptimizationResult): string[] {
-    return [
-      'schedule_follow_up_call',
-      'send_personalized_proposal',
-      'schedule_product_demo'
-    ];
+  private generateNextActions(
+    analysis: CustomerAnalysis,
+    optimization: OptimizationResult
+  ): string[] {
+    return ['schedule_follow_up_call', 'send_personalized_proposal', 'schedule_product_demo'];
   }
 
-  private async executeChannelStrategy(channels: any[], config: LifecycleConfig): Promise<ExecutionResult[]> {
+  private async executeChannelStrategy(
+    channels: any[],
+    config: LifecycleConfig
+  ): Promise<ExecutionResult[]> {
     return []; // 实际实现
   }
 
@@ -585,14 +603,30 @@ export class CustomerLifecycleManager extends EventEmitter {
   }
 
   // 更多辅助方法的简化实现
-  private async getDemographics(customerId: string): Promise<any> { return {}; }
-  private async getFirmographics(customerId: string): Promise<any> { return {}; }
-  private async getPsychographics(customerId: string): Promise<any> { return {}; }
-  private async getTransactionalData(customerId: string): Promise<any> { return {}; }
-  private async getMarketConditions(): Promise<any> { return {}; }
-  private async getCompetitorActions(): Promise<any> { return {}; }
-  private async getCurrentSeasonality(): Promise<any> { return {}; }
-  private async getEconomicIndicators(): Promise<any> { return {}; }
+  private async getDemographics(customerId: string): Promise<any> {
+    return {};
+  }
+  private async getFirmographics(customerId: string): Promise<any> {
+    return {};
+  }
+  private async getPsychographics(customerId: string): Promise<any> {
+    return {};
+  }
+  private async getTransactionalData(customerId: string): Promise<any> {
+    return {};
+  }
+  private async getMarketConditions(): Promise<any> {
+    return {};
+  }
+  private async getCompetitorActions(): Promise<any> {
+    return {};
+  }
+  private async getCurrentSeasonality(): Promise<any> {
+    return {};
+  }
+  private async getEconomicIndicators(): Promise<any> {
+    return {};
+  }
 }
 
 // 类型定义

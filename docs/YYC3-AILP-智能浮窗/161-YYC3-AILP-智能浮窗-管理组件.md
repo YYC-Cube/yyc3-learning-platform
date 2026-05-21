@@ -20,7 +20,7 @@
 
 typescript
 
-```plaintext
+````plaintext
 // ================================================
 // 1. 拖拽状态机定义
 // ================================================
@@ -60,10 +60,10 @@ export class DragManager {
   private inertiaSimulator: InertiaSimulator;
   private gestureRecognizer: GestureRecognizer;
   private dropTargetManager: DropTargetManager;
-  
+
   // 拖拽约束函数类型
   private constraintFunctions: Map<string, ConstraintFunction> = new Map();
-  
+
   constructor(config: Partial<DragManagerConfig> = {}) {
     this.config = {
       dragThreshold: 5,           // 拖拽阈值（像素）
@@ -72,28 +72,28 @@ export class DragManager {
       defaultConstraint: 'none',  // 默认约束
       ...config
     };
-    
+
     this.inertiaSimulator = new InertiaSimulator(this.config);
     this.gestureRecognizer = new GestureRecognizer(this.config);
     this.dropTargetManager = new DropTargetManager();
-    
+
     // 注册内置约束
     this.registerConstraint('none', this.noConstraint);
     this.registerConstraint('horizontal', this.horizontalConstraint);
     this.registerConstraint('vertical', this.verticalConstraint);
     this.registerConstraint('parentBoundary', this.parentBoundaryConstraint);
     this.registerConstraint('grid', this.gridConstraint);
-    
+
     // 初始化事件监听
     this.setupEventListeners();
   }
-  
+
   /**
    * 开始拖拽会话
    */
   startDrag(source: DragSource, data: any, options: DragOptions = {}): string {
     const sessionId = generateSessionId();
-    
+
     const session: DragSession = {
       id: sessionId,
       state: DragState.PREPARING,
@@ -106,13 +106,13 @@ export class DragManager {
       velocity: { x: 0, y: 0 },
       constraints: options.constraints,
     };
-    
+
     this.sessions.set(sessionId, session);
     this.activeSessionId = sessionId;
-    
+
     // 触发开始事件
     this.eventEmitter.emit('dragStart', { session });
-    
+
     // 根据触发方式处理
     if (options.trigger === 'immediate') {
       this.transitionToState(sessionId, DragState.DRAGGING);
@@ -120,17 +120,17 @@ export class DragManager {
       // 启动长按计时器
       this.startLongPressTimer(sessionId);
     }
-    
+
     return sessionId;
   }
-  
+
   /**
    * 更新拖拽位置
    */
   updateDrag(sessionId: string, newPosition: { x: number, y: number }): void {
     const session = this.sessions.get(sessionId);
     if (!session || session.state !== DragState.DRAGGING) return;
-    
+
     // 计算速度
     const now = new Date();
     const deltaTime = now.getTime() - session.lastUpdated.getTime();
@@ -142,17 +142,17 @@ export class DragManager {
         y: deltaY / deltaTime
       };
     }
-    
+
     // 应用约束
     let constrainedPosition = newPosition;
     if (session.constraints) {
       constrainedPosition = this.applyConstraints(session, newPosition);
     }
-    
+
     // 更新会话
     session.position = constrainedPosition;
     session.lastUpdated = now;
-    
+
     // 检测放置目标
     const dropTarget = this.dropTargetManager.findDropTarget(constrainedPosition, session.data);
     if (dropTarget !== session.dropTarget) {
@@ -165,21 +165,21 @@ export class DragManager {
       }
     }
     session.dropTarget = dropTarget;
-    
+
     // 发出更新事件
     this.eventEmitter.emit('dragMove', { session });
-    
+
     // 更新拖拽视觉反馈
     this.updateDragPreview(session);
   }
-  
+
   /**
    * 结束拖拽
    */
   endDrag(sessionId: string): void {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     // 如果是拖拽状态，尝试放置
     if (session.state === DragState.DRAGGING) {
       this.drop(sessionId);
@@ -187,21 +187,21 @@ export class DragManager {
       this.cancelDrag(sessionId);
     }
   }
-  
+
   /**
    * 放置操作
    */
   private async drop(sessionId: string): Promise<void> {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     this.transitionToState(sessionId, DragState.DROPPING);
-    
+
     try {
       // 如果有放置目标，执行放置逻辑
       if (session.dropTarget) {
         const success = await session.dropTarget.onDrop(session.data, session.position);
-        
+
         if (success) {
           this.transitionToState(sessionId, DragState.COMPLETED);
           this.eventEmitter.emit('dropSuccess', { session, dropTarget: session.dropTarget });
@@ -216,36 +216,36 @@ export class DragManager {
       this.cancelDrag(sessionId);
     }
   }
-  
+
   /**
    * 取消拖拽
    */
   cancelDrag(sessionId: string): void {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     this.transitionToState(sessionId, DragState.CANCELLED);
-    
+
     // 触发取消事件
     this.eventEmitter.emit('dragCancel', { session });
-    
+
     // 清理会话
     this.cleanupSession(sessionId);
   }
-  
+
   /**
    * 状态转移
    */
   private transitionToState(sessionId: string, newState: DragState): void {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     const oldState = session.state;
     session.state = newState;
-    
+
     // 触发状态变化事件
     this.eventEmitter.emit('stateChange', { session, oldState, newState });
-    
+
     // 状态特定的处理
     switch (newState) {
       case DragState.DRAGGING:
@@ -259,13 +259,13 @@ export class DragManager {
         break;
     }
   }
-  
+
   /**
    * 应用约束
    */
   private applyConstraints(session: DragSession, position: { x: number, y: number }): { x: number, y: number } {
     let result = { ...position };
-    
+
     // 应用每个约束
     if (session.constraints) {
       if (session.constraints.function) {
@@ -274,60 +274,60 @@ export class DragManager {
           result = constraintFunc(result, session);
         }
       }
-      
+
       // 应用边界约束
       if (session.constraints.boundary) {
         result = this.applyBoundaryConstraint(result, session.constraints.boundary);
       }
-      
+
       // 应用网格约束
       if (session.constraints.grid) {
         result = this.applyGridConstraint(result, session.constraints.grid);
       }
     }
-    
+
     return result;
   }
-  
+
   /**
    * 注册自定义约束函数
    */
   registerConstraint(name: string, constraintFunc: ConstraintFunction): void {
     this.constraintFunctions.set(name, constraintFunc);
   }
-  
+
   /**
    * 内置约束函数
    */
   private noConstraint(position: { x: number, y: number }, session: DragSession): { x: number, y: number } {
     return position;
   }
-  
+
   private horizontalConstraint(position: { x: number, y: number }, session: DragSession): { x: number, y: number } {
     return { x: position.x, y: session.startPosition.y };
   }
-  
+
   private verticalConstraint(position: { x: number, y: number }, session: DragSession): { x: number, y: number } {
     return { x: session.startPosition.x, y: position.y };
   }
-  
+
   private parentBoundaryConstraint(position: { x: number, y: number }, session: DragSession): { x: number, y: number } {
     const parentRect = session.source.getParentRect();
     const elementRect = session.source.getElementRect();
-    
+
     return {
       x: Math.max(parentRect.left, Math.min(position.x, parentRect.right - elementRect.width)),
       y: Math.max(parentRect.top, Math.min(position.y, parentRect.bottom - elementRect.height))
     };
   }
-  
+
   private gridConstraint(position: { x: number, y: number }, session: DragSession, gridSize: number = 10): { x: number, y: number } {
     return {
       x: Math.round(position.x / gridSize) * gridSize,
       y: Math.round(position.y / gridSize) * gridSize
     };
   }
-  
+
   /**
    * 惯性拖拽
    */
@@ -338,7 +338,7 @@ export class DragManager {
       });
     }
   }
-  
+
   /**
    * 设置事件监听
    */
@@ -347,16 +347,16 @@ export class DragManager {
     document.addEventListener('mousedown', this.handleMouseDown.bind(this));
     document.addEventListener('mousemove', this.handleMouseMove.bind(this));
     document.addEventListener('mouseup', this.handleMouseUp.bind(this));
-    
+
     // 触摸事件
     document.addEventListener('touchstart', this.handleTouchStart.bind(this));
     document.addEventListener('touchmove', this.handleTouchMove.bind(this));
     document.addEventListener('touchend', this.handleTouchEnd.bind(this));
-    
+
     // 键盘事件（用于取消拖拽）
     document.addEventListener('keydown', this.handleKeyDown.bind(this));
   }
-  
+
   // 事件处理函数
   private handleMouseDown(event: MouseEvent): void {
     // 找到拖拽源并开始拖拽
@@ -366,7 +366,7 @@ export class DragManager {
       this.startDrag(source, source.getData(), { trigger: 'longPress' });
     }
   }
-  
+
   // 其他事件处理函数...
 }
 
@@ -377,22 +377,22 @@ export class DragManager {
 export interface DragSource {
   // 获取拖拽数据
   getData(): any;
-  
+
   // 获取初始位置
   getInitialPosition(): { x: number, y: number };
-  
+
   // 获取元素矩形
   getElementRect(): DOMRect;
-  
+
   // 获取父元素矩形
   getParentRect(): DOMRect;
-  
+
   // 拖拽开始时的回调
   onDragStart?(session: DragSession): void;
-  
+
   // 拖拽结束时的回调
   onDragEnd?(session: DragSession): void;
-  
+
   // 拖拽取消时的回调
   onDragCancel?(session: DragSession): void;
 }
@@ -404,16 +404,16 @@ export interface DragSource {
 export interface DropTarget {
   // 判断点是否在目标内
   contains(point: { x: number, y: number }): boolean;
-  
+
   // 放置数据
   onDrop(data: any, position: { x: number, y: number }): Promise<boolean>;
-  
+
   // 拖拽进入时的回调
   onDragEnter?(session: DragSession): void;
-  
+
   // 拖拽离开时的回调
   onDragLeave?(session: DragSession): void;
-  
+
   // 拖拽在目标上移动时的回调
   onDragOver?(session: DragSession): void;
 }
@@ -438,21 +438,21 @@ export class PositionOptimizer {
   private ruleEngine: RuleEngine;
   private screenAnalyzer: ScreenAnalyzer;
   private contextManager: ContextManager;
-  
+
   // 位置记忆
   private positionMemory: Map<string, PositionMemory> = new Map();
-  
+
   constructor(config: PositionOptimizerConfig) {
     this.heatmap = new Heatmap(config.heatmapResolution);
     this.preferenceLearner = new PreferenceLearner(config.learningRate);
     this.ruleEngine = new RuleEngine(config.rules);
     this.screenAnalyzer = new ScreenAnalyzer();
     this.contextManager = new ContextManager();
-    
+
     // 加载历史数据
     this.loadHistoricalData();
   }
-  
+
   /**
    * 为组件推荐最佳位置
    */
@@ -462,19 +462,19 @@ export class PositionOptimizer {
   ): Promise<RecommendedPosition> {
     // 1. 收集上下文信息
     const context = await this.collectContext(component);
-    
+
     // 2. 获取候选位置
     const candidates = await this.generateCandidates(component, constraints, context);
-    
+
     // 3. 评估每个候选位置
     const scoredCandidates = await this.scoreCandidates(candidates, context);
-    
+
     // 4. 选择最佳位置
     const bestCandidate = this.selectBestCandidate(scoredCandidates);
-    
+
     // 5. 记录决策
     await this.recordDecision(component, bestCandidate, context);
-    
+
     return {
       ...bestCandidate.position,
       confidence: bestCandidate.score,
@@ -485,7 +485,7 @@ export class PositionOptimizer {
       }))
     };
   }
-  
+
   /**
    * 生成候选位置
    */
@@ -495,27 +495,27 @@ export class PositionOptimizer {
     context: OptimizationContext
   ): Promise<CandidatePosition[]> {
     const candidates: CandidatePosition[] = [];
-    
+
     // 1. 用户偏好位置
     const preferred = await this.getPreferredPositions(component, context);
     candidates.push(...preferred);
-    
+
     // 2. 基于规则的位置
     const ruleBased = this.ruleEngine.generatePositions(component, constraints, context);
     candidates.push(...ruleBased);
-    
+
     // 3. 基于热点的位置
     const heatBased = this.generateHeatBasedPositions(component, context);
     candidates.push(...heatBased);
-    
+
     // 4. 避让关键区域的位置
     const avoidBased = this.generateAvoidancePositions(component, context);
     candidates.push(...avoidBased);
-    
+
     // 去重
     return this.deduplicateCandidates(candidates);
   }
-  
+
   /**
    * 评估候选位置
    */
@@ -527,7 +527,7 @@ export class PositionOptimizer {
       candidates.map(async candidate => {
         const scores = await this.calculateScores(candidate, context);
         const totalScore = this.combineScores(scores);
-        
+
         return {
           position: candidate.position,
           scores,
@@ -536,11 +536,11 @@ export class PositionOptimizer {
         };
       })
     );
-    
+
     // 按总分排序
     return scored.sort((a, b) => b.totalScore - a.totalScore);
   }
-  
+
   /**
    * 计算多个维度的分数
    */
@@ -561,7 +561,7 @@ export class PositionOptimizer {
       this.scoreStability(candidate, context),
       this.scorePersonalization(candidate, context)
     ]);
-    
+
     return {
       accessibility: accessibilityScore,
       efficiency: efficiencyScore,
@@ -570,7 +570,7 @@ export class PositionOptimizer {
       personalization: personalizationScore
     };
   }
-  
+
   /**
    * 可访问性评分：确保组件易于访问
    */
@@ -579,26 +579,26 @@ export class PositionOptimizer {
     context: OptimizationContext
   ): Promise<number> {
     const factors = [];
-    
+
     // 1. 距离屏幕边缘的距离（太近不好访问）
     const edgeDistance = this.calculateEdgeDistance(candidate.position, context.screen);
     factors.push(this.normalizeEdgeDistance(edgeDistance));
-    
+
     // 2. 与当前焦点的距离
     const focusDistance = this.calculateFocusDistance(candidate.position, context.focusElement);
     factors.push(this.normalizeFocusDistance(focusDistance));
-    
+
     // 3. 手势可达性（特别是移动设备）
     const reachability = this.calculateReachability(candidate.position, context.deviceType);
     factors.push(reachability);
-    
+
     // 4. 视觉层次（不要遮挡重要内容）
     const visualHierarchy = this.calculateVisualHierarchy(candidate.position, context.visibleElements);
     factors.push(visualHierarchy);
-    
+
     return this.averageFactors(factors);
   }
-  
+
   /**
    * 效率评分：最小化用户交互成本
    */
@@ -607,22 +607,22 @@ export class PositionOptimizer {
     context: OptimizationContext
   ): Promise<number> {
     const factors = [];
-    
+
     // 1. 与预期交互区域的距离
     const interactionDistance = this.calculateInteractionDistance(candidate.position, context.interactionZones);
     factors.push(this.normalizeInteractionDistance(interactionDistance));
-    
+
     // 2. 操作路径优化（费茨定律）
     const fittsScore = this.calculateFittsLawScore(candidate.position, context.lastInteraction);
     factors.push(fittsScore);
-    
+
     // 3. 减少视线移动
     const eyeMovement = this.calculateEyeMovement(candidate.position, context.attentionAreas);
     factors.push(eyeMovement);
-    
+
     return this.averageFactors(factors);
   }
-  
+
   /**
    * 学习用户偏好
    */
@@ -633,22 +633,22 @@ export class PositionOptimizer {
   ): Promise<void> {
     // 1. 记录本次交互
     await this.recordInteraction(componentId, position, context);
-    
+
     // 2. 更新热图
     this.heatmap.recordInteraction(position, context.interactionType);
-    
+
     // 3. 更新用户偏好模型
     await this.preferenceLearner.update(componentId, position, context);
-    
+
     // 4. 调整规则权重
     this.ruleEngine.adjustWeights(context.success);
-    
+
     // 5. 定期重新训练模型
     if (this.shouldRetrain()) {
       await this.retrainModels();
     }
   }
-  
+
   /**
    * 上下文感知优化
    */
@@ -657,31 +657,31 @@ export class PositionOptimizer {
       // 设备信息
       deviceType: this.detectDeviceType(),
       screen: this.screenAnalyzer.getScreenInfo(),
-      
+
       // 用户状态
       userAttention: await this.detectUserAttention(),
       currentTask: await this.inferCurrentTask(),
-      
+
       // 界面状态
       visibleElements: this.getVisibleElements(),
       focusElement: document.activeElement,
       interactionZones: this.heatmap.getHotZones(),
       attentionAreas: this.getAttentionAreas(),
-      
+
       // 组件特定信息
       componentType: component.type,
       componentPriority: component.priority,
       componentFrequency: component.frequency,
-      
+
       // 时间上下文
       timeOfDay: new Date().getHours(),
       interactionHistory: this.getInteractionHistory(component.id),
-      
+
       // 环境因素
       isDistractedEnvironment: await this.detectDistractions()
     };
   }
-  
+
   /**
    * 多屏适配
    */
@@ -689,16 +689,16 @@ export class PositionOptimizer {
     if (screens.length <= 1) {
       return { primary: position };
     }
-    
+
     // 根据屏幕使用模式选择最佳屏幕
     const bestScreen = this.selectBestScreen(screens);
-    
+
     // 调整位置到选定屏幕
     const adjustedPosition = this.adjustToScreen(position, bestScreen);
-    
+
     // 考虑跨屏连续性
     const secondaryPositions = this.calculateSecondaryPositions(adjustedPosition, screens);
-    
+
     return {
       primary: adjustedPosition,
       secondary: secondaryPositions,
@@ -728,7 +728,7 @@ export class ResizeController {
   private constraints: ResizeConstraints;
   private gestureDetector: GestureDetector;
   private animationController: AnimationController;
-  
+
   // 调整手柄定义
   private handles: ResizeHandle[] = [
     { position: 'top-left', cursor: 'nw-resize', vector: { x: -1, y: -1 } },
@@ -740,7 +740,7 @@ export class ResizeController {
     { position: 'bottom-left', cursor: 'sw-resize', vector: { x: -1, y: 1 } },
     { position: 'left', cursor: 'w-resize', vector: { x: -1, y: 0 } }
   ];
-  
+
   constructor(config: Partial<ResizeConfig> = {}) {
     this.config = {
       minWidth: 100,
@@ -754,14 +754,14 @@ export class ResizeController {
       enableInertia: true,
       ...config
     };
-    
+
     this.constraints = new ResizeConstraints(this.config);
     this.gestureDetector = new GestureDetector();
     this.animationController = new AnimationController();
-    
+
     this.initializeHandles();
   }
-  
+
   /**
    * 开始调整大小
    */
@@ -773,7 +773,7 @@ export class ResizeController {
     if (this.currentSession) {
       this.endResize();
     }
-    
+
     const session: ResizeSession = {
       id: generateSessionId(),
       element,
@@ -783,22 +783,22 @@ export class ResizeController {
       currentRect: element.getBoundingClientRect(),
       state: ResizeState.RESIZING,
       constraints: this.constraints.getForElement(element),
-      aspectRatio: this.config.keepAspectRatio ? 
+      aspectRatio: this.config.keepAspectRatio ?
         element.offsetWidth / element.offsetHeight : null
     };
-    
+
     this.currentSession = session;
     this.resizeState = ResizeState.RESIZING;
-    
+
     // 添加临时样式
     this.addResizingStyles(element);
-    
+
     // 触发开始事件
     this.dispatchEvent('resizeStart', { session });
-    
+
     return session;
   }
-  
+
   /**
    * 更新调整大小
    */
@@ -806,14 +806,14 @@ export class ResizeController {
     if (!this.currentSession || this.resizeState !== ResizeState.RESIZING) {
       return;
     }
-    
+
     const session = this.currentSession;
     const currentPosition = this.getEventPosition(currentEvent);
-    
+
     // 计算鼠标移动距离
     const deltaX = currentPosition.x - session.startPosition.x;
     const deltaY = currentPosition.y - session.startPosition.y;
-    
+
     // 根据手柄方向计算新尺寸
     const newRect = this.calculateNewRect(
       session.startRect,
@@ -822,24 +822,24 @@ export class ResizeController {
       deltaY,
       session.aspectRatio
     );
-    
+
     // 应用约束
     const constrainedRect = this.constraints.apply(newRect, session.constraints);
-    
+
     // 应用智能吸附
     const snappedRect = this.applySnapping(constrainedRect);
-    
+
     // 更新会话状态
     session.currentRect = snappedRect;
     session.lastUpdate = new Date();
-    
+
     // 更新元素尺寸
     this.updateElementSize(session.element, snappedRect);
-    
+
     // 触发更新事件
     this.dispatchEvent('resizeUpdate', { session, rect: snappedRect });
   }
-  
+
   /**
    * 结束调整大小
    */
@@ -847,21 +847,21 @@ export class ResizeController {
     if (!this.currentSession) {
       throw new Error('No active resize session');
     }
-    
+
     const session = this.currentSession;
-    
+
     // 如果有结束事件，最后一次更新
     if (endEvent) {
       this.updateResize(endEvent);
     }
-    
+
     // 计算惯性（如果启用）
     if (this.config.enableInertia && endEvent) {
       this.applyInertia(session, endEvent);
     } else {
       this.finalizeResize(session);
     }
-    
+
     const result: ResizeResult = {
       sessionId: session.id,
       finalRect: session.currentRect,
@@ -869,18 +869,18 @@ export class ResizeController {
       duration: new Date().getTime() - session.startTime.getTime(),
       success: true
     };
-    
+
     // 清理
     this.cleanupSession(session);
     this.currentSession = null;
     this.resizeState = ResizeState.IDLE;
-    
+
     // 触发结束事件
     this.dispatchEvent('resizeEnd', { result });
-    
+
     return result;
   }
-  
+
   /**
    * 计算新矩形
    */
@@ -892,7 +892,7 @@ export class ResizeController {
     aspectRatio: number | null
   ): DOMRect {
     let newRect = { ...startRect };
-    
+
     // 根据手柄方向调整
     if (vector.x === -1) {
       // 左侧调整
@@ -902,7 +902,7 @@ export class ResizeController {
       // 右侧调整
       newRect.width = startRect.width + deltaX;
     }
-    
+
     if (vector.y === -1) {
       // 顶部调整
       newRect.y = startRect.y + deltaY;
@@ -911,15 +911,15 @@ export class ResizeController {
       // 底部调整
       newRect.height = startRect.height + deltaY;
     }
-    
+
     // 保持宽高比
     if (aspectRatio) {
       newRect = this.maintainAspectRatio(newRect, vector, aspectRatio);
     }
-    
+
     return newRect;
   }
-  
+
   /**
    * 保持宽高比
    */
@@ -929,14 +929,14 @@ export class ResizeController {
     aspectRatio: number
   ): DOMRect {
     const newRect = { ...rect };
-    
+
     // 根据调整方向决定保持哪条边
     if (vector.x !== 0 && vector.y !== 0) {
       // 角落调整：同时调整宽高
       if (Math.abs(newRect.width / newRect.height - aspectRatio) > 0.01) {
         // 以宽度为准调整高度
         newRect.height = newRect.width / aspectRatio;
-        
+
         // 根据手柄方向调整位置
         if (vector.y === -1) {
           newRect.y = rect.y - (newRect.height - rect.height);
@@ -949,29 +949,29 @@ export class ResizeController {
       // 垂直调整：调整宽度以保持比例
       newRect.width = newRect.height * aspectRatio;
     }
-    
+
     return newRect;
   }
-  
+
   /**
    * 应用智能吸附
    */
   private applySnapping(rect: DOMRect): DOMRect {
     let snapped = { ...rect };
-    
+
     if (this.config.snapToGrid) {
       snapped = this.snapToGrid(snapped);
     }
-    
+
     // 吸附到其他元素
     snapped = this.snapToElements(snapped);
-    
+
     // 吸附到屏幕边缘
     snapped = this.snapToScreenEdges(snapped);
-    
+
     return snapped;
   }
-  
+
   /**
    * 网格吸附
    */
@@ -984,7 +984,7 @@ export class ResizeController {
       top: 0, right: 0, bottom: 0, left: 0 // DOMRect需要这些属性
     } as DOMRect;
   }
-  
+
   /**
    * 多点触控调整
    */
@@ -997,56 +997,56 @@ export class ResizeController {
       this.handleRotation(touches);
     }
   }
-  
+
   /**
    * 双指缩放处理
    */
   private handlePinchZoom(touches: TouchList): void {
     if (!this.currentSession) return;
-    
+
     const touch1 = touches[0];
     const touch2 = touches[1];
-    
+
     // 计算当前距离
     const currentDistance = Math.hypot(
       touch2.clientX - touch1.clientX,
       touch2.clientY - touch1.clientY
     );
-    
+
     if (this.currentSession.lastPinchDistance) {
       // 计算缩放比例
       const scale = currentDistance / this.currentSession.lastPinchDistance;
-      
+
       // 计算中心点
       const centerX = (touch1.clientX + touch2.clientX) / 2;
       const centerY = (touch1.clientY + touch2.clientY) / 2;
-      
+
       // 应用缩放
       this.applyPinchZoom(scale, centerX, centerY);
     }
-    
+
     // 更新距离
     this.currentSession.lastPinchDistance = currentDistance;
   }
-  
+
   /**
    * 应用双指缩放
    */
   private applyPinchZoom(scale: number, centerX: number, centerY: number): void {
     if (!this.currentSession) return;
-    
+
     const session = this.currentSession;
     const element = session.element;
     const rect = session.currentRect;
-    
+
     // 计算相对于中心点的缩放
     const newWidth = rect.width * scale;
     const newHeight = rect.height * scale;
-    
+
     // 计算位置调整（使中心点保持不变）
     const deltaWidth = newWidth - rect.width;
     const deltaHeight = newHeight - rect.height;
-    
+
     const newRect: DOMRect = {
       ...rect,
       x: rect.x - (deltaWidth * (centerX - rect.x) / rect.width),
@@ -1054,25 +1054,25 @@ export class ResizeController {
       width: newWidth,
       height: newHeight
     } as DOMRect;
-    
+
     // 应用约束
     const constrainedRect = this.constraints.apply(newRect, session.constraints);
-    
+
     // 更新元素
     session.currentRect = constrainedRect;
     this.updateElementSize(element, constrainedRect);
-    
+
     // 触发事件
     this.dispatchEvent('resizeUpdate', { session, rect: constrainedRect });
   }
-  
+
   /**
    * 惯性调整
    */
   private applyInertia(session: ResizeSession, endEvent: MouseEvent | TouchEvent): void {
     // 计算结束速度
     const velocity = this.calculateEndVelocity(session, endEvent);
-    
+
     if (Math.abs(velocity.x) > 0.1 || Math.abs(velocity.y) > 0.1) {
       // 启动惯性动画
       this.animationController.startInertia(
@@ -1091,7 +1091,7 @@ export class ResizeController {
       this.finalizeResize(session);
     }
   }
-  
+
   /**
    * 添加调整模式
    */
@@ -1099,7 +1099,7 @@ export class ResizeController {
     // 实现自定义调整模式
     this.resizeModes.set(mode.name, mode);
   }
-  
+
   /**
    * 设置调整约束
    */
@@ -1129,7 +1129,7 @@ export class ThemeManager {
   private styleInjector: StyleInjector;
   private themeObserver: MutationObserver;
   private preferenceManager: PreferenceManager;
-  
+
   // 主题状态
   private state: ThemeState = {
     theme: 'light',
@@ -1139,35 +1139,35 @@ export class ThemeManager {
     fontSize: 'medium',
     reducedMotion: false
   };
-  
+
   constructor(config: ThemeManagerConfig) {
     this.designTokens = new DesignTokens(config.tokens);
     this.styleInjector = new StyleInjector();
     this.preferenceManager = new PreferenceManager();
-    
+
     // 加载内置主题
     this.loadBuiltinThemes();
-    
+
     // 监听系统主题变化
     this.setupSystemListeners();
-    
+
     // 恢复用户偏好
     this.restoreUserPreferences();
   }
-  
+
   /**
    * 注册新主题
    */
   registerTheme(name: string, theme: ThemeDefinition): void {
     const compiledTheme = this.compileTheme(theme);
     this.themes.set(name, compiledTheme);
-    
+
     // 如果这是第一个主题，设置为当前主题
     if (this.themes.size === 1) {
       this.setTheme(name);
     }
   }
-  
+
   /**
    * 设置当前主题
    */
@@ -1175,40 +1175,40 @@ export class ThemeManager {
     if (!this.themes.has(name)) {
       throw new Error(`Theme "${name}" not found`);
     }
-    
+
     const oldTheme = this.currentTheme;
     const newTheme = this.themes.get(name)!;
-    
+
     // 更新状态
     this.state.theme = name;
     this.state.mode = newTheme.mode;
-    
+
     // 触发主题切换前事件
-    await this.dispatchEvent('themeWillChange', { 
-      oldTheme, 
+    await this.dispatchEvent('themeWillChange', {
+      oldTheme,
       newTheme,
-      transition 
+      transition
     });
-    
+
     // 应用主题切换
     if (transition && this.config.enableTransitions) {
       await this.applyThemeWithTransition(newTheme);
     } else {
       this.applyThemeImmediately(newTheme);
     }
-    
+
     this.currentTheme = newTheme;
-    
+
     // 保存偏好
     this.saveUserPreferences();
-    
+
     // 触发主题切换后事件
-    await this.dispatchEvent('themeChanged', { 
-      oldTheme, 
-      newTheme 
+    await this.dispatchEvent('themeChanged', {
+      oldTheme,
+      newTheme
     });
   }
-  
+
   /**
    * 动态更新主题变量
    */
@@ -1218,10 +1218,10 @@ export class ThemeManager {
     value: string
   ): void {
     if (!this.currentTheme) return;
-    
+
     // 更新设计令牌
     this.designTokens.update(category, token, value);
-    
+
     // 重新编译当前主题
     const updatedTheme = this.compileTheme({
       ...this.currentTheme.definition,
@@ -1230,14 +1230,14 @@ export class ThemeManager {
         [token]: value
       }
     });
-    
+
     // 更新主题
     this.themes.set(this.state.theme, updatedTheme);
-    
+
     // 重新应用主题
     this.applyThemeImmediately(updatedTheme);
     this.currentTheme = updatedTheme;
-    
+
     // 触发变量更新事件
     this.dispatchEvent('themeVariableUpdated', {
       category,
@@ -1246,7 +1246,7 @@ export class ThemeManager {
       theme: this.state.theme
     });
   }
-  
+
   /**
    * 编译主题
    */
@@ -1258,22 +1258,22 @@ export class ThemeManager {
       cssVariables: {},
       styles: {}
     };
-    
+
     // 生成CSS变量
     compiled.cssVariables = this.generateCSSVariables(definition);
-    
+
     // 生成CSS样式
     compiled.styles = this.generateStyles(compiled.cssVariables);
-    
+
     return compiled;
   }
-  
+
   /**
    * 生成CSS变量
    */
   private generateCSSVariables(definition: ThemeDefinition): Record<string, string> {
     const variables: Record<string, string> = {};
-    
+
     // 遍历所有设计令牌类别
     Object.entries(definition).forEach(([category, tokens]) => {
       if (typeof tokens === 'object') {
@@ -1283,14 +1283,14 @@ export class ThemeManager {
         });
       }
     });
-    
+
     // 添加模式变量
     variables['--theme-mode'] = definition.mode || 'light';
     variables['--theme-contrast'] = this.state.contrast;
-    
+
     return variables;
   }
-  
+
   /**
    * 应用主题（带过渡动画）
    */
@@ -1298,10 +1298,10 @@ export class ThemeManager {
     return new Promise((resolve) => {
       // 添加过渡样式
       this.styleInjector.injectTransitionStyles();
-      
+
       // 应用新主题变量
       this.applyCSSVariables(theme.cssVariables);
-      
+
       // 等待过渡完成
       setTimeout(() => {
         this.styleInjector.removeTransitionStyles();
@@ -1309,7 +1309,7 @@ export class ThemeManager {
       }, this.config.transitionDuration);
     });
   }
-  
+
   /**
    * 响应系统主题变化
    */
@@ -1323,14 +1323,14 @@ export class ThemeManager {
         }
       });
     }
-    
+
     // 监听系统对比度设置
     const contrastQuery = window.matchMedia('(prefers-contrast: more)');
     contrastQuery.addEventListener('change', (e) => {
       this.state.contrast = e.matches ? 'high' : 'normal';
       this.updateContrast(this.state.contrast);
     });
-    
+
     // 监听减少动画设置
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     reducedMotionQuery.addEventListener('change', (e) => {
@@ -1338,7 +1338,7 @@ export class ThemeManager {
       this.updateMotionPreferences(this.state.reducedMotion);
     });
   }
-  
+
   /**
    * 主题派生系统
    */
@@ -1351,7 +1351,7 @@ export class ThemeManager {
     if (!baseTheme) {
       throw new Error(`Base theme "${baseThemeName}" not found`);
     }
-    
+
     // 合并主题定义
     const derivedDefinition: ThemeDefinition = {
       ...baseTheme.definition,
@@ -1359,16 +1359,16 @@ export class ThemeManager {
       name: newThemeName,
       base: baseThemeName
     };
-    
+
     // 编译派生主题
     const derivedTheme = this.compileTheme(derivedDefinition);
-    
+
     // 注册新主题
     this.registerTheme(newThemeName, derivedDefinition);
-    
+
     return derivedTheme;
   }
-  
+
   /**
    * 样式隔离
    */
@@ -1377,13 +1377,13 @@ export class ThemeManager {
     if (!theme) {
       throw new Error(`Theme "${themeName}" not found`);
     }
-    
+
     // 生成作用域CSS变量
     const scopedVariables = this.scopeCSSVariables(theme.cssVariables, scope);
-    
+
     // 创建作用域样式
     const scopedStyles = this.generateScopedStyles(scopedVariables, scope);
-    
+
     return {
       scope,
       theme: themeName,
@@ -1393,7 +1393,7 @@ export class ThemeManager {
       remove: () => this.removeScopedTheme(scope)
     };
   }
-  
+
   /**
    * 主题导出和导入
    */
@@ -1402,7 +1402,7 @@ export class ThemeManager {
     if (!theme) {
       throw new Error(`Theme "${name}" not found`);
     }
-    
+
     return {
       version: '1.0',
       name: theme.name,
@@ -1415,20 +1415,20 @@ export class ThemeManager {
       }
     };
   }
-  
+
   importTheme(exportData: ThemeExport): void {
     // 验证数据格式
     this.validateThemeExport(exportData);
-    
+
     // 注册主题
     this.registerTheme(exportData.name, exportData.definition);
-    
+
     // 导入设计令牌
     if (exportData.tokens) {
       this.designTokens.import(exportData.tokens);
     }
   }
-  
+
   /**
    * 生成主题调色板
    */
@@ -1441,7 +1441,7 @@ export class ThemeManager {
       semantic: this.generateSemanticColors(baseColor)
     };
   }
-  
+
   /**
    * 无障碍支持
    */
@@ -1452,14 +1452,14 @@ export class ThemeManager {
       this.testInteractiveElements(theme),
       this.testFocusIndicators(theme)
     ];
-    
+
     const report: AccessibilityReport = {
       passed: tests.every(test => test.passed),
       tests,
       score: this.calculateAccessibilityScore(tests),
       recommendations: this.generateAccessibilityRecommendations(tests)
     };
-    
+
     return report;
   }
 }
@@ -1485,7 +1485,7 @@ export class NotificationCenter {
   private historyManager: HistoryManager;
   private preferenceManager: PreferenceManager;
   private groupingEngine: GroupingEngine;
-  
+
   // 状态
   private state: NotificationState = {
     isVisible: false,
@@ -1499,59 +1499,59 @@ export class NotificationCenter {
       playSounds: true
     }
   };
-  
+
   constructor(config: NotificationConfig) {
     this.queue = new PriorityQueue<Notification>(
       this.compareNotifications.bind(this)
     );
-    
+
     this.displayManager = new DisplayManager(config.display);
     this.historyManager = new HistoryManager(config.history);
     this.preferenceManager = new PreferenceManager(config.preferences);
     this.groupingEngine = new GroupingEngine(config.grouping);
-    
+
     // 初始化UI
     this.initializeUI();
-    
+
     // 加载历史通知
     this.loadNotificationHistory();
-    
+
     // 设置自动清理
     this.setupAutoCleanup();
   }
-  
+
   /**
    * 发送通知
    */
   async send(notification: NotificationInput): Promise<string> {
     // 1. 创建通知对象
     const notification = this.createNotification(notification);
-    
+
     // 2. 检查勿扰模式
     if (this.shouldSuppressNotification(notification)) {
       await this.handleSuppressedNotification(notification);
       return notification.id;
     }
-    
+
     // 3. 应用用户偏好
     const personalized = await this.personalizeNotification(notification);
-    
+
     // 4. 添加到队列
     this.queue.enqueue(personalized);
     this.notifications.set(personalized.id, personalized);
-    
+
     // 5. 更新未读计数
     this.updateUnreadCount();
-    
+
     // 6. 触发发送事件
     await this.dispatchEvent('notificationSent', { notification: personalized });
-    
+
     // 7. 尝试显示
     this.tryDisplayNotifications();
-    
+
     return personalized.id;
   }
-  
+
   /**
    * 智能通知排序
    */
@@ -1559,11 +1559,11 @@ export class NotificationCenter {
     // 计算综合评分
     const scoreA = this.calculateNotificationScore(a);
     const scoreB = this.calculateNotificationScore(b);
-    
+
     // 分数高的优先级高
     return scoreB - scoreA;
   }
-  
+
   /**
    * 计算通知评分
    */
@@ -1574,64 +1574,64 @@ export class NotificationCenter {
       timeliness: 0.2,
       userInterest: 0.1
     };
-    
+
     const scores = {
       priority: this.getPriorityScore(notification.priority),
       relevance: await this.calculateRelevance(notification),
       timeliness: this.calculateTimeliness(notification),
       userInterest: await this.calculateUserInterest(notification)
     };
-    
+
     // 加权平均
     return Object.entries(weights).reduce((total, [key, weight]) => {
       return total + (scores[key as keyof typeof scores] * weight);
     }, 0);
   }
-  
+
   /**
    * 显示通知
    */
   private async displayNotification(notification: Notification): Promise<void> {
     // 1. 检查是否已显示
     if (notification.state === 'displayed') return;
-    
+
     // 2. 创建通知UI
     const notificationUI = this.createNotificationUI(notification);
-    
+
     // 3. 添加到显示管理器
     this.displayManager.add(notificationUI);
-    
+
     // 4. 更新通知状态
     notification.state = 'displayed';
     notification.displayedAt = new Date();
-    
+
     // 5. 设置自动消失（如果启用）
     if (this.state.settings.autoDismiss && notification.dismissible) {
       this.setupAutoDismiss(notification);
     }
-    
+
     // 6. 播放声音（如果启用）
     if (this.state.settings.playSounds && notification.sound) {
       this.playNotificationSound(notification);
     }
-    
+
     // 7. 触发显示事件
     await this.dispatchEvent('notificationDisplayed', { notification });
   }
-  
+
   /**
    * 通知分组
    */
   private groupNotifications(notifications: Notification[]): NotificationGroup[] {
     return this.groupingEngine.group(notifications);
   }
-  
+
   /**
    * 交互式通知
    */
   private createInteractiveNotification(notification: Notification): InteractiveNotification {
     const baseUI = this.createNotificationUI(notification);
-    
+
     // 添加操作按钮
     const actions = notification.actions?.map(action => ({
       ...action,
@@ -1639,21 +1639,21 @@ export class NotificationCenter {
         try {
           // 执行操作
           const result = await action.handler(notification);
-          
+
           // 标记通知为已操作
           notification.state = 'acted';
           notification.actionResult = result;
-          
+
           // 触发操作事件
           await this.dispatchEvent('notificationAction', {
             notification,
             action: action.label,
             result
           });
-          
+
           // 关闭通知
           this.dismissNotification(notification.id);
-          
+
           return result;
         } catch (error) {
           await this.dispatchEvent('notificationActionFailed', {
@@ -1665,7 +1665,7 @@ export class NotificationCenter {
         }
       }
     })) || [];
-    
+
     // 添加快速回复（对于消息通知）
     let quickReply: QuickReply | undefined;
     if (notification.type === 'message') {
@@ -1676,7 +1676,7 @@ export class NotificationCenter {
         }
       };
     }
-    
+
     return {
       ...baseUI,
       actions,
@@ -1684,75 +1684,75 @@ export class NotificationCenter {
       interactive: true
     };
   }
-  
+
   /**
    * 勿扰模式
    */
   enableDoNotDisturb(rules: DNDRule[]): void {
     this.state.doNotDisturb = true;
     this.state.dndRules = rules;
-    
+
     // 隐藏所有当前通知
     this.displayManager.clearAll();
-    
+
     // 触发勿扰模式事件
     this.dispatchEvent('doNotDisturbEnabled', { rules });
   }
-  
+
   disableDoNotDisturb(): void {
     this.state.doNotDisturb = false;
-    
+
     // 重新显示通知
     this.tryDisplayNotifications();
-    
+
     // 触发事件
     this.dispatchEvent('doNotDisturbDisabled', {});
   }
-  
+
   /**
    * 通知历史
    */
   getNotificationHistory(filter: HistoryFilter = {}): NotificationHistory {
     return this.historyManager.getHistory(filter);
   }
-  
+
   clearHistory(options: ClearHistoryOptions = {}): void {
     const cleared = this.historyManager.clear(options);
-    
+
     // 触发清理事件
-    this.dispatchEvent('historyCleared', { 
+    this.dispatchEvent('historyCleared', {
       count: cleared.count,
-      options 
+      options
     });
   }
-  
+
   /**
    * 用户偏好学习
    */
   private async learnFromInteraction(interaction: NotificationInteraction): Promise<void> {
     // 更新用户偏好模型
     await this.preferenceManager.recordInteraction(interaction);
-    
+
     // 调整通知排序权重
     this.adjustScoringWeights(interaction);
-    
+
     // 如果用户经常忽略某类通知，降低其优先级
     if (interaction.type === 'dismiss' && interaction.duration < 1000) {
       await this.adjustNotificationPriority(interaction.notification, -0.1);
     }
-    
+
     // 如果用户经常点击某类通知，提高其优先级
     if (interaction.type === 'click') {
       await this.adjustNotificationPriority(interaction.notification, 0.2);
     }
   }
-  
+
   /**
    * 通知分析报告
    */
   generateAnalyticsReport(timeframe: Timeframe): AnalyticsReport {
     const history = this.getNotificationHistory({ timeframe });
-    
+
     return {
       timeframe,
       totals: {
@@ -1774,23 +1774,23 @@ export class NotificationCenter {
       recommendations: this.generateRecommendations(history.notifications)
     };
   }
-  
+
   /**
    * 跨设备同步
    */
   async syncAcrossDevices(deviceId: string): Promise<void> {
     // 获取当前状态
     const state = this.getSyncState();
-    
+
     // 同步到服务器
     await this.syncService.sync(state, deviceId);
-    
+
     // 从服务器获取其他设备的通知
     const remoteNotifications = await this.syncService.getRemoteNotifications();
-    
+
     // 合并通知
     this.mergeRemoteNotifications(remoteNotifications);
-    
+
     // 触发同步完成事件
     this.dispatchEvent('syncComplete', {
       deviceId,
@@ -1798,14 +1798,14 @@ export class NotificationCenter {
       remoteCount: remoteNotifications.length
     });
   }
-  
+
   /**
    * 通知模板系统
    */
   registerTemplate(name: string, template: NotificationTemplate): void {
     this.templateManager.register(name, template);
   }
-  
+
   createNotificationFromTemplate(
     templateName: string,
     data: any
@@ -1814,7 +1814,7 @@ export class NotificationCenter {
     if (!template) {
       throw new Error(`Template "${templateName}" not found`);
     }
-    
+
     return this.templateManager.render(template, data);
   }
 }
@@ -1899,10 +1899,10 @@ export class DragManager {
   private inertiaSimulator: InertiaSimulator;
   private gestureRecognizer: GestureRecognizer;
   private dropTargetManager: DropTargetManager;
-  
+
   // 拖拽约束函数类型
   private constraintFunctions: Map<string, ConstraintFunction> = new Map();
-  
+
   constructor(config: Partial<DragManagerConfig> = {}) {
     this.config = {
       dragThreshold: 5,           // 拖拽阈值（像素）
@@ -1911,28 +1911,28 @@ export class DragManager {
       defaultConstraint: 'none',  // 默认约束
       ...config
     };
-    
+
     this.inertiaSimulator = new InertiaSimulator(this.config);
     this.gestureRecognizer = new GestureRecognizer(this.config);
     this.dropTargetManager = new DropTargetManager();
-    
+
     // 注册内置约束
     this.registerConstraint('none', this.noConstraint);
     this.registerConstraint('horizontal', this.horizontalConstraint);
     this.registerConstraint('vertical', this.verticalConstraint);
     this.registerConstraint('parentBoundary', this.parentBoundaryConstraint);
     this.registerConstraint('grid', this.gridConstraint);
-    
+
     // 初始化事件监听
     this.setupEventListeners();
   }
-  
+
   /**
    * 开始拖拽会话
    */
   startDrag(source: DragSource, data: any, options: DragOptions = {}): string {
     const sessionId = generateSessionId();
-    
+
     const session: DragSession = {
       id: sessionId,
       state: DragState.PREPARING,
@@ -1945,13 +1945,13 @@ export class DragManager {
       velocity: { x: 0, y: 0 },
       constraints: options.constraints,
     };
-    
+
     this.sessions.set(sessionId, session);
     this.activeSessionId = sessionId;
-    
+
     // 触发开始事件
     this.eventEmitter.emit('dragStart', { session });
-    
+
     // 根据触发方式处理
     if (options.trigger === 'immediate') {
       this.transitionToState(sessionId, DragState.DRAGGING);
@@ -1959,17 +1959,17 @@ export class DragManager {
       // 启动长按计时器
       this.startLongPressTimer(sessionId);
     }
-    
+
     return sessionId;
   }
-  
+
   /**
    * 更新拖拽位置
    */
   updateDrag(sessionId: string, newPosition: { x: number, y: number }): void {
     const session = this.sessions.get(sessionId);
     if (!session || session.state !== DragState.DRAGGING) return;
-    
+
     // 计算速度
     const now = new Date();
     const deltaTime = now.getTime() - session.lastUpdated.getTime();
@@ -1981,17 +1981,17 @@ export class DragManager {
         y: deltaY / deltaTime
       };
     }
-    
+
     // 应用约束
     let constrainedPosition = newPosition;
     if (session.constraints) {
       constrainedPosition = this.applyConstraints(session, newPosition);
     }
-    
+
     // 更新会话
     session.position = constrainedPosition;
     session.lastUpdated = now;
-    
+
     // 检测放置目标
     const dropTarget = this.dropTargetManager.findDropTarget(constrainedPosition, session.data);
     if (dropTarget !== session.dropTarget) {
@@ -2004,21 +2004,21 @@ export class DragManager {
       }
     }
     session.dropTarget = dropTarget;
-    
+
     // 发出更新事件
     this.eventEmitter.emit('dragMove', { session });
-    
+
     // 更新拖拽视觉反馈
     this.updateDragPreview(session);
   }
-  
+
   /**
    * 结束拖拽
    */
   endDrag(sessionId: string): void {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     // 如果是拖拽状态，尝试放置
     if (session.state === DragState.DRAGGING) {
       this.drop(sessionId);
@@ -2026,21 +2026,21 @@ export class DragManager {
       this.cancelDrag(sessionId);
     }
   }
-  
+
   /**
    * 放置操作
    */
   private async drop(sessionId: string): Promise<void> {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     this.transitionToState(sessionId, DragState.DROPPING);
-    
+
     try {
       // 如果有放置目标，执行放置逻辑
       if (session.dropTarget) {
         const success = await session.dropTarget.onDrop(session.data, session.position);
-        
+
         if (success) {
           this.transitionToState(sessionId, DragState.COMPLETED);
           this.eventEmitter.emit('dropSuccess', { session, dropTarget: session.dropTarget });
@@ -2055,36 +2055,36 @@ export class DragManager {
       this.cancelDrag(sessionId);
     }
   }
-  
+
   /**
    * 取消拖拽
    */
   cancelDrag(sessionId: string): void {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     this.transitionToState(sessionId, DragState.CANCELLED);
-    
+
     // 触发取消事件
     this.eventEmitter.emit('dragCancel', { session });
-    
+
     // 清理会话
     this.cleanupSession(sessionId);
   }
-  
+
   /**
    * 状态转移
    */
   private transitionToState(sessionId: string, newState: DragState): void {
     const session = this.sessions.get(sessionId);
     if (!session) return;
-    
+
     const oldState = session.state;
     session.state = newState;
-    
+
     // 触发状态变化事件
     this.eventEmitter.emit('stateChange', { session, oldState, newState });
-    
+
     // 状态特定的处理
     switch (newState) {
       case DragState.DRAGGING:
@@ -2098,13 +2098,13 @@ export class DragManager {
         break;
     }
   }
-  
+
   /**
    * 应用约束
    */
   private applyConstraints(session: DragSession, position: { x: number, y: number }): { x: number, y: number } {
     let result = { ...position };
-    
+
     // 应用每个约束
     if (session.constraints) {
       if (session.constraints.function) {
@@ -2113,60 +2113,60 @@ export class DragManager {
           result = constraintFunc(result, session);
         }
       }
-      
+
       // 应用边界约束
       if (session.constraints.boundary) {
         result = this.applyBoundaryConstraint(result, session.constraints.boundary);
       }
-      
+
       // 应用网格约束
       if (session.constraints.grid) {
         result = this.applyGridConstraint(result, session.constraints.grid);
       }
     }
-    
+
     return result;
   }
-  
+
   /**
    * 注册自定义约束函数
    */
   registerConstraint(name: string, constraintFunc: ConstraintFunction): void {
     this.constraintFunctions.set(name, constraintFunc);
   }
-  
+
   /**
    * 内置约束函数
    */
   private noConstraint(position: { x: number, y: number }, session: DragSession): { x: number, y: number } {
     return position;
   }
-  
+
   private horizontalConstraint(position: { x: number, y: number }, session: DragSession): { x: number, y: number } {
     return { x: position.x, y: session.startPosition.y };
   }
-  
+
   private verticalConstraint(position: { x: number, y: number }, session: DragSession): { x: number, y: number } {
     return { x: session.startPosition.x, y: position.y };
   }
-  
+
   private parentBoundaryConstraint(position: { x: number, y: number }, session: DragSession): { x: number, y: number } {
     const parentRect = session.source.getParentRect();
     const elementRect = session.source.getElementRect();
-    
+
     return {
       x: Math.max(parentRect.left, Math.min(position.x, parentRect.right - elementRect.width)),
       y: Math.max(parentRect.top, Math.min(position.y, parentRect.bottom - elementRect.height))
     };
   }
-  
+
   private gridConstraint(position: { x: number, y: number }, session: DragSession, gridSize: number = 10): { x: number, y: number } {
     return {
       x: Math.round(position.x / gridSize) * gridSize,
       y: Math.round(position.y / gridSize) * gridSize
     };
   }
-  
+
   /**
    * 惯性拖拽
    */
@@ -2177,7 +2177,7 @@ export class DragManager {
       });
     }
   }
-  
+
   /**
    * 设置事件监听
    */
@@ -2186,16 +2186,16 @@ export class DragManager {
     document.addEventListener('mousedown', this.handleMouseDown.bind(this));
     document.addEventListener('mousemove', this.handleMouseMove.bind(this));
     document.addEventListener('mouseup', this.handleMouseUp.bind(this));
-    
+
     // 触摸事件
     document.addEventListener('touchstart', this.handleTouchStart.bind(this));
     document.addEventListener('touchmove', this.handleTouchMove.bind(this));
     document.addEventListener('touchend', this.handleTouchEnd.bind(this));
-    
+
     // 键盘事件（用于取消拖拽）
     document.addEventListener('keydown', this.handleKeyDown.bind(this));
   }
-  
+
   // 事件处理函数
   private handleMouseDown(event: MouseEvent): void {
     // 找到拖拽源并开始拖拽
@@ -2205,7 +2205,7 @@ export class DragManager {
       this.startDrag(source, source.getData(), { trigger: 'longPress' });
     }
   }
-  
+
   // 其他事件处理函数...
 }
 
@@ -2216,22 +2216,22 @@ export class DragManager {
 export interface DragSource {
   // 获取拖拽数据
   getData(): any;
-  
+
   // 获取初始位置
   getInitialPosition(): { x: number, y: number };
-  
+
   // 获取元素矩形
   getElementRect(): DOMRect;
-  
+
   // 获取父元素矩形
   getParentRect(): DOMRect;
-  
+
   // 拖拽开始时的回调
   onDragStart?(session: DragSession): void;
-  
+
   // 拖拽结束时的回调
   onDragEnd?(session: DragSession): void;
-  
+
   // 拖拽取消时的回调
   onDragCancel?(session: DragSession): void;
 }
@@ -2243,16 +2243,16 @@ export interface DragSource {
 export interface DropTarget {
   // 判断点是否在目标内
   contains(point: { x: number, y: number }): boolean;
-  
+
   // 放置数据
   onDrop(data: any, position: { x: number, y: number }): Promise<boolean>;
-  
+
   // 拖拽进入时的回调
   onDragEnter?(session: DragSession): void;
-  
+
   // 拖拽离开时的回调
   onDragLeave?(session: DragSession): void;
-  
+
   // 拖拽在目标上移动时的回调
   onDragOver?(session: DragSession): void;
 }
@@ -2277,21 +2277,21 @@ export class PositionOptimizer {
   private ruleEngine: RuleEngine;
   private screenAnalyzer: ScreenAnalyzer;
   private contextManager: ContextManager;
-  
+
   // 位置记忆
   private positionMemory: Map<string, PositionMemory> = new Map();
-  
+
   constructor(config: PositionOptimizerConfig) {
     this.heatmap = new Heatmap(config.heatmapResolution);
     this.preferenceLearner = new PreferenceLearner(config.learningRate);
     this.ruleEngine = new RuleEngine(config.rules);
     this.screenAnalyzer = new ScreenAnalyzer();
     this.contextManager = new ContextManager();
-    
+
     // 加载历史数据
     this.loadHistoricalData();
   }
-  
+
   /**
    * 为组件推荐最佳位置
    */
@@ -2301,19 +2301,19 @@ export class PositionOptimizer {
   ): Promise<RecommendedPosition> {
     // 1. 收集上下文信息
     const context = await this.collectContext(component);
-    
+
     // 2. 获取候选位置
     const candidates = await this.generateCandidates(component, constraints, context);
-    
+
     // 3. 评估每个候选位置
     const scoredCandidates = await this.scoreCandidates(candidates, context);
-    
+
     // 4. 选择最佳位置
     const bestCandidate = this.selectBestCandidate(scoredCandidates);
-    
+
     // 5. 记录决策
     await this.recordDecision(component, bestCandidate, context);
-    
+
     return {
       ...bestCandidate.position,
       confidence: bestCandidate.score,
@@ -2324,7 +2324,7 @@ export class PositionOptimizer {
       }))
     };
   }
-  
+
   /**
    * 生成候选位置
    */
@@ -2334,27 +2334,27 @@ export class PositionOptimizer {
     context: OptimizationContext
   ): Promise<CandidatePosition[]> {
     const candidates: CandidatePosition[] = [];
-    
+
     // 1. 用户偏好位置
     const preferred = await this.getPreferredPositions(component, context);
     candidates.push(...preferred);
-    
+
     // 2. 基于规则的位置
     const ruleBased = this.ruleEngine.generatePositions(component, constraints, context);
     candidates.push(...ruleBased);
-    
+
     // 3. 基于热点的位置
     const heatBased = this.generateHeatBasedPositions(component, context);
     candidates.push(...heatBased);
-    
+
     // 4. 避让关键区域的位置
     const avoidBased = this.generateAvoidancePositions(component, context);
     candidates.push(...avoidBased);
-    
+
     // 去重
     return this.deduplicateCandidates(candidates);
   }
-  
+
   /**
    * 评估候选位置
    */
@@ -2366,7 +2366,7 @@ export class PositionOptimizer {
       candidates.map(async candidate => {
         const scores = await this.calculateScores(candidate, context);
         const totalScore = this.combineScores(scores);
-        
+
         return {
           position: candidate.position,
           scores,
@@ -2375,11 +2375,11 @@ export class PositionOptimizer {
         };
       })
     );
-    
+
     // 按总分排序
     return scored.sort((a, b) => b.totalScore - a.totalScore);
   }
-  
+
   /**
    * 计算多个维度的分数
    */
@@ -2400,7 +2400,7 @@ export class PositionOptimizer {
       this.scoreStability(candidate, context),
       this.scorePersonalization(candidate, context)
     ]);
-    
+
     return {
       accessibility: accessibilityScore,
       efficiency: efficiencyScore,
@@ -2409,7 +2409,7 @@ export class PositionOptimizer {
       personalization: personalizationScore
     };
   }
-  
+
   /**
    * 可访问性评分：确保组件易于访问
    */
@@ -2418,26 +2418,26 @@ export class PositionOptimizer {
     context: OptimizationContext
   ): Promise<number> {
     const factors = [];
-    
+
     // 1. 距离屏幕边缘的距离（太近不好访问）
     const edgeDistance = this.calculateEdgeDistance(candidate.position, context.screen);
     factors.push(this.normalizeEdgeDistance(edgeDistance));
-    
+
     // 2. 与当前焦点的距离
     const focusDistance = this.calculateFocusDistance(candidate.position, context.focusElement);
     factors.push(this.normalizeFocusDistance(focusDistance));
-    
+
     // 3. 手势可达性（特别是移动设备）
     const reachability = this.calculateReachability(candidate.position, context.deviceType);
     factors.push(reachability);
-    
+
     // 4. 视觉层次（不要遮挡重要内容）
     const visualHierarchy = this.calculateVisualHierarchy(candidate.position, context.visibleElements);
     factors.push(visualHierarchy);
-    
+
     return this.averageFactors(factors);
   }
-  
+
   /**
    * 效率评分：最小化用户交互成本
    */
@@ -2446,22 +2446,22 @@ export class PositionOptimizer {
     context: OptimizationContext
   ): Promise<number> {
     const factors = [];
-    
+
     // 1. 与预期交互区域的距离
     const interactionDistance = this.calculateInteractionDistance(candidate.position, context.interactionZones);
     factors.push(this.normalizeInteractionDistance(interactionDistance));
-    
+
     // 2. 操作路径优化（费茨定律）
     const fittsScore = this.calculateFittsLawScore(candidate.position, context.lastInteraction);
     factors.push(fittsScore);
-    
+
     // 3. 减少视线移动
     const eyeMovement = this.calculateEyeMovement(candidate.position, context.attentionAreas);
     factors.push(eyeMovement);
-    
+
     return this.averageFactors(factors);
   }
-  
+
   /**
    * 学习用户偏好
    */
@@ -2472,22 +2472,22 @@ export class PositionOptimizer {
   ): Promise<void> {
     // 1. 记录本次交互
     await this.recordInteraction(componentId, position, context);
-    
+
     // 2. 更新热图
     this.heatmap.recordInteraction(position, context.interactionType);
-    
+
     // 3. 更新用户偏好模型
     await this.preferenceLearner.update(componentId, position, context);
-    
+
     // 4. 调整规则权重
     this.ruleEngine.adjustWeights(context.success);
-    
+
     // 5. 定期重新训练模型
     if (this.shouldRetrain()) {
       await this.retrainModels();
     }
   }
-  
+
   /**
    * 上下文感知优化
    */
@@ -2496,31 +2496,31 @@ export class PositionOptimizer {
       // 设备信息
       deviceType: this.detectDeviceType(),
       screen: this.screenAnalyzer.getScreenInfo(),
-      
+
       // 用户状态
       userAttention: await this.detectUserAttention(),
       currentTask: await this.inferCurrentTask(),
-      
+
       // 界面状态
       visibleElements: this.getVisibleElements(),
       focusElement: document.activeElement,
       interactionZones: this.heatmap.getHotZones(),
       attentionAreas: this.getAttentionAreas(),
-      
+
       // 组件特定信息
       componentType: component.type,
       componentPriority: component.priority,
       componentFrequency: component.frequency,
-      
+
       // 时间上下文
       timeOfDay: new Date().getHours(),
       interactionHistory: this.getInteractionHistory(component.id),
-      
+
       // 环境因素
       isDistractedEnvironment: await this.detectDistractions()
     };
   }
-  
+
   /**
    * 多屏适配
    */
@@ -2528,16 +2528,16 @@ export class PositionOptimizer {
     if (screens.length <= 1) {
       return { primary: position };
     }
-    
+
     // 根据屏幕使用模式选择最佳屏幕
     const bestScreen = this.selectBestScreen(screens);
-    
+
     // 调整位置到选定屏幕
     const adjustedPosition = this.adjustToScreen(position, bestScreen);
-    
+
     // 考虑跨屏连续性
     const secondaryPositions = this.calculateSecondaryPositions(adjustedPosition, screens);
-    
+
     return {
       primary: adjustedPosition,
       secondary: secondaryPositions,
@@ -2567,7 +2567,7 @@ export class ResizeController {
   private constraints: ResizeConstraints;
   private gestureDetector: GestureDetector;
   private animationController: AnimationController;
-  
+
   // 调整手柄定义
   private handles: ResizeHandle[] = [
     { position: 'top-left', cursor: 'nw-resize', vector: { x: -1, y: -1 } },
@@ -2579,7 +2579,7 @@ export class ResizeController {
     { position: 'bottom-left', cursor: 'sw-resize', vector: { x: -1, y: 1 } },
     { position: 'left', cursor: 'w-resize', vector: { x: -1, y: 0 } }
   ];
-  
+
   constructor(config: Partial<ResizeConfig> = {}) {
     this.config = {
       minWidth: 100,
@@ -2593,14 +2593,14 @@ export class ResizeController {
       enableInertia: true,
       ...config
     };
-    
+
     this.constraints = new ResizeConstraints(this.config);
     this.gestureDetector = new GestureDetector();
     this.animationController = new AnimationController();
-    
+
     this.initializeHandles();
   }
-  
+
   /**
    * 开始调整大小
    */
@@ -2612,7 +2612,7 @@ export class ResizeController {
     if (this.currentSession) {
       this.endResize();
     }
-    
+
     const session: ResizeSession = {
       id: generateSessionId(),
       element,
@@ -2622,22 +2622,22 @@ export class ResizeController {
       currentRect: element.getBoundingClientRect(),
       state: ResizeState.RESIZING,
       constraints: this.constraints.getForElement(element),
-      aspectRatio: this.config.keepAspectRatio ? 
+      aspectRatio: this.config.keepAspectRatio ?
         element.offsetWidth / element.offsetHeight : null
     };
-    
+
     this.currentSession = session;
     this.resizeState = ResizeState.RESIZING;
-    
+
     // 添加临时样式
     this.addResizingStyles(element);
-    
+
     // 触发开始事件
     this.dispatchEvent('resizeStart', { session });
-    
+
     return session;
   }
-  
+
   /**
    * 更新调整大小
    */
@@ -2645,14 +2645,14 @@ export class ResizeController {
     if (!this.currentSession || this.resizeState !== ResizeState.RESIZING) {
       return;
     }
-    
+
     const session = this.currentSession;
     const currentPosition = this.getEventPosition(currentEvent);
-    
+
     // 计算鼠标移动距离
     const deltaX = currentPosition.x - session.startPosition.x;
     const deltaY = currentPosition.y - session.startPosition.y;
-    
+
     // 根据手柄方向计算新尺寸
     const newRect = this.calculateNewRect(
       session.startRect,
@@ -2661,24 +2661,24 @@ export class ResizeController {
       deltaY,
       session.aspectRatio
     );
-    
+
     // 应用约束
     const constrainedRect = this.constraints.apply(newRect, session.constraints);
-    
+
     // 应用智能吸附
     const snappedRect = this.applySnapping(constrainedRect);
-    
+
     // 更新会话状态
     session.currentRect = snappedRect;
     session.lastUpdate = new Date();
-    
+
     // 更新元素尺寸
     this.updateElementSize(session.element, snappedRect);
-    
+
     // 触发更新事件
     this.dispatchEvent('resizeUpdate', { session, rect: snappedRect });
   }
-  
+
   /**
    * 结束调整大小
    */
@@ -2686,21 +2686,21 @@ export class ResizeController {
     if (!this.currentSession) {
       throw new Error('No active resize session');
     }
-    
+
     const session = this.currentSession;
-    
+
     // 如果有结束事件，最后一次更新
     if (endEvent) {
       this.updateResize(endEvent);
     }
-    
+
     // 计算惯性（如果启用）
     if (this.config.enableInertia && endEvent) {
       this.applyInertia(session, endEvent);
     } else {
       this.finalizeResize(session);
     }
-    
+
     const result: ResizeResult = {
       sessionId: session.id,
       finalRect: session.currentRect,
@@ -2708,18 +2708,18 @@ export class ResizeController {
       duration: new Date().getTime() - session.startTime.getTime(),
       success: true
     };
-    
+
     // 清理
     this.cleanupSession(session);
     this.currentSession = null;
     this.resizeState = ResizeState.IDLE;
-    
+
     // 触发结束事件
     this.dispatchEvent('resizeEnd', { result });
-    
+
     return result;
   }
-  
+
   /**
    * 计算新矩形
    */
@@ -2731,7 +2731,7 @@ export class ResizeController {
     aspectRatio: number | null
   ): DOMRect {
     let newRect = { ...startRect };
-    
+
     // 根据手柄方向调整
     if (vector.x === -1) {
       // 左侧调整
@@ -2741,7 +2741,7 @@ export class ResizeController {
       // 右侧调整
       newRect.width = startRect.width + deltaX;
     }
-    
+
     if (vector.y === -1) {
       // 顶部调整
       newRect.y = startRect.y + deltaY;
@@ -2750,15 +2750,15 @@ export class ResizeController {
       // 底部调整
       newRect.height = startRect.height + deltaY;
     }
-    
+
     // 保持宽高比
     if (aspectRatio) {
       newRect = this.maintainAspectRatio(newRect, vector, aspectRatio);
     }
-    
+
     return newRect;
   }
-  
+
   /**
    * 保持宽高比
    */
@@ -2768,14 +2768,14 @@ export class ResizeController {
     aspectRatio: number
   ): DOMRect {
     const newRect = { ...rect };
-    
+
     // 根据调整方向决定保持哪条边
     if (vector.x !== 0 && vector.y !== 0) {
       // 角落调整：同时调整宽高
       if (Math.abs(newRect.width / newRect.height - aspectRatio) > 0.01) {
         // 以宽度为准调整高度
         newRect.height = newRect.width / aspectRatio;
-        
+
         // 根据手柄方向调整位置
         if (vector.y === -1) {
           newRect.y = rect.y - (newRect.height - rect.height);
@@ -2788,29 +2788,29 @@ export class ResizeController {
       // 垂直调整：调整宽度以保持比例
       newRect.width = newRect.height * aspectRatio;
     }
-    
+
     return newRect;
   }
-  
+
   /**
    * 应用智能吸附
    */
   private applySnapping(rect: DOMRect): DOMRect {
     let snapped = { ...rect };
-    
+
     if (this.config.snapToGrid) {
       snapped = this.snapToGrid(snapped);
     }
-    
+
     // 吸附到其他元素
     snapped = this.snapToElements(snapped);
-    
+
     // 吸附到屏幕边缘
     snapped = this.snapToScreenEdges(snapped);
-    
+
     return snapped;
   }
-  
+
   /**
    * 网格吸附
    */
@@ -2823,7 +2823,7 @@ export class ResizeController {
       top: 0, right: 0, bottom: 0, left: 0 // DOMRect需要这些属性
     } as DOMRect;
   }
-  
+
   /**
    * 多点触控调整
    */
@@ -2836,56 +2836,56 @@ export class ResizeController {
       this.handleRotation(touches);
     }
   }
-  
+
   /**
    * 双指缩放处理
    */
   private handlePinchZoom(touches: TouchList): void {
     if (!this.currentSession) return;
-    
+
     const touch1 = touches[0];
     const touch2 = touches[1];
-    
+
     // 计算当前距离
     const currentDistance = Math.hypot(
       touch2.clientX - touch1.clientX,
       touch2.clientY - touch1.clientY
     );
-    
+
     if (this.currentSession.lastPinchDistance) {
       // 计算缩放比例
       const scale = currentDistance / this.currentSession.lastPinchDistance;
-      
+
       // 计算中心点
       const centerX = (touch1.clientX + touch2.clientX) / 2;
       const centerY = (touch1.clientY + touch2.clientY) / 2;
-      
+
       // 应用缩放
       this.applyPinchZoom(scale, centerX, centerY);
     }
-    
+
     // 更新距离
     this.currentSession.lastPinchDistance = currentDistance;
   }
-  
+
   /**
    * 应用双指缩放
    */
   private applyPinchZoom(scale: number, centerX: number, centerY: number): void {
     if (!this.currentSession) return;
-    
+
     const session = this.currentSession;
     const element = session.element;
     const rect = session.currentRect;
-    
+
     // 计算相对于中心点的缩放
     const newWidth = rect.width * scale;
     const newHeight = rect.height * scale;
-    
+
     // 计算位置调整（使中心点保持不变）
     const deltaWidth = newWidth - rect.width;
     const deltaHeight = newHeight - rect.height;
-    
+
     const newRect: DOMRect = {
       ...rect,
       x: rect.x - (deltaWidth * (centerX - rect.x) / rect.width),
@@ -2893,25 +2893,25 @@ export class ResizeController {
       width: newWidth,
       height: newHeight
     } as DOMRect;
-    
+
     // 应用约束
     const constrainedRect = this.constraints.apply(newRect, session.constraints);
-    
+
     // 更新元素
     session.currentRect = constrainedRect;
     this.updateElementSize(element, constrainedRect);
-    
+
     // 触发事件
     this.dispatchEvent('resizeUpdate', { session, rect: constrainedRect });
   }
-  
+
   /**
    * 惯性调整
    */
   private applyInertia(session: ResizeSession, endEvent: MouseEvent | TouchEvent): void {
     // 计算结束速度
     const velocity = this.calculateEndVelocity(session, endEvent);
-    
+
     if (Math.abs(velocity.x) > 0.1 || Math.abs(velocity.y) > 0.1) {
       // 启动惯性动画
       this.animationController.startInertia(
@@ -2930,7 +2930,7 @@ export class ResizeController {
       this.finalizeResize(session);
     }
   }
-  
+
   /**
    * 添加调整模式
    */
@@ -2938,7 +2938,7 @@ export class ResizeController {
     // 实现自定义调整模式
     this.resizeModes.set(mode.name, mode);
   }
-  
+
   /**
    * 设置调整约束
    */
@@ -2968,7 +2968,7 @@ export class ThemeManager {
   private styleInjector: StyleInjector;
   private themeObserver: MutationObserver;
   private preferenceManager: PreferenceManager;
-  
+
   // 主题状态
   private state: ThemeState = {
     theme: 'light',
@@ -2978,35 +2978,35 @@ export class ThemeManager {
     fontSize: 'medium',
     reducedMotion: false
   };
-  
+
   constructor(config: ThemeManagerConfig) {
     this.designTokens = new DesignTokens(config.tokens);
     this.styleInjector = new StyleInjector();
     this.preferenceManager = new PreferenceManager();
-    
+
     // 加载内置主题
     this.loadBuiltinThemes();
-    
+
     // 监听系统主题变化
     this.setupSystemListeners();
-    
+
     // 恢复用户偏好
     this.restoreUserPreferences();
   }
-  
+
   /**
    * 注册新主题
    */
   registerTheme(name: string, theme: ThemeDefinition): void {
     const compiledTheme = this.compileTheme(theme);
     this.themes.set(name, compiledTheme);
-    
+
     // 如果这是第一个主题，设置为当前主题
     if (this.themes.size === 1) {
       this.setTheme(name);
     }
   }
-  
+
   /**
    * 设置当前主题
    */
@@ -3014,40 +3014,40 @@ export class ThemeManager {
     if (!this.themes.has(name)) {
       throw new Error(`Theme "${name}" not found`);
     }
-    
+
     const oldTheme = this.currentTheme;
     const newTheme = this.themes.get(name)!;
-    
+
     // 更新状态
     this.state.theme = name;
     this.state.mode = newTheme.mode;
-    
+
     // 触发主题切换前事件
-    await this.dispatchEvent('themeWillChange', { 
-      oldTheme, 
+    await this.dispatchEvent('themeWillChange', {
+      oldTheme,
       newTheme,
-      transition 
+      transition
     });
-    
+
     // 应用主题切换
     if (transition && this.config.enableTransitions) {
       await this.applyThemeWithTransition(newTheme);
     } else {
       this.applyThemeImmediately(newTheme);
     }
-    
+
     this.currentTheme = newTheme;
-    
+
     // 保存偏好
     this.saveUserPreferences();
-    
+
     // 触发主题切换后事件
-    await this.dispatchEvent('themeChanged', { 
-      oldTheme, 
-      newTheme 
+    await this.dispatchEvent('themeChanged', {
+      oldTheme,
+      newTheme
     });
   }
-  
+
   /**
    * 动态更新主题变量
    */
@@ -3057,10 +3057,10 @@ export class ThemeManager {
     value: string
   ): void {
     if (!this.currentTheme) return;
-    
+
     // 更新设计令牌
     this.designTokens.update(category, token, value);
-    
+
     // 重新编译当前主题
     const updatedTheme = this.compileTheme({
       ...this.currentTheme.definition,
@@ -3069,14 +3069,14 @@ export class ThemeManager {
         [token]: value
       }
     });
-    
+
     // 更新主题
     this.themes.set(this.state.theme, updatedTheme);
-    
+
     // 重新应用主题
     this.applyThemeImmediately(updatedTheme);
     this.currentTheme = updatedTheme;
-    
+
     // 触发变量更新事件
     this.dispatchEvent('themeVariableUpdated', {
       category,
@@ -3085,7 +3085,7 @@ export class ThemeManager {
       theme: this.state.theme
     });
   }
-  
+
   /**
    * 编译主题
    */
@@ -3097,22 +3097,22 @@ export class ThemeManager {
       cssVariables: {},
       styles: {}
     };
-    
+
     // 生成CSS变量
     compiled.cssVariables = this.generateCSSVariables(definition);
-    
+
     // 生成CSS样式
     compiled.styles = this.generateStyles(compiled.cssVariables);
-    
+
     return compiled;
   }
-  
+
   /**
    * 生成CSS变量
    */
   private generateCSSVariables(definition: ThemeDefinition): Record<string, string> {
     const variables: Record<string, string> = {};
-    
+
     // 遍历所有设计令牌类别
     Object.entries(definition).forEach(([category, tokens]) => {
       if (typeof tokens === 'object') {
@@ -3122,14 +3122,14 @@ export class ThemeManager {
         });
       }
     });
-    
+
     // 添加模式变量
     variables['--theme-mode'] = definition.mode || 'light';
     variables['--theme-contrast'] = this.state.contrast;
-    
+
     return variables;
   }
-  
+
   /**
    * 应用主题（带过渡动画）
    */
@@ -3137,10 +3137,10 @@ export class ThemeManager {
     return new Promise((resolve) => {
       // 添加过渡样式
       this.styleInjector.injectTransitionStyles();
-      
+
       // 应用新主题变量
       this.applyCSSVariables(theme.cssVariables);
-      
+
       // 等待过渡完成
       setTimeout(() => {
         this.styleInjector.removeTransitionStyles();
@@ -3148,7 +3148,7 @@ export class ThemeManager {
       }, this.config.transitionDuration);
     });
   }
-  
+
   /**
    * 响应系统主题变化
    */
@@ -3162,14 +3162,14 @@ export class ThemeManager {
         }
       });
     }
-    
+
     // 监听系统对比度设置
     const contrastQuery = window.matchMedia('(prefers-contrast: more)');
     contrastQuery.addEventListener('change', (e) => {
       this.state.contrast = e.matches ? 'high' : 'normal';
       this.updateContrast(this.state.contrast);
     });
-    
+
     // 监听减少动画设置
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     reducedMotionQuery.addEventListener('change', (e) => {
@@ -3177,7 +3177,7 @@ export class ThemeManager {
       this.updateMotionPreferences(this.state.reducedMotion);
     });
   }
-  
+
   /**
    * 主题派生系统
    */
@@ -3190,7 +3190,7 @@ export class ThemeManager {
     if (!baseTheme) {
       throw new Error(`Base theme "${baseThemeName}" not found`);
     }
-    
+
     // 合并主题定义
     const derivedDefinition: ThemeDefinition = {
       ...baseTheme.definition,
@@ -3198,16 +3198,16 @@ export class ThemeManager {
       name: newThemeName,
       base: baseThemeName
     };
-    
+
     // 编译派生主题
     const derivedTheme = this.compileTheme(derivedDefinition);
-    
+
     // 注册新主题
     this.registerTheme(newThemeName, derivedDefinition);
-    
+
     return derivedTheme;
   }
-  
+
   /**
    * 样式隔离
    */
@@ -3216,13 +3216,13 @@ export class ThemeManager {
     if (!theme) {
       throw new Error(`Theme "${themeName}" not found`);
     }
-    
+
     // 生成作用域CSS变量
     const scopedVariables = this.scopeCSSVariables(theme.cssVariables, scope);
-    
+
     // 创建作用域样式
     const scopedStyles = this.generateScopedStyles(scopedVariables, scope);
-    
+
     return {
       scope,
       theme: themeName,
@@ -3232,7 +3232,7 @@ export class ThemeManager {
       remove: () => this.removeScopedTheme(scope)
     };
   }
-  
+
   /**
    * 主题导出和导入
    */
@@ -3241,7 +3241,7 @@ export class ThemeManager {
     if (!theme) {
       throw new Error(`Theme "${name}" not found`);
     }
-    
+
     return {
       version: '1.0',
       name: theme.name,
@@ -3254,20 +3254,20 @@ export class ThemeManager {
       }
     };
   }
-  
+
   importTheme(exportData: ThemeExport): void {
     // 验证数据格式
     this.validateThemeExport(exportData);
-    
+
     // 注册主题
     this.registerTheme(exportData.name, exportData.definition);
-    
+
     // 导入设计令牌
     if (exportData.tokens) {
       this.designTokens.import(exportData.tokens);
     }
   }
-  
+
   /**
    * 生成主题调色板
    */
@@ -3280,7 +3280,7 @@ export class ThemeManager {
       semantic: this.generateSemanticColors(baseColor)
     };
   }
-  
+
   /**
    * 无障碍支持
    */
@@ -3291,14 +3291,14 @@ export class ThemeManager {
       this.testInteractiveElements(theme),
       this.testFocusIndicators(theme)
     ];
-    
+
     const report: AccessibilityReport = {
       passed: tests.every(test => test.passed),
       tests,
       score: this.calculateAccessibilityScore(tests),
       recommendations: this.generateAccessibilityRecommendations(tests)
     };
-    
+
     return report;
   }
 }
@@ -3324,7 +3324,7 @@ export class NotificationCenter {
   private historyManager: HistoryManager;
   private preferenceManager: PreferenceManager;
   private groupingEngine: GroupingEngine;
-  
+
   // 状态
   private state: NotificationState = {
     isVisible: false,
@@ -3338,59 +3338,59 @@ export class NotificationCenter {
       playSounds: true
     }
   };
-  
+
   constructor(config: NotificationConfig) {
     this.queue = new PriorityQueue<Notification>(
       this.compareNotifications.bind(this)
     );
-    
+
     this.displayManager = new DisplayManager(config.display);
     this.historyManager = new HistoryManager(config.history);
     this.preferenceManager = new PreferenceManager(config.preferences);
     this.groupingEngine = new GroupingEngine(config.grouping);
-    
+
     // 初始化UI
     this.initializeUI();
-    
+
     // 加载历史通知
     this.loadNotificationHistory();
-    
+
     // 设置自动清理
     this.setupAutoCleanup();
   }
-  
+
   /**
    * 发送通知
    */
   async send(notification: NotificationInput): Promise<string> {
     // 1. 创建通知对象
     const notification = this.createNotification(notification);
-    
+
     // 2. 检查勿扰模式
     if (this.shouldSuppressNotification(notification)) {
       await this.handleSuppressedNotification(notification);
       return notification.id;
     }
-    
+
     // 3. 应用用户偏好
     const personalized = await this.personalizeNotification(notification);
-    
+
     // 4. 添加到队列
     this.queue.enqueue(personalized);
     this.notifications.set(personalized.id, personalized);
-    
+
     // 5. 更新未读计数
     this.updateUnreadCount();
-    
+
     // 6. 触发发送事件
     await this.dispatchEvent('notificationSent', { notification: personalized });
-    
+
     // 7. 尝试显示
     this.tryDisplayNotifications();
-    
+
     return personalized.id;
   }
-  
+
   /**
    * 智能通知排序
    */
@@ -3398,11 +3398,11 @@ export class NotificationCenter {
     // 计算综合评分
     const scoreA = this.calculateNotificationScore(a);
     const scoreB = this.calculateNotificationScore(b);
-    
+
     // 分数高的优先级高
     return scoreB - scoreA;
   }
-  
+
   /**
    * 计算通知评分
    */
@@ -3413,64 +3413,64 @@ export class NotificationCenter {
       timeliness: 0.2,
       userInterest: 0.1
     };
-    
+
     const scores = {
       priority: this.getPriorityScore(notification.priority),
       relevance: await this.calculateRelevance(notification),
       timeliness: this.calculateTimeliness(notification),
       userInterest: await this.calculateUserInterest(notification)
     };
-    
+
     // 加权平均
     return Object.entries(weights).reduce((total, [key, weight]) => {
       return total + (scores[key as keyof typeof scores] * weight);
     }, 0);
   }
-  
+
   /**
    * 显示通知
    */
   private async displayNotification(notification: Notification): Promise<void> {
     // 1. 检查是否已显示
     if (notification.state === 'displayed') return;
-    
+
     // 2. 创建通知UI
     const notificationUI = this.createNotificationUI(notification);
-    
+
     // 3. 添加到显示管理器
     this.displayManager.add(notificationUI);
-    
+
     // 4. 更新通知状态
     notification.state = 'displayed';
     notification.displayedAt = new Date();
-    
+
     // 5. 设置自动消失（如果启用）
     if (this.state.settings.autoDismiss && notification.dismissible) {
       this.setupAutoDismiss(notification);
     }
-    
+
     // 6. 播放声音（如果启用）
     if (this.state.settings.playSounds && notification.sound) {
       this.playNotificationSound(notification);
     }
-    
+
     // 7. 触发显示事件
     await this.dispatchEvent('notificationDisplayed', { notification });
   }
-  
+
   /**
    * 通知分组
    */
   private groupNotifications(notifications: Notification[]): NotificationGroup[] {
     return this.groupingEngine.group(notifications);
   }
-  
+
   /**
    * 交互式通知
    */
   private createInteractiveNotification(notification: Notification): InteractiveNotification {
     const baseUI = this.createNotificationUI(notification);
-    
+
     // 添加操作按钮
     const actions = notification.actions?.map(action => ({
       ...action,
@@ -3478,21 +3478,21 @@ export class NotificationCenter {
         try {
           // 执行操作
           const result = await action.handler(notification);
-          
+
           // 标记通知为已操作
           notification.state = 'acted';
           notification.actionResult = result;
-          
+
           // 触发操作事件
           await this.dispatchEvent('notificationAction', {
             notification,
             action: action.label,
             result
           });
-          
+
           // 关闭通知
           this.dismissNotification(notification.id);
-          
+
           return result;
         } catch (error) {
           await this.dispatchEvent('notificationActionFailed', {
@@ -3504,7 +3504,7 @@ export class NotificationCenter {
         }
       }
     })) || [];
-    
+
     // 添加快速回复（对于消息通知）
     let quickReply: QuickReply | undefined;
     if (notification.type === 'message') {
@@ -3515,7 +3515,7 @@ export class NotificationCenter {
         }
       };
     }
-    
+
     return {
       ...baseUI,
       actions,
@@ -3523,75 +3523,75 @@ export class NotificationCenter {
       interactive: true
     };
   }
-  
+
   /**
    * 勿扰模式
    */
   enableDoNotDisturb(rules: DNDRule[]): void {
     this.state.doNotDisturb = true;
     this.state.dndRules = rules;
-    
+
     // 隐藏所有当前通知
     this.displayManager.clearAll();
-    
+
     // 触发勿扰模式事件
     this.dispatchEvent('doNotDisturbEnabled', { rules });
   }
-  
+
   disableDoNotDisturb(): void {
     this.state.doNotDisturb = false;
-    
+
     // 重新显示通知
     this.tryDisplayNotifications();
-    
+
     // 触发事件
     this.dispatchEvent('doNotDisturbDisabled', {});
   }
-  
+
   /**
    * 通知历史
    */
   getNotificationHistory(filter: HistoryFilter = {}): NotificationHistory {
     return this.historyManager.getHistory(filter);
   }
-  
+
   clearHistory(options: ClearHistoryOptions = {}): void {
     const cleared = this.historyManager.clear(options);
-    
+
     // 触发清理事件
-    this.dispatchEvent('historyCleared', { 
+    this.dispatchEvent('historyCleared', {
       count: cleared.count,
-      options 
+      options
     });
   }
-  
+
   /**
    * 用户偏好学习
    */
   private async learnFromInteraction(interaction: NotificationInteraction): Promise<void> {
     // 更新用户偏好模型
     await this.preferenceManager.recordInteraction(interaction);
-    
+
     // 调整通知排序权重
     this.adjustScoringWeights(interaction);
-    
+
     // 如果用户经常忽略某类通知，降低其优先级
     if (interaction.type === 'dismiss' && interaction.duration < 1000) {
       await this.adjustNotificationPriority(interaction.notification, -0.1);
     }
-    
+
     // 如果用户经常点击某类通知，提高其优先级
     if (interaction.type === 'click') {
       await this.adjustNotificationPriority(interaction.notification, 0.2);
     }
   }
-  
+
   /**
    * 通知分析报告
    */
   generateAnalyticsReport(timeframe: Timeframe): AnalyticsReport {
     const history = this.getNotificationHistory({ timeframe });
-    
+
     return {
       timeframe,
       totals: {
@@ -3613,23 +3613,23 @@ export class NotificationCenter {
       recommendations: this.generateRecommendations(history.notifications)
     };
   }
-  
+
   /**
    * 跨设备同步
    */
   async syncAcrossDevices(deviceId: string): Promise<void> {
     // 获取当前状态
     const state = this.getSyncState();
-    
+
     // 同步到服务器
     await this.syncService.sync(state, deviceId);
-    
+
     // 从服务器获取其他设备的通知
     const remoteNotifications = await this.syncService.getRemoteNotifications();
-    
+
     // 合并通知
     this.mergeRemoteNotifications(remoteNotifications);
-    
+
     // 触发同步完成事件
     this.dispatchEvent('syncComplete', {
       deviceId,
@@ -3637,14 +3637,14 @@ export class NotificationCenter {
       remoteCount: remoteNotifications.length
     });
   }
-  
+
   /**
    * 通知模板系统
    */
   registerTemplate(name: string, template: NotificationTemplate): void {
     this.templateManager.register(name, template);
   }
-  
+
   createNotificationFromTemplate(
     templateName: string,
     data: any
@@ -3653,8 +3653,9 @@ export class NotificationCenter {
     if (!template) {
       throw new Error(`Template "${templateName}" not found`);
     }
-    
+
     return this.templateManager.render(template, data);
   }
 }
 ```text
+````

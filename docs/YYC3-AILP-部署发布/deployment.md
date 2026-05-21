@@ -151,12 +151,12 @@ docker build -t ai-learning-platform .
 # 运行容器
 
 docker run -p 3000:3000 \
-  -e DB_HOST=your-db-host \
-  -e DB_NAME=your-db-name \
-  -e DB_USER=your-db-user \
-  -e DB_PASS=your-db-password \
-  -e JWT_SECRET=your-jwt-secret \
-  ai-learning-platform
+ -e DB_HOST=your-db-host \
+ -e DB_NAME=your-db-name \
+ -e DB_USER=your-db-user \
+ -e DB_PASS=your-db-password \
+ -e JWT_SECRET=your-jwt-secret \
+ ai-learning-platform
 \`\`\`
 
 ### Docker Compose
@@ -167,31 +167,20 @@ docker run -p 3000:3000 \
 version: '3.8'
 
 services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - DB_HOST=db
-      - DB_NAME=ai_learning
-      - DB_USER=root
-      - DB_PASS=password
-      - JWT_SECRET=your-jwt-secret
-    depends_on:
-      - db
+app:
+build: .
+ports: - "3000:3000"
+environment: - DB_HOST=db - DB_NAME=ai_learning - DB_USER=root - DB_PASS=password - JWT_SECRET=your-jwt-secret
+depends_on: - db
 
-  db:
-    image: mysql:8.0
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=ai_learning
-    volumes:
-      - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+db:
+image: mysql:8.0
+environment: - MYSQL_ROOT_PASSWORD=password - MYSQL_DATABASE=ai_learning
+volumes: - mysql_data:/var/lib/mysql
+ports: - "3306:3306"
 
 volumes:
-  mysql_data:
+mysql_data:
 \`\`\`
 
 运行:
@@ -253,11 +242,11 @@ docker-compose up -d
 \`\`\`typescript
 // next.config.mjs
 const nextConfig = {
-  images: {
-    domains: ['your-cdn-domain.com'],
-  },
-  // 启用静态优化
-  reactStrictMode: true,
+images: {
+domains: ['your-cdn-domain.com'],
+},
+// 启用静态优化
+reactStrictMode: true,
 }
 \`\`\`
 
@@ -266,9 +255,9 @@ const nextConfig = {
 \`\`\`typescript
 // lib/database.ts
 const pool = mysql.createPool({
-  connectionLimit: 10,
-  queueLimit: 0,
-  waitForConnections: true,
+connectionLimit: 10,
+queueLimit: 0,
+waitForConnections: true,
 })
 \`\`\`
 
@@ -292,7 +281,7 @@ const pool = mysql.createPool({
 \`\`\`typescript
 // 生产环境日志
 if (process.env.NODE_ENV === 'production') {
-  console.log('Application started')
+console.log('Application started')
 }
 \`\`\`
 

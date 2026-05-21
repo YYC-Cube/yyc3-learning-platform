@@ -17,7 +17,7 @@ import {
   AlertFilters,
   DimensionType,
   AlertLevel,
-  Priority
+  Priority,
 } from '../types/IFiveDimensionalManagement';
 import { GoalDimension } from '../dimensions/GoalDimension';
 import { TechnologyDimension } from '../dimensions/TechnologyDimension';
@@ -87,7 +87,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
 
     this._logger.info('FiveDimensionalManagement initialized', {
       systemId: config.systemId,
-      environment: config.environment
+      environment: config.environment,
     });
   }
 
@@ -145,7 +145,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this.emit('system-status-change', { status: 'active', timestamp: new Date() });
 
       this._logger.info('FiveDimensionalManagement system initialized successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to initialize FiveDimensionalManagement', error);
@@ -183,7 +182,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this.emit('system-status-change', { status: 'active', timestamp: new Date() });
 
       this._logger.info('FiveDimensionalManagement system started successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to start FiveDimensionalManagement', error);
@@ -218,7 +216,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this.emit('system-status-change', { status: 'suspended', timestamp: new Date() });
 
       this._logger.info('FiveDimensionalManagement system stopped successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to stop FiveDimensionalManagement', error);
@@ -229,7 +226,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
   async restart(): Promise<void> {
     this._logger.info('Restarting FiveDimensionalManagement system...');
     await this.stop();
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Brief pause
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Brief pause
     await this.start();
   }
 
@@ -261,7 +258,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
 
       this._status = 'initializing';
       this._logger.info('FiveDimensionalManagement system shutdown complete');
-
     } catch (error) {
       this._logger.error('Error during shutdown', error);
       throw error;
@@ -283,7 +279,11 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       if (config.dimensions) {
         for (const [type, dimConfig] of Object.entries(config.dimensions)) {
           const dimension = this._dimensions.get(type as DimensionType);
-          if (dimension && dimConfig.enabled !== this._config.dimensions[type as keyof typeof this._config.dimensions].enabled) {
+          if (
+            dimension &&
+            dimConfig.enabled !==
+              this._config.dimensions[type as keyof typeof this._config.dimensions].enabled
+          ) {
             if (dimConfig.enabled) {
               await dimension.start();
             } else {
@@ -309,7 +309,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this.emit('config-updated', { config: newConfig, timestamp: new Date() });
 
       this._logger.info('Configuration updated successfully');
-
     } catch (error) {
       this._logger.error('Failed to update configuration', error);
       throw error;
@@ -374,7 +373,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this.emit('metric-update', { metrics, timestamp: new Date() });
 
       this._logger.debug('Metrics collected successfully');
-
     } catch (error) {
       this._logger.error('Failed to collect metrics', error);
       throw error;
@@ -397,13 +395,13 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
 
     if (filters) {
       if (filters.type) {
-        alerts = alerts.filter(alert => alert.type === filters.type);
+        alerts = alerts.filter((alert) => alert.type === filters.type);
       }
       if (filters.level) {
-        alerts = alerts.filter(alert => alert.level === filters.level);
+        alerts = alerts.filter((alert) => alert.level === filters.level);
       }
       if (filters.status) {
-        alerts = alerts.filter(alert => {
+        alerts = alerts.filter((alert) => {
           if (filters.status === 'active') return !alert.acknowledged && !alert.resolved;
           if (filters.status === 'acknowledged') return alert.acknowledged && !alert.resolved;
           if (filters.status === 'resolved') return alert.resolved;
@@ -411,13 +409,13 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
         });
       }
       if (filters.dateRange) {
-        alerts = alerts.filter(alert =>
-          alert.timestamp >= filters.dateRange!.start &&
-          alert.timestamp <= filters.dateRange!.end
+        alerts = alerts.filter(
+          (alert) =>
+            alert.timestamp >= filters.dateRange!.start && alert.timestamp <= filters.dateRange!.end
         );
       }
       if (filters.source) {
-        alerts = alerts.filter(alert => alert.source === filters.source);
+        alerts = alerts.filter((alert) => alert.source === filters.source);
       }
     }
 
@@ -463,7 +461,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       executed: true,
       executedBy: userId,
       executedAt: new Date(),
-      result: 'resolved'
+      result: 'resolved',
     });
 
     this._alerts.set(alertId, alert);
@@ -486,7 +484,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this._dashboard = dashboardData;
 
       this.emit('dashboard-refreshed', { dashboard: dashboardData, timestamp: new Date() });
-
     } catch (error) {
       this._logger.error('Failed to refresh dashboard', error);
       throw error;
@@ -499,7 +496,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
 
   async getRecommendations(): Promise<Recommendation[]> {
     return Array.from(this._recommendations.values())
-      .filter(rec => rec.status === 'pending')
+      .filter((rec) => rec.status === 'pending')
       .sort((a, b) => {
         // Sort by priority first, then by creation date
         const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
@@ -531,7 +528,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this._logger.info(`Generated ${recommendations.length} new recommendations`);
 
       return recommendations;
-
     } catch (error) {
       this._logger.error('Failed to generate recommendations', error);
       throw error;
@@ -561,7 +557,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this.emit('recommendation-applied', { recommendation, timestamp: new Date() });
 
       this._logger.info(`Recommendation ${recommendationId} applied successfully`);
-
     } catch (error) {
       recommendation.status = 'pending'; // Reset to pending on failure
       this._recommendations.set(recommendationId, recommendation);
@@ -589,7 +584,6 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
       this._logger.info(`Report generated: ${report.id}`);
 
       return report;
-
     } catch (error) {
       this._logger.error('Failed to generate report', error);
       throw error;
@@ -628,7 +622,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
         failedConnections: 0,
         dataSyncStatus: 'synced',
         lastSyncTime: new Date(),
-        apiResponseTime: 0
+        apiResponseTime: 0,
       },
       systemLoad: {
         cpuUtilization: 0,
@@ -637,10 +631,10 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
         networkUtilization: 0,
         activeProcesses: 0,
         queueSize: 0,
-        throughput: 0
+        throughput: 0,
       },
       responseTime: 0,
-      uptime: 100
+      uptime: 100,
     };
   }
 
@@ -652,7 +646,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
         keyHighlights: [],
         criticalIssues: [],
         topRecommendations: [],
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       },
       dimensions: {
         goal: {
@@ -662,7 +656,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
           atRiskGoals: 0,
           overallProgress: 0,
           topPriorities: [],
-          upcomingDeadlines: []
+          upcomingDeadlines: [],
         },
         technology: {
           systemHealth: 100,
@@ -674,7 +668,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
             diskUtilization: 0,
             networkLatency: 0,
             databaseQueryTime: 0,
-            cacheHitRate: 0
+            cacheHitRate: 0,
           },
           reliability: {
             uptime: 100,
@@ -682,11 +676,11 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
             mttr: 0,
             errorRate: 0,
             availability: 100,
-            slaCompliance: 100
+            slaCompliance: 100,
           },
           securityScore: 100,
           technicalDebt: 0,
-          uptime: 100
+          uptime: 100,
         },
         data: {
           dataQuality: 100,
@@ -694,7 +688,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
           analyticsAccuracy: 100,
           pipelineHealth: 100,
           activeIssues: 0,
-          dataVolume: 0
+          dataVolume: 0,
         },
         ux: {
           userSatisfaction: 100,
@@ -702,7 +696,7 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
           accessibilityScore: 100,
           performanceScore: 100,
           netPromoterScore: 100,
-          activeUsers: 0
+          activeUsers: 0,
         },
         value: {
           roi: 0,
@@ -710,12 +704,12 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
           revenueImpact: 0,
           efficiencyGain: 100,
           customerSatisfaction: 100,
-          marketPosition: 100
-        }
+          marketPosition: 100,
+        },
       },
       trends: [],
       alerts: [],
-      recommendations: []
+      recommendations: [],
     };
   }
 
@@ -758,22 +752,28 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
     });
 
     // Alert processing job
-    this._alertProcessingJob = cron.schedule(`*/${Math.max(frequency / 2, 30)} * * * *`, async () => {
-      try {
-        await this._alertManager.processPendingAlerts();
-      } catch (error) {
-        this._logger.error('Scheduled alert processing failed', error);
+    this._alertProcessingJob = cron.schedule(
+      `*/${Math.max(frequency / 2, 30)} * * * *`,
+      async () => {
+        try {
+          await this._alertManager.processPendingAlerts();
+        } catch (error) {
+          this._logger.error('Scheduled alert processing failed', error);
+        }
       }
-    });
+    );
 
     // Recommendation generation job
-    this._recommendationJob = cron.schedule(`0 */${Math.floor(frequency / 60) || 1} * * *`, async () => {
-      try {
-        await this.generateRecommendations();
-      } catch (error) {
-        this._logger.error('Scheduled recommendation generation failed', error);
+    this._recommendationJob = cron.schedule(
+      `0 */${Math.floor(frequency / 60) || 1} * * *`,
+      async () => {
+        try {
+          await this.generateRecommendations();
+        } catch (error) {
+          this._logger.error('Scheduled recommendation generation failed', error);
+        }
       }
-    });
+    );
 
     // Dashboard refresh job
     this._dashboardRefreshJob = cron.schedule(`*/${frequency} * * * *`, async () => {
@@ -925,10 +925,12 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
 
   private sendDashboardUpdate(ws: WebSocket): void {
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({
-        type: 'dashboard-update',
-        data: this._dashboard
-      }));
+      ws.send(
+        JSON.stringify({
+          type: 'dashboard-update',
+          data: this._dashboard,
+        })
+      );
     }
   }
 
@@ -943,35 +945,48 @@ export class FiveDimensionalManagement extends EventEmitter implements IFiveDime
   private handleDashboardMessage(ws: WebSocket, data: any): void {
     switch (data.type) {
       case 'refresh':
-        this.refreshDashboard().then(() => {
-          this.sendDashboardUpdate(ws);
-        }).catch(error => {
-          this._logger.error('Failed to refresh dashboard on request', error);
-        });
+        this.refreshDashboard()
+          .then(() => {
+            this.sendDashboardUpdate(ws);
+          })
+          .catch((error) => {
+            this._logger.error('Failed to refresh dashboard on request', error);
+          });
         break;
 
       case 'acknowledge-alert':
-        this.acknowledgeAlert(data.alertId, data.userId).then(() => {
-          ws.send(JSON.stringify({ type: 'alert-acknowledged', alertId: data.alertId }));
-        }).catch(error => {
-          ws.send(JSON.stringify({ type: 'error', message: error.message }));
-        });
+        this.acknowledgeAlert(data.alertId, data.userId)
+          .then(() => {
+            ws.send(JSON.stringify({ type: 'alert-acknowledged', alertId: data.alertId }));
+          })
+          .catch((error) => {
+            ws.send(JSON.stringify({ type: 'error', message: error.message }));
+          });
         break;
 
       case 'resolve-alert':
-        this.resolveAlert(data.alertId, data.userId, data.resolution).then(() => {
-          ws.send(JSON.stringify({ type: 'alert-resolved', alertId: data.alertId }));
-        }).catch(error => {
-          ws.send(JSON.stringify({ type: 'error', message: error.message }));
-        });
+        this.resolveAlert(data.alertId, data.userId, data.resolution)
+          .then(() => {
+            ws.send(JSON.stringify({ type: 'alert-resolved', alertId: data.alertId }));
+          })
+          .catch((error) => {
+            ws.send(JSON.stringify({ type: 'error', message: error.message }));
+          });
         break;
 
       case 'apply-recommendation':
-        this.applyRecommendation(data.recommendationId).then(() => {
-          ws.send(JSON.stringify({ type: 'recommendation-applied', recommendationId: data.recommendationId }));
-        }).catch(error => {
-          ws.send(JSON.stringify({ type: 'error', message: error.message }));
-        });
+        this.applyRecommendation(data.recommendationId)
+          .then(() => {
+            ws.send(
+              JSON.stringify({
+                type: 'recommendation-applied',
+                recommendationId: data.recommendationId,
+              })
+            );
+          })
+          .catch((error) => {
+            ws.send(JSON.stringify({ type: 'error', message: error.message }));
+          });
         break;
     }
   }

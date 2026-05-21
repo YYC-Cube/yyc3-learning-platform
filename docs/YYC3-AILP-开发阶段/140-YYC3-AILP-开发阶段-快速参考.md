@@ -3,28 +3,38 @@
 ## 🚀 快速开始
 
 ### 安装
+
 ```bash
 cd /Users/yanyu/learning-platform
 pnpm install
 ```
 
 ### 导入组件
+
 ```typescript
 import {
   // 基础架构
-  MessageBus, TaskScheduler, StateManager, EventDispatcher, SubsystemRegistry,
+  MessageBus,
+  TaskScheduler,
+  StateManager,
+  EventDispatcher,
+  SubsystemRegistry,
   // 管理组件
-  GoalManagementSystem, TechnicalMaturityModel,
+  GoalManagementSystem,
+  TechnicalMaturityModel,
   // AI功能
-  ChatInterface, ToolboxPanel, InsightsDashboard,
+  ChatInterface,
+  ToolboxPanel,
+  InsightsDashboard,
   // 代理核心
-  AgenticCore
+  AgenticCore,
 } from '@/packages/core-engine';
 ```
 
 ## 📦 组件速查
 
 ### ChatInterface (聊天界面)
+
 ```typescript
 // 初始化
 await chatInterface.initialize();
@@ -33,7 +43,7 @@ await chatInterface.initialize();
 await chatInterface.sendMessage({
   content: '你好',
   role: 'user',
-  type: MessageType.TEXT
+  type: MessageType.TEXT,
 });
 
 // 获取历史
@@ -41,12 +51,13 @@ const history = chatInterface.getMessageHistory({ limit: 10 });
 ```
 
 ### ToolboxPanel (工具箱)
+
 ```typescript
 // 注册工具
 await toolboxPanel.registerTool({
   name: 'MyTool',
   category: ToolCategory.CODE,
-  executor: async (params) => ({ success: true })
+  executor: async (params) => ({ success: true }),
 });
 
 // 搜索工具
@@ -57,19 +68,20 @@ await toolboxPanel.executeTool(toolId, params);
 ```
 
 ### InsightsDashboard (数据洞察)
+
 ```typescript
 // 连接数据源
 await insightsDashboard.connectDataSource({
   id: 'db1',
   type: DataSourceType.SQL,
-  connectionString: 'postgresql://...'
+  connectionString: 'postgresql://...',
 });
 
 // 添加部件
 const widgetId = insightsDashboard.addWidget({
   type: WidgetType.LINE_CHART,
   title: '用户增长',
-  dataSourceId: 'db1'
+  dataSourceId: 'db1',
 });
 
 // 生成洞察
@@ -79,6 +91,7 @@ const insights = await insightsDashboard.generateInsights();
 ## 🔧 常用API
 
 ### 生命周期管理
+
 ```typescript
 // 初始化
 await component.initialize();
@@ -91,6 +104,7 @@ await component.shutdown();
 ```
 
 ### 事件监听
+
 ```typescript
 component.on('event_name', (data) => {
   console.log('事件触发:', data);
@@ -98,6 +112,7 @@ component.on('event_name', (data) => {
 ```
 
 ### 错误处理
+
 ```typescript
 try {
   await component.doSomething();
@@ -109,6 +124,7 @@ try {
 ## 📝 类型定义
 
 ### ChatMessage
+
 ```typescript
 interface ChatMessage {
   id?: string;
@@ -120,6 +136,7 @@ interface ChatMessage {
 ```
 
 ### Tool
+
 ```typescript
 interface Tool {
   id: string;
@@ -130,6 +147,7 @@ interface Tool {
 ```
 
 ### Widget
+
 ```typescript
 interface Widget {
   id: string;
@@ -150,11 +168,11 @@ interface Widget {
 
 ## 📊 性能指标
 
-| 组件 | 响应时间 | 吞吐量 |
-|------|----------|--------|
-| ChatInterface | 150ms | 1K msg/s |
-| ToolboxPanel | 400ms | 100 exec/s |
-| InsightsDashboard | 800ms | 12K rec/s |
+| 组件              | 响应时间 | 吞吐量     |
+| ----------------- | -------- | ---------- |
+| ChatInterface     | 150ms    | 1K msg/s   |
+| ToolboxPanel      | 400ms    | 100 exec/s |
+| InsightsDashboard | 800ms    | 12K rec/s  |
 
 ## 🔗 相关文档
 
@@ -164,4 +182,5 @@ interface Widget {
 - [集成指南](./INTEGRATION-GUIDE.md)
 
 ---
-*最后更新: 2025-12-10*
+
+_最后更新: 2025-12-10_

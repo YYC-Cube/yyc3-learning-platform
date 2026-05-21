@@ -16,7 +16,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
       enableCompression: false,
       writeThrough: true,
       writeBehind: false,
-      clusteringEnabled: false
+      clusteringEnabled: false,
     });
   });
 
@@ -30,7 +30,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-1', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       const result = await cacheLayer.get('test-key-1');
@@ -45,7 +45,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-2', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       const result = await cacheLayer.get('test-key-2');
@@ -59,7 +59,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       const result = await cacheLayer.get('test-key-3', {
         loader,
-        ttl: 60000
+        ttl: 60000,
       });
 
       expect(loader).toHaveBeenCalledTimes(1);
@@ -74,7 +74,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.get('test-key-4', {
         loader,
-        ttl: 60000
+        ttl: 60000,
       });
 
       const result = await cacheLayer.get('test-key-4');
@@ -89,13 +89,17 @@ describe('IntelligentCacheLayer Integration Tests', () => {
     it('should evict LRU entries when cache is full', async () => {
       const smallCache = new IntelligentCacheLayer({
         l1Size: 5,
-        l1TTL: 60000
+        l1TTL: 60000,
       });
 
       for (let i = 0; i < 10; i++) {
-        await smallCache.set(`key-${i}`, { value: i }, {
-          strategy: 'write-through'
-        });
+        await smallCache.set(
+          `key-${i}`,
+          { value: i },
+          {
+            strategy: 'write-through',
+          }
+        );
       }
 
       const result1 = await smallCache.get('key-0');
@@ -112,7 +116,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-5', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.get('test-key-5');
@@ -132,7 +136,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-6', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.get('test-key-6');
@@ -140,7 +144,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
       await cacheLayer.get('non-existent-key');
 
       const stats = await cacheLayer.getStats();
-      const l1Stats = stats.find(s => s.level === CacheLevel.L1);
+      const l1Stats = stats.find((s) => s.level === CacheLevel.L1);
 
       if (l1Stats) {
         const hitRate = l1Stats.hits / (l1Stats.hits + l1Stats.misses);
@@ -155,7 +159,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-7', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.delete('test-key-7');
@@ -170,12 +174,12 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('user:1', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.set('user:2', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.invalidate(/user:\d+/);
@@ -192,12 +196,12 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-8', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.set('test-key-9', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.clear();
@@ -216,10 +220,10 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-10', testData, {
         strategy: 'write-through',
-        ttl: 100
+        ttl: 100,
       });
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const result = await cacheLayer.get('test-key-10');
 
@@ -234,7 +238,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
       await cacheLayer.set('test-key-11', testData, {
         strategy: 'write-through',
         ttl: 60000,
-        tags: ['user', 'profile']
+        tags: ['user', 'profile'],
       });
 
       const result = await cacheLayer.get('test-key-11');
@@ -250,7 +254,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
       await cacheLayer.set('test-key-12', testData, {
         strategy: 'write-through',
         ttl: 60000,
-        priority: 'high'
+        priority: 'high',
       });
 
       const result = await cacheLayer.get('test-key-12');
@@ -265,7 +269,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-13', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       const result = await cacheLayer.get('test-key-13');
@@ -279,7 +283,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-14', testData, {
         strategy: 'write-behind',
-        ttl: 60000
+        ttl: 60000,
       });
 
       const result = await cacheLayer.get('test-key-14');
@@ -293,7 +297,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-15', testData, {
         strategy: 'write-around',
-        ttl: 60000
+        ttl: 60000,
       });
 
       const result = await cacheLayer.get('test-key-15');
@@ -306,7 +310,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-16', testData, {
         strategy: 'cache-aside',
-        ttl: 60000
+        ttl: 60000,
       });
 
       const result = await cacheLayer.get('test-key-16');
@@ -324,11 +328,11 @@ describe('IntelligentCacheLayer Integration Tests', () => {
           keyPattern: 'user:\\d+',
           loader: async (key: string) => ({
             userId: key.split(':')[1],
-            name: `User ${key.split(':')[1]}`
+            name: `User ${key.split(':')[1]}`,
           }),
           ttl: 60000,
-          priority: 'high' as const
-        }
+          priority: 'high' as const,
+        },
       ];
 
       const report = await cacheLayer.warmup(patterns);
@@ -347,7 +351,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-17', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.get('test-key-17');
@@ -375,7 +379,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
 
       await cacheLayer.set('test-key-18', testData, {
         strategy: 'write-through',
-        ttl: 60000
+        ttl: 60000,
       });
 
       await cacheLayer.get('test-key-18');
@@ -402,10 +406,14 @@ describe('IntelligentCacheLayer Integration Tests', () => {
         setEvents.push(event);
       });
 
-      await cacheLayer.set('test-key-19', { value: 'test' }, {
-        strategy: 'write-through',
-        ttl: 60000
-      });
+      await cacheLayer.set(
+        'test-key-19',
+        { value: 'test' },
+        {
+          strategy: 'write-through',
+          ttl: 60000,
+        }
+      );
 
       expect(setEvents.length).toBeGreaterThan(0);
       expect(setEvents[0].key).toBe('test-key-19');
@@ -418,10 +426,14 @@ describe('IntelligentCacheLayer Integration Tests', () => {
         deleteEvents.push(event);
       });
 
-      await cacheLayer.set('test-key-20', { value: 'test' }, {
-        strategy: 'write-through',
-        ttl: 60000
-      });
+      await cacheLayer.set(
+        'test-key-20',
+        { value: 'test' },
+        {
+          strategy: 'write-through',
+          ttl: 60000,
+        }
+      );
 
       await cacheLayer.delete('test-key-20');
 
@@ -443,7 +455,7 @@ describe('IntelligentCacheLayer Integration Tests', () => {
       try {
         await cacheLayer.get('test-key-21', {
           loader,
-          ttl: 60000
+          ttl: 60000,
         });
       } catch (error) {
         expect(error).toBeDefined();

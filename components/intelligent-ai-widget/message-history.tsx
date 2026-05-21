@@ -29,17 +29,20 @@ interface TimeRangeOption {
 const TIME_RANGES: TimeRangeOption[] = [
   { label: '全部时间', value: {} },
   { label: '今天', value: { startDate: new Date().setHours(0, 0, 0, 0) } },
-  { label: '昨天', value: { 
-    startDate: new Date().setDate(new Date().getDate() - 1),
-    endDate: new Date().setHours(0, 0, 0, 0)
-  }},
+  {
+    label: '昨天',
+    value: {
+      startDate: new Date().setDate(new Date().getDate() - 1),
+      endDate: new Date().setHours(0, 0, 0, 0),
+    },
+  },
   { label: '近7天', value: { startDate: new Date().setDate(new Date().getDate() - 7) } },
   { label: '近30天', value: { startDate: new Date().setDate(new Date().getDate() - 30) } },
 ];
 
 export const MessageHistory: React.FC<MessageHistoryProps> = ({
   onLoadMessages,
-  className = ''
+  className = '',
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [messages, setMessages] = React.useState<StoredMessage[]>([]);
@@ -55,40 +58,44 @@ export const MessageHistory: React.FC<MessageHistoryProps> = ({
 
   const pageSize = 20;
 
-  const loadMessages = React.useCallback(async (page: number = 1) => {
-    setIsLoading(true);
-    try {
-      const timeRange = TIME_RANGES[selectedTimeRange].value;
-      const filter: MessageFilter = {
-        keyword: searchKeyword.trim() || undefined,
-        role: selectedRole !== 'all' ? selectedRole as 'user' | 'assistant' | 'system' : undefined,
-        startDate: timeRange.startDate,
-        endDate: timeRange.endDate
-      };
+  const loadMessages = React.useCallback(
+    async (page: number = 1) => {
+      setIsLoading(true);
+      try {
+        const timeRange = TIME_RANGES[selectedTimeRange].value;
+        const filter: MessageFilter = {
+          keyword: searchKeyword.trim() || undefined,
+          role:
+            selectedRole !== 'all' ? (selectedRole as 'user' | 'assistant' | 'system') : undefined,
+          startDate: timeRange.startDate,
+          endDate: timeRange.endDate,
+        };
 
-      const options: PaginationOptions = {
-        page,
-        pageSize,
-        filter
-      };
+        const options: PaginationOptions = {
+          page,
+          pageSize,
+          filter,
+        };
 
-      const result = await messageStorage.getMessages(options);
-      
-      if (page === 1) {
-        setMessages(result.data);
-      } else {
-        setMessages(prev => [...prev, ...result.data]);
+        const result = await messageStorage.getMessages(options);
+
+        if (page === 1) {
+          setMessages(result.data);
+        } else {
+          setMessages((prev) => [...prev, ...result.data]);
+        }
+
+        setCurrentPage(result.page);
+        setHasMore(result.hasMore);
+        setTotal(result.total);
+      } catch (error) {
+        console.error('加载消息历史失败:', error);
+      } finally {
+        setIsLoading(false);
       }
-      
-      setCurrentPage(result.page);
-      setHasMore(result.hasMore);
-      setTotal(result.total);
-    } catch (error) {
-      console.error('加载消息历史失败:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchKeyword, selectedTimeRange, selectedRole]);
+    },
+    [searchKeyword, selectedTimeRange, selectedRole]
+  );
 
   const handleLoadMore = () => {
     if (hasMore && !isLoading) {
@@ -175,7 +182,7 @@ export const MessageHistory: React.FC<MessageHistoryProps> = ({
       {/* 头部 */}
       <div className="p-4 border-b border-gray-200">
         <h3 className="text-lg font-medium text-gray-900 mb-3">消息历史</h3>
-        
+
         {/* 搜索框 */}
         <div className="flex gap-2 mb-3">
           <div className="flex-1 relative">
@@ -215,9 +222,7 @@ export const MessageHistory: React.FC<MessageHistoryProps> = ({
               导入/导出
             </button>
           </div>
-          <div className="text-sm text-gray-500">
-            共 {total} 条消息
-          </div>
+          <div className="text-sm text-gray-500">共 {total} 条消息</div>
         </div>
       </div>
 
@@ -250,15 +255,13 @@ export const MessageHistory: React.FC<MessageHistoryProps> = ({
 
             {/* 消息类型 */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                消息类型
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">消息类型</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { value: 'all', label: '全部' },
                   { value: 'user', label: '用户' },
                   { value: 'assistant', label: '助手' },
-                  { value: 'system', label: '系统' }
+                  { value: 'system', label: '系统' },
                 ].map((role) => (
                   <button
                     key={role.value}
@@ -317,9 +320,7 @@ export const MessageHistory: React.FC<MessageHistoryProps> = ({
       {/* 消息列表 */}
       <div className="max-h-96 overflow-y-auto">
         {messages.length === 0 && !isLoading && (
-          <div className="p-8 text-center text-gray-500">
-            暂无消息记录
-          </div>
+          <div className="p-8 text-center text-gray-500">暂无消息记录</div>
         )}
 
         {messages.map((message) => (
@@ -329,38 +330,39 @@ export const MessageHistory: React.FC<MessageHistoryProps> = ({
           >
             <div className="flex items-start gap-3">
               {/* 消息类型标识 */}
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium ${
-                message.role === 'user' ? 'bg-indigo-600' :
-                message.role === 'assistant' ? 'bg-green-600' : 'bg-gray-600'
-              }`}>
-                {message.role === 'user' ? 'U' :
-                 message.role === 'assistant' ? 'A' : 'S'}
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium ${
+                  message.role === 'user'
+                    ? 'bg-indigo-600'
+                    : message.role === 'assistant'
+                      ? 'bg-green-600'
+                      : 'bg-gray-600'
+                }`}
+              >
+                {message.role === 'user' ? 'U' : message.role === 'assistant' ? 'A' : 'S'}
               </div>
 
               {/* 消息内容 */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-sm font-medium text-gray-900">
-                    {message.role === 'user' ? '用户' :
-                     message.role === 'assistant' ? '助手' : '系统'}
+                    {message.role === 'user'
+                      ? '用户'
+                      : message.role === 'assistant'
+                        ? '助手'
+                        : '系统'}
                   </span>
                   <span className="text-xs text-gray-500">
                     {new Date(message.timestamp).toLocaleString()}
                   </span>
                 </div>
-                <p className="text-sm text-gray-700 truncate">
-                  {message.content}
-                </p>
+                <p className="text-sm text-gray-700 truncate">{message.content}</p>
               </div>
             </div>
           </div>
         ))}
 
-        {isLoading && (
-          <div className="p-4 text-center text-gray-500">
-            加载中...
-          </div>
-        )}
+        {isLoading && <div className="p-4 text-center text-gray-500">加载中...</div>}
       </div>
 
       {/* 底部操作 */}

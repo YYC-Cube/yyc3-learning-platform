@@ -14,24 +14,29 @@ const testConfig: AIProviderConfig = {
     ollama: {
       enabled: true,
       baseURL: 'http://localhost:11434',
-      models: ['llama3.2:3b-instruct-q4_K_M', 'qwen2.5-coder:1.5b', 'llama3.2:1b', 'deepseek-coder:33b'],
+      models: [
+        'llama3.2:3b-instruct-q4_K_M',
+        'qwen2.5-coder:1.5b',
+        'llama3.2:1b',
+        'deepseek-coder:33b',
+      ],
       timeout: 60000,
       retryAttempts: 3,
       defaultModels: {
         chat: 'llama3.2:3b-instruct-q4_K_M',
         code: 'qwen2.5-coder:1.5b',
         analysis: 'llama3.2:1b',
-        reasoning: 'deepseek-coder:33b'
-      }
-    }
+        reasoning: 'deepseek-coder:33b',
+      },
+    },
   },
   costLimits: {
     dailyLimit: 100,
     monthlyLimit: 3000,
-    perRequestLimit: 10
+    perRequestLimit: 10,
   },
   routingStrategy: 'best-performance',
-  fallbackEnabled: true
+  fallbackEnabled: true,
 };
 
 /**
@@ -75,7 +80,6 @@ async function testOllamaProvider(): Promise<void> {
     console.log('💰 成本分析:', costAnalysis);
 
     console.log('\n✅ Ollama本地模型集成测试完成！');
-
   } catch (error) {
     console.error('❌ 测试失败:', error);
     process.exit(1);
@@ -92,25 +96,25 @@ async function testBasicChat(providerManager: RealAIProvidersManager): Promise<v
       request: {
         content: '你好！请简单介绍一下你自己。',
         scenario: 'greeting',
-        costBudget: 'low'
-      }
+        costBudget: 'low',
+      },
     },
     {
       name: '企业场景咨询',
       request: {
         content: '我想了解如何提高团队的工作效率，有什么建议吗？',
         scenario: 'consultation',
-        costBudget: 'medium'
-      }
+        costBudget: 'medium',
+      },
     },
     {
       name: '快速问答',
       request: {
         content: '什么是人工智能？',
         scenario: 'qa',
-        costBudget: 'low'
-      }
-    }
+        costBudget: 'low',
+      },
+    },
   ];
 
   for (const { name, request } of requests) {
@@ -122,15 +126,18 @@ async function testBasicChat(providerManager: RealAIProvidersManager): Promise<v
       const response = await providerManager.chat(request);
       const duration = Date.now() - startTime;
 
-      console.log(`💬 回答: ${response.content.substring(0, 150)}${response.content.length > 150 ? '...' : ''}`);
+      console.log(
+        `💬 回答: ${response.content.substring(0, 150)}${response.content.length > 150 ? '...' : ''}`
+      );
       console.log(`⏱️  响应时间: ${duration}ms`);
       console.log(`🎯 置信度: ${response.confidence || 'N/A'}`);
       console.log(`🔧 使用模型: ${response.model}`);
 
       if (response.usage) {
-        console.log(`📊 Token使用: ${response.usage.totalTokens} (输入: ${response.usage.promptTokens}, 输出: ${response.usage.completionTokens})`);
+        console.log(
+          `📊 Token使用: ${response.usage.totalTokens} (输入: ${response.usage.promptTokens}, 输出: ${response.usage.completionTokens})`
+        );
       }
-
     } catch (error) {
       console.error(`❌ ${name} 失败:`, error.message);
     }
@@ -148,16 +155,16 @@ async function testCodeGeneration(providerManager: RealAIProvidersManager): Prom
         content: '请写一个Python函数，计算斐波那契数列的第n项。',
         scenario: 'code-generation',
         requiresReasoning: true,
-        costBudget: 'low'
-      }
+        costBudget: 'low',
+      },
     },
     {
       name: 'JavaScript类',
       request: {
         content: '创建一个JavaScript类，表示一个简单的银行账户，包含存款和取款方法。',
         scenario: 'code-generation',
-        costBudget: 'low'
-      }
+        costBudget: 'low',
+      },
     },
     {
       name: 'API设计',
@@ -165,9 +172,9 @@ async function testCodeGeneration(providerManager: RealAIProvidersManager): Prom
         content: '设计一个RESTful API来管理用户数据，包括增删改查操作。',
         scenario: 'api-design',
         requiresReasoning: true,
-        costBudget: 'medium'
-      }
-    }
+        costBudget: 'medium',
+      },
+    },
   ];
 
   for (const { name, request } of codeRequests) {
@@ -182,7 +189,6 @@ async function testCodeGeneration(providerManager: RealAIProvidersManager): Prom
       console.log(`🔧 生成的代码:\n${response.content}`);
       console.log(`⏱️  生成时间: ${duration}ms`);
       console.log(`🤖 使用模型: ${response.model}`);
-
     } catch (error) {
       console.error(`❌ ${name} 失败:`, error.message);
     }
@@ -200,17 +206,18 @@ async function testAnalysis(providerManager: RealAIProvidersManager): Promise<vo
         content: '分析以下销售数据：Q1:100万, Q2:120万, Q3:90万, Q4:150万。请给出趋势分析和建议。',
         scenario: 'data-analysis',
         requiresDataAnalysis: true,
-        costBudget: 'low'
-      }
+        costBudget: 'low',
+      },
     },
     {
       name: '用户行为分析',
       request: {
-        content: '分析电商网站用户行为数据：页面浏览量10000，独立访客3000，转化率2.5%，平均停留时间3分钟。',
+        content:
+          '分析电商网站用户行为数据：页面浏览量10000，独立访客3000，转化率2.5%，平均停留时间3分钟。',
         scenario: 'user-analysis',
-        costBudget: 'low'
-      }
-    }
+        costBudget: 'low',
+      },
+    },
   ];
 
   for (const { name, request } of analysisRequests) {
@@ -225,7 +232,6 @@ async function testAnalysis(providerManager: RealAIProvidersManager): Promise<vo
       console.log(`🔍 分析结果:\n${response.content}`);
       console.log(`⏱️  分析时间: ${duration}ms`);
       console.log(`🤖 使用模型: ${response.model}`);
-
     } catch (error) {
       console.error(`❌ ${name} 失败:`, error.message);
     }
@@ -244,8 +250,8 @@ async function testComplexReasoning(providerManager: RealAIProvidersManager): Pr
         scenario: 'strategy-planning',
         requiresReasoning: true,
         priority: 'high',
-        costBudget: 'high'
-      }
+        costBudget: 'high',
+      },
     },
     {
       name: '问题解决',
@@ -253,9 +259,9 @@ async function testComplexReasoning(providerManager: RealAIProvidersManager): Pr
         content: '团队面临技术债务严重、交付周期长的问题，请分析根本原因并提供解决方案。',
         scenario: 'problem-solving',
         requiresReasoning: true,
-        costBudget: 'high'
-      }
-    }
+        costBudget: 'high',
+      },
+    },
   ];
 
   for (const { name, request } of reasoningRequests) {
@@ -271,7 +277,6 @@ async function testComplexReasoning(providerManager: RealAIProvidersManager): Pr
       console.log(`⏱️  推理时间: ${duration}ms`);
       console.log(`🎯 置信度: ${response.confidence || 'N/A'}`);
       console.log(`🤖 使用模型: ${response.model}`);
-
     } catch (error) {
       console.error(`❌ ${name} 失败:`, error.message);
     }
@@ -288,17 +293,19 @@ async function performanceTest(providerManager: RealAIProvidersManager): Promise
   const testPrompt = '请简单总结一下人工智能的发展历史。';
 
   const requests = Array.from({ length: concurrentRequests }, (_, i) =>
-    providerManager.chat({
-      content: testPrompt,
-      scenario: 'performance-test',
-      costBudget: 'low'
-    }).then(response => ({
-      requestId: i + 1,
-      duration: Date.now(),
-      model: response.model,
-      contentLength: response.content.length,
-      usage: response.usage
-    }))
+    providerManager
+      .chat({
+        content: testPrompt,
+        scenario: 'performance-test',
+        costBudget: 'low',
+      })
+      .then((response) => ({
+        requestId: i + 1,
+        duration: Date.now(),
+        model: response.model,
+        contentLength: response.content.length,
+        usage: response.usage,
+      }))
   );
 
   const startTime = Date.now();
@@ -311,12 +318,11 @@ async function performanceTest(providerManager: RealAIProvidersManager): Promise
     console.log(`🔄 并发请求数: ${concurrentRequests}`);
     console.log(`⏱️  总耗时: ${totalDuration}ms`);
     console.log(`⚡ 平均延迟: ${Math.round(totalDuration / concurrentRequests)}ms`);
-    console.log(`📊 吞吐量: ${Math.round(concurrentRequests * 1000 / totalDuration)} 请求/秒`);
+    console.log(`📊 吞吐量: ${Math.round((concurrentRequests * 1000) / totalDuration)} 请求/秒`);
 
-    results.forEach(result => {
+    results.forEach((result) => {
       console.log(`   请求${result.requestId}: ${result.model}, 内容长度: ${result.contentLength}`);
     });
-
   } catch (error) {
     console.error('❌ 性能测试失败:', error.message);
   }
@@ -334,7 +340,7 @@ async function testModelCapabilities(): Promise<void> {
   const models = provider.getAvailableModels();
 
   console.log('\n📋 可用模型列表:');
-  models.forEach(model => {
+  models.forEach((model) => {
     console.log(`• ${model.name} (${model.id})`);
     console.log(`  能力: ${model.capabilities.join(', ')}`);
     console.log(`  上下文窗口: ${model.contextWindow} tokens`);
@@ -349,7 +355,7 @@ async function testModelCapabilities(): Promise<void> {
 // 主函数
 async function main(): Promise<void> {
   console.log('🚀 YYC³ AI引擎 - Ollama本地模型集成测试');
-  console.log('=' .repeat(50));
+  console.log('='.repeat(50));
 
   try {
     // 首先测试模型能力
@@ -360,7 +366,6 @@ async function main(): Promise<void> {
 
     console.log('\n🎉 所有测试完成！');
     console.log('✅ Ollama本地模型已成功集成到YYC³ AI引擎中');
-
   } catch (error) {
     console.error('\n💥 测试过程中出现错误:', error);
     process.exit(1);
@@ -369,7 +374,7 @@ async function main(): Promise<void> {
 
 // 运行测试
 if (import.meta.main) {
-  main().catch(error => {
+  main().catch((error) => {
     console.error('💥 未捕获的错误:', error);
     process.exit(1);
   });

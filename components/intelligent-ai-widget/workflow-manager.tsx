@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-"use client";
+'use client';
 
 import { Play, Plus, Trash2, Copy, Edit, ChevronRight, Clock, FolderOpen } from 'lucide-react';
 import * as React from 'react';
@@ -85,7 +85,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
   onWorkflowExecute,
   onWorkflowCreate,
   onWorkflowUpdate: _onWorkflowUpdate,
-  onWorkflowDelete
+  onWorkflowDelete,
 }) => {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [_selectedWorkflow, setSelectedWorkflow] = useState<Workflow | null>(null);
@@ -99,7 +99,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
 
   const loadWorkflows = useCallback(async () => {
     setLoading(true);
-    
+
     try {
       const defaultWorkflows: Workflow[] = [
         {
@@ -113,7 +113,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               type: 'start',
               name: '开始',
               config: {},
-              position: { x: 100, y: 50 }
+              position: { x: 100, y: 50 },
             },
             {
               id: 'node-2',
@@ -121,7 +121,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               name: '收集数据',
               description: '从各个数据源收集今日数据',
               config: { action: 'collect_data' },
-              position: { x: 100, y: 150 }
+              position: { x: 100, y: 150 },
             },
             {
               id: 'node-3',
@@ -129,25 +129,25 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               name: '生成报告',
               description: '基于收集的数据生成报告',
               config: { action: 'generate_report' },
-              position: { x: 100, y: 250 }
+              position: { x: 100, y: 250 },
             },
             {
               id: 'node-4',
               type: 'end',
               name: '结束',
               config: {},
-              position: { x: 100, y: 350 }
-            }
+              position: { x: 100, y: 350 },
+            },
           ],
           connections: [
             { id: 'conn-1', from: 'node-1', to: 'node-2' },
             { id: 'conn-2', from: 'node-2', to: 'node-3' },
-            { id: 'conn-3', from: 'node-3', to: 'node-4' }
+            { id: 'conn-3', from: 'node-3', to: 'node-4' },
           ],
           createdAt: new Date(Date.now() - 86400000 * 7),
           updatedAt: new Date(Date.now() - 86400000),
           executionCount: 42,
-          lastExecuted: new Date(Date.now() - 86400000)
+          lastExecuted: new Date(Date.now() - 86400000),
         },
         {
           id: 'wf-2',
@@ -160,7 +160,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               type: 'start',
               name: '开始',
               config: {},
-              position: { x: 100, y: 50 }
+              position: { x: 100, y: 50 },
             },
             {
               id: 'node-2',
@@ -168,7 +168,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               name: '检查备份时间',
               description: '验证是否到达备份时间',
               config: { condition: 'is_backup_time' },
-              position: { x: 100, y: 150 }
+              position: { x: 100, y: 150 },
             },
             {
               id: 'node-3',
@@ -176,25 +176,25 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               name: '执行备份',
               description: '将数据备份到云存储',
               config: { action: 'backup_data' },
-              position: { x: 100, y: 250 }
+              position: { x: 100, y: 250 },
             },
             {
               id: 'node-4',
               type: 'end',
               name: '结束',
               config: {},
-              position: { x: 100, y: 350 }
-            }
+              position: { x: 100, y: 350 },
+            },
           ],
           connections: [
             { id: 'conn-1', from: 'node-1', to: 'node-2' },
             { id: 'conn-2', from: 'node-2', to: 'node-3', condition: 'true' },
-            { id: 'conn-3', from: 'node-3', to: 'node-4' }
+            { id: 'conn-3', from: 'node-3', to: 'node-4' },
           ],
           createdAt: new Date(Date.now() - 86400000 * 14),
           updatedAt: new Date(Date.now() - 86400000 * 2),
           executionCount: 128,
-          lastExecuted: new Date(Date.now() - 3600000)
+          lastExecuted: new Date(Date.now() - 3600000),
         },
         {
           id: 'wf-3',
@@ -207,7 +207,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               type: 'start',
               name: '开始',
               config: {},
-              position: { x: 100, y: 50 }
+              position: { x: 100, y: 50 },
             },
             {
               id: 'node-2',
@@ -215,7 +215,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               name: '发送欢迎邮件',
               description: '向新客户发送欢迎邮件',
               config: { action: 'send_welcome_email' },
-              position: { x: 100, y: 150 }
+              position: { x: 100, y: 150 },
             },
             {
               id: 'node-3',
@@ -223,25 +223,25 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
               name: '定期跟进',
               description: '每周发送跟进邮件',
               config: { interval: '7d' },
-              position: { x: 100, y: 250 }
+              position: { x: 100, y: 250 },
             },
             {
               id: 'node-4',
               type: 'end',
               name: '结束',
               config: {},
-              position: { x: 100, y: 350 }
-            }
+              position: { x: 100, y: 350 },
+            },
           ],
           connections: [
             { id: 'conn-1', from: 'node-1', to: 'node-2' },
             { id: 'conn-2', from: 'node-2', to: 'node-3' },
-            { id: 'conn-3', from: 'node-3', to: 'node-4' }
+            { id: 'conn-3', from: 'node-3', to: 'node-4' },
           ],
           createdAt: new Date(Date.now() - 86400000 * 3),
           updatedAt: new Date(Date.now() - 86400000),
-          executionCount: 0
-        }
+          executionCount: 0,
+        },
       ];
 
       setWorkflows(defaultWorkflows);
@@ -252,65 +252,68 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
     }
   }, []);
 
-  const handleWorkflowExecute = useCallback(async (workflowId: string) => {
-    const workflow = workflows.find(w => w.id === workflowId);
-    if (!workflow) return;
+  const handleWorkflowExecute = useCallback(
+    async (workflowId: string) => {
+      const workflow = workflows.find((w) => w.id === workflowId);
+      if (!workflow) return;
 
-    const execution: WorkflowExecution = {
-      id: `exec-${Date.now()}`,
-      workflowId,
-      status: 'running',
-      startTime: new Date(),
-      logs: []
-    };
-
-    setExecutions(prev => new Map(prev).set(workflowId, execution));
-
-    try {
-      await onWorkflowExecute?.(workflowId);
-
-      const updatedExecution: WorkflowExecution = {
-        ...execution,
-        status: 'completed',
-        endTime: new Date(),
-        logs: [
-          {
-            timestamp: new Date(),
-            nodeId: workflow.nodes[0].id,
-            nodeName: workflow.nodes[0].name,
-            status: 'success',
-            message: '工作流执行完成'
-          }
-        ]
+      const execution: WorkflowExecution = {
+        id: `exec-${Date.now()}`,
+        workflowId,
+        status: 'running',
+        startTime: new Date(),
+        logs: [],
       };
 
-      setExecutions(prev => new Map(prev).set(workflowId, updatedExecution));
+      setExecutions((prev) => new Map(prev).set(workflowId, execution));
 
-      const updatedWorkflows = workflows.map(w =>
-        w.id === workflowId
-          ? { ...w, executionCount: w.executionCount + 1, lastExecuted: new Date() }
-          : w
-      );
-      setWorkflows(updatedWorkflows);
-    } catch (error) {
-      const failedExecution: WorkflowExecution = {
-        ...execution,
-        status: 'failed',
-        endTime: new Date(),
-        logs: [
-          {
-            timestamp: new Date(),
-            nodeId: workflow.nodes[0].id,
-            nodeName: workflow.nodes[0].name,
-            status: 'error',
-            message: error instanceof Error ? error.message : '执行失败'
-          }
-        ]
-      };
+      try {
+        await onWorkflowExecute?.(workflowId);
 
-      setExecutions(prev => new Map(prev).set(workflowId, failedExecution));
-    }
-  }, [workflows, onWorkflowExecute]);
+        const updatedExecution: WorkflowExecution = {
+          ...execution,
+          status: 'completed',
+          endTime: new Date(),
+          logs: [
+            {
+              timestamp: new Date(),
+              nodeId: workflow.nodes[0].id,
+              nodeName: workflow.nodes[0].name,
+              status: 'success',
+              message: '工作流执行完成',
+            },
+          ],
+        };
+
+        setExecutions((prev) => new Map(prev).set(workflowId, updatedExecution));
+
+        const updatedWorkflows = workflows.map((w) =>
+          w.id === workflowId
+            ? { ...w, executionCount: w.executionCount + 1, lastExecuted: new Date() }
+            : w
+        );
+        setWorkflows(updatedWorkflows);
+      } catch (error) {
+        const failedExecution: WorkflowExecution = {
+          ...execution,
+          status: 'failed',
+          endTime: new Date(),
+          logs: [
+            {
+              timestamp: new Date(),
+              nodeId: workflow.nodes[0].id,
+              nodeName: workflow.nodes[0].name,
+              status: 'error',
+              message: error instanceof Error ? error.message : '执行失败',
+            },
+          ],
+        };
+
+        setExecutions((prev) => new Map(prev).set(workflowId, failedExecution));
+      }
+    },
+    [workflows, onWorkflowExecute]
+  );
 
   const handleWorkflowCreate = useCallback(() => {
     const newWorkflow: Partial<Workflow> = {
@@ -323,52 +326,59 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
           type: 'start',
           name: '开始',
           config: {},
-          position: { x: 100, y: 50 }
+          position: { x: 100, y: 50 },
         },
         {
           id: 'node-2',
           type: 'end',
           name: '结束',
           config: {},
-          position: { x: 100, y: 150 }
-        }
+          position: { x: 100, y: 150 },
+        },
       ],
-      connections: [
-        { id: 'conn-1', from: 'node-1', to: 'node-2' }
-      ],
+      connections: [{ id: 'conn-1', from: 'node-1', to: 'node-2' }],
       createdAt: new Date(),
       updatedAt: new Date(),
-      executionCount: 0
+      executionCount: 0,
     };
 
     onWorkflowCreate?.(newWorkflow);
   }, [onWorkflowCreate]);
 
-  const handleWorkflowDelete = useCallback((workflowId: string) => {
-    const updatedWorkflows = workflows.filter(w => w.id !== workflowId);
-    setWorkflows(updatedWorkflows);
-    onWorkflowDelete?.(workflowId);
-  }, [workflows, onWorkflowDelete]);
+  const handleWorkflowDelete = useCallback(
+    (workflowId: string) => {
+      const updatedWorkflows = workflows.filter((w) => w.id !== workflowId);
+      setWorkflows(updatedWorkflows);
+      onWorkflowDelete?.(workflowId);
+    },
+    [workflows, onWorkflowDelete]
+  );
 
-  const handleWorkflowDuplicate = useCallback((workflowId: string) => {
-    const workflow = workflows.find(w => w.id === workflowId);
-    if (!workflow) return;
+  const handleWorkflowDuplicate = useCallback(
+    (workflowId: string) => {
+      const workflow = workflows.find((w) => w.id === workflowId);
+      if (!workflow) return;
 
-    const duplicated: Workflow = {
-      ...workflow,
-      id: `wf-${Date.now()}`,
-      name: `${workflow.name} (副本)`,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      executionCount: 0,
-      lastExecuted: undefined
-    };
+      const duplicated: Workflow = {
+        ...workflow,
+        id: `wf-${Date.now()}`,
+        name: `${workflow.name} (副本)`,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        executionCount: 0,
+        lastExecuted: undefined,
+      };
 
-    setWorkflows(prev => [...prev, duplicated]);
-  }, [workflows]);
+      setWorkflows((prev) => [...prev, duplicated]);
+    },
+    [workflows]
+  );
 
-  const activeWorkflows = useMemo(() => workflows.filter(w => w.status === 'active'), [workflows]);
-  const draftWorkflows = useMemo(() => workflows.filter(w => w.status === 'draft'), [workflows]);
+  const activeWorkflows = useMemo(
+    () => workflows.filter((w) => w.status === 'active'),
+    [workflows]
+  );
+  const draftWorkflows = useMemo(() => workflows.filter((w) => w.status === 'draft'), [workflows]);
 
   if (loading) {
     return (
@@ -391,7 +401,9 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
             <button
               onClick={() => setViewMode('list')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                viewMode === 'list' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                viewMode === 'list'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
               工作流列表
@@ -399,7 +411,9 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
             <button
               onClick={() => setViewMode('templates')}
               className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                viewMode === 'templates' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                viewMode === 'templates'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
               模板库
@@ -426,7 +440,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
                   运行中的工作流 ({activeWorkflows.length})
                 </h4>
                 <div className="space-y-3">
-                  {activeWorkflows.map(workflow => (
+                  {activeWorkflows.map((workflow) => (
                     <WorkflowCard
                       key={workflow.id}
                       workflow={workflow}
@@ -447,7 +461,7 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
                   草稿工作流 ({draftWorkflows.length})
                 </h4>
                 <div className="space-y-3">
-                  {draftWorkflows.map(workflow => (
+                  {draftWorkflows.map((workflow) => (
                     <WorkflowCard
                       key={workflow.id}
                       workflow={workflow}
@@ -519,106 +533,113 @@ export const WorkflowManager: React.FC<WorkflowManagerProps> = ({
 
 WorkflowManager.displayName = 'WorkflowManager';
 
-const WorkflowCard: React.FC<WorkflowCardProps> = React.memo(({ workflow, onExecute, onEdit, onDelete, onDuplicate }) => {
-  const execution = useMemo(() => {
-    const statusColors = {
-      draft: 'bg-gray-100 text-gray-700',
-      active: 'bg-green-100 text-green-700',
-      paused: 'bg-yellow-100 text-yellow-700',
-      completed: 'bg-blue-100 text-blue-700',
-      error: 'bg-red-100 text-red-700'
-    };
+const WorkflowCard: React.FC<WorkflowCardProps> = React.memo(
+  ({ workflow, onExecute, onEdit, onDelete, onDuplicate }) => {
+    const execution = useMemo(() => {
+      const statusColors = {
+        draft: 'bg-gray-100 text-gray-700',
+        active: 'bg-green-100 text-green-700',
+        paused: 'bg-yellow-100 text-yellow-700',
+        completed: 'bg-blue-100 text-blue-700',
+        error: 'bg-red-100 text-red-700',
+      };
 
-    const statusLabels = {
-      draft: '草稿',
-      active: '运行中',
-      paused: '已暂停',
-      completed: '已完成',
-      error: '错误'
-    };
+      const statusLabels = {
+        draft: '草稿',
+        active: '运行中',
+        paused: '已暂停',
+        completed: '已完成',
+        error: '错误',
+      };
 
-    return {
-      color: statusColors[workflow.status],
-      label: statusLabels[workflow.status]
-    };
-  }, [workflow.status]);
+      return {
+        color: statusColors[workflow.status],
+        label: statusLabels[workflow.status],
+      };
+    }, [workflow.status]);
 
-  return (
-    <div className="p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-md transition-all">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <h5 className="font-semibold text-gray-900 mb-1">{workflow.name}</h5>
-          <p className="text-sm text-gray-600 line-clamp-2">{workflow.description}</p>
-        </div>
-        <span className={`text-xs px-2 py-1 rounded-full ${execution.color}`}>
-          {execution.label}
-        </span>
-      </div>
-
-      <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-1">
-            <Play className="w-3 h-3" />
-            <span>{workflow.executionCount} 次执行</span>
+    return (
+      <div className="p-4 bg-white rounded-lg border border-gray-200 hover:border-indigo-300 hover:shadow-md transition-all">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <h5 className="font-semibold text-gray-900 mb-1">{workflow.name}</h5>
+            <p className="text-sm text-gray-600 line-clamp-2">{workflow.description}</p>
           </div>
-          {workflow.lastExecuted && (
-            <div className="flex items-center space-x-1">
-              <Clock className="w-3 h-3" />
-              <span>{formatRelativeTime(workflow.lastExecuted)}</span>
-            </div>
-          )}
+          <span className={`text-xs px-2 py-1 rounded-full ${execution.color}`}>
+            {execution.label}
+          </span>
         </div>
-        <div className="flex items-center space-x-1">
-          <span>{workflow.nodes.length} 节点</span>
-          <ChevronRight className="w-3 h-3" />
-          <span>{workflow.connections.length} 连接</span>
-        </div>
-      </div>
 
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={() => onExecute(workflow.id)}
-          className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
-        >
-          <Play className="w-4 h-4" />
-          <span>执行</span>
-        </button>
-        <button
-          onClick={() => onEdit(workflow.id)}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          title="编辑"
-        >
-          <Edit className="w-4 h-4 text-gray-600" />
-        </button>
-        <button
-          onClick={() => onDuplicate(workflow.id)}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          title="复制"
-        >
-          <Copy className="w-4 h-4 text-gray-600" />
-        </button>
-        <button
-          onClick={() => onDelete(workflow.id)}
-          className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-          title="删除"
-        >
-          <Trash2 className="w-4 h-4 text-red-600" />
-        </button>
+        <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <Play className="w-3 h-3" />
+              <span>{workflow.executionCount} 次执行</span>
+            </div>
+            {workflow.lastExecuted && (
+              <div className="flex items-center space-x-1">
+                <Clock className="w-3 h-3" />
+                <span>{formatRelativeTime(workflow.lastExecuted)}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center space-x-1">
+            <span>{workflow.nodes.length} 节点</span>
+            <ChevronRight className="w-3 h-3" />
+            <span>{workflow.connections.length} 连接</span>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => onExecute(workflow.id)}
+            className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            <Play className="w-4 h-4" />
+            <span>执行</span>
+          </button>
+          <button
+            onClick={() => onEdit(workflow.id)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title="编辑"
+          >
+            <Edit className="w-4 h-4 text-gray-600" />
+          </button>
+          <button
+            onClick={() => onDuplicate(workflow.id)}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            title="复制"
+          >
+            <Copy className="w-4 h-4 text-gray-600" />
+          </button>
+          <button
+            onClick={() => onDelete(workflow.id)}
+            className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+            title="删除"
+          >
+            <Trash2 className="w-4 h-4 text-red-600" />
+          </button>
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 WorkflowCard.displayName = 'WorkflowCard';
 
-const WorkflowTemplate: React.FC<WorkflowTemplateProps> = React.memo(({ name, description, icon, category, onUse }) => (
-  <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border border-indigo-100 hover:shadow-md transition-all cursor-pointer" onClick={onUse}>
-    <div className="text-3xl mb-2">{icon}</div>
-    <h5 className="font-semibold text-gray-900 mb-1">{name}</h5>
-    <p className="text-xs text-gray-600 mb-2">{description}</p>
-    <span className="text-xs bg-white/60 px-2 py-1 rounded-full text-indigo-700">{category}</span>
-  </div>
-));
+const WorkflowTemplate: React.FC<WorkflowTemplateProps> = React.memo(
+  ({ name, description, icon, category, onUse }) => (
+    <div
+      className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg border border-indigo-100 hover:shadow-md transition-all cursor-pointer"
+      onClick={onUse}
+    >
+      <div className="text-3xl mb-2">{icon}</div>
+      <h5 className="font-semibold text-gray-900 mb-1">{name}</h5>
+      <p className="text-xs text-gray-600 mb-2">{description}</p>
+      <span className="text-xs bg-white/60 px-2 py-1 rounded-full text-indigo-700">{category}</span>
+    </div>
+  )
+);
 
 WorkflowTemplate.displayName = 'WorkflowTemplate';
 

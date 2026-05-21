@@ -33,10 +33,10 @@ export class SmartFormSystem extends EventEmitter {
         { id: 'contact_person', type: 'text', required: true, label: '联系人' },
         { id: 'phone', type: 'tel', required: true, label: '联系电话' },
         { id: 'email', type: 'email', required: true, label: '邮箱地址' },
-        { id: 'requirements', type: 'textarea', required: false, label: '具体需求' }
+        { id: 'requirements', type: 'textarea', required: false, label: '具体需求' },
       ],
       aiFeatures: ['auto-fill', 'validation', 'personalization'],
-      workflow: 'customer-acquisition'
+      workflow: 'customer-acquisition',
     });
 
     this.formTemplates.set('hr-recruitment', {
@@ -50,10 +50,10 @@ export class SmartFormSystem extends EventEmitter {
         { id: 'skills', type: 'tags', required: true, label: '技能标签' },
         { id: 'education', type: 'select', required: true, label: '学历' },
         { id: 'resume', type: 'file', required: true, label: '简历上传' },
-        { id: 'expected_salary', type: 'number', required: false, label: '期望薪资' }
+        { id: 'expected_salary', type: 'number', required: false, label: '期望薪资' },
       ],
       aiFeatures: ['skill-matching', 'candidate-screening', 'interview-scheduling'],
-      workflow: 'recruitment-process'
+      workflow: 'recruitment-process',
     });
 
     this.formTemplates.set('feedback-survey', {
@@ -64,10 +64,10 @@ export class SmartFormSystem extends EventEmitter {
         { id: 'satisfaction', type: 'rating', required: true, label: '满意度评分' },
         { id: 'feature_usage', type: 'checkbox', required: true, label: '使用功能' },
         { id: 'improvements', type: 'textarea', required: false, label: '改进建议' },
-        { id: 'recommendation', type: 'nps', required: true, label: '推荐意愿' }
+        { id: 'recommendation', type: 'nps', required: true, label: '推荐意愿' },
       ],
       aiFeatures: ['sentiment-analysis', 'priority-detection'],
-      workflow: 'feedback-processing'
+      workflow: 'feedback-processing',
     });
   }
 
@@ -92,12 +92,11 @@ export class SmartFormSystem extends EventEmitter {
         completionRate: 0,
         dataQuality: 0,
         insights: {},
-        efficiency: this.calculateFormEfficiency(form)
+        efficiency: this.calculateFormEfficiency(form),
       };
 
       this.emit('form-created', result);
       return result;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -116,8 +115,8 @@ export class SmartFormSystem extends EventEmitter {
         originalConfig: config,
         targetAudience: targetAudience,
         historicalData: historicalData,
-        objectives: objectives
-      }
+        objectives: objectives,
+      },
     });
 
     return {
@@ -127,12 +126,15 @@ export class SmartFormSystem extends EventEmitter {
       personalization: optimization.personalization,
       validation: optimization.validation,
       adaptiveFields: optimization.adaptiveFields,
-      intelligentDefaults: optimization.intelligentDefaults
+      intelligentDefaults: optimization.intelligentDefaults,
     };
   }
 
   // 创建动态表单
-  private async createDynamicForm(config: OptimizedFormConfig, formId: string): Promise<ActiveForm> {
+  private async createDynamicForm(
+    config: OptimizedFormConfig,
+    formId: string
+  ): Promise<ActiveForm> {
     // AI生成个性化字段
     const personalizedFields = await this.generatePersonalizedFields(config);
 
@@ -160,8 +162,8 @@ export class SmartFormSystem extends EventEmitter {
         completions: 0,
         abandonment: 0,
         averageTime: 0,
-        fieldErrors: 0
-      }
+        fieldErrors: 0,
+      },
     };
 
     this.activeForms.set(formId, form);
@@ -171,19 +173,19 @@ export class SmartFormSystem extends EventEmitter {
   // 生成个性化字段
   private async generatePersonalizedFields(config: OptimizedFormConfig): Promise<FormField[]> {
     const fields = config.fields || [];
-    const personalization = config.personalization || {} as any;
+    const personalization = config.personalization || ({} as any);
 
     for (const field of fields) {
       // AI优化字段配置
-      const fieldOptimization = await this.aiEngine.optimize({
+      const fieldOptimization = (await this.aiEngine.optimize({
         type: 'field-optimization',
         field: field,
         personalization: personalization,
         context: {
           formType: config.type,
-          targetAudience: personalization.targetAudience
-        }
-      }) as any;
+          targetAudience: personalization.targetAudience,
+        },
+      })) as any;
 
       // 应用优化
       if (fieldOptimization.placeholder !== undefined) {
@@ -215,14 +217,14 @@ export class SmartFormSystem extends EventEmitter {
       fieldValidation: {},
       crossFieldValidation: [],
       businessRules: [],
-      realTimeValidation: true
+      realTimeValidation: true,
     };
 
     for (const field of fields) {
       // AI生成字段特定验证
       const fieldRules = await this.aiEngine.generate({
         type: 'field-validation-rules',
-        field: field
+        field: field,
       });
 
       rules.fieldValidation[field.id] = {
@@ -230,14 +232,14 @@ export class SmartFormSystem extends EventEmitter {
         pattern: fieldRules.pattern,
         minLength: fieldRules.minLength,
         maxLength: fieldRules.maxLength,
-        custom: fieldRules.custom
+        custom: fieldRules.custom,
       };
     }
 
     // AI生成跨字段验证
     const crossFieldRules = await this.aiEngine.generate({
       type: 'cross-field-validation',
-      fields: fields
+      fields: fields,
     });
 
     rules.crossFieldValidation = crossFieldRules.rules;
@@ -246,7 +248,10 @@ export class SmartFormSystem extends EventEmitter {
   }
 
   // 处理表单提交
-  async handleFormSubmission(formId: string, submission: FormSubmission): Promise<SubmissionResult> {
+  async handleFormSubmission(
+    formId: string,
+    submission: FormSubmission
+  ): Promise<SubmissionResult> {
     try {
       const form = this.activeForms.get(formId);
       if (!form) {
@@ -261,7 +266,7 @@ export class SmartFormSystem extends EventEmitter {
           success: false,
           errors: enhancedValidation.errors,
           warnings: enhancedValidation.warnings,
-          suggestions: enhancedValidation.suggestions
+          suggestions: enhancedValidation.suggestions,
         };
       }
 
@@ -289,12 +294,11 @@ export class SmartFormSystem extends EventEmitter {
         data: enrichedData,
         qualityScore: qualityScore,
         nextSteps: await this.generateNextSteps(form, enrichedData),
-        recommendations: await this.generateRecommendations(form, enrichedData)
+        recommendations: await this.generateRecommendations(form, enrichedData),
       };
 
       this.emit('form-submitted', { formId, submissionId, data: enrichedData });
       return result;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -302,17 +306,20 @@ export class SmartFormSystem extends EventEmitter {
   }
 
   // 执行增强验证
-  private async performEnhancedValidation(form: ActiveForm, submission: FormSubmission): Promise<EnhancedValidation> {
+  private async performEnhancedValidation(
+    form: ActiveForm,
+    submission: FormSubmission
+  ): Promise<EnhancedValidation> {
     const validation = {
       valid: true,
       errors: [] as string[],
       warnings: [] as string[],
-      suggestions: [] as string[]
+      suggestions: [] as string[],
     };
 
     // AI语义验证
     for (const [fieldId, value] of Object.entries(submission.data)) {
-      const field = form.fields.find(f => f.id === fieldId);
+      const field = form.fields.find((f) => f.id === fieldId);
       if (field) {
         const semanticValidation = await this.aiEngine.analyze({
           type: 'semantic-validation',
@@ -320,8 +327,8 @@ export class SmartFormSystem extends EventEmitter {
           value: value,
           context: {
             formType: form.type,
-            otherFields: submission.data
-          }
+            otherFields: submission.data,
+          },
         });
 
         if (!semanticValidation.valid) {
@@ -339,7 +346,7 @@ export class SmartFormSystem extends EventEmitter {
     const businessValidation = await this.aiEngine.validate({
       type: 'business-logic-validation',
       formData: submission.data,
-      formType: form.type
+      formType: form.type,
     });
 
     if (!businessValidation.valid) {
@@ -359,13 +366,13 @@ export class SmartFormSystem extends EventEmitter {
     const cleaned: any = {};
 
     for (const [fieldId, value] of Object.entries(data)) {
-      const field = form.fields.find(f => f.id === fieldId);
+      const field = form.fields.find((f) => f.id === fieldId);
       if (field) {
         // AI数据清洗
         const cleaning = await this.aiEngine.process({
           type: 'data-cleaning',
           field: field,
-          value: value
+          value: value,
         });
 
         cleaned[fieldId] = cleaning.cleanedValue;
@@ -379,7 +386,7 @@ export class SmartFormSystem extends EventEmitter {
   private async assessDataQuality(data: any): Promise<number> {
     const qualityAnalysis = await this.aiEngine.analyze({
       type: 'data-quality-assessment',
-      data: data
+      data: data,
     });
 
     return qualityAnalysis.qualityScore;
@@ -391,7 +398,7 @@ export class SmartFormSystem extends EventEmitter {
     const enrichment = await this.aiEngine.enrich({
       type: 'form-data-enrichment',
       data: data,
-      formType: form.type
+      formType: form.type,
     });
 
     return {
@@ -399,8 +406,8 @@ export class SmartFormSystem extends EventEmitter {
       ...enrichment.enrichedData,
       metadata: {
         enrichmentTimestamp: new Date(),
-        enrichmentSource: 'ai-system'
-      }
+        enrichmentSource: 'ai-system',
+      },
     };
   }
 
@@ -413,7 +420,7 @@ export class SmartFormSystem extends EventEmitter {
           formData: data,
           formId: form.id,
           submissionId: submissionId,
-          trigger: 'form-submission'
+          trigger: 'form-submission',
         });
       }
     }
@@ -422,7 +429,7 @@ export class SmartFormSystem extends EventEmitter {
     const workflowSuggestions = await this.aiEngine.recommend({
       type: 'workflow-actions',
       formData: data,
-      formType: form.type
+      formType: form.type,
     });
 
     // 根据建议执行自动化操作
@@ -459,8 +466,8 @@ export class SmartFormSystem extends EventEmitter {
       formData: data,
       formType: form.type,
       context: {
-        businessObjectives: form.workflow?.objectives || []
-      }
+        businessObjectives: form.workflow?.objectives || [],
+      },
     });
 
     return nextSteps.steps;
@@ -471,7 +478,7 @@ export class SmartFormSystem extends EventEmitter {
     const recommendations = await this.aiEngine.recommend({
       type: 'form-recommendations',
       formData: data,
-      formType: form.type
+      formType: form.type,
     });
 
     return recommendations.recommendations;
@@ -490,7 +497,7 @@ export class SmartFormSystem extends EventEmitter {
       form: form,
       submissions: submissions,
       analytics: form.analytics,
-      insights: await this.generateFormInsights(form, submissions)
+      insights: await this.generateFormInsights(form, submissions),
     };
   }
 
@@ -499,7 +506,7 @@ export class SmartFormSystem extends EventEmitter {
     const insights = await this.aiEngine.analyze({
       type: 'form-insights',
       form: form,
-      submissions: submissions
+      submissions: submissions,
     });
 
     return insights;
@@ -524,7 +531,7 @@ export class SmartFormSystem extends EventEmitter {
     const timeScore = Math.max(0, (300 - averageTime) / 300); // 5分钟为满分
     const errorScore = Math.max(0, (1 - errorRate) * 100);
 
-    return (completionRate * 40 + timeScore * 30 + errorScore * 30);
+    return completionRate * 40 + timeScore * 30 + errorScore * 30;
   }
 
   // 辅助方法
@@ -532,7 +539,7 @@ export class SmartFormSystem extends EventEmitter {
     return {
       segments: ['new_visitors', 'returning_customers'],
       preferences: {},
-      behavior: {}
+      behavior: {},
     };
   }
 
@@ -549,7 +556,7 @@ export class SmartFormSystem extends EventEmitter {
       id: config.workflow,
       name: 'Default Workflow',
       steps: [],
-      triggers: ['form-submission']
+      triggers: ['form-submission'],
     };
   }
 
@@ -561,7 +568,7 @@ export class SmartFormSystem extends EventEmitter {
     const submission = {
       formId: formId,
       data: data,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
     return await this.dataService.store('form_submission', submission);

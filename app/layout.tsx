@@ -8,26 +8,28 @@
  * @copyright Copyright (c) 2025 YYC³
  * @license MIT
  */
-import type { Metadata, Viewport } from "next";
-import type { ReactNode } from "react";
-import dynamic from "next/dynamic";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import "./mobile-styles.css";
+import type { Metadata, Viewport } from 'next';
+import type { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import './mobile-styles.css';
 
-const BottomNav = dynamic(() => import("@/components/bottom-nav"), { ssr: false });
-const AIAssistantProvider = dynamic(() => import("@/app/providers/AIAssistantProvider"), { ssr: false });
-const PerformanceMonitor = dynamic(() => import("@/components/PerformanceMonitor"), { ssr: false });
+const BottomNav = dynamic(() => import('@/components/bottom-nav'), { ssr: false });
+const AIAssistantProvider = dynamic(() => import('@/app/providers/AIAssistantProvider'), {
+  ssr: false,
+});
+const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), { ssr: false });
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "YanYu Smart Cloud³ Learning Platform - 言枢象限·语启未来",
-  description: "万象归元于云枢，深栈智启新纪元 - 专业的AI应用开发学习平台",
-  keywords: "AI学习, 人工智能, 云计算, 深度学习, YanYu Smart Cloud",
-  authors: [{ name: "YanYu Smart Cloud³ Team" }],
+  title: 'YanYu Smart Cloud³ Learning Platform - 言枢象限·语启未来',
+  description: '万象归元于云枢，深栈智启新纪元 - 专业的AI应用开发学习平台',
+  keywords: 'AI学习, 人工智能, 云计算, 深度学习, YanYu Smart Cloud',
+  authors: [{ name: 'YanYu Smart Cloud³ Team' }],
   generator: 'v0.app',
   manifest: '/manifest.json',
   icons: {
@@ -36,34 +38,32 @@ export const metadata: Metadata = {
       { url: '/icons/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/icons/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
     ],
-    apple: [
-      { url: '/yyc3-pwa-icon.png' },
-    ],
+    apple: [{ url: '/yyc3-pwa-icon.png' }],
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "YanYu Smart Cloud³",
+    statusBarStyle: 'default',
+    title: 'YanYu Smart Cloud³',
   },
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  viewportFit: "cover",
-  themeColor: "#3b82f6",
+  viewportFit: 'cover',
+  themeColor: '#3b82f6',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="zh-CN" className="safe-area-inset" suppressHydrationWarning>
       <body className={`${inter.className} pb-20 md:pb-0`} suppressHydrationWarning>
-        <ThemeProvider 
-          attribute="class" 
-          defaultTheme="light" 
-          enableSystem 
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
           disableTransitionOnChange
         >
           <AIAssistantProvider>

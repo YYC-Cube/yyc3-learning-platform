@@ -132,8 +132,8 @@ describe('API_ROUTES', () => {
   });
 
   it('所有路由都应该以/api开头', () => {
-    const allRoutes = Object.values(API_ROUTES).flatMap(routes => Object.values(routes));
-    allRoutes.forEach(route => {
+    const allRoutes = Object.values(API_ROUTES).flatMap((routes) => Object.values(routes));
+    allRoutes.forEach((route) => {
       expect(route).toMatch(/^\/api\//);
     });
   });
@@ -157,13 +157,13 @@ describe('STORAGE_KEYS', () => {
   });
 
   it('所有键名应该使用下划线命名', () => {
-    Object.values(STORAGE_KEYS).forEach(key => {
+    Object.values(STORAGE_KEYS).forEach((key) => {
       expect(key).toMatch(/^[a-z_]+$/);
     });
   });
 
   it('所有键名应该具有描述性', () => {
-    Object.values(STORAGE_KEYS).forEach(key => {
+    Object.values(STORAGE_KEYS).forEach((key) => {
       expect(key.length).toBeGreaterThan(5);
       expect(key).toContain('_');
     });
@@ -196,7 +196,7 @@ describe('PAGINATION', () => {
   });
 
   it('所有页大小选项应该在合理范围内', () => {
-    PAGINATION.pageSizeOptions.forEach(size => {
+    PAGINATION.pageSizeOptions.forEach((size) => {
       expect(size).toBeGreaterThanOrEqual(1);
       expect(size).toBeLessThanOrEqual(PAGINATION.maxPageSize);
     });
@@ -214,7 +214,7 @@ describe('COURSE_LEVELS', () => {
   });
 
   it('每个级别应该有value和label属性', () => {
-    COURSE_LEVELS.forEach(level => {
+    COURSE_LEVELS.forEach((level) => {
       expect(level).toHaveProperty('value');
       expect(level).toHaveProperty('label');
       expect(typeof level.value).toBe('string');
@@ -223,31 +223,31 @@ describe('COURSE_LEVELS', () => {
   });
 
   it('应该包含初级级别', () => {
-    const beginner = COURSE_LEVELS.find(l => l.value === 'beginner');
+    const beginner = COURSE_LEVELS.find((l) => l.value === 'beginner');
     expect(beginner).toBeDefined();
     expect(beginner?.label).toBe('初级');
   });
 
   it('应该包含中级级别', () => {
-    const intermediate = COURSE_LEVELS.find(l => l.value === 'intermediate');
+    const intermediate = COURSE_LEVELS.find((l) => l.value === 'intermediate');
     expect(intermediate).toBeDefined();
     expect(intermediate?.label).toBe('中级');
   });
 
   it('应该包含高级级别', () => {
-    const advanced = COURSE_LEVELS.find(l => l.value === 'advanced');
+    const advanced = COURSE_LEVELS.find((l) => l.value === 'advanced');
     expect(advanced).toBeDefined();
     expect(advanced?.label).toBe('高级');
   });
 
   it('value值应该是英文', () => {
-    COURSE_LEVELS.forEach(level => {
+    COURSE_LEVELS.forEach((level) => {
       expect(level.value).toMatch(/^[a-z]+$/);
     });
   });
 
   it('label值应该是中文', () => {
-    COURSE_LEVELS.forEach(level => {
+    COURSE_LEVELS.forEach((level) => {
       expect(level.label).toMatch(/^[\u4e00-\u9fa5]+$/);
     });
   });
@@ -259,7 +259,7 @@ describe('COURSE_CATEGORIES', () => {
   });
 
   it('每个分类应该有value和label属性', () => {
-    COURSE_CATEGORIES.forEach(category => {
+    COURSE_CATEGORIES.forEach((category) => {
       expect(category).toHaveProperty('value');
       expect(category).toHaveProperty('label');
       expect(typeof category.value).toBe('string');
@@ -268,55 +268,55 @@ describe('COURSE_CATEGORIES', () => {
   });
 
   it('应该包含AI基础分类', () => {
-    const aiBasics = COURSE_CATEGORIES.find(c => c.value === 'ai-basics');
+    const aiBasics = COURSE_CATEGORIES.find((c) => c.value === 'ai-basics');
     expect(aiBasics).toBeDefined();
     expect(aiBasics?.label).toBe('AI基础');
   });
 
   it('应该包含机器学习分类', () => {
-    const ml = COURSE_CATEGORIES.find(c => c.value === 'machine-learning');
+    const ml = COURSE_CATEGORIES.find((c) => c.value === 'machine-learning');
     expect(ml).toBeDefined();
     expect(ml?.label).toBe('机器学习');
   });
 
   it('应该包含深度学习分类', () => {
-    const dl = COURSE_CATEGORIES.find(c => c.value === 'deep-learning');
+    const dl = COURSE_CATEGORIES.find((c) => c.value === 'deep-learning');
     expect(dl).toBeDefined();
     expect(dl?.label).toBe('深度学习');
   });
 
   it('应该包含自然语言处理分类', () => {
-    const nlp = COURSE_CATEGORIES.find(c => c.value === 'nlp');
+    const nlp = COURSE_CATEGORIES.find((c) => c.value === 'nlp');
     expect(nlp).toBeDefined();
     expect(nlp?.label).toBe('自然语言处理');
   });
 
   it('应该包含计算机视觉分类', () => {
-    const cv = COURSE_CATEGORIES.find(c => c.value === 'computer-vision');
+    const cv = COURSE_CATEGORIES.find((c) => c.value === 'computer-vision');
     expect(cv).toBeDefined();
     expect(cv?.label).toBe('计算机视觉');
   });
 
   it('应该包含Prompt工程分类', () => {
-    const pe = COURSE_CATEGORIES.find(c => c.value === 'prompt-engineering');
+    const pe = COURSE_CATEGORIES.find((c) => c.value === 'prompt-engineering');
     expect(pe).toBeDefined();
     expect(pe?.label).toBe('Prompt工程');
   });
 
   it('应该包含AI应用分类', () => {
-    const aiApp = COURSE_CATEGORIES.find(c => c.value === 'ai-applications');
+    const aiApp = COURSE_CATEGORIES.find((c) => c.value === 'ai-applications');
     expect(aiApp).toBeDefined();
     expect(aiApp?.label).toBe('AI应用');
   });
 
   it('所有value应该是kebab-case格式', () => {
-    COURSE_CATEGORIES.forEach(category => {
+    COURSE_CATEGORIES.forEach((category) => {
       expect(category.value).toMatch(/^[a-z-]+$/);
     });
   });
 
   it('所有label应该是中文或允许英文', () => {
-    COURSE_CATEGORIES.forEach(category => {
+    COURSE_CATEGORIES.forEach((category) => {
       // 允许中文、大写英文（如Prompt）和特殊字符（如·）
       expect(category.label).toMatch(/^[\u4e00-\u9fa5A-Za-z·]+$/);
     });
@@ -329,7 +329,7 @@ describe('EXAM_DIFFICULTIES', () => {
   });
 
   it('每个难度应该有value和label属性', () => {
-    EXAM_DIFFICULTIES.forEach(difficulty => {
+    EXAM_DIFFICULTIES.forEach((difficulty) => {
       expect(difficulty).toHaveProperty('value');
       expect(difficulty).toHaveProperty('label');
       expect(typeof difficulty.value).toBe('string');
@@ -338,19 +338,19 @@ describe('EXAM_DIFFICULTIES', () => {
   });
 
   it('应该包含简单难度', () => {
-    const easy = EXAM_DIFFICULTIES.find(d => d.value === 'easy');
+    const easy = EXAM_DIFFICULTIES.find((d) => d.value === 'easy');
     expect(easy).toBeDefined();
     expect(easy?.label).toBe('简单');
   });
 
   it('应该包含中等难度', () => {
-    const medium = EXAM_DIFFICULTIES.find(d => d.value === 'medium');
+    const medium = EXAM_DIFFICULTIES.find((d) => d.value === 'medium');
     expect(medium).toBeDefined();
     expect(medium?.label).toBe('中等');
   });
 
   it('应该包含困难难度', () => {
-    const hard = EXAM_DIFFICULTIES.find(d => d.value === 'hard');
+    const hard = EXAM_DIFFICULTIES.find((d) => d.value === 'hard');
     expect(hard).toBeDefined();
     expect(hard?.label).toBe('困难');
   });
@@ -370,7 +370,7 @@ describe('USER_ROLES', () => {
   });
 
   it('所有角色值应该是小写', () => {
-    Object.values(USER_ROLES).forEach(role => {
+    Object.values(USER_ROLES).forEach((role) => {
       expect(role).toMatch(/^[a-z]+$/);
     });
   });
@@ -394,7 +394,7 @@ describe('ACHIEVEMENT_RARITIES', () => {
   });
 
   it('所有稀有度值应该是小写', () => {
-    Object.values(ACHIEVEMENT_RARITIES).forEach(rarity => {
+    Object.values(ACHIEVEMENT_RARITIES).forEach((rarity) => {
       expect(rarity).toMatch(/^[a-z]+$/);
     });
   });
@@ -418,7 +418,7 @@ describe('NOTIFICATION_TYPES', () => {
   });
 
   it('所有类型值应该是小写', () => {
-    Object.values(NOTIFICATION_TYPES).forEach(type => {
+    Object.values(NOTIFICATION_TYPES).forEach((type) => {
       expect(type).toMatch(/^[a-z]+$/);
     });
   });
@@ -431,27 +431,17 @@ describe('VALIDATION_RULES', () => {
     });
 
     it('应该验证有效的邮箱地址', () => {
-      const validEmails = [
-        'test@example.com',
-        'user.name@example.com',
-        'user+tag@example.co.uk',
-      ];
+      const validEmails = ['test@example.com', 'user.name@example.com', 'user+tag@example.co.uk'];
 
-      validEmails.forEach(email => {
+      validEmails.forEach((email) => {
         expect(VALIDATION_RULES.email.pattern.test(email)).toBe(true);
       });
     });
 
     it('应该拒绝无效的邮箱地址', () => {
-      const invalidEmails = [
-        'invalid',
-        'invalid@',
-        '@example.com',
-        'user@',
-        'user @example.com',
-      ];
+      const invalidEmails = ['invalid', 'invalid@', '@example.com', 'user@', 'user @example.com'];
 
-      invalidEmails.forEach(email => {
+      invalidEmails.forEach((email) => {
         expect(VALIDATION_RULES.email.pattern.test(email)).toBe(false);
       });
     });
@@ -471,13 +461,9 @@ describe('VALIDATION_RULES', () => {
     });
 
     it('应该验证包含大小写字母和数字的密码', () => {
-      const validPasswords = [
-        'Password123',
-        'MyPass123',
-        'Test1234',
-      ];
+      const validPasswords = ['Password123', 'MyPass123', 'Test1234'];
 
-      validPasswords.forEach(password => {
+      validPasswords.forEach((password) => {
         expect(VALIDATION_RULES.password.pattern.test(password)).toBe(true);
       });
     });
@@ -490,7 +476,7 @@ describe('VALIDATION_RULES', () => {
         '12345678', // 无字母
       ];
 
-      invalidPasswords.forEach(password => {
+      invalidPasswords.forEach((password) => {
         expect(VALIDATION_RULES.password.pattern.test(password)).toBe(false);
       });
     });
@@ -520,14 +506,9 @@ describe('VALIDATION_RULES', () => {
     });
 
     it('应该验证有效的用户名', () => {
-      const validUsernames = [
-        'user123',
-        'test_user',
-        'User_123',
-        'abc',
-      ];
+      const validUsernames = ['user123', 'test_user', 'User_123', 'abc'];
 
-      validUsernames.forEach(username => {
+      validUsernames.forEach((username) => {
         expect(VALIDATION_RULES.username.pattern.test(username)).toBe(true);
       });
     });
@@ -540,7 +521,7 @@ describe('VALIDATION_RULES', () => {
         '用户名', // 包含中文字符
       ];
 
-      invalidUsernames.forEach(username => {
+      invalidUsernames.forEach((username) => {
         expect(VALIDATION_RULES.username.pattern.test(username)).toBe(false);
       });
     });
@@ -621,7 +602,7 @@ describe('实际使用场景', () => {
   });
 
   it('应该能够根据级别获取课程选项', () => {
-    const options = COURSE_LEVELS.map(level => ({
+    const options = COURSE_LEVELS.map((level) => ({
       value: level.value,
       label: level.label,
     }));
@@ -630,7 +611,7 @@ describe('实际使用场景', () => {
   });
 
   it('应该能够根据分类获取课程选项', () => {
-    const options = COURSE_CATEGORIES.map(cat => ({
+    const options = COURSE_CATEGORIES.map((cat) => ({
       value: cat.value,
       label: cat.label,
     }));

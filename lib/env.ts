@@ -14,71 +14,129 @@ dotenv.config();
 // 定义环境变量模式
 const envSchema = z.object({
   // 应用基本配置
-  NEXT_PUBLIC_APP_URL: z.string().url("NEXT_PUBLIC_APP_URL 必须是有效的URL").optional().default('http://localhost:3000'),
-  NEXT_PUBLIC_API_URL: z.string().url("NEXT_PUBLIC_API_URL 必须是有效的URL").optional().default('http://localhost:3000/api'),
-  
+  NEXT_PUBLIC_APP_URL: z
+    .string()
+    .url('NEXT_PUBLIC_APP_URL 必须是有效的URL')
+    .optional()
+    .default('http://localhost:3000'),
+  NEXT_PUBLIC_API_URL: z
+    .string()
+    .url('NEXT_PUBLIC_API_URL 必须是有效的URL')
+    .optional()
+    .default('http://localhost:3000/api'),
+
   // 数据库配置
-  DB_HOST: z.string().min(1, "DB_HOST 不能为空").optional().default('localhost'),
-  DB_PORT: z.string().regex(/^[0-9]+$/, "DB_PORT 必须是数字").optional().default('5432'),
-  DB_USER: z.string().min(1, "DB_USER 不能为空").optional().default('postgres'),
-  DB_PASS: z.string().min(1, "DB_PASS 不能为空").refine(
-    (val) => {
-      if (process.env.NODE_ENV === 'production') return val.length > 0 && val !== 'your_secure_password_here';
-      return true;
-    },
-    { message: "生产环境 DB_PASS 不能为空或使用默认密码" }
-  ).optional().default(''),
-  DB_NAME: z.string().min(1, "DB_NAME 不能为空").optional().default('ai_learning'),
-  DB_SSL: z.string().regex(/^(true|false)$/, "DB_SSL 必须是 true 或 false").optional().default('false'),
-  DB_CONNECTION_LIMIT: z.string().regex(/^[0-9]+$/, "DB_CONNECTION_LIMIT 必须是数字").optional().default('10'),
-  DB_IDLE_TIMEOUT: z.string().regex(/^[0-9]+$/, "DB_IDLE_TIMEOUT 必须是数字").optional().default('30000'),
-  DB_MAX_LIFETIME: z.string().regex(/^[0-9]+$/, "DB_MAX_LIFETIME 必须是数字").optional().default('600000'),
-  
+  DB_HOST: z.string().min(1, 'DB_HOST 不能为空').optional().default('localhost'),
+  DB_PORT: z
+    .string()
+    .regex(/^[0-9]+$/, 'DB_PORT 必须是数字')
+    .optional()
+    .default('5432'),
+  DB_USER: z.string().min(1, 'DB_USER 不能为空').optional().default('postgres'),
+  DB_PASS: z
+    .string()
+    .min(1, 'DB_PASS 不能为空')
+    .refine(
+      (val) => {
+        if (process.env.NODE_ENV === 'production')
+          return val.length > 0 && val !== 'your_secure_password_here';
+        return true;
+      },
+      { message: '生产环境 DB_PASS 不能为空或使用默认密码' }
+    )
+    .optional()
+    .default(''),
+  DB_NAME: z.string().min(1, 'DB_NAME 不能为空').optional().default('ai_learning'),
+  DB_SSL: z
+    .string()
+    .regex(/^(true|false)$/, 'DB_SSL 必须是 true 或 false')
+    .optional()
+    .default('false'),
+  DB_CONNECTION_LIMIT: z
+    .string()
+    .regex(/^[0-9]+$/, 'DB_CONNECTION_LIMIT 必须是数字')
+    .optional()
+    .default('10'),
+  DB_IDLE_TIMEOUT: z
+    .string()
+    .regex(/^[0-9]+$/, 'DB_IDLE_TIMEOUT 必须是数字')
+    .optional()
+    .default('30000'),
+  DB_MAX_LIFETIME: z
+    .string()
+    .regex(/^[0-9]+$/, 'DB_MAX_LIFETIME 必须是数字')
+    .optional()
+    .default('600000'),
+
   // 数据库连接字符串（可选，如果提供则验证格式）
-  DATABASE_URL: z.string().url("DATABASE_URL 必须是有效的数据库连接URL").optional(),
-  
+  DATABASE_URL: z.string().url('DATABASE_URL 必须是有效的数据库连接URL').optional(),
+
   // JWT配置
-  JWT_SECRET: z.string().min(32, "JWT_SECRET 至少需要32个字符").refine(
-    (val) => {
-      if (process.env.NODE_ENV === 'production') return val.length >= 32;
-      return true;
-    },
-    { message: "生产环境 JWT_SECRET 必须至少32个字符" }
-  ).optional().default(() => {
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('生产环境必须设置 JWT_SECRET 环境变量');
-    }
-    return 'dev-only-insecure-jwt-secret-do-not-use-in-production';
-  }),
-  JWT_EXPIRES_IN: z.string().regex(/^\d+[smhd]$/, "JWT_EXPIRES_IN 格式不正确，例如: 7d, 1h, 30m").optional().default('7d'),
-  
+  JWT_SECRET: z
+    .string()
+    .min(32, 'JWT_SECRET 至少需要32个字符')
+    .refine(
+      (val) => {
+        if (process.env.NODE_ENV === 'production') return val.length >= 32;
+        return true;
+      },
+      { message: '生产环境 JWT_SECRET 必须至少32个字符' }
+    )
+    .optional()
+    .default(() => {
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('生产环境必须设置 JWT_SECRET 环境变量');
+      }
+      return 'dev-only-insecure-jwt-secret-do-not-use-in-production';
+    }),
+  JWT_EXPIRES_IN: z
+    .string()
+    .regex(/^\d+[smhd]$/, 'JWT_EXPIRES_IN 格式不正确，例如: 7d, 1h, 30m')
+    .optional()
+    .default('7d'),
+
   // BCrypt配置
-  BCRYPT_ROUNDS: z.string().regex(/^[0-9]+$/, "BCRYPT_ROUNDS 必须是数字").optional().default('10'),
-  
+  BCRYPT_ROUNDS: z
+    .string()
+    .regex(/^[0-9]+$/, 'BCRYPT_ROUNDS 必须是数字')
+    .optional()
+    .default('10'),
+
   // 应用配置
-  NODE_ENV: z.enum(['development', 'production', 'test'], {
-    errorMap: () => ({ message: "NODE_ENV 必须是 development, production 或 test" })
-  }).optional().default('development'),
-  PORT: z.string().regex(/^[0-9]+$/, "PORT 必须是数字").default('3000'),
-  
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'], {
+      errorMap: () => ({ message: 'NODE_ENV 必须是 development, production 或 test' }),
+    })
+    .optional()
+    .default('development'),
+  PORT: z
+    .string()
+    .regex(/^[0-9]+$/, 'PORT 必须是数字')
+    .default('3000'),
+
   // 可选：Redis 配置
   REDIS_HOST: z.string().optional(),
-  REDIS_PORT: z.string().regex(/^[0-9]+$/, "REDIS_PORT 必须是数字").optional(),
+  REDIS_PORT: z
+    .string()
+    .regex(/^[0-9]+$/, 'REDIS_PORT 必须是数字')
+    .optional(),
   REDIS_PASSWORD: z.string().optional(),
-  
+
   // 可选：日志配置
-  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error'], {
-    errorMap: () => ({ message: "LOG_LEVEL 必须是 debug, info, warn 或 error" })
-  }).optional(),
+  LOG_LEVEL: z
+    .enum(['debug', 'info', 'warn', 'error'], {
+      errorMap: () => ({ message: 'LOG_LEVEL 必须是 debug, info, warn 或 error' }),
+    })
+    .optional(),
   LOG_FILE_PATH: z.string().optional(),
-  
+
   // 可选：监控配置
-  SENTRY_DSN: z.string().url("SENTRY_DSN 必须是有效的URL").optional(),
+  SENTRY_DSN: z.string().url('SENTRY_DSN 必须是有效的URL').optional(),
   SENTRY_ENVIRONMENT: z.string().optional(),
-  
+
   // 可选：第三方 API 密钥
-  OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY 不能为空").optional(),
-  GOOGLE_API_KEY: z.string().min(1, "GOOGLE_API_KEY 不能为空").optional(),
+  OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY 不能为空').optional(),
+  GOOGLE_API_KEY: z.string().min(1, 'GOOGLE_API_KEY 不能为空').optional(),
 });
 
 // 验证环境变量
@@ -87,16 +145,12 @@ function validateEnv(): z.infer<typeof envSchema> {
     return envSchema.parse(process.env);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map(err => ({
+      const errors = error.errors.map((err) => ({
         path: err.path.join('.'),
         message: err.message,
       }));
-      
-      throw new ValidationError(
-        '环境变量验证失败',
-        'ENV_VALIDATION_ERROR',
-        { errors }
-      );
+
+      throw new ValidationError('环境变量验证失败', 'ENV_VALIDATION_ERROR', { errors });
     }
     throw error;
   }
@@ -124,7 +178,7 @@ export function getDatabaseUrl(): string {
   if (env.DATABASE_URL) {
     return env.DATABASE_URL;
   }
-  
+
   const sslMode = DB_SSL ? '?sslmode=require' : '';
   return `postgresql://${env.DB_USER}:${env.DB_PASS}@${env.DB_HOST}:${DB_PORT}/${env.DB_NAME}${sslMode}`;
 }
@@ -140,12 +194,10 @@ export function validateRequiredEnvVars(): void {
   }
 
   if (requiredVars.length > 0) {
-    const missingVars = requiredVars.map(v => v.name).join('、');
-    throw new ValidationError(
-      `缺少必需的环境变量: ${missingVars}`,
-      'MISSING_REQUIRED_ENV_VARS',
-      { missingVars: requiredVars }
-    );
+    const missingVars = requiredVars.map((v) => v.name).join('、');
+    throw new ValidationError(`缺少必需的环境变量: ${missingVars}`, 'MISSING_REQUIRED_ENV_VARS', {
+      missingVars: requiredVars,
+    });
   }
 }
 
@@ -156,7 +208,9 @@ export function validateEnvConfig(): void {
 
   if (!parseResult.success) {
     // Zod验证失败，构建错误消息
-    const errorMessages = parseResult.error.errors.map(err => `${err.path.join('.')}: ${err.message}`);
+    const errorMessages = parseResult.error.errors.map(
+      (err) => `${err.path.join('.')}: ${err.message}`
+    );
     throw new ValidationError(
       '环境变量配置验证失败: ' + errorMessages.join(', '),
       'ENV_CONFIG_VALIDATION_ERROR',
@@ -173,28 +227,24 @@ export function validateEnvConfig(): void {
     const nodeEnv = currentEnv.NODE_ENV || 'development';
     if (nodeEnv === 'production') {
       if (!currentEnv.JWT_SECRET || currentEnv.JWT_SECRET.length < 32) {
-        throw new ValidationError(
-          '生产环境中 JWT_SECRET 必须至少32个字符',
-          'INSECURE_JWT_SECRET'
-        );
+        throw new ValidationError('生产环境中 JWT_SECRET 必须至少32个字符', 'INSECURE_JWT_SECRET');
       }
 
-      if (!currentEnv.DB_PASS || currentEnv.DB_PASS.length < 16 || currentEnv.DB_PASS === 'your_secure_password_here') {
-        throw new ValidationError(
-          '生产环境中必须设置安全的数据库密码',
-          'INSECURE_DB_PASSWORD'
-        );
+      if (
+        !currentEnv.DB_PASS ||
+        currentEnv.DB_PASS.length < 16 ||
+        currentEnv.DB_PASS === 'your_secure_password_here'
+      ) {
+        throw new ValidationError('生产环境中必须设置安全的数据库密码', 'INSECURE_DB_PASSWORD');
       }
     }
   } catch (error) {
     if (error instanceof ValidationError) {
       throw error;
     }
-    throw new ValidationError(
-      '环境变量配置验证失败',
-      'ENV_CONFIG_VALIDATION_ERROR',
-      { error: error instanceof Error ? error.message : String(error) }
-    );
+    throw new ValidationError('环境变量配置验证失败', 'ENV_CONFIG_VALIDATION_ERROR', {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 
@@ -212,7 +262,7 @@ export function checkEnvironment(): {
     isDevelopment: nodeEnv === 'development',
     isProduction: nodeEnv === 'production',
     isTest: nodeEnv === 'test',
-    nodeEnv
+    nodeEnv,
   };
 }
 

@@ -20,38 +20,32 @@ const { execSync } = require('child_process');
 const SECURITY_FIX_CONFIG = {
   // 需要修复的依赖漏洞
   vulnerableDependencies: {
-    'inflight': '^1.0.6', // 已知漏洞版本
+    inflight: '^1.0.6', // 已知漏洞版本
   },
-  
+
   // 需要更新的过时依赖
   outdatedDependencies: [
     'jest',
-    '@types/jest', 
+    '@types/jest',
     'react',
     'react-dom',
     'next',
     'eslint',
     'tailwindcss',
-    'typescript'
+    'typescript',
   ],
-  
+
   // 需要添加的安全依赖
-  securityDependencies: [
-    'helmet',
-    'express-rate-limit',
-    'bcryptjs',
-    'jsonwebtoken',
-    'cors'
-  ],
-  
+  securityDependencies: ['helmet', 'express-rate-limit', 'bcryptjs', 'jsonwebtoken', 'cors'],
+
   // 需要检查的安全配置文件
   securityFiles: [
     '.env.example',
     '.gitleaks.toml',
     '.eslintrc.json',
     'tsconfig.json',
-    'package.json'
-  ]
+    'package.json',
+  ],
 };
 
 /**
@@ -113,18 +107,18 @@ function runCommand(command, options = {}) {
  */
 function checkDependencyVulnerabilities() {
   log('开始检查依赖漏洞...');
-  
+
   try {
     const result = execSync('npm audit --json', { encoding: 'utf8' });
     const auditData = JSON.parse(result);
-    
+
     if (auditData.vulnerabilities && Object.keys(auditData.vulnerabilities).length > 0) {
       log(`发现 ${Object.keys(auditData.vulnerabilities).length} 个漏洞`, 'warn');
-      
+
       Object.entries(auditData.vulnerabilities).forEach(([pkg, vuln]) => {
         log(`漏洞: ${pkg} - ${vuln.severity} - ${vuln.title}`, 'warn');
       });
-      
+
       return false;
     } else {
       log('未发现已知漏洞', 'success');
@@ -141,44 +135,44 @@ function checkDependencyVulnerabilities() {
  */
 function fixDependencyVulnerabilities() {
   log('开始修复依赖漏洞...');
-  
+
   // 尝试自动修复
   if (runCommand('npm audit fix --force')) {
     log('依赖漏洞修复完成', 'success');
     return true;
   } else {
     log('自动修复失败，尝试手动修复', 'warn');
-    
+
     // 手动更新特定依赖
     const packageJsonPath = path.join(process.cwd(), 'package.json');
     const packageJson = readJsonFile(packageJsonPath);
-    
+
     if (packageJson) {
       // 更新已知有漏洞的依赖
       if (packageJson.dependencies) {
-        Object.keys(SECURITY_FIX_CONFIG.vulnerableDependencies).forEach(dep => {
+        Object.keys(SECURITY_FIX_CONFIG.vulnerableDependencies).forEach((dep) => {
           if (packageJson.dependencies[dep]) {
             packageJson.dependencies[dep] = SECURITY_FIX_CONFIG.vulnerableDependencies[dep];
             log(`更新依赖: ${dep}`, 'info');
           }
         });
       }
-      
+
       if (packageJson.devDependencies) {
-        Object.keys(SECURITY_FIX_CONFIG.vulnerableDependencies).forEach(dep => {
+        Object.keys(SECURITY_FIX_CONFIG.vulnerableDependencies).forEach((dep) => {
           if (packageJson.devDependencies[dep]) {
             packageJson.devDependencies[dep] = SECURITY_FIX_CONFIG.vulnerableDependencies[dep];
             log(`更新开发依赖: ${dep}`, 'info');
           }
         });
       }
-      
+
       if (writeJsonFile(packageJsonPath, packageJson)) {
         log('手动依赖更新完成', 'success');
         return true;
       }
     }
-    
+
     return false;
   }
 }
@@ -188,26 +182,26 @@ function fixDependencyVulnerabilities() {
  */
 function updateOutdatedDependencies() {
   log('开始更新过时依赖...');
-  
+
   try {
     const result = execSync('npm outdated --json', { encoding: 'utf8' });
     const outdatedData = JSON.parse(result);
-    
+
     if (Object.keys(outdatedData).length > 0) {
       log(`发现 ${Object.keys(outdatedData).length} 个过时依赖`, 'warn');
-      
+
       // 更新主要依赖
-      const depsToUpdate = SECURITY_FIX_CONFIG.outdatedDependencies.filter(dep => 
-        outdatedData[dep]
+      const depsToUpdate = SECURITY_FIX_CONFIG.outdatedDependencies.filter(
+        (dep) => outdatedData[dep]
       );
-      
+
       if (depsToUpdate.length > 0) {
         const updateCommand = `npm update ${depsToUpdate.join(' ')} --save`;
         if (runCommand(updateCommand)) {
           log('过时依赖更新完成', 'success');
         }
       }
-      
+
       return true;
     } else {
       log('未发现过时依赖', 'success');
@@ -224,10 +218,10 @@ function updateOutdatedDependencies() {
  */
 function checkSecurityFiles() {
   log('开始检查安全配置文件...');
-  
+
   let allFilesExist = true;
-  
-  SECURITY_FIX_CONFIG.securityFiles.forEach(file => {
+
+  SECURITY_FIX_CONFIG.securityFiles.forEach((file) => {
     if (fileExists(file)) {
       log(`✓ ${file} 存在`, 'success');
     } else {
@@ -235,7 +229,7 @@ function checkSecurityFiles() {
       allFilesExist = false;
     }
   });
-  
+
   return allFilesExist;
 }
 
@@ -245,36 +239,36 @@ function checkSecurityFiles() {
 async function main() {
   log('开始安全漏洞修复...');
   log('='.repeat(50));
-  
+
   // 1. 检查安全配置文件
   if (!checkSecurityFiles()) {
     log('安全配置文件检查失败', 'error');
     process.exit(1);
   }
-  
+
   // 2. 检查依赖漏洞
   if (!checkDependencyVulnerabilities()) {
     log('依赖漏洞检查发现安全问题', 'warn');
-    
+
     // 3. 修复依赖漏洞
     if (!fixDependencyVulnerabilities()) {
       log('依赖漏洞修复失败', 'error');
       process.exit(1);
     }
   }
-  
+
   // 4. 更新过时依赖
   if (!updateOutdatedDependencies()) {
     log('过时依赖更新失败', 'error');
     process.exit(1);
   }
-  
+
   // 5. 安装安全依赖
   log('安装安全依赖...');
   if (runCommand('npm install helmet express-rate-limit bcryptjs jsonwebtoken cors --save')) {
     log('安全依赖安装完成', 'success');
   }
-  
+
   log('='.repeat(50));
   log('安全漏洞修复完成', 'success');
   log('建议运行以下命令进行验证:');
@@ -286,7 +280,7 @@ async function main() {
 
 // 执行主函数
 if (require.main === module) {
-  main().catch(error => {
+  main().catch((error) => {
     log(`修复过程出错: ${error.message}`, 'error');
     process.exit(1);
   });
@@ -296,5 +290,5 @@ module.exports = {
   checkDependencyVulnerabilities,
   fixDependencyVulnerabilities,
   updateOutdatedDependencies,
-  checkSecurityFiles
+  checkSecurityFiles,
 };

@@ -10,7 +10,7 @@ export enum EventPriority {
   LOW = 0,
   NORMAL = 1,
   HIGH = 2,
-  CRITICAL = 3
+  CRITICAL = 3,
 }
 
 export interface Event<T = any> {
@@ -94,7 +94,7 @@ export class EventDispatcher extends EventEmitter {
       enableEventStore: true,
       enableMetrics: true,
       enableMiddleware: true,
-      ...config
+      ...config,
     };
 
     this.metrics = {
@@ -102,7 +102,7 @@ export class EventDispatcher extends EventEmitter {
       eventsByType: new Map(),
       eventsByPriority: new Map(),
       averageProcessingTime: 0,
-      failedEvents: 0
+      failedEvents: 0,
     };
   }
 
@@ -127,9 +127,9 @@ export class EventDispatcher extends EventEmitter {
       metadata: {
         version: '1.0.0',
         tags: [],
-        ...options.metadata
+        ...options.metadata,
       },
-      source: options.source || 'system'
+      source: options.source || 'system',
     };
 
     // 存储事件
@@ -168,9 +168,7 @@ export class EventDispatcher extends EventEmitter {
     }>
   ): Promise<string[]> {
     return Promise.all(
-      events.map(({ type, payload, options }) =>
-        this.publish(type, payload, options)
-      )
+      events.map(({ type, payload, options }) => this.publish(type, payload, options))
     );
   }
 
@@ -192,12 +190,12 @@ export class EventDispatcher extends EventEmitter {
       handler,
       filter: options.filter,
       transformer: options.transformer,
-      priority: options.priority || EventPriority.NORMAL
+      priority: options.priority || EventPriority.NORMAL,
     };
 
     // 支持通配符订阅
     const subscriptionKey = type;
-    
+
     if (!this.subscriptions.has(subscriptionKey)) {
       this.subscriptions.set(subscriptionKey, []);
     }
@@ -218,11 +216,11 @@ export class EventDispatcher extends EventEmitter {
    */
   unsubscribe(subscriptionId: string): boolean {
     for (const [type, subs] of this.subscriptions.entries()) {
-      const index = subs.findIndex(s => s.id === subscriptionId);
-      
+      const index = subs.findIndex((s) => s.id === subscriptionId);
+
       if (index > -1) {
         const subscription = subs.splice(index, 1)[0];
-        
+
         if (subs.length === 0) {
           this.subscriptions.delete(type);
         }
@@ -243,7 +241,7 @@ export class EventDispatcher extends EventEmitter {
     const matchedSubscriptions = this.findMatchingSubscriptions(event);
 
     await Promise.all(
-      matchedSubscriptions.map(async subscription => {
+      matchedSubscriptions.map(async (subscription) => {
         try {
           // 应用过滤器
           if (subscription.filter && !this.applyFilter(event, subscription.filter)) {
@@ -261,16 +259,15 @@ export class EventDispatcher extends EventEmitter {
 
           this.emit('event:handled', {
             event: transformedEvent,
-            subscription
+            subscription,
           });
-
         } catch (error: any) {
           this.metrics.failedEvents++;
-          
+
           this.emit('event:error', {
             event,
             subscription,
-            error
+            error,
           });
         }
       })
@@ -323,9 +320,7 @@ export class EventDispatcher extends EventEmitter {
     }
 
     if (filter.tags && filter.tags.length > 0) {
-      const hasTag = filter.tags.some(tag => 
-        event.metadata.tags.includes(tag)
-      );
+      const hasTag = filter.tags.some((tag) => event.metadata.tags.includes(tag));
       if (!hasTag) return false;
     }
 
@@ -380,15 +375,15 @@ export class EventDispatcher extends EventEmitter {
 
     // 应用过滤器
     if (filter) {
-      events = events.filter(event => this.applyFilter(event, filter));
+      events = events.filter((event) => this.applyFilter(event, filter));
     }
 
     // 时间范围过滤
     if (options.startTime) {
-      events = events.filter(e => e.timestamp >= options.startTime!);
+      events = events.filter((e) => e.timestamp >= options.startTime!);
     }
     if (options.endTime) {
-      events = events.filter(e => e.timestamp <= options.endTime!);
+      events = events.filter((e) => e.timestamp <= options.endTime!);
     }
 
     // 限制数量
@@ -404,7 +399,7 @@ export class EventDispatcher extends EventEmitter {
     this.emit('replay:completed', {
       count: events.length,
       filter,
-      options
+      options,
     });
   }
 
@@ -440,21 +435,18 @@ export class EventDispatcher extends EventEmitter {
    */
   private updateProcessingTime(processingTime: number): void {
     const total = this.metrics.totalEvents;
-    this.metrics.averageProcessingTime = 
+    this.metrics.averageProcessingTime =
       (this.metrics.averageProcessingTime * (total - 1) + processingTime) / total;
   }
 
   /**
    * 获取事件历史
    */
-  getEventHistory(
-    filter?: EventFilter,
-    limit: number = 100
-  ): Event[] {
+  getEventHistory(filter?: EventFilter, limit: number = 100): Event[] {
     let events = [...this.eventStore];
 
     if (filter) {
-      events = events.filter(event => this.applyFilter(event, filter));
+      events = events.filter((event) => this.applyFilter(event, filter));
     }
 
     return events.slice(-limit);
@@ -482,7 +474,7 @@ export class EventDispatcher extends EventEmitter {
     return {
       ...this.metrics,
       eventsByType: new Map(this.metrics.eventsByType),
-      eventsByPriority: new Map(this.metrics.eventsByPriority)
+      eventsByPriority: new Map(this.metrics.eventsByPriority),
     };
   }
 

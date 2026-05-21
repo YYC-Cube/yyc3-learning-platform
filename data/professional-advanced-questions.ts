@@ -1,108 +1,108 @@
 // 专业高级题目数据结构
 export interface ProfessionalAdvancedQuestion {
-  id: string
-  type: "single" | "multiple" | "technical-analysis" | "system-design"
-  category: string
-  subCategory?: string
-  difficulty: 1 | 2 | 3 | 4 | 5 // 1-5星难度
-  question: string
-  options?: string[]
-  correctAnswers: number[]
-  explanation: string
-  points: number
-  keywords: string[]
-  technicalDepth?: "basic" | "intermediate" | "advanced" | "expert"
-  applicationScenario?: string
-  relatedConcepts?: string[]
+  id: string;
+  type: 'single' | 'multiple' | 'technical-analysis' | 'system-design';
+  category: string;
+  subCategory?: string;
+  difficulty: 1 | 2 | 3 | 4 | 5; // 1-5星难度
+  question: string;
+  options?: string[];
+  correctAnswers: number[];
+  explanation: string;
+  points: number;
+  keywords: string[];
+  technicalDepth?: 'basic' | 'intermediate' | 'advanced' | 'expert';
+  applicationScenario?: string;
+  relatedConcepts?: string[];
 }
 
 // 技术基础专项题目
 export const technicalFoundationQuestions: ProfessionalAdvancedQuestion[] = [
   {
-    id: "tf_001",
-    type: "single",
-    category: "技术基础",
-    subCategory: "架构设计",
+    id: 'tf_001',
+    type: 'single',
+    category: '技术基础',
+    subCategory: '架构设计',
     difficulty: 3,
-    question: "以下哪种架构最适合文本生成任务？",
-    options: ["CNN", "RNN", "Transformer", "SVM"],
+    question: '以下哪种架构最适合文本生成任务？',
+    options: ['CNN', 'RNN', 'Transformer', 'SVM'],
     correctAnswers: [2],
     explanation:
-      "Transformer架构通过自注意力机制能够并行处理序列数据，在文本生成任务中表现最优。相比RNN的串行计算，Transformer能够更好地捕捉长距离依赖关系。",
+      'Transformer架构通过自注意力机制能够并行处理序列数据，在文本生成任务中表现最优。相比RNN的串行计算，Transformer能够更好地捕捉长距离依赖关系。',
     points: 2,
-    keywords: ["Transformer", "文本生成", "自注意力机制"],
-    technicalDepth: "intermediate",
-    applicationScenario: "自然语言处理",
-    relatedConcepts: ["注意力机制", "并行计算", "序列建模"],
+    keywords: ['Transformer', '文本生成', '自注意力机制'],
+    technicalDepth: 'intermediate',
+    applicationScenario: '自然语言处理',
+    relatedConcepts: ['注意力机制', '并行计算', '序列建模'],
   },
   {
-    id: "tf_002",
-    type: "single",
-    category: "技术基础",
-    subCategory: "扩散模型",
+    id: 'tf_002',
+    type: 'single',
+    category: '技术基础',
+    subCategory: '扩散模型',
     difficulty: 4,
-    question: "在扩散模型（Diffusion Model）中，去噪过程的核心目标是：",
+    question: '在扩散模型（Diffusion Model）中，去噪过程的核心目标是：',
     options: [
-      "最小化生成图像与真实图像的像素差异",
-      "逐步去除噪声以还原数据分布",
-      "最大化生成图像的多样性",
-      "加速训练过程",
+      '最小化生成图像与真实图像的像素差异',
+      '逐步去除噪声以还原数据分布',
+      '最大化生成图像的多样性',
+      '加速训练过程',
     ],
     correctAnswers: [1],
     explanation:
-      "扩散模型的去噪过程通过学习噪声分布的逆过程，逐步从纯噪声中还原出符合真实数据分布的样本。这是扩散模型生成高质量内容的核心机制。",
+      '扩散模型的去噪过程通过学习噪声分布的逆过程，逐步从纯噪声中还原出符合真实数据分布的样本。这是扩散模型生成高质量内容的核心机制。',
     points: 3,
-    keywords: ["扩散模型", "去噪过程", "数据分布", "逆过程"],
-    technicalDepth: "advanced",
-    applicationScenario: "图像生成",
-    relatedConcepts: ["马尔可夫链", "变分推断", "噪声调度"],
+    keywords: ['扩散模型', '去噪过程', '数据分布', '逆过程'],
+    technicalDepth: 'advanced',
+    applicationScenario: '图像生成',
+    relatedConcepts: ['马尔可夫链', '变分推断', '噪声调度'],
   },
   {
-    id: "tf_003",
-    type: "multiple",
-    category: "技术基础",
-    subCategory: "Transformer架构",
+    id: 'tf_003',
+    type: 'multiple',
+    category: '技术基础',
+    subCategory: 'Transformer架构',
     difficulty: 3,
-    question: "以下哪些是Transformer模型的关键组件？",
-    options: ["自注意力机制", "位置编码", "残差连接", "卷积核"],
+    question: '以下哪些是Transformer模型的关键组件？',
+    options: ['自注意力机制', '位置编码', '残差连接', '卷积核'],
     correctAnswers: [0, 1, 2],
     explanation:
-      "Transformer的关键组件包括：1)自注意力机制用于捕捉序列内的依赖关系；2)位置编码提供序列位置信息；3)残差连接帮助梯度传播。卷积核是CNN的组件，不属于标准Transformer架构。",
+      'Transformer的关键组件包括：1)自注意力机制用于捕捉序列内的依赖关系；2)位置编码提供序列位置信息；3)残差连接帮助梯度传播。卷积核是CNN的组件，不属于标准Transformer架构。',
     points: 3,
-    keywords: ["Transformer", "自注意力", "位置编码", "残差连接"],
-    technicalDepth: "intermediate",
-    applicationScenario: "深度学习架构",
-    relatedConcepts: ["注意力机制", "序列建模", "梯度传播"],
+    keywords: ['Transformer', '自注意力', '位置编码', '残差连接'],
+    technicalDepth: 'intermediate',
+    applicationScenario: '深度学习架构',
+    relatedConcepts: ['注意力机制', '序列建模', '梯度传播'],
   },
   {
-    id: "tf_004",
-    type: "single",
-    category: "技术基础",
-    subCategory: "模型优化",
+    id: 'tf_004',
+    type: 'single',
+    category: '技术基础',
+    subCategory: '模型优化',
     difficulty: 4,
-    question: "LoRA（Low-Rank Adaptation）技术主要用于：",
-    options: ["减少模型参数量", "加速推理速度", "微调大语言模型时的高效参数更新", "数据增强"],
+    question: 'LoRA（Low-Rank Adaptation）技术主要用于：',
+    options: ['减少模型参数量', '加速推理速度', '微调大语言模型时的高效参数更新', '数据增强'],
     correctAnswers: [2],
     explanation:
-      "LoRA通过低秩分解的方式，在微调大语言模型时只更新少量参数，大大提高了参数效率。它冻结预训练模型的主要参数，只训练低秩适配器，实现高效的任务特定优化。",
+      'LoRA通过低秩分解的方式，在微调大语言模型时只更新少量参数，大大提高了参数效率。它冻结预训练模型的主要参数，只训练低秩适配器，实现高效的任务特定优化。',
     points: 3,
-    keywords: ["LoRA", "低秩分解", "参数效率", "模型微调"],
-    technicalDepth: "advanced",
-    applicationScenario: "大模型微调",
-    relatedConcepts: ["参数高效微调", "适配器", "迁移学习"],
+    keywords: ['LoRA', '低秩分解', '参数效率', '模型微调'],
+    technicalDepth: 'advanced',
+    applicationScenario: '大模型微调',
+    relatedConcepts: ['参数高效微调', '适配器', '迁移学习'],
   },
-]
+];
 
 // 核心技术深度专项题目
 export const coreTechDepthQuestions: ProfessionalAdvancedQuestion[] = [
   {
-    id: "ctd_001",
-    type: "technical-analysis",
-    category: "核心技术深度",
-    subCategory: "多头注意力机制",
+    id: 'ctd_001',
+    type: 'technical-analysis',
+    category: '核心技术深度',
+    subCategory: '多头注意力机制',
     difficulty: 4,
     question:
-      "在Transformer架构中，多头注意力机制（Multi-Head Attention）如何解决传统RNN的局限性？请结合数学公式说明其并行计算优势。",
+      '在Transformer架构中，多头注意力机制（Multi-Head Attention）如何解决传统RNN的局限性？请结合数学公式说明其并行计算优势。',
     correctAnswers: [],
     explanation: `多头注意力机制通过以下方式解决RNN局限性：
 
@@ -123,18 +123,19 @@ export const coreTechDepthQuestions: ProfessionalAdvancedQuestion[] = [
    - 不同的注意力头可以学习不同类型的依赖关系
    - 提高了模型的表达能力和泛化性能`,
     points: 15,
-    keywords: ["多头注意力", "并行计算", "长距离依赖", "RNN局限性"],
-    technicalDepth: "expert",
-    applicationScenario: "序列建模",
-    relatedConcepts: ["注意力机制", "Transformer", "梯度消失"],
+    keywords: ['多头注意力', '并行计算', '长距离依赖', 'RNN局限性'],
+    technicalDepth: 'expert',
+    applicationScenario: '序列建模',
+    relatedConcepts: ['注意力机制', 'Transformer', '梯度消失'],
   },
   {
-    id: "ctd_002",
-    type: "technical-analysis",
-    category: "核心技术深度",
-    subCategory: "模型微调技术",
+    id: 'ctd_002',
+    type: 'technical-analysis',
+    category: '核心技术深度',
+    subCategory: '模型微调技术',
     difficulty: 5,
-    question: "对比分析LoRA与Adapter模块在模型微调中的异同，特别是在参数效率（Parameter Efficiency）方面的数学证明。",
+    question:
+      '对比分析LoRA与Adapter模块在模型微调中的异同，特别是在参数效率（Parameter Efficiency）方面的数学证明。',
     correctAnswers: [],
     explanation: `LoRA与Adapter模块对比分析：
 
@@ -166,27 +167,28 @@ export const coreTechDepthQuestions: ProfessionalAdvancedQuestion[] = [
 - LoRA：适合需要保持推理速度的场景
 - Adapter：适合需要更强表达能力的复杂任务`,
     points: 20,
-    keywords: ["LoRA", "Adapter", "参数效率", "低秩分解"],
-    technicalDepth: "expert",
-    applicationScenario: "大模型微调",
-    relatedConcepts: ["参数高效微调", "矩阵分解", "迁移学习"],
+    keywords: ['LoRA', 'Adapter', '参数效率', '低秩分解'],
+    technicalDepth: 'expert',
+    applicationScenario: '大模型微调',
+    relatedConcepts: ['参数高效微调', '矩阵分解', '迁移学习'],
   },
-]
+];
 
 // 多模态生成专项题目
 export const multimodalQuestions: ProfessionalAdvancedQuestion[] = [
   {
-    id: "mm_001",
-    type: "multiple",
-    category: "多模态生成",
-    subCategory: "CLIP模型",
+    id: 'mm_001',
+    type: 'multiple',
+    category: '多模态生成',
+    subCategory: 'CLIP模型',
     difficulty: 3,
-    question: "关于CLIP（Contrastive Language-Image Pretraining）模型的多模态对齐机制，以下说法正确的是？",
+    question:
+      '关于CLIP（Contrastive Language-Image Pretraining）模型的多模态对齐机制，以下说法正确的是？',
     options: [
-      "通过对比学习拉近文本与图像的嵌入空间",
-      "使用交叉注意力机制直接融合两种模态",
-      "图像编码器采用ViT（Vision Transformer）结构",
-      "文本编码器与BERT架构完全一致",
+      '通过对比学习拉近文本与图像的嵌入空间',
+      '使用交叉注意力机制直接融合两种模态',
+      '图像编码器采用ViT（Vision Transformer）结构',
+      '文本编码器与BERT架构完全一致',
     ],
     correctAnswers: [0, 2],
     explanation: `CLIP模型的核心机制分析：
@@ -204,19 +206,19 @@ D. CLIP的文本编码器是定制的Transformer，与BERT在架构上有差异
 - 损失函数：对称的对比损失（InfoNCE loss）
 - 应用价值：零样本图像分类、文本到图像检索等`,
     points: 4,
-    keywords: ["CLIP", "对比学习", "多模态对齐", "ViT"],
-    technicalDepth: "advanced",
-    applicationScenario: "多模态理解",
-    relatedConcepts: ["对比学习", "零样本学习", "跨模态检索"],
+    keywords: ['CLIP', '对比学习', '多模态对齐', 'ViT'],
+    technicalDepth: 'advanced',
+    applicationScenario: '多模态理解',
+    relatedConcepts: ['对比学习', '零样本学习', '跨模态检索'],
   },
   {
-    id: "mm_002",
-    type: "system-design",
-    category: "多模态生成",
-    subCategory: "视频生成",
+    id: 'mm_002',
+    type: 'system-design',
+    category: '多模态生成',
+    subCategory: '视频生成',
     difficulty: 5,
     question:
-      "在视频生成任务中，如何解决时序一致性（Temporal Consistency）问题？请提出至少两种技术方案并分析其优缺点。",
+      '在视频生成任务中，如何解决时序一致性（Temporal Consistency）问题？请提出至少两种技术方案并分析其优缺点。',
     correctAnswers: [],
     explanation: `视频生成中时序一致性解决方案：
 
@@ -247,27 +249,27 @@ D. CLIP的文本编码器是定制的Transformer，与BERT在架构上有差异
 **综合建议**：
 实际应用中通常结合多种方法，如光流约束+时序注意力，在效果和效率间取得平衡。`,
     points: 25,
-    keywords: ["时序一致性", "光流约束", "时序注意力", "3D卷积"],
-    technicalDepth: "expert",
-    applicationScenario: "视频生成",
-    relatedConcepts: ["光流估计", "时序建模", "视频理解"],
+    keywords: ['时序一致性', '光流约束', '时序注意力', '3D卷积'],
+    technicalDepth: 'expert',
+    applicationScenario: '视频生成',
+    relatedConcepts: ['光流估计', '时序建模', '视频理解'],
   },
-]
+];
 
 // RLHF调优专项题目
 export const rlhfQuestions: ProfessionalAdvancedQuestion[] = [
   {
-    id: "rlhf_001",
-    type: "multiple",
-    category: "RLHF调优",
-    subCategory: "奖励模型设计",
+    id: 'rlhf_001',
+    type: 'multiple',
+    category: 'RLHF调优',
+    subCategory: '奖励模型设计',
     difficulty: 4,
-    question: "在RLHF中训练奖励模型时，为避免过度拟合人类偏好，应采取的措施包括：",
+    question: '在RLHF中训练奖励模型时，为避免过度拟合人类偏好，应采取的措施包括：',
     options: [
-      "使用多样性采样策略扩展训练数据",
-      "仅使用Top-K样本进行训练",
-      "加入对抗训练增强鲁棒性",
-      "固定奖励模型权重",
+      '使用多样性采样策略扩展训练数据',
+      '仅使用Top-K样本进行训练',
+      '加入对抗训练增强鲁棒性',
+      '固定奖励模型权重',
     ],
     correctAnswers: [0, 2],
     explanation: `避免奖励模型过度拟合的策略：
@@ -287,19 +289,19 @@ D. 固定权重无法让模型学习和适应新的人类偏好
 - 定期更新训练数据，包含新的人类反馈
 - 使用集成方法结合多个奖励模型的预测`,
     points: 5,
-    keywords: ["奖励模型", "过拟合", "多样性采样", "对抗训练"],
-    technicalDepth: "advanced",
-    applicationScenario: "强化学习",
-    relatedConcepts: ["人类反馈", "模型泛化", "鲁棒性"],
+    keywords: ['奖励模型', '过拟合', '多样性采样', '对抗训练'],
+    technicalDepth: 'advanced',
+    applicationScenario: '强化学习',
+    relatedConcepts: ['人类反馈', '模型泛化', '鲁棒性'],
   },
   {
-    id: "rlhf_002",
-    type: "system-design",
-    category: "RLHF调优",
-    subCategory: "代码生成",
+    id: 'rlhf_002',
+    type: 'system-design',
+    category: 'RLHF调优',
+    subCategory: '代码生成',
     difficulty: 5,
     question:
-      "如何将强化学习（RLHF）应用于代码生成任务？请设计一个完整的奖励函数设计框架，需考虑代码正确性、可读性和安全性三个维度。",
+      '如何将强化学习（RLHF）应用于代码生成任务？请设计一个完整的奖励函数设计框架，需考虑代码正确性、可读性和安全性三个维度。',
     correctAnswers: [],
     explanation: `代码生成RLHF奖励函数设计框架：
 
@@ -345,53 +347,58 @@ R_security = 0.4·vulnerability_score + 0.2·validation_score + 0.2·access_scor
 - 基于用户反馈动态更新评分标准
 - 定期重新训练奖励模型以适应新的编程范式`,
     points: 30,
-    keywords: ["RLHF", "代码生成", "奖励函数", "多维度评估"],
-    technicalDepth: "expert",
-    applicationScenario: "代码生成",
-    relatedConcepts: ["强化学习", "代码质量", "静态分析"],
+    keywords: ['RLHF', '代码生成', '奖励函数', '多维度评估'],
+    technicalDepth: 'expert',
+    applicationScenario: '代码生成',
+    relatedConcepts: ['强化学习', '代码质量', '静态分析'],
   },
-]
+];
 
 // 获取所有专业高级题目
 export function getAllProfessionalAdvancedQuestions(): ProfessionalAdvancedQuestion[] {
-  return [...technicalFoundationQuestions, ...coreTechDepthQuestions, ...multimodalQuestions, ...rlhfQuestions]
+  return [
+    ...technicalFoundationQuestions,
+    ...coreTechDepthQuestions,
+    ...multimodalQuestions,
+    ...rlhfQuestions,
+  ];
 }
 
 // 按类别获取题目
 export function getQuestionsByCategory(category: string): ProfessionalAdvancedQuestion[] {
-  return getAllProfessionalAdvancedQuestions().filter((q) => q.category === category)
+  return getAllProfessionalAdvancedQuestions().filter((q) => q.category === category);
 }
 
 // 按难度获取题目
 export function getQuestionsByDifficulty(difficulty: number): ProfessionalAdvancedQuestion[] {
-  return getAllProfessionalAdvancedQuestions().filter((q) => q.difficulty === difficulty)
+  return getAllProfessionalAdvancedQuestions().filter((q) => q.difficulty === difficulty);
 }
 
 // 生成专业考试试卷
 export function generateProfessionalExamPaper(config: {
-  categories: string[]
-  difficultyRange: [number, number]
-  questionCount: number
-  includeSystemDesign?: boolean
+  categories: string[];
+  difficultyRange: [number, number];
+  questionCount: number;
+  includeSystemDesign?: boolean;
 }): ProfessionalAdvancedQuestion[] {
-  let availableQuestions = getAllProfessionalAdvancedQuestions()
+  let availableQuestions = getAllProfessionalAdvancedQuestions();
 
   // 按类别筛选
   if (config.categories.length > 0) {
-    availableQuestions = availableQuestions.filter((q) => config.categories.includes(q.category))
+    availableQuestions = availableQuestions.filter((q) => config.categories.includes(q.category));
   }
 
   // 按难度筛选
   availableQuestions = availableQuestions.filter(
-    (q) => q.difficulty >= config.difficultyRange[0] && q.difficulty <= config.difficultyRange[1],
-  )
+    (q) => q.difficulty >= config.difficultyRange[0] && q.difficulty <= config.difficultyRange[1]
+  );
 
   // 是否包含系统设计题
   if (!config.includeSystemDesign) {
-    availableQuestions = availableQuestions.filter((q) => q.type !== "system-design")
+    availableQuestions = availableQuestions.filter((q) => q.type !== 'system-design');
   }
 
   // 随机选择题目
-  const shuffled = availableQuestions.sort(() => 0.5 - Math.random())
-  return shuffled.slice(0, config.questionCount)
+  const shuffled = availableQuestions.sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, config.questionCount);
 }

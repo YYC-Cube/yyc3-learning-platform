@@ -42,12 +42,12 @@ docker-compose -f docker-compose.monitoring.yml down
 
 ## Access Points
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| Prometheus | http://localhost:9090 | - |
-| Grafana | http://localhost:3001 | admin / admin |
-| AlertManager | http://localhost:9093 | - |
-| Node Exporter | http://localhost:9100/metrics | - |
+| Service       | URL                           | Credentials   |
+| ------------- | ----------------------------- | ------------- |
+| Prometheus    | http://localhost:9090         | -             |
+| Grafana       | http://localhost:3001         | admin / admin |
+| AlertManager  | http://localhost:9093         | -             |
+| Node Exporter | http://localhost:9100/metrics | -             |
 
 ---
 
@@ -107,16 +107,16 @@ scrape_configs:
 
 ### Available Metrics
 
-| Metric | Type | Description |
-|--------|------|-------------|
-| `up` | gauge | Service status (1=up, 0=down) |
-| `http_request_duration_ms` | histogram | HTTP request duration |
-| `http_requests_2xx_total` | counter | Total 2xx responses |
-| `http_requests_4xx_total` | counter | Total 4xx responses |
-| `http_requests_5xx_total` | counter | Total 5xx responses |
-| `errors_total` | counter | Total errors by type |
-| `system_memory_bytes` | gauge | Memory usage by type |
-| `system_uptime_seconds` | gauge | System uptime |
+| Metric                     | Type      | Description                   |
+| -------------------------- | --------- | ----------------------------- |
+| `up`                       | gauge     | Service status (1=up, 0=down) |
+| `http_request_duration_ms` | histogram | HTTP request duration         |
+| `http_requests_2xx_total`  | counter   | Total 2xx responses           |
+| `http_requests_4xx_total`  | counter   | Total 4xx responses           |
+| `http_requests_5xx_total`  | counter   | Total 5xx responses           |
+| `errors_total`             | counter   | Total errors by type          |
+| `system_memory_bytes`      | gauge     | Memory usage by type          |
+| `system_uptime_seconds`    | gauge     | System uptime                 |
 
 ---
 
@@ -124,23 +124,23 @@ scrape_configs:
 
 ### Application Alerts
 
-| Alert | Condition | Severity | Duration |
-|-------|-----------|----------|----------|
-| HighErrorRate | `rate(errors_total) > 10` | Warning | 5m |
-| CriticalErrorRate | `rate(errors_total) > 50` | Critical | 2m |
-| HighHTTP5xxRate | `rate(http_requests_5xx_total) > 0.1` | Warning | 5m |
-| HighMemoryUsage | `heap_used/heap_total > 0.9` | Warning | 5m |
-| CriticalMemoryUsage | `heap_used/heap_total > 0.95` | Critical | 2m |
-| HighResponseTime | `p95 response time > 1000ms` | Warning | 5m |
-| ServiceDown | `up == 0` | Critical | 2m |
+| Alert               | Condition                             | Severity | Duration |
+| ------------------- | ------------------------------------- | -------- | -------- |
+| HighErrorRate       | `rate(errors_total) > 10`             | Warning  | 5m       |
+| CriticalErrorRate   | `rate(errors_total) > 50`             | Critical | 2m       |
+| HighHTTP5xxRate     | `rate(http_requests_5xx_total) > 0.1` | Warning  | 5m       |
+| HighMemoryUsage     | `heap_used/heap_total > 0.9`          | Warning  | 5m       |
+| CriticalMemoryUsage | `heap_used/heap_total > 0.95`         | Critical | 2m       |
+| HighResponseTime    | `p95 response time > 1000ms`          | Warning  | 5m       |
+| ServiceDown         | `up == 0`                             | Critical | 2m       |
 
 ### Infrastructure Alerts
 
-| Alert | Condition | Severity | Duration |
-|-------|-----------|----------|----------|
-| HighCPUUsage | `CPU usage > 80%` | Warning | 10m |
-| DiskSpaceLow | `Disk space < 20%` | Warning | 10m |
-| DiskSpaceCritical | `Disk space < 10%` | Critical | 5m |
+| Alert             | Condition          | Severity | Duration |
+| ----------------- | ------------------ | -------- | -------- |
+| HighCPUUsage      | `CPU usage > 80%`  | Warning  | 10m      |
+| DiskSpaceLow      | `Disk space < 20%` | Warning  | 10m      |
+| DiskSpaceCritical | `Disk space < 10%` | Critical | 5m       |
 
 ---
 
@@ -171,16 +171,18 @@ monitoring/
 ### Adding New Metrics
 
 1. **Add metric to application code** (`lib/monitoring/metrics.ts`):
+
    ```typescript
    recordMetric({
      name: 'custom_metric',
      value: 42,
      timestamp: Date.now(),
-     labels: { label1: 'value1' }
+     labels: { label1: 'value1' },
    });
    ```
 
 2. **Query in Prometheus**:
+
    ```
    custom_metric
    rate(custom_metric[5m])
@@ -205,7 +207,7 @@ groups:
         labels:
           severity: warning
         annotations:
-          summary: "Custom alert triggered"
+          summary: 'Custom alert triggered'
 ```
 
 Reload Prometheus: `docker-compose restart prometheus`
@@ -270,6 +272,7 @@ Reload Prometheus: `docker-compose restart prometheus`
 ### Security Considerations
 
 1. **Change default passwords**:
+
    ```bash
    # Edit docker-compose.monitoring.yml
    GF_SECURITY_ADMIN_PASSWORD=your_secure_password

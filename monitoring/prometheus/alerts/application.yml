@@ -12,8 +12,8 @@ groups:
           severity: warning
           component: application
         annotations:
-          summary: "High error rate detected"
-          description: "Error rate is {{ $value }} errors/sec"
+          summary: 'High error rate detected'
+          description: 'Error rate is {{ $value }} errors/sec'
 
       # Critical error rate
       - alert: CriticalErrorRate
@@ -23,8 +23,8 @@ groups:
           severity: critical
           component: application
         annotations:
-          summary: "Critical error rate detected"
-          description: "Error rate is {{ $value }} errors/sec"
+          summary: 'Critical error rate detected'
+          description: 'Error rate is {{ $value }} errors/sec'
 
       # High HTTP 5xx rate
       - alert: HighHTTP5xxRate
@@ -34,8 +34,8 @@ groups:
           severity: warning
           component: api
         annotations:
-          summary: "High HTTP 5xx rate"
-          description: "{{ $value }} 5xx responses/sec"
+          summary: 'High HTTP 5xx rate'
+          description: '{{ $value }} 5xx responses/sec'
 
       # High memory usage
       - alert: HighMemoryUsage
@@ -45,8 +45,8 @@ groups:
           severity: warning
           component: application
         annotations:
-          summary: "High memory usage"
-          description: "Memory usage is {{ $value | humanizePercentage }}"
+          summary: 'High memory usage'
+          description: 'Memory usage is {{ $value | humanizePercentage }}'
 
       # Critical memory usage
       - alert: CriticalMemoryUsage
@@ -56,8 +56,8 @@ groups:
           severity: critical
           component: application
         annotations:
-          summary: "Critical memory usage"
-          description: "Memory usage is {{ $value | humanizePercentage }}"
+          summary: 'Critical memory usage'
+          description: 'Memory usage is {{ $value | humanizePercentage }}'
 
       # High response time
       - alert: HighResponseTime
@@ -67,8 +67,8 @@ groups:
           severity: warning
           component: api
         annotations:
-          summary: "High API response time"
-          description: "P95 response time is {{ $value }}ms"
+          summary: 'High API response time'
+          description: 'P95 response time is {{ $value }}ms'
 
       # Service down
       - alert: ServiceDown
@@ -78,8 +78,8 @@ groups:
           severity: critical
           component: application
         annotations:
-          summary: "Service is down"
-          description: "Learning Platform service has been down for more than 2 minutes"
+          summary: 'Service is down'
+          description: 'Learning Platform service has been down for more than 2 minutes'
 
   - name: infrastructure_alerts
     interval: 30s
@@ -92,8 +92,8 @@ groups:
           severity: warning
           component: infrastructure
         annotations:
-          summary: "High CPU usage"
-          description: "CPU usage is {{ $value }}%"
+          summary: 'High CPU usage'
+          description: 'CPU usage is {{ $value }}%'
 
       # Disk space low
       - alert: DiskSpaceLow
@@ -103,8 +103,8 @@ groups:
           severity: warning
           component: infrastructure
         annotations:
-          summary: "Disk space low"
-          description: "Only {{ $value }}% disk space remaining"
+          summary: 'Disk space low'
+          description: 'Only {{ $value }}% disk space remaining'
 
       # Disk space critical
       - alert: DiskSpaceCritical
@@ -114,5 +114,5 @@ groups:
           severity: critical
           component: infrastructure
         annotations:
-          summary: "Disk space critical"
-          description: "Only {{ $value }}% disk space remaining"
+          summary: 'Disk space critical'
+          description: 'Only {{ $value }}% disk space remaining'

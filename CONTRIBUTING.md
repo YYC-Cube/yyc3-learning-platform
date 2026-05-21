@@ -62,6 +62,7 @@ If this is your first time contributing:
 ### Good First Issues
 
 Look for issues labeled:
+
 - `good first issue` - Suitable for newcomers
 - `help wanted` - Community contributions welcome
 - `documentation` - Documentation improvements
@@ -264,6 +265,7 @@ bun run format:check
 ```
 
 **Configuration** (.prettierrc):
+
 ```json
 {
   "semi": true,
@@ -450,6 +452,7 @@ type(scope): brief description
 ```
 
 Examples:
+
 - `feat(behavioral): add pattern clustering`
 - `fix(knowledge): resolve graph traversal bug`
 - `docs(api): update examples`
@@ -458,32 +461,39 @@ Examples:
 
 ```markdown
 ## Description
+
 Briefly describe the changes made in this PR.
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Related Issues
+
 Fixes #123
 Related to #456
 
 ## Changes Made
+
 - Added feature X
 - Fixed bug Y
 - Updated documentation for Z
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 - [ ] All tests passing locally
 
 ## Screenshots (if applicable)
+
 [Add screenshots for UI changes]
 
 ## Checklist
+
 - [ ] Code follows project standards
 - [ ] Self-review completed
 - [ ] Documentation updated
@@ -504,12 +514,14 @@ Related to #456
 ### Review Guidelines
 
 **For Reviewers**:
+
 - Be constructive and respectful
 - Explain reasoning for suggestions
 - Approve if changes look good
 - Request changes if improvements needed
 
 **For Contributors**:
+
 - Respond to all review comments
 - Make requested changes or discuss alternatives
 - Mark conversations as resolved when addressed
@@ -541,7 +553,7 @@ describe('LearningSystem', () => {
     await system.initialize({
       behavioral: { enabled: true },
       strategic: { enabled: true },
-      knowledge: { enabled: true }
+      knowledge: { enabled: true },
     });
   });
 
@@ -554,12 +566,12 @@ describe('LearningSystem', () => {
         environment: {},
         objectives: [],
         constraints: [],
-        availableResources: []
+        availableResources: [],
       },
       actions: [],
       outcomes: [],
       feedback: { satisfaction: 0.8, effectiveness: 0.8 },
-      metadata: {}
+      metadata: {},
     };
 
     const result = await system.learn(experience);
@@ -572,7 +584,7 @@ describe('LearningSystem', () => {
     const prediction = await system.predict({
       situation: { type: 'test' },
       environment: {},
-      actor: { id: 'user_001', type: 'human' }
+      actor: { id: 'user_001', type: 'human' },
     });
 
     expect(prediction).toBeDefined();
@@ -619,7 +631,7 @@ bun test --watch
 
 #### API Documentation
 
-```typescript
+````typescript
 /**
  * Learns from a given experience and updates internal models.
  *
@@ -646,11 +658,11 @@ bun test --watch
  * ```
  */
 async learn(experience: LearningExperience): Promise<LearningResult>
-```
+````
 
 #### Markdown Documentation
 
-```markdown
+````markdown
 ## Feature Name
 
 Brief description of the feature.
@@ -660,12 +672,13 @@ Brief description of the feature.
 ```typescript
 // Code example
 ```
+````
 
 ### Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| param1 | string | Description |
+| Parameter | Type   | Description |
+| --------- | ------ | ----------- |
+| param1    | string | Description |
 
 ### Returns
 
@@ -678,7 +691,8 @@ Complete example showing typical usage.
 ### Notes
 
 Additional information, warnings, or best practices.
-```
+
+````
 
 ### Documentation Updates
 
@@ -726,24 +740,29 @@ What actually happens.
 
 ## Additional Context
 Screenshots, logs, or other relevant information.
-```
+````
 
 #### Feature Request
 
 ```markdown
 ## Feature Description
+
 What feature would you like.
 
 ## Problem Statement
+
 What problem does this solve?
 
 ## Proposed Solution
+
 How should it work?
 
 ## Alternatives Considered
+
 What other approaches did you consider?
 
 ## Additional Context
+
 Examples, mockups, or implementation ideas.
 ```
 
@@ -763,6 +782,7 @@ Examples, mockups, or implementation ideas.
 ### Contributors
 
 All contributors are recognized in:
+
 - CONTRIBUTORS.md file
 - Release notes
 - Project documentation
@@ -770,6 +790,7 @@ All contributors are recognized in:
 ### Becoming a Maintainer
 
 Active contributors may be invited to become maintainers based on:
+
 - Quality and consistency of contributions
 - Understanding of the codebase
 - Participation in reviews and discussions
@@ -811,6 +832,6 @@ Thank you for your interest in contributing to YYC³ Learning Platform! Your con
 
 ---
 
-*This document is maintained by YYC³ AI Team*
+_This document is maintained by YYC³ AI Team_
 
-*Last updated: 2026-01-03*
+_Last updated: 2026-01-03_

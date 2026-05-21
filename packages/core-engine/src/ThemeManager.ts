@@ -1,9 +1,9 @@
 /**
  * ThemeManager - 主题和样式管理系统
- * 
+ *
  * 提供完整的主题管理和动态样式切换
  * 支持多主题、深色模式、自定义主题、平滑过渡
- * 
+ *
  * 特性:
  * - 预设主题和自定义主题
  * - 深色/浅色模式自动切换
@@ -11,7 +11,7 @@
  * - CSS变量动态更新
  * - 主题预览
  * - 用户偏好保存
- * 
+ *
  * @module ThemeManager
  */
 
@@ -42,32 +42,32 @@ export interface ColorScheme {
   primary: ColorValue;
   primaryHover: ColorValue;
   primaryActive: ColorValue;
-  
+
   // 次色
   secondary: ColorValue;
   secondaryHover: ColorValue;
   secondaryActive: ColorValue;
-  
+
   // 背景色
   background: ColorValue;
   backgroundSecondary: ColorValue;
   backgroundTertiary: ColorValue;
-  
+
   // 前景色（文本）
   foreground: ColorValue;
   foregroundSecondary: ColorValue;
   foregroundTertiary: ColorValue;
-  
+
   // 边框色
   border: ColorValue;
   borderHover: ColorValue;
-  
+
   // 状态色
   success: ColorValue;
   warning: ColorValue;
   error: ColorValue;
   info: ColorValue;
-  
+
   // 阴影
   shadow: ColorValue;
   shadowHeavy: ColorValue;
@@ -188,7 +188,7 @@ export interface ApplyThemeOptions {
  * 预设主题定义
  */
 const PRESET_THEMES: Record<string, Theme> = {
-  'light': {
+  light: {
     id: 'light',
     name: 'Light',
     mode: 'light',
@@ -212,7 +212,7 @@ const PRESET_THEMES: Record<string, Theme> = {
       error: '#ef4444',
       info: '#3b82f6',
       shadow: 'rgba(0, 0, 0, 0.1)',
-      shadowHeavy: 'rgba(0, 0, 0, 0.2)'
+      shadowHeavy: 'rgba(0, 0, 0, 0.2)',
     },
     fonts: {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -224,20 +224,20 @@ const PRESET_THEMES: Record<string, Theme> = {
         lg: '1.125rem',
         xl: '1.25rem',
         '2xl': '1.5rem',
-        '3xl': '1.875rem'
+        '3xl': '1.875rem',
       },
       fontWeight: {
         light: 300,
         normal: 400,
         medium: 500,
         semibold: 600,
-        bold: 700
+        bold: 700,
       },
       lineHeight: {
         tight: 1.25,
         normal: 1.5,
-        relaxed: 1.75
-      }
+        relaxed: 1.75,
+      },
     },
     spacing: {
       xs: '0.25rem',
@@ -246,7 +246,7 @@ const PRESET_THEMES: Record<string, Theme> = {
       lg: '1.5rem',
       xl: '2rem',
       '2xl': '3rem',
-      '3xl': '4rem'
+      '3xl': '4rem',
     },
     borderRadius: {
       none: '0',
@@ -254,7 +254,7 @@ const PRESET_THEMES: Record<string, Theme> = {
       md: '0.375rem',
       lg: '0.5rem',
       xl: '0.75rem',
-      full: '9999px'
+      full: '9999px',
     },
     transitions: {
       fast: '150ms',
@@ -265,12 +265,12 @@ const PRESET_THEMES: Record<string, Theme> = {
         ease: 'ease',
         easeIn: 'ease-in',
         easeOut: 'ease-out',
-        easeInOut: 'ease-in-out'
-      }
-    }
+        easeInOut: 'ease-in-out',
+      },
+    },
   },
-  
-  'dark': {
+
+  dark: {
     id: 'dark',
     name: 'Dark',
     mode: 'dark',
@@ -295,7 +295,7 @@ const PRESET_THEMES: Record<string, Theme> = {
       error: '#ef4444',
       info: '#3b82f6',
       shadow: 'rgba(0, 0, 0, 0.3)',
-      shadowHeavy: 'rgba(0, 0, 0, 0.5)'
+      shadowHeavy: 'rgba(0, 0, 0, 0.5)',
     },
     fonts: {
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
@@ -307,20 +307,20 @@ const PRESET_THEMES: Record<string, Theme> = {
         lg: '1.125rem',
         xl: '1.25rem',
         '2xl': '1.5rem',
-        '3xl': '1.875rem'
+        '3xl': '1.875rem',
       },
       fontWeight: {
         light: 300,
         normal: 400,
         medium: 500,
         semibold: 600,
-        bold: 700
+        bold: 700,
       },
       lineHeight: {
         tight: 1.25,
         normal: 1.5,
-        relaxed: 1.75
-      }
+        relaxed: 1.75,
+      },
     },
     spacing: {
       xs: '0.25rem',
@@ -329,7 +329,7 @@ const PRESET_THEMES: Record<string, Theme> = {
       lg: '1.5rem',
       xl: '2rem',
       '2xl': '3rem',
-      '3xl': '4rem'
+      '3xl': '4rem',
     },
     borderRadius: {
       none: '0',
@@ -337,7 +337,7 @@ const PRESET_THEMES: Record<string, Theme> = {
       md: '0.375rem',
       lg: '0.5rem',
       xl: '0.75rem',
-      full: '9999px'
+      full: '9999px',
     },
     transitions: {
       fast: '150ms',
@@ -348,10 +348,10 @@ const PRESET_THEMES: Record<string, Theme> = {
         ease: 'ease',
         easeIn: 'ease-in',
         easeOut: 'ease-out',
-        easeInOut: 'ease-in-out'
-      }
-    }
-  }
+        easeInOut: 'ease-in-out',
+      },
+    },
+  },
 };
 
 // ================================================
@@ -367,10 +367,10 @@ export class ThemeManager extends EventEmitter {
   private currentMode: ThemeMode = 'auto';
   private config: ThemeConfig;
   private previewElement: HTMLStyleElement | null = null;
-  
+
   constructor(config: Partial<ThemeConfig> = {}) {
     super();
-    
+
     this.config = {
       defaultTheme: 'light',
       defaultMode: 'auto',
@@ -378,28 +378,28 @@ export class ThemeManager extends EventEmitter {
       transitionDuration: 300,
       persistPreference: true,
       autoDetectMode: true,
-      ...config
+      ...config,
     };
-    
+
     // 注册预设主题
     for (const [id, theme] of Object.entries(PRESET_THEMES)) {
       this.registerTheme(theme);
     }
-    
+
     // 加载用户偏好
     if (this.config.persistPreference) {
       this.loadPreferences();
     }
-    
+
     // 应用默认主题
     this.applyTheme(this.config.defaultTheme);
-    
+
     // 监听系统主题变化
     if (this.config.autoDetectMode && this.currentMode === 'auto') {
       this.watchSystemTheme();
     }
   }
-  
+
   /**
    * 注册主题
    */
@@ -411,11 +411,11 @@ export class ThemeManager extends EventEmitter {
         theme = this.mergeThemes(baseTheme, theme);
       }
     }
-    
+
     this.themes.set(theme.id, theme);
     this.emit('themeRegistered', { theme });
   }
-  
+
   /**
    * 应用主题
    */
@@ -425,58 +425,58 @@ export class ThemeManager extends EventEmitter {
       logger.warn(`Theme "${themeId}" not found`);
       return;
     }
-    
+
     // 如果是预览模式，使用临时样式
     if (options.preview) {
       this.previewTheme(theme, options);
       return;
     }
-    
+
     const oldTheme = this.currentTheme;
     this.currentTheme = theme;
-    
+
     // 应用过渡效果
     if (options.transition !== false && this.config.enableTransitions) {
       this.enableTransition(options.duration);
     }
-    
+
     // 应用CSS变量
     this.applyCSSVariables(theme);
-    
+
     // 更新body类名
     this.updateBodyClasses(theme);
-    
+
     // 保存偏好
     if (this.config.persistPreference) {
       this.savePreferences();
     }
-    
+
     // 触发事件
     this.emit('themeChanged', { oldTheme, newTheme: theme });
   }
-  
+
   /**
    * 设置主题模式（深色/浅色/自动）
    */
   setMode(mode: ThemeMode): void {
     this.currentMode = mode;
-    
+
     let themeId: string;
     if (mode === 'auto') {
       themeId = this.detectSystemTheme();
     } else {
       themeId = mode;
     }
-    
+
     this.applyTheme(themeId);
-    
+
     if (this.config.persistPreference) {
       this.savePreferences();
     }
-    
+
     this.emit('modeChanged', { mode });
   }
-  
+
   /**
    * 切换深色/浅色模式
    */
@@ -484,14 +484,14 @@ export class ThemeManager extends EventEmitter {
     const newMode = this.getCurrentMode() === 'light' ? 'dark' : 'light';
     this.setMode(newMode);
   }
-  
+
   /**
    * 获取当前主题
    */
   getCurrentTheme(): Theme | null {
     return this.currentTheme;
   }
-  
+
   /**
    * 获取当前模式
    */
@@ -501,14 +501,14 @@ export class ThemeManager extends EventEmitter {
     }
     return this.currentMode;
   }
-  
+
   /**
    * 获取所有主题
    */
   getAllThemes(): Theme[] {
     return Array.from(this.themes.values());
   }
-  
+
   /**
    * 自定义主题
    */
@@ -517,7 +517,7 @@ export class ThemeManager extends EventEmitter {
     if (!baseTheme) {
       throw new Error(`Base theme "${baseThemeId}" not found`);
     }
-    
+
     const customTheme: Theme = {
       ...baseTheme,
       ...customizations,
@@ -527,13 +527,13 @@ export class ThemeManager extends EventEmitter {
       fonts: { ...baseTheme.fonts, ...customizations.fonts },
       spacing: { ...baseTheme.spacing, ...customizations.spacing },
       borderRadius: { ...baseTheme.borderRadius, ...customizations.borderRadius },
-      transitions: { ...baseTheme.transitions, ...customizations.transitions }
+      transitions: { ...baseTheme.transitions, ...customizations.transitions },
     };
-    
+
     this.registerTheme(customTheme);
     return customTheme;
   }
-  
+
   /**
    * 预览主题
    */
@@ -544,16 +544,16 @@ export class ThemeManager extends EventEmitter {
       this.previewElement.id = 'theme-preview';
       document.head.appendChild(this.previewElement);
     }
-    
+
     const cssVars = this.generateCSSVariables(theme);
     this.previewElement.textContent = `:root { ${cssVars} }`;
-    
+
     // 自动清除预览
     setTimeout(() => {
       this.clearPreview();
     }, options.duration || 5000);
   }
-  
+
   /**
    * 清除预览
    */
@@ -561,42 +561,42 @@ export class ThemeManager extends EventEmitter {
     if (this.previewElement) {
       this.previewElement.remove();
       this.previewElement = null;
-      
+
       // 恢复当前主题
       if (this.currentTheme) {
         this.applyCSSVariables(this.currentTheme);
       }
     }
   }
-  
+
   /**
    * 应用CSS变量
    */
   private applyCSSVariables(theme: Theme): void {
     const root = document.documentElement;
     const cssVars = this.generateCSSVariables(theme);
-    
+
     // 解析并应用每个变量
-    const vars = cssVars.split(';').filter(v => v.trim());
+    const vars = cssVars.split(';').filter((v) => v.trim());
     for (const varDef of vars) {
-      const [name, value] = varDef.split(':').map(s => s.trim());
+      const [name, value] = varDef.split(':').map((s) => s.trim());
       if (name && value) {
         root.style.setProperty(name, value);
       }
     }
   }
-  
+
   /**
    * 生成CSS变量
    */
   private generateCSSVariables(theme: Theme): string {
     const vars: string[] = [];
-    
+
     // 颜色变量
     for (const [key, value] of Object.entries(theme.colors)) {
       vars.push(`--color-${this.camelToKebab(key)}: ${value}`);
     }
-    
+
     // 字体变量
     vars.push(`--font-family: ${theme.fonts.fontFamily}`);
     vars.push(`--font-family-mono: ${theme.fonts.fontFamilyMono}`);
@@ -609,17 +609,17 @@ export class ThemeManager extends EventEmitter {
     for (const [key, value] of Object.entries(theme.fonts.lineHeight)) {
       vars.push(`--line-height-${key}: ${value}`);
     }
-    
+
     // 间距变量
     for (const [key, value] of Object.entries(theme.spacing)) {
       vars.push(`--spacing-${key}: ${value}`);
     }
-    
+
     // 圆角变量
     for (const [key, value] of Object.entries(theme.borderRadius)) {
       vars.push(`--border-radius-${key}: ${value}`);
     }
-    
+
     // 过渡变量
     vars.push(`--transition-fast: ${theme.transitions.fast}`);
     vars.push(`--transition-normal: ${theme.transitions.normal}`);
@@ -627,17 +627,17 @@ export class ThemeManager extends EventEmitter {
     for (const [key, value] of Object.entries(theme.transitions.easing)) {
       vars.push(`--easing-${key}: ${value}`);
     }
-    
+
     // 自定义变量
     if (theme.custom) {
       for (const [key, value] of Object.entries(theme.custom)) {
         vars.push(`--${this.camelToKebab(key)}: ${value}`);
       }
     }
-    
+
     return vars.join('; ');
   }
-  
+
   /**
    * 更新body类名
    */
@@ -646,22 +646,22 @@ export class ThemeManager extends EventEmitter {
     document.body.classList.add(`theme-${theme.mode}`);
     document.body.setAttribute('data-theme', theme.id);
   }
-  
+
   /**
    * 启用过渡效果
    */
   private enableTransition(duration?: number): void {
     const dur = duration || this.config.transitionDuration;
     const root = document.documentElement;
-    
+
     root.style.setProperty('--theme-transition-duration', `${dur}ms`);
     root.classList.add('theme-transitioning');
-    
+
     setTimeout(() => {
       root.classList.remove('theme-transitioning');
     }, dur);
   }
-  
+
   /**
    * 合并主题
    */
@@ -673,28 +673,28 @@ export class ThemeManager extends EventEmitter {
       fonts: { ...base.fonts, ...override.fonts },
       spacing: { ...base.spacing, ...override.spacing },
       borderRadius: { ...base.borderRadius, ...override.borderRadius },
-      transitions: { ...base.transitions, ...override.transitions }
+      transitions: { ...base.transitions, ...override.transitions },
     };
   }
-  
+
   /**
    * 检测系统主题
    */
   private detectSystemTheme(): string {
     if (typeof window === 'undefined') return 'light';
-    
+
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     return darkModeQuery.matches ? 'dark' : 'light';
   }
-  
+
   /**
    * 监听系统主题变化
    */
   private watchSystemTheme(): void {
     if (typeof window === 'undefined') return;
-    
+
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
+
     darkModeQuery.addEventListener('change', (e) => {
       if (this.currentMode === 'auto') {
         const themeId = e.matches ? 'dark' : 'light';
@@ -702,7 +702,7 @@ export class ThemeManager extends EventEmitter {
       }
     });
   }
-  
+
   /**
    * 保存偏好
    */
@@ -710,14 +710,14 @@ export class ThemeManager extends EventEmitter {
     try {
       const prefs = {
         themeId: this.currentTheme?.id,
-        mode: this.currentMode
+        mode: this.currentMode,
       };
       localStorage.setItem('theme-preferences', JSON.stringify(prefs));
     } catch (error) {
       logger.warn('Failed to save theme preferences:', error);
     }
   }
-  
+
   /**
    * 加载偏好
    */
@@ -735,14 +735,14 @@ export class ThemeManager extends EventEmitter {
       logger.warn('Failed to load theme preferences:', error);
     }
   }
-  
+
   /**
    * 驼峰转短横线
    */
   private camelToKebab(str: string): string {
     return str.replace(/([A-Z])/g, '-$1').toLowerCase();
   }
-  
+
   /**
    * 导出主题为JSON
    */
@@ -753,7 +753,7 @@ export class ThemeManager extends EventEmitter {
     }
     return JSON.stringify(theme, null, 2);
   }
-  
+
   /**
    * 从JSON导入主题
    */
@@ -766,7 +766,7 @@ export class ThemeManager extends EventEmitter {
       throw new Error(`Failed to import theme: ${error}`);
     }
   }
-  
+
   /**
    * 销毁管理器
    */

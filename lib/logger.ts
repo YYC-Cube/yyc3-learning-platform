@@ -9,7 +9,7 @@ export enum LogLevel {
   DEBUG = 0,
   INFO = 1,
   WARN = 2,
-  ERROR = 3
+  ERROR = 3,
 }
 
 export interface LoggerConfig {
@@ -27,7 +27,7 @@ export class Logger {
     this.config = {
       level: LogLevel.INFO, // 默认INFO级别，避免环境检测问题
       enableTimestamp: true,
-      ...config
+      ...config,
     };
   }
 
@@ -35,7 +35,7 @@ export class Logger {
     const timestamp = this.config.enableTimestamp ? `[${new Date().toISOString()}] ` : '';
     const context = this.config.context ? `[${this.config.context}] ` : '';
     const dataStr = data ? ` ${JSON.stringify(data)}` : '';
-    
+
     return `${timestamp}${context}${level}: ${message}${dataStr}`;
   }
 
@@ -65,11 +65,14 @@ export class Logger {
 
   error(message: string, error?: Error | any): void {
     if (this.shouldLog(LogLevel.ERROR)) {
-      const errorData = error instanceof Error ? {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      } : error;
+      const errorData =
+        error instanceof Error
+          ? {
+              name: error.name,
+              message: error.message,
+              stack: error.stack,
+            }
+          : error;
       console.error(this.formatMessage('ERROR', message, errorData));
     }
   }

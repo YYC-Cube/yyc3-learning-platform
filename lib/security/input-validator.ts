@@ -42,27 +42,27 @@ export interface ValidationResult {
  */
 export function validateString(value: string, config: ValidationConfig = {}): ValidationResult {
   const { maxLength, minLength, pattern, allowEmpty = false, customValidator } = config;
-  
+
   if (!value && !allowEmpty) {
     return { valid: false, error: '值不能为空' };
   }
-  
+
   if (value && minLength && value.length < minLength) {
     return { valid: false, error: `长度不能少于${minLength}个字符` };
   }
-  
+
   if (value && maxLength && value.length > maxLength) {
     return { valid: false, error: `长度不能超过${maxLength}个字符` };
   }
-  
+
   if (value && pattern && !pattern.test(value)) {
     return { valid: false, error: '格式不正确' };
   }
-  
+
   if (value && customValidator && !customValidator(value)) {
     return { valid: false, error: '自定义验证失败' };
   }
-  
+
   return { valid: true };
 }
 
@@ -119,18 +119,18 @@ export function validatePasswordStrength(password: string): ValidationResult {
   if (password.length < 8) {
     return { valid: false, error: '密码长度至少8位' };
   }
-  
+
   let strength = 0;
-  
+
   if (/[a-z]/.test(password)) strength++;
   if (/[A-Z]/.test(password)) strength++;
   if (/\d/.test(password)) strength++;
   if (/[^a-zA-Z0-9]/.test(password)) strength++;
-  
+
   if (strength < 3) {
     return { valid: false, error: '密码必须包含大小写字母、数字和特殊字符中的至少三种' };
   }
-  
+
   return { valid: true };
 }
 
@@ -148,7 +148,7 @@ export function sanitizeHTML(html: string): string {
     "'": '&#039;',
     '/': '&#x2F;',
   };
-  
+
   const reg = /[&<>"'/]/gi;
   return html.replace(reg, (match) => map[match]);
 }
@@ -180,11 +180,7 @@ export function sanitizeFilename(filename: string): string {
  * @returns 清理后的路径
  */
 export function sanitizePath(path: string): string {
-  return path
-    .replace(/\.\./g, '')
-    .replace(/\/+/g, '/')
-    .replace(/^\/+/, '')
-    .replace(/\/+$/, '');
+  return path.replace(/\.\./g, '').replace(/\/+/g, '/').replace(/^\/+/, '').replace(/\/+$/, '');
 }
 
 /**
@@ -198,11 +194,11 @@ export function validateNumberRange(value: number, min: number, max: number): Va
   if (isNaN(value)) {
     return { valid: false, error: '不是有效的数字' };
   }
-  
+
   if (value < min || value > max) {
     return { valid: false, error: `数值必须在${min}到${max}之间` };
   }
-  
+
   return { valid: true };
 }
 
@@ -213,15 +209,19 @@ export function validateNumberRange(value: number, min: number, max: number): Va
  * @param maxLength 最大长度
  * @returns 验证结果
  */
-export function validateArrayLength<T>(array: T[], minLength: number, maxLength: number): ValidationResult {
+export function validateArrayLength<T>(
+  array: T[],
+  minLength: number,
+  maxLength: number
+): ValidationResult {
   if (array.length < minLength) {
     return { valid: false, error: `数组长度不能少于${minLength}` };
   }
-  
+
   if (array.length > maxLength) {
     return { valid: false, error: `数组长度不能超过${maxLength}` };
   }
-  
+
   return { valid: true };
 }
 
@@ -231,13 +231,16 @@ export function validateArrayLength<T>(array: T[], minLength: number, maxLength:
  * @param requiredProps 必需属性列表
  * @returns 验证结果
  */
-export function validateObjectProps(obj: Record<string, any>, requiredProps: string[]): ValidationResult {
-  const missingProps = requiredProps.filter(prop => !(prop in obj));
-  
+export function validateObjectProps(
+  obj: Record<string, any>,
+  requiredProps: string[]
+): ValidationResult {
+  const missingProps = requiredProps.filter((prop) => !(prop in obj));
+
   if (missingProps.length > 0) {
     return { valid: false, error: `缺少必需属性: ${missingProps.join(', ')}` };
   }
-  
+
   return { valid: true };
 }
 
@@ -291,13 +294,14 @@ export function validateDateTime(datetime: string): ValidationResult {
  * @returns 验证结果
  */
 export function validateIP(ip: string): ValidationResult {
-  const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  const ipv4Regex =
+    /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
   const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/;
-  
+
   if (ipv4Regex.test(ip) || ipv6Regex.test(ip)) {
     return { valid: true };
   }
-  
+
   return { valid: false, error: 'IP地址格式不正确' };
 }
 
@@ -330,7 +334,7 @@ export function validateFileSize(size: number, maxSize: number): ValidationResul
   if (size > maxSize) {
     return { valid: false, error: `文件大小不能超过${maxSize}字节` };
   }
-  
+
   return { valid: true };
 }
 
@@ -342,11 +346,11 @@ export function validateFileSize(size: number, maxSize: number): ValidationResul
  */
 export function validateFileType(filename: string, allowedTypes: string[]): ValidationResult {
   const ext = filename.split('.').pop()?.toLowerCase();
-  
+
   if (!ext || !allowedTypes.includes(ext)) {
     return { valid: false, error: `不支持的文件类型` };
   }
-  
+
   return { valid: true };
 }
 
@@ -361,11 +365,11 @@ export function validateBatch(
   validators: Record<string, (value: any) => ValidationResult>
 ): Record<string, ValidationResult> {
   const results: Record<string, ValidationResult> = {};
-  
+
   for (const [key, validator] of Object.entries(validators)) {
     results[key] = validator(data[key]);
   }
-  
+
   return results;
 }
 
@@ -375,5 +379,5 @@ export function validateBatch(
  * @returns 是否全部通过
  */
 export function isAllValid(results: Record<string, ValidationResult>): boolean {
-  return Object.values(results).every(result => result.valid);
+  return Object.values(results).every((result) => result.valid);
 }

@@ -4,21 +4,21 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { BookOpen, Clock, Download, RefreshCw, Share2, Target, Trophy } from "lucide-react"
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { BookOpen, Clock, Download, RefreshCw, Share2, Target, Trophy } from 'lucide-react';
 
 interface ExamResultAnalysisProps {
-  results: any
-  examTitle: string
-  questions: any[]
-  onRetake: () => void
-  onDownloadCertificate: () => void
-  onShare: () => void
+  results: any;
+  examTitle: string;
+  questions: any[];
+  onRetake: () => void;
+  onDownloadCertificate: () => void;
+  onShare: () => void;
 }
 
 export function ExamResultAnalysis({
@@ -30,31 +30,41 @@ export function ExamResultAnalysis({
   onShare,
 }: ExamResultAnalysisProps) {
   const getPerformanceLevel = (score: number) => {
-    if (score >= 90) return { level: "优秀", color: "text-green-600", bg: "bg-green-50" }
-    if (score >= 80) return { level: "良好", color: "text-blue-600", bg: "bg-blue-50" }
-    if (score >= 70) return { level: "中等", color: "text-yellow-600", bg: "bg-yellow-50" }
-    if (score >= 60) return { level: "及格", color: "text-orange-600", bg: "bg-orange-50" }
-    return { level: "不及格", color: "text-red-600", bg: "bg-red-50" }
-  }
+    if (score >= 90) return { level: '优秀', color: 'text-green-600', bg: 'bg-green-50' };
+    if (score >= 80) return { level: '良好', color: 'text-blue-600', bg: 'bg-blue-50' };
+    if (score >= 70) return { level: '中等', color: 'text-yellow-600', bg: 'bg-yellow-50' };
+    if (score >= 60) return { level: '及格', color: 'text-orange-600', bg: 'bg-orange-50' };
+    return { level: '不及格', color: 'text-red-600', bg: 'bg-red-50' };
+  };
 
-  const performance = getPerformanceLevel(results.score)
+  const performance = getPerformanceLevel(results.score);
 
   const getRecommendations = (score: number) => {
     if (score >= 90) {
       return [
-        "🎉 恭喜！您的表现非常出色",
-        "💡 可以尝试更高难度的考试",
-        "📚 建议深入学习前沿技术",
-        "🤝 可以考虑分享经验帮助他人",
-      ]
+        '🎉 恭喜！您的表现非常出色',
+        '💡 可以尝试更高难度的考试',
+        '📚 建议深入学习前沿技术',
+        '🤝 可以考虑分享经验帮助他人',
+      ];
     } else if (score >= 70) {
-      return ["👍 表现不错，还有提升空间", "📖 建议复习错题相关知识点", "💪 多做练习题巩固基础", "🎯 重点关注薄弱环节"]
+      return [
+        '👍 表现不错，还有提升空间',
+        '📖 建议复习错题相关知识点',
+        '💪 多做练习题巩固基础',
+        '🎯 重点关注薄弱环节',
+      ];
     } else {
-      return ["📚 建议系统性复习基础知识", "🔄 多次练习提高熟练度", "👨‍🏫 可以寻求专业指导", "⏰ 合理安排学习时间"]
+      return [
+        '📚 建议系统性复习基础知识',
+        '🔄 多次练习提高熟练度',
+        '👨‍🏫 可以寻求专业指导',
+        '⏰ 合理安排学习时间',
+      ];
     }
-  }
+  };
 
-  const recommendations = getRecommendations(results.score)
+  const recommendations = getRecommendations(results.score);
 
   return (
     <div className="space-y-6">
@@ -67,7 +77,9 @@ export function ExamResultAnalysis({
             </div>
           </div>
           <CardTitle className="text-3xl font-bold mb-2">
-            {examTitle && <span className="text-lg font-normal text-gray-500 block mb-1">{examTitle}</span>}
+            {examTitle && (
+              <span className="text-lg font-normal text-gray-500 block mb-1">{examTitle}</span>
+            )}
             <span className={performance.color}>{results.score}</span>
             <span className="text-gray-500 text-xl ml-2">分</span>
           </CardTitle>
@@ -88,7 +100,9 @@ export function ExamResultAnalysis({
               <div className="text-sm text-gray-600">正确率</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-orange-600">{Math.floor(results.timeUsed / 60)}分钟</div>
+              <div className="text-2xl font-bold text-orange-600">
+                {Math.floor(results.timeUsed / 60)}分钟
+              </div>
               <div className="text-sm text-gray-600">用时</div>
             </div>
             <div>
@@ -111,23 +125,25 @@ export function ExamResultAnalysis({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {["single", "multiple", "essay"].map((type) => {
-                const typeQuestions = questions.filter((q) => q.type === type)
+              {['single', 'multiple', 'essay'].map((type) => {
+                const typeQuestions = questions.filter((q) => q.type === type);
                 const typeAnswered = typeQuestions.filter(
                   (_, index) =>
-                    results.answers[questions.findIndex((q) => q.id === typeQuestions[index]?.id)] !== undefined,
-                ).length
-                const accuracy = typeAnswered > 0 ? (typeAnswered / typeQuestions.length) * 100 : 0
+                    results.answers[
+                      questions.findIndex((q) => q.id === typeQuestions[index]?.id)
+                    ] !== undefined
+                ).length;
+                const accuracy = typeAnswered > 0 ? (typeAnswered / typeQuestions.length) * 100 : 0;
 
-                if (typeQuestions.length === 0) return null
+                if (typeQuestions.length === 0) return null;
 
                 return (
                   <div key={type}>
                     <div className="flex justify-between text-sm mb-1">
                       <span>
-                        {type === "single" && "单选题"}
-                        {type === "multiple" && "多选题"}
-                        {type === "essay" && "简答题"}
+                        {type === 'single' && '单选题'}
+                        {type === 'multiple' && '多选题'}
+                        {type === 'essay' && '简答题'}
                       </span>
                       <span>{Math.round(accuracy)}%</span>
                     </div>
@@ -136,7 +152,7 @@ export function ExamResultAnalysis({
                       {typeAnswered}/{typeQuestions.length} 题
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
           </CardContent>
@@ -157,11 +173,14 @@ export function ExamResultAnalysis({
                   <span>时间利用率</span>
                   <span>{Math.round((results.timeUsed / (questions.length * 3 * 60)) * 100)}%</span>
                 </div>
-                <Progress value={(results.timeUsed / (questions.length * 3 * 60)) * 100} className="h-2" />
+                <Progress
+                  value={(results.timeUsed / (questions.length * 3 * 60)) * 100}
+                  className="h-2"
+                />
               </div>
               <div className="text-sm text-gray-600">
                 <div>平均每题用时: {Math.round(results.timeUsed / questions.length)} 秒</div>
-                <div>建议每题用时: {questions.length > 20 ? "2-3" : "3-4"} 分钟</div>
+                <div>建议每题用时: {questions.length > 20 ? '2-3' : '3-4'} 分钟</div>
               </div>
             </div>
           </CardContent>
@@ -207,5 +226,5 @@ export function ExamResultAnalysis({
         </Button>
       </div>
     </div>
-  )
+  );
 }

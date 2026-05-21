@@ -46,13 +46,13 @@ export class AIEngineService {
       maxConcurrentTasks: 10,
       enableLearning: true,
       enableEventPublishing: true,
-      ...config
+      ...config,
     };
 
     this.app = express();
     this.agentCore = new AgenticCore({
       maxConcurrentTasks: this.config.maxConcurrentTasks,
-      enableLearning: this.config.enableLearning
+      enableLearning: this.config.enableLearning,
     });
     this.knowledgeBase = new VectorKnowledgeBase();
     this.eventDispatcher = eventDispatcher;
@@ -67,12 +67,14 @@ export class AIEngineService {
   private setupMiddleware(): void {
     // 安全中间件
     this.app.use(helmet());
-    
+
     // CORS
-    this.app.use(cors({
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3200'],
-      credentials: true
-    }));
+    this.app.use(
+      cors({
+        origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3200'],
+        credentials: true,
+      })
+    );
 
     // JSON解析
     this.app.use(express.json({ limit: '50mb' }));
@@ -82,7 +84,7 @@ export class AIEngineService {
     const limiter = rateLimit({
       windowMs: 15 * 60 * 1000,
       max: 50,
-      message: 'AI服务请求过于频繁，请稍后再试'
+      message: 'AI服务请求过于频繁，请稍后再试',
     });
     this.app.use('/api/', limiter);
 
@@ -106,7 +108,7 @@ export class AIEngineService {
         timestamp: Date.now(),
         uptime: process.uptime(),
         service: 'yyc3-ai-engine',
-        version: '1.0.0'
+        version: '1.0.0',
       });
     });
 
@@ -123,19 +125,23 @@ export class AIEngineService {
 
         // 发布事件：AI请求开始
         if (this.config.enableEventPublishing) {
-          await this.eventDispatcher.publish('ai:request:start', {
-            requestId: `req_${Date.now()}`,
-            userId: req.userId,
-            text,
-            context,
-            model,
-            timestamp: Date.now()
-          }, {
-            source: 'yyc3-ai-engine',
-            metadata: {
-              correlationId: req.headers['x-correlation-id'] as string
+          await this.eventDispatcher.publish(
+            'ai:request:start',
+            {
+              requestId: `req_${Date.now()}`,
+              userId: req.userId,
+              text,
+              context,
+              model,
+              timestamp: Date.now(),
+            },
+            {
+              source: 'yyc3-ai-engine',
+              metadata: {
+                correlationId: req.headers['x-correlation-id'] as string,
+              },
             }
-          });
+          );
         }
 
         const response = await this.agentCore.processInput({
@@ -145,42 +151,50 @@ export class AIEngineService {
             userId: req.userId!,
             sessionId: req.sessionId!,
             environment: 'web',
-            model
-          }
+            model,
+          },
         });
 
         // 发布事件：AI请求完成
         if (this.config.enableEventPublishing) {
-          await this.eventDispatcher.publish('ai:request:complete', {
-            requestId: `req_${Date.now()}`,
-            userId: req.userId,
-            text,
-            response,
-            model,
-            timestamp: Date.now()
-          }, {
-            source: 'yyc3-ai-engine',
-            metadata: {
-              correlationId: req.headers['x-correlation-id'] as string
+          await this.eventDispatcher.publish(
+            'ai:request:complete',
+            {
+              requestId: `req_${Date.now()}`,
+              userId: req.userId,
+              text,
+              response,
+              model,
+              timestamp: Date.now(),
+            },
+            {
+              source: 'yyc3-ai-engine',
+              metadata: {
+                correlationId: req.headers['x-correlation-id'] as string,
+              },
             }
-          });
+          );
         }
 
         res.json(response);
       } catch (error: any) {
         // 发布事件：AI请求失败
         if (this.config.enableEventPublishing) {
-          await this.eventDispatcher.publish('ai:request:error', {
-            requestId: `req_${Date.now()}`,
-            userId: (req as AuthenticatedRequest).userId,
-            error: error.message,
-            timestamp: Date.now()
-          }, {
-            source: 'yyc3-ai-engine',
-            metadata: {
-              correlationId: req.headers['x-correlation-id'] as string
+          await this.eventDispatcher.publish(
+            'ai:request:error',
+            {
+              requestId: `req_${Date.now()}`,
+              userId: (req as AuthenticatedRequest).userId,
+              error: error.message,
+              timestamp: Date.now(),
+            },
+            {
+              source: 'yyc3-ai-engine',
+              metadata: {
+                correlationId: req.headers['x-correlation-id'] as string,
+              },
             }
-          });
+          );
         }
         res.status(500).json({ error: error.message });
       }
@@ -202,8 +216,8 @@ export class AIEngineService {
           context: {
             userId: req.userId!,
             sessionId: req.sessionId!,
-            environment: 'web'
-          }
+            environment: 'web',
+          },
         });
 
         res.json(response);
@@ -227,8 +241,8 @@ export class AIEngineService {
           context: {
             userId: req.userId!,
             sessionId: req.sessionId!,
-            environment: 'web'
-          }
+            environment: 'web',
+          },
         });
 
         res.json(embedding);
@@ -261,8 +275,7 @@ export class AIEngineService {
       try {
         // 刷新本地知识库缓存
         await this.knowledgeBase.refresh();
-      } catch (error) {
-      }
+      } catch (error) {}
     });
 
     // 订阅用户偏好更新事件
@@ -271,14 +284,17 @@ export class AIEngineService {
         const { userId, preferences } = event.payload;
         // 更新用户偏好设置
         await this.agentCore.updateUserPreferences(userId, preferences);
-      } catch (error) {
-      }
+      } catch (error) {}
     });
   }
 
   // ==================== 中间件实现 ====================
 
-  private async authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  private async authenticate(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       // 从请求头获取令牌
       const token = req.headers.authorization?.replace('Bearer ', '');
@@ -302,8 +318,7 @@ export class AIEngineService {
   private logger(req: Request, res: Response, next: NextFunction): void {
     const start = Date.now();
 
-    res.on('finish', () => {
-    });
+    res.on('finish', () => {});
 
     next();
   }
@@ -311,15 +326,14 @@ export class AIEngineService {
   private errorHandler(err: Error, req: Request, res: Response, next: NextFunction): void {
     res.status(500).json({
       error: 'AI服务内部错误',
-      message: process.env.NODE_ENV === 'development' ? err.message : undefined
+      message: process.env.NODE_ENV === 'development' ? err.message : undefined,
     });
   }
 
   // ==================== 服务器管理 ====================
 
   public start(): void {
-    this.app.listen(this.config.port, () => {
-    });
+    this.app.listen(this.config.port, () => {});
   }
 
   public getApp(): express.Application {

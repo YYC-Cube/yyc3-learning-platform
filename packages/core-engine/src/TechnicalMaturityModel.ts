@@ -7,11 +7,11 @@ import { EventEmitter } from 'events';
 // ==================== 类型定义 ====================
 
 export enum MaturityLevel {
-  INITIAL = 1,      // 初始级：基本功能
-  REPEATABLE = 2,   // 可重复级：过程规范
-  DEFINED = 3,      // 已定义级：标准过程
-  MANAGED = 4,      // 已管理级：量化管理
-  OPTIMIZING = 5    // 优化级：持续改进
+  INITIAL = 1, // 初始级：基本功能
+  REPEATABLE = 2, // 可重复级：过程规范
+  DEFINED = 3, // 已定义级：标准过程
+  MANAGED = 4, // 已管理级：量化管理
+  OPTIMIZING = 5, // 优化级：持续改进
 }
 
 export interface MaturityDimension {
@@ -169,87 +169,102 @@ export class TechnicalMaturityModel extends EventEmitter {
     { name: '监控告警', weight: 0.1 },
     { name: '安全合规', weight: 0.1 },
     { name: '文档完整', weight: 0.05 },
-    { name: '团队能力', weight: 0.1 }
+    { name: '团队能力', weight: 0.1 },
   ];
 
   private assessmentHistory: MaturityAssessment[] = [];
 
   private levelCriteria: Map<MaturityLevel, AssessmentCriteria> = new Map([
-    [MaturityLevel.INITIAL, {
-      level: MaturityLevel.INITIAL,
-      criteria: [
-        {
-          dimension: '架构设计',
-          requirements: ['存在基本架构', '功能可运行'],
-          examples: ['单体应用', '基本MVC']
-        },
-        {
-          dimension: '代码质量',
-          requirements: ['代码可读', '基本规范'],
-          examples: ['变量命名规范', '基本注释']
-        }
-      ]
-    }],
-    [MaturityLevel.REPEATABLE, {
-      level: MaturityLevel.REPEATABLE,
-      criteria: [
-        {
-          dimension: '架构设计',
-          requirements: ['分层架构', '模块化设计'],
-          examples: ['三层架构', '模块边界清晰']
-        },
-        {
-          dimension: '代码质量',
-          requirements: ['编码规范', '代码审查'],
-          examples: ['ESLint配置', 'PR Review流程']
-        }
-      ]
-    }],
-    [MaturityLevel.DEFINED, {
-      level: MaturityLevel.DEFINED,
-      criteria: [
-        {
-          dimension: '架构设计',
-          requirements: ['微服务架构', '事件驱动'],
-          examples: ['服务拆分', '消息队列']
-        },
-        {
-          dimension: '测试覆盖',
-          requirements: ['单元测试', '集成测试'],
-          examples: ['覆盖率>70%', 'CI/CD集成']
-        }
-      ]
-    }],
-    [MaturityLevel.MANAGED, {
-      level: MaturityLevel.MANAGED,
-      criteria: [
-        {
-          dimension: '监控告警',
-          requirements: ['全链路监控', 'SLO/SLA'],
-          examples: ['分布式追踪', '指标大盘']
-        },
-        {
-          dimension: '部署运维',
-          requirements: ['自动化运维', '灰度发布'],
-          examples: ['K8s部署', '金丝雀发布']
-        }
-      ]
-    }],
-    [MaturityLevel.OPTIMIZING, {
-      level: MaturityLevel.OPTIMIZING,
-      criteria: [
-        {
-          dimension: '架构设计',
-          requirements: ['自适应架构', 'AI驱动优化'],
-          examples: ['自动扩缩容', '智能路由']
-        },
-        {
-          dimension: '团队能力',
-          requirements: ['持续学习', '创新文化'],
-          examples: ['定期技术分享', '创新激励']
-        }
-      ]
-    }]
+    [
+      MaturityLevel.INITIAL,
+      {
+        level: MaturityLevel.INITIAL,
+        criteria: [
+          {
+            dimension: '架构设计',
+            requirements: ['存在基本架构', '功能可运行'],
+            examples: ['单体应用', '基本MVC'],
+          },
+          {
+            dimension: '代码质量',
+            requirements: ['代码可读', '基本规范'],
+            examples: ['变量命名规范', '基本注释'],
+          },
+        ],
+      },
+    ],
+    [
+      MaturityLevel.REPEATABLE,
+      {
+        level: MaturityLevel.REPEATABLE,
+        criteria: [
+          {
+            dimension: '架构设计',
+            requirements: ['分层架构', '模块化设计'],
+            examples: ['三层架构', '模块边界清晰'],
+          },
+          {
+            dimension: '代码质量',
+            requirements: ['编码规范', '代码审查'],
+            examples: ['ESLint配置', 'PR Review流程'],
+          },
+        ],
+      },
+    ],
+    [
+      MaturityLevel.DEFINED,
+      {
+        level: MaturityLevel.DEFINED,
+        criteria: [
+          {
+            dimension: '架构设计',
+            requirements: ['微服务架构', '事件驱动'],
+            examples: ['服务拆分', '消息队列'],
+          },
+          {
+            dimension: '测试覆盖',
+            requirements: ['单元测试', '集成测试'],
+            examples: ['覆盖率>70%', 'CI/CD集成'],
+          },
+        ],
+      },
+    ],
+    [
+      MaturityLevel.MANAGED,
+      {
+        level: MaturityLevel.MANAGED,
+        criteria: [
+          {
+            dimension: '监控告警',
+            requirements: ['全链路监控', 'SLO/SLA'],
+            examples: ['分布式追踪', '指标大盘'],
+          },
+          {
+            dimension: '部署运维',
+            requirements: ['自动化运维', '灰度发布'],
+            examples: ['K8s部署', '金丝雀发布'],
+          },
+        ],
+      },
+    ],
+    [
+      MaturityLevel.OPTIMIZING,
+      {
+        level: MaturityLevel.OPTIMIZING,
+        criteria: [
+          {
+            dimension: '架构设计',
+            requirements: ['自适应架构', 'AI驱动优化'],
+            examples: ['自动扩缩容', '智能路由'],
+          },
+          {
+            dimension: '团队能力',
+            requirements: ['持续学习', '创新文化'],
+            examples: ['定期技术分享', '创新激励'],
+          },
+        ],
+      },
+    ],
   ]);
 
   constructor() {
@@ -262,25 +277,25 @@ export class TechnicalMaturityModel extends EventEmitter {
   async assessMaturity(): Promise<MaturityAssessment> {
     // 1. 数据收集
     const data = await this.collectAssessmentData();
-    
+
     // 2. 维度评分
     const dimensionScores = await this.scoreDimensions(data);
-    
+
     // 3. 总体评分
     const overallScore = this.calculateOverallScore(dimensionScores);
-    
+
     // 4. 成熟度定级
     const maturityLevel = this.determineMaturityLevel(overallScore);
-    
+
     // 5. 差距分析
     const gapAnalysis = await this.analyzeGaps(maturityLevel, dimensionScores);
-    
+
     // 6. 改进建议
     const recommendations = await this.generateRecommendations(gapAnalysis);
-    
+
     // 7. 路线图规划
     const roadmap = await this.createImprovementRoadmap(recommendations);
-    
+
     // 8. 基准比较
     const benchmarking = await this.benchmarkAgainstIndustry(maturityLevel);
 
@@ -296,7 +311,7 @@ export class TechnicalMaturityModel extends EventEmitter {
       recommendations,
       roadmap,
       benchmarking,
-      trends
+      trends,
     };
 
     this.assessmentHistory.push(assessment);
@@ -314,7 +329,7 @@ export class TechnicalMaturityModel extends EventEmitter {
       testMetrics: await this.collectTestMetrics(),
       deploymentMetrics: await this.collectDeploymentMetrics(),
       documentationMetrics: await this.collectDocumentationMetrics(),
-      teamMetrics: await this.collectTeamMetrics()
+      teamMetrics: await this.collectTeamMetrics(),
     };
   }
 
@@ -322,12 +337,12 @@ export class TechnicalMaturityModel extends EventEmitter {
    * 2. 维度评分
    */
   private async scoreDimensions(data: any): Promise<DimensionScore[]> {
-    return this.dimensions.map(dimension => ({
+    return this.dimensions.map((dimension) => ({
       dimension: dimension.name,
       score: this.scoreDimension(dimension.name, data),
       level: this.determineDimensionLevel(this.scoreDimension(dimension.name, data)),
       weight: dimension.weight,
-      details: this.getScoreDetails(dimension.name, data)
+      details: this.getScoreDetails(dimension.name, data),
     }));
   }
 
@@ -336,7 +351,7 @@ export class TechnicalMaturityModel extends EventEmitter {
    */
   private calculateOverallScore(dimensionScores: DimensionScore[]): number {
     let totalScore = 0;
-    dimensionScores.forEach(ds => {
+    dimensionScores.forEach((ds) => {
       totalScore += ds.score * ds.weight;
     });
     return Math.round(totalScore);
@@ -360,11 +375,10 @@ export class TechnicalMaturityModel extends EventEmitter {
     currentLevel: MaturityLevel,
     dimensionScores: DimensionScore[]
   ): Promise<GapAnalysis> {
-    const targetLevel = currentLevel < MaturityLevel.OPTIMIZING 
-      ? currentLevel + 1 
-      : MaturityLevel.OPTIMIZING;
+    const targetLevel =
+      currentLevel < MaturityLevel.OPTIMIZING ? currentLevel + 1 : MaturityLevel.OPTIMIZING;
 
-    const gaps: Gap[] = dimensionScores.map(ds => {
+    const gaps: Gap[] = dimensionScores.map((ds) => {
       const targetScore = this.getTargetScore(ds.dimension, targetLevel);
       return {
         dimension: ds.dimension,
@@ -373,20 +387,18 @@ export class TechnicalMaturityModel extends EventEmitter {
         gap: targetScore - ds.score,
         priority: this.calculateGapPriority(ds),
         effort: this.estimateEffort(ds.score, targetScore),
-        impact: this.estimateImpact(ds.dimension)
+        impact: this.estimateImpact(ds.dimension),
       };
     });
 
     // 按优先级排序
-    const prioritizedGaps = gaps
-      .filter(g => g.gap > 0)
-      .sort((a, b) => b.priority - a.priority);
+    const prioritizedGaps = gaps.filter((g) => g.gap > 0).sort((a, b) => b.priority - a.priority);
 
     return {
       currentLevel,
       targetLevel,
       gaps,
-      prioritizedGaps
+      prioritizedGaps,
     };
   }
 
@@ -406,7 +418,7 @@ export class TechnicalMaturityModel extends EventEmitter {
         effort: gap.effort,
         impact: gap.impact,
         timeframe: this.estimateTimeframe(gap.effort),
-        dependencies: []
+        dependencies: [],
       });
     });
 
@@ -427,7 +439,7 @@ export class TechnicalMaturityModel extends EventEmitter {
         endDate: Date.now() + 30 * 24 * 60 * 60 * 1000,
         objectives: ['解决高优先级问题', '快速提升关键指标'],
         initiatives: [],
-        milestones: []
+        milestones: [],
       },
       {
         name: '系统优化期',
@@ -436,7 +448,7 @@ export class TechnicalMaturityModel extends EventEmitter {
         endDate: Date.now() + 90 * 24 * 60 * 60 * 1000,
         objectives: ['建立标准流程', '完善基础设施'],
         initiatives: [],
-        milestones: []
+        milestones: [],
       },
       {
         name: '持续改进期',
@@ -445,19 +457,15 @@ export class TechnicalMaturityModel extends EventEmitter {
         endDate: Date.now() + 180 * 24 * 60 * 60 * 1000,
         objectives: ['自动化优化', '创新实践'],
         initiatives: [],
-        milestones: []
-      }
+        milestones: [],
+      },
     ];
 
     return {
       phases,
       totalDuration: 180,
       estimatedCost: 100000,
-      expectedBenefits: [
-        '开发效率提升30%',
-        '质量缺陷降低50%',
-        '部署频率提升3倍'
-      ]
+      expectedBenefits: ['开发效率提升30%', '质量缺陷降低50%', '部署频率提升3倍'],
     };
   }
 
@@ -470,7 +478,7 @@ export class TechnicalMaturityModel extends EventEmitter {
       [MaturityLevel.REPEATABLE]: { avg: 50, top: 70 },
       [MaturityLevel.DEFINED]: { avg: 70, top: 85 },
       [MaturityLevel.MANAGED]: { avg: 85, top: 95 },
-      [MaturityLevel.OPTIMIZING]: { avg: 95, top: 100 }
+      [MaturityLevel.OPTIMIZING]: { avg: 95, top: 100 },
     };
 
     const yourScore = this.getLevelScore(level);
@@ -481,7 +489,7 @@ export class TechnicalMaturityModel extends EventEmitter {
       topPerformers: data.top,
       yourPosition: yourScore,
       percentile: this.calculatePercentile(yourScore, data.avg),
-      comparison: []
+      comparison: [],
     };
   }
 
@@ -497,15 +505,15 @@ export class TechnicalMaturityModel extends EventEmitter {
         projection: {
           nextLevel: MaturityLevel.INITIAL,
           estimatedTime: 0,
-          confidence: 0
-        }
+          confidence: 0,
+        },
       };
     }
 
-    const historical = this.assessmentHistory.map(a => ({
+    const historical = this.assessmentHistory.map((a) => ({
       timestamp: a.timestamp.getTime(),
       overallScore: a.overallScore,
-      level: a.maturityLevel
+      level: a.maturityLevel,
     }));
 
     const velocity = this.calculateVelocity(historical);
@@ -515,7 +523,7 @@ export class TechnicalMaturityModel extends EventEmitter {
       historical,
       trend,
       velocity,
-      projection: this.projectNextLevel(historical, velocity)
+      projection: this.projectNextLevel(historical, velocity),
     };
   }
 
@@ -526,7 +534,7 @@ export class TechnicalMaturityModel extends EventEmitter {
       linesOfCode: 10000,
       complexity: 15,
       duplication: 3.5,
-      coverage: 75
+      coverage: 75,
     };
   }
 
@@ -535,7 +543,7 @@ export class TechnicalMaturityModel extends EventEmitter {
       unitTests: 500,
       integrationTests: 100,
       coverage: 75,
-      passRate: 98
+      passRate: 98,
     };
   }
 
@@ -544,7 +552,7 @@ export class TechnicalMaturityModel extends EventEmitter {
       deploymentFrequency: 10,
       leadTime: 2,
       mttr: 0.5,
-      changeFailureRate: 5
+      changeFailureRate: 5,
     };
   }
 
@@ -552,7 +560,7 @@ export class TechnicalMaturityModel extends EventEmitter {
     return {
       apiDocCoverage: 80,
       readmeQuality: 70,
-      architectureDocs: true
+      architectureDocs: true,
     };
   }
 
@@ -560,7 +568,7 @@ export class TechnicalMaturityModel extends EventEmitter {
     return {
       teamSize: 8,
       seniorityRatio: 0.6,
-      trainingHours: 40
+      trainingHours: 40,
     };
   }
 
@@ -628,14 +636,13 @@ export class TechnicalMaturityModel extends EventEmitter {
       return {
         nextLevel: MaturityLevel.INITIAL,
         estimatedTime: 0,
-        confidence: 0
+        confidence: 0,
       };
     }
 
     const current = historical[historical.length - 1];
-    const nextLevel = current.level < MaturityLevel.OPTIMIZING 
-      ? current.level + 1 
-      : MaturityLevel.OPTIMIZING;
+    const nextLevel =
+      current.level < MaturityLevel.OPTIMIZING ? current.level + 1 : MaturityLevel.OPTIMIZING;
 
     const targetScore = nextLevel * 20;
     const gap = targetScore - current.overallScore;
@@ -644,7 +651,7 @@ export class TechnicalMaturityModel extends EventEmitter {
     return {
       nextLevel,
       estimatedTime: Math.round(estimatedTime),
-      confidence: Math.min(historical.length / 10, 1)
+      confidence: Math.min(historical.length / 10, 1),
     };
   }
 
@@ -659,7 +666,7 @@ export class TechnicalMaturityModel extends EventEmitter {
    * 获取最新评估
    */
   getLatestAssessment(): MaturityAssessment | null {
-    return this.assessmentHistory.length > 0 
+    return this.assessmentHistory.length > 0
       ? this.assessmentHistory[this.assessmentHistory.length - 1]
       : null;
   }

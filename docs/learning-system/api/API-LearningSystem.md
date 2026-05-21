@@ -37,14 +37,14 @@ import type {
   BehaviorContext,
   BehaviorPrediction,
   StrategicGoal,
-  KnowledgeItem
+  KnowledgeItem,
 } from '@yyc3/learning-system';
 
 // 导入各层
 import {
   BehavioralLearningLayer,
   StrategicLearningLayer,
-  KnowledgeLearningLayer
+  KnowledgeLearningLayer,
 } from '@yyc3/learning-system';
 ```
 
@@ -60,14 +60,14 @@ class LearningSystem extends EventEmitter implements ILearningSystem
 
 ### 只读属性
 
-| 属性 | 类型 | 说明 |
-|------|------|------|
-| `status` | `LayerStatus` | 系统状态 |
-| `config` | `LearningSystemConfig` | 系统配置 |
-| `metrics` | `LearningSystemMetrics` | 系统指标 |
+| 属性              | 类型                       | 说明       |
+| ----------------- | -------------------------- | ---------- |
+| `status`          | `LayerStatus`              | 系统状态   |
+| `config`          | `LearningSystemConfig`     | 系统配置   |
+| `metrics`         | `LearningSystemMetrics`    | 系统指标   |
 | `behavioralLayer` | `IBehavioralLearningLayer` | 行为学习层 |
-| `strategicLayer` | `IStrategicLearningLayer` | 策略学习层 |
-| `knowledgeLayer` | `IKnowledgeLearningLayer` | 知识学习层 |
+| `strategicLayer`  | `IStrategicLearningLayer`  | 策略学习层 |
+| `knowledgeLayer`  | `IKnowledgeLearningLayer`  | 知识学习层 |
 
 ### 生命周期方法
 
@@ -76,22 +76,25 @@ class LearningSystem extends EventEmitter implements ILearningSystem
 初始化学习系统
 
 **签名**:
+
 ```typescript
 initialize(config: LearningSystemConfig): Promise<void>
 ```
 
 **参数**:
+
 - `config`: 系统配置对象
 
 **返回**: `Promise<void>`
 
 **示例**:
+
 ```typescript
 const system = new LearningSystem();
 await system.initialize({
   behavioral: { enabled: true, modelType: 'classification' },
   strategic: { enabled: true, planningHorizon: 90 },
-  knowledge: { enabled: true, graphSize: 100000 }
+  knowledge: { enabled: true, graphSize: 100000 },
 });
 ```
 
@@ -102,6 +105,7 @@ await system.initialize({
 启动学习系统
 
 **签名**:
+
 ```typescript
 start(): Promise<void>
 ```
@@ -109,6 +113,7 @@ start(): Promise<void>
 **返回**: `Promise<void>`
 
 **示例**:
+
 ```typescript
 await system.start();
 console.log('System started:', system.status); // 'active'
@@ -121,6 +126,7 @@ console.log('System started:', system.status); // 'active'
 停止学习系统
 
 **签名**:
+
 ```typescript
 stop(): Promise<void>
 ```
@@ -128,6 +134,7 @@ stop(): Promise<void>
 **返回**: `Promise<void>`
 
 **示例**:
+
 ```typescript
 await system.stop();
 console.log('System stopped:', system.status); // 'suspended'
@@ -142,16 +149,19 @@ console.log('System stopped:', system.status); // 'suspended'
 从经验中学习
 
 **签名**:
+
 ```typescript
 learn(experience: LearningExperience): Promise<LearningResult>
 ```
 
 **参数**:
+
 - `experience`: 学习经验对象
 
 **返回**: `Promise<LearningResult>`
 
 **LearningExperience 结构**:
+
 ```typescript
 interface LearningExperience {
   id: string;
@@ -171,6 +181,7 @@ interface LearningExperience {
 ```
 
 **示例**:
+
 ```typescript
 const experience: LearningExperience = {
   id: 'exp_001',
@@ -180,12 +191,12 @@ const experience: LearningExperience = {
     environment: { conditions: 'stable', resources: ['cpu', 'memory'] },
     objectives: [{ id: 'obj_1', description: 'Optimize response time' }],
     constraints: [],
-    availableResources: []
+    availableResources: [],
   },
   actions: [{ type: 'adjust_model', parameters: { learningRate: 0.01 } }],
   outcomes: [{ success: true, effectiveness: 0.85 }],
   feedback: { satisfaction: 0.9, effectiveness: 0.85 },
-  metadata: { source: 'production', version: '1.0' }
+  metadata: { source: 'production', version: '1.0' },
 };
 
 const result = await system.learn(experience);
@@ -199,16 +210,19 @@ console.log('Learning completed:', result.success);
 预测行为
 
 **签名**:
+
 ```typescript
 predict(context: BehaviorContext): Promise<BehaviorPrediction>
 ```
 
 **参数**:
+
 - `context`: 行为上下文
 
 **返回**: `Promise<BehaviorPrediction>`
 
 **BehaviorPrediction 结构**:
+
 ```typescript
 interface BehaviorPrediction {
   id: string;
@@ -221,11 +235,12 @@ interface BehaviorPrediction {
 ```
 
 **示例**:
+
 ```typescript
 const context: BehaviorContext = {
   situation: { type: 'system', description: 'High load' },
   environment: { state: 'production' },
-  actor: { id: 'user_001', type: 'human' }
+  actor: { id: 'user_001', type: 'human' },
 };
 
 const prediction = await system.predict(context);
@@ -240,6 +255,7 @@ console.log('Confidence:', prediction.confidence);
 系统性能优化
 
 **签名**:
+
 ```typescript
 optimize(): Promise<PerformanceOptimizationResult>
 ```
@@ -247,6 +263,7 @@ optimize(): Promise<PerformanceOptimizationResult>
 **返回**: `Promise<PerformanceOptimizationResult>`
 
 **示例**:
+
 ```typescript
 const optimization = await system.optimize();
 console.log('Optimizations applied:', optimization.optimizations.length);
@@ -262,11 +279,13 @@ console.log('Performance improvement:', optimization.performanceGain);
 监听系统事件
 
 **签名**:
+
 ```typescript
 on(event: string, listener: (...args: any[]) => void): this
 ```
 
 **可用事件**:
+
 - `'initialized'`: 系统初始化完成
 - `'started'`: 系统启动
 - `'stopped'`: 系统停止
@@ -276,6 +295,7 @@ on(event: string, listener: (...args: any[]) => void): this
 - `'optimized'`: 优化完成
 
 **示例**:
+
 ```typescript
 system.on('pattern_discovered', (pattern) => {
   console.log('New pattern discovered:', pattern.id);
@@ -303,14 +323,17 @@ class BehavioralLearningLayer extends EventEmitter implements IBehavioralLearnin
 记录行为
 
 **签名**:
+
 ```typescript
 recordBehavior(record: BehaviorRecord): Promise<void>
 ```
 
 **参数**:
+
 - `record`: 行为记录对象
 
 **示例**:
+
 ```typescript
 await system.behavioralLayer.recordBehavior({
   id: 'beh_001',
@@ -319,7 +342,7 @@ await system.behavioralLayer.recordBehavior({
   action: { type: 'click', parameters: { target: 'button' } },
   context: { situation: {}, environment: {} },
   outcome: { result: { success: true }, effectiveness: 1.0 },
-  metadata: { source: 'web' }
+  metadata: { source: 'web' },
 });
 ```
 
@@ -330,23 +353,26 @@ await system.behavioralLayer.recordBehavior({
 分析行为模式
 
 **签名**:
+
 ```typescript
 analyzePatterns(timeRange: TimeRange): Promise<BehaviorPattern[]>
 ```
 
 **参数**:
+
 - `timeRange`: 时间范围
 
 **返回**: `Promise<BehaviorPattern[]>`
 
 **示例**:
+
 ```typescript
 const patterns = await system.behavioralLayer.analyzePatterns({
   start: Date.now() - 86400000, // 24小时前
-  end: Date.now()
+  end: Date.now(),
 });
 
-patterns.forEach(pattern => {
+patterns.forEach((pattern) => {
   console.log(`Pattern: ${pattern.id}, Frequency: ${pattern.frequency}`);
 });
 ```
@@ -358,21 +384,24 @@ patterns.forEach(pattern => {
 预测行为
 
 **签名**:
+
 ```typescript
 predictBehavior(context: BehaviorContext): Promise<BehaviorPrediction>
 ```
 
 **参数**:
+
 - `context`: 行为上下文
 
 **返回**: `Promise<BehaviorPrediction>`
 
 **示例**:
+
 ```typescript
 const prediction = await system.behavioralLayer.predictBehavior({
   situation: { type: 'user_session' },
   environment: { state: 'active' },
-  actor: { id: 'user_001', type: 'human' }
+  actor: { id: 'user_001', type: 'human' },
 });
 
 console.log('Next behavior:', prediction.predictedBehavior.type);
@@ -395,14 +424,17 @@ class StrategicLearningLayer extends EventEmitter implements IStrategicLearningL
 设定战略目标
 
 **签名**:
+
 ```typescript
 setGoals(goals: StrategicGoal[]): Promise<void>
 ```
 
 **参数**:
+
 - `goals`: 战略目标数组
 
 **示例**:
+
 ```typescript
 await system.strategicLayer.setGoals([
   {
@@ -413,8 +445,8 @@ await system.strategicLayer.setGoals([
     targetValue: 0.9,
     currentValue: 0.75,
     deadline: Date.now() + 90 * 86400000,
-    status: 'pending'
-  }
+    status: 'pending',
+  },
 ]);
 ```
 
@@ -425,16 +457,19 @@ await system.strategicLayer.setGoals([
 制定战略决策
 
 **签名**:
+
 ```typescript
 makeDecision(context: DecisionContext): Promise<StrategicDecision>
 ```
 
 **参数**:
+
 - `context`: 决策上下文
 
 **返回**: `Promise<StrategicDecision>`
 
 **示例**:
+
 ```typescript
 const decision = await system.strategicLayer.makeDecision({
   situation: { type: 'resource_allocation', priority: 'high' },
@@ -442,8 +477,8 @@ const decision = await system.strategicLayer.makeDecision({
   constraints: ['budget_limit'],
   availableOptions: [
     { id: 'opt_1', description: 'Scale up', cost: 1000 },
-    { id: 'opt_2', description: 'Optimize', cost: 500 }
-  ]
+    { id: 'opt_2', description: 'Optimize', cost: 500 },
+  ],
 });
 
 console.log('Selected option:', decision.selectedOption);
@@ -456,16 +491,19 @@ console.log('Selected option:', decision.selectedOption);
 评估性能
 
 **签名**:
+
 ```typescript
 assessPerformance(plan: StrategicPlan): Promise<PlanEvaluation>
 ```
 
 **参数**:
+
 - `plan`: 战略计划
 
 **返回**: `Promise<PlanEvaluation>`
 
 **示例**:
+
 ```typescript
 const evaluation = await system.strategicLayer.assessPerformance(plan);
 console.log('Goal achievement:', evaluation.goalAchievement);
@@ -489,14 +527,17 @@ class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLearningL
 获取知识
 
 **签名**:
+
 ```typescript
 acquireKnowledge(knowledge: KnowledgeItem): Promise<void>
 ```
 
 **参数**:
+
 - `knowledge`: 知识项对象
 
 **示例**:
+
 ```typescript
 await system.knowledgeLayer.acquireKnowledge({
   id: 'know_001',
@@ -505,13 +546,13 @@ await system.knowledgeLayer.acquireKnowledge({
     id: 'rule_001',
     type: 'rule',
     content: 'If user satisfaction drops below 0.7, trigger alert',
-    format: 'text'
+    format: 'text',
   },
   source: { id: 'manual', type: 'human', name: 'Expert', reliability: 0.9 },
   confidence: 0.95,
   validity: { start: Date.now(), end: null, confidence: 0.9 },
   relationships: [],
-  metadata: { tags: ['user_satisfaction'], source: 'expert', version: '1.0' }
+  metadata: { tags: ['user_satisfaction'], source: 'expert', version: '1.0' },
 });
 ```
 
@@ -522,23 +563,26 @@ await system.knowledgeLayer.acquireKnowledge({
 推理知识
 
 **签名**:
+
 ```typescript
 reason(query: ReasoningQuery): Promise<ReasoningResult>
 ```
 
 **参数**:
+
 - `query`: 推理查询
 
 **返回**: `Promise<ReasoningResult>`
 
 **示例**:
+
 ```typescript
 const result = await system.knowledgeLayer.reason({
   id: 'query_001',
   type: 'inference',
   query: 'What actions improve user satisfaction?',
   context: { domain: 'user_experience' },
-  constraints: { maxResults: 5, confidence: 0.8 }
+  constraints: { maxResults: 5, confidence: 0.8 },
 });
 
 console.log('Inference result:', result.conclusion);
@@ -552,21 +596,24 @@ console.log('Confidence:', result.confidence);
 泛化知识
 
 **签名**:
+
 ```typescript
 generalizeKnowledge(criteria: PruningCriteria): Promise<GeneralizationResult>
 ```
 
 **参数**:
+
 - `criteria`: 泛化标准
 
 **返回**: `Promise<GeneralizationResult>`
 
 **示例**:
+
 ```typescript
 const generalization = await system.knowledgeLayer.generalizeKnowledge({
   minConfidence: 0.8,
   minSupport: 10,
-  timeRange: { start: Date.now() - 30 * 86400000, end: Date.now() }
+  timeRange: { start: Date.now() - 30 * 86400000, end: Date.now() },
 });
 
 console.log('Generalized patterns:', generalization.generalizations.length);
@@ -581,12 +628,14 @@ console.log('Generalized patterns:', generalization.generalizations.length);
 创建学习经验对象
 
 **签名**:
+
 ```typescript
 // @ts-ignore - Factory function accepts flexible input
 createLearningExperience(data: any): LearningExperience
 ```
 
 **示例**:
+
 ```typescript
 import { createLearningExperience } from '@yyc3/learning-system';
 
@@ -595,7 +644,7 @@ const experience = createLearningExperience({
   environment: { state: 'stable' },
   objectives: [{ id: 'obj_1', description: 'Test objective' }],
   actions: [{ type: 'test_action' }],
-  outcomes: [{ success: true }]
+  outcomes: [{ success: true }],
 });
 ```
 
@@ -606,17 +655,19 @@ const experience = createLearningExperience({
 创建行为记录对象
 
 **签名**:
+
 ```typescript
 // @ts-ignore - Factory function accepts flexible input
 createBehaviorRecord(data: any): BehaviorRecord
 ```
 
 **示例**:
+
 ```typescript
 const record = createBehaviorRecord({
   actor: { id: 'user_001', type: 'human' },
   action: { type: 'click', parameters: { target: 'submit' } },
-  outcome: { result: { success: true }, effectiveness: 1.0 }
+  outcome: { result: { success: true }, effectiveness: 1.0 },
 });
 ```
 
@@ -627,19 +678,21 @@ const record = createBehaviorRecord({
 创建战略目标对象
 
 **签名**:
+
 ```typescript
 // @ts-ignore - Factory function accepts flexible input
 createStrategicGoal(data: any): StrategicGoal
 ```
 
 **示例**:
+
 ```typescript
 const goal = createStrategicGoal({
   name: 'Increase Conversion Rate',
   description: 'Achieve 5% conversion rate',
   priority: 'high',
   targetValue: 0.05,
-  currentValue: 0.03
+  currentValue: 0.03,
 });
 ```
 
@@ -650,17 +703,19 @@ const goal = createStrategicGoal({
 创建知识项对象
 
 **签名**:
+
 ```typescript
 // @ts-ignore - Factory function accepts flexible input
 createKnowledgeItem(data: any): KnowledgeItem
 ```
 
 **示例**:
+
 ```typescript
 const knowledge = createKnowledgeItem({
   type: 'fact',
   content: 'Users prefer shorter forms',
-  confidence: 0.9
+  confidence: 0.9,
 });
 ```
 
@@ -671,16 +726,19 @@ const knowledge = createKnowledgeItem({
 ### 核心类型
 
 #### LayerStatus
+
 ```typescript
 type LayerStatus = 'initializing' | 'active' | 'suspended' | 'error';
 ```
 
 #### Priority
+
 ```typescript
 type Priority = 'low' | 'medium' | 'high' | 'critical';
 ```
 
 #### TimeRange
+
 ```typescript
 interface TimeRange {
   start: number;
@@ -693,6 +751,7 @@ interface TimeRange {
 ### 结果类型
 
 #### Result
+
 ```typescript
 interface Result<T = unknown, E = Error> {
   success: boolean;
@@ -703,6 +762,7 @@ interface Result<T = unknown, E = Error> {
 ```
 
 #### LearningResult
+
 ```typescript
 interface LearningResult {
   id: string;
@@ -721,6 +781,7 @@ interface LearningResult {
 ### 行为类型
 
 #### BehaviorRecord
+
 ```typescript
 interface BehaviorRecord {
   id: string;
@@ -734,6 +795,7 @@ interface BehaviorRecord {
 ```
 
 #### BehaviorPattern
+
 ```typescript
 interface BehaviorPattern {
   id: string;
@@ -752,6 +814,7 @@ interface BehaviorPattern {
 ### 策略类型
 
 #### StrategicGoal
+
 ```typescript
 interface StrategicGoal {
   id: string;
@@ -777,6 +840,7 @@ interface StrategicGoal {
 ```
 
 #### StrategicDecision
+
 ```typescript
 interface StrategicDecision {
   id: string;
@@ -795,6 +859,7 @@ interface StrategicDecision {
 ### 知识类型
 
 #### KnowledgeItem
+
 ```typescript
 interface KnowledgeItem {
   id: string;
@@ -809,6 +874,7 @@ interface KnowledgeItem {
 ```
 
 #### ReasoningResult
+
 ```typescript
 interface ReasoningResult {
   id: string;

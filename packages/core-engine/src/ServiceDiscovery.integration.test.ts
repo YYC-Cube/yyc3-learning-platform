@@ -14,7 +14,7 @@ describe('ServiceDiscovery Integration Tests', () => {
       enablePersistence: false,
       enableMetrics: true,
       enableCaching: true,
-      cacheTTL: 5000
+      cacheTTL: 5000,
     });
   });
 
@@ -35,17 +35,17 @@ describe('ServiceDiscovery Integration Tests', () => {
         metadata: {
           region: 'us-east-1',
           environment: 'development',
-          capabilities: ['inference', 'training']
+          capabilities: ['inference', 'training'],
         },
         healthCheck: {
           enabled: false,
           interval: 10000,
           timeout: 5000,
           unhealthyThreshold: 3,
-          healthyThreshold: 2
+          healthyThreshold: 2,
         },
         tags: ['ai', 'engine'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       const serviceId = await serviceDiscovery.register(service);
@@ -68,24 +68,24 @@ describe('ServiceDiscovery Integration Tests', () => {
         status: ServiceStatus.HEALTHY,
         metadata: {
           region: 'us-east-1',
-          environment: 'development'
+          environment: 'development',
         },
         healthCheck: {
           enabled: false,
           interval: 10000,
           timeout: 5000,
           unhealthyThreshold: 3,
-          healthyThreshold: 2
+          healthyThreshold: 2,
         },
         tags: ['model', 'adapter'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
 
       const updated = await serviceDiscovery.update('service-2', {
         status: ServiceStatus.DEGRADED,
-        version: '1.1.0'
+        version: '1.1.0',
       });
 
       expect(updated).toBe(true);
@@ -106,17 +106,17 @@ describe('ServiceDiscovery Integration Tests', () => {
         status: ServiceStatus.HEALTHY,
         metadata: {
           region: 'us-east-1',
-          environment: 'development'
+          environment: 'development',
         },
         healthCheck: {
           enabled: false,
           interval: 10000,
           timeout: 5000,
           unhealthyThreshold: 3,
-          healthyThreshold: 2
+          healthyThreshold: 2,
         },
         tags: ['cache'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
@@ -142,9 +142,15 @@ describe('ServiceDiscovery Integration Tests', () => {
           protocol: 'http',
           status: ServiceStatus.HEALTHY,
           metadata: { region: 'us-east-1', environment: 'production' },
-          healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+          healthCheck: {
+            enabled: false,
+            interval: 10000,
+            timeout: 5000,
+            unhealthyThreshold: 3,
+            healthyThreshold: 2,
+          },
           tags: ['ai', 'engine', 'production'],
-          version: '1.0.0'
+          version: '1.0.0',
         },
         {
           id: 'service-5',
@@ -155,9 +161,15 @@ describe('ServiceDiscovery Integration Tests', () => {
           protocol: 'http',
           status: ServiceStatus.HEALTHY,
           metadata: { region: 'us-west-1', environment: 'production' },
-          healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+          healthCheck: {
+            enabled: false,
+            interval: 10000,
+            timeout: 5000,
+            unhealthyThreshold: 3,
+            healthyThreshold: 2,
+          },
           tags: ['ai', 'engine', 'production'],
-          version: '1.0.0'
+          version: '1.0.0',
         },
         {
           id: 'service-6',
@@ -168,10 +180,16 @@ describe('ServiceDiscovery Integration Tests', () => {
           protocol: 'http',
           status: ServiceStatus.UNHEALTHY,
           metadata: { region: 'us-east-1', environment: 'production' },
-          healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+          healthCheck: {
+            enabled: false,
+            interval: 10000,
+            timeout: 5000,
+            unhealthyThreshold: 3,
+            healthyThreshold: 2,
+          },
           tags: ['model', 'adapter'],
-          version: '1.0.0'
-        }
+          version: '1.0.0',
+        },
       ];
 
       for (const service of services) {
@@ -183,7 +201,7 @@ describe('ServiceDiscovery Integration Tests', () => {
       const services = await serviceDiscovery.discoverByType(ServiceType.AI_ENGINE);
 
       expect(services.length).toBe(2);
-      expect(services.every(s => s.type === ServiceType.AI_ENGINE)).toBe(true);
+      expect(services.every((s) => s.type === ServiceType.AI_ENGINE)).toBe(true);
     });
 
     it('should discover services by name', async () => {
@@ -197,25 +215,25 @@ describe('ServiceDiscovery Integration Tests', () => {
       const services = await serviceDiscovery.discoverByTag('production');
 
       expect(services.length).toBe(2);
-      expect(services.every(s => s.tags.includes('production'))).toBe(true);
+      expect(services.every((s) => s.tags.includes('production'))).toBe(true);
     });
 
     it('should filter services by status', async () => {
       const healthyServices = await serviceDiscovery.discoverByType(ServiceType.AI_ENGINE, {
-        healthyOnly: true
+        healthyOnly: true,
       });
 
       expect(healthyServices.length).toBe(2);
-      expect(healthyServices.every(s => s.status === ServiceStatus.HEALTHY)).toBe(true);
+      expect(healthyServices.every((s) => s.status === ServiceStatus.HEALTHY)).toBe(true);
     });
 
     it('should use custom filter', async () => {
       const services = await serviceDiscovery.discover({
-        customFilter: (service) => service.port >= 4001
+        customFilter: (service) => service.port >= 4001,
       });
 
       expect(services.length).toBe(2);
-      expect(services.every(s => s.port >= 4001)).toBe(true);
+      expect(services.every((s) => s.port >= 4001)).toBe(true);
     });
 
     it('should cache query results', async () => {
@@ -240,9 +258,15 @@ describe('ServiceDiscovery Integration Tests', () => {
         protocol: 'http',
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-east-1', environment: 'development' },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['message', 'bus'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
@@ -250,7 +274,7 @@ describe('ServiceDiscovery Integration Tests', () => {
       const initialService = serviceDiscovery.getService('service-7');
       const initialHeartbeat = initialService?.lastHeartbeat || 0;
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const heartbeatResult = await serviceDiscovery.heartbeat('service-7');
 
@@ -277,10 +301,10 @@ describe('ServiceDiscovery Integration Tests', () => {
           interval: 10000,
           timeout: 5000,
           unhealthyThreshold: 3,
-          healthyThreshold: 2
+          healthyThreshold: 2,
         },
         tags: ['database'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
@@ -288,7 +312,9 @@ describe('ServiceDiscovery Integration Tests', () => {
       const status = await serviceDiscovery.healthCheck('service-8');
 
       expect(status).toBeDefined();
-      expect([ServiceStatus.HEALTHY, ServiceStatus.UNHEALTHY, ServiceStatus.UNKNOWN]).toContain(status);
+      expect([ServiceStatus.HEALTHY, ServiceStatus.UNHEALTHY, ServiceStatus.UNKNOWN]).toContain(
+        status
+      );
     });
   });
 
@@ -303,9 +329,15 @@ describe('ServiceDiscovery Integration Tests', () => {
         protocol: 'http',
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-east-1', environment: 'development' },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['storage'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
@@ -341,9 +373,15 @@ describe('ServiceDiscovery Integration Tests', () => {
         protocol: 'http',
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-east-1', environment: 'development' },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['api', 'gateway'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
@@ -368,9 +406,15 @@ describe('ServiceDiscovery Integration Tests', () => {
         protocol: 'http',
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-east-1', environment: 'development' },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['auth'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
@@ -396,9 +440,15 @@ describe('ServiceDiscovery Integration Tests', () => {
         protocol: 'http',
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-east-1', environment: 'development' },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['worker'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
@@ -420,9 +470,15 @@ describe('ServiceDiscovery Integration Tests', () => {
         protocol: 'http',
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-east-1', environment: 'development' },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['scheduler'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);
@@ -443,9 +499,15 @@ describe('ServiceDiscovery Integration Tests', () => {
         protocol: 'http',
         status: ServiceStatus.HEALTHY,
         metadata: { region: 'us-east-1', environment: 'development' },
-        healthCheck: { enabled: false, interval: 10000, timeout: 5000, unhealthyThreshold: 3, healthyThreshold: 2 },
+        healthCheck: {
+          enabled: false,
+          interval: 10000,
+          timeout: 5000,
+          unhealthyThreshold: 3,
+          healthyThreshold: 2,
+        },
         tags: ['ai', 'engine', 'test'],
-        version: '1.0.0'
+        version: '1.0.0',
       };
 
       await serviceDiscovery.register(service);

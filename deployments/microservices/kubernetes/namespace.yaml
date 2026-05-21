@@ -11,5 +11,5 @@ metadata:
     environment: production
     project: yyc3-ai-platform
   annotations:
-    description: "YYC³ AI Platform Production Namespace"
-    created-by: "yyc3-deployment-system"
+    description: 'YYC³ AI Platform Production Namespace'
+    created-by: 'yyc3-deployment-system'

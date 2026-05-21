@@ -4,158 +4,175 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ResponsiveLayout } from "@/components/responsive-layout"
-import { ProfessionalExam } from "@/components/professional-exam"
-import { ComprehensiveExam } from "@/components/comprehensive-exam"
-import { generateClassificationExam } from "@/data/comprehensive-exam-questions"
-import { FileText, Trophy, Clock, Target, BookOpen, Award, TrendingUp, Brain, Layers } from "lucide-react"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ResponsiveLayout } from '@/components/responsive-layout';
+import { ProfessionalExam } from '@/components/professional-exam';
+import { ComprehensiveExam } from '@/components/comprehensive-exam';
+import { generateClassificationExam } from '@/data/comprehensive-exam-questions';
+import {
+  FileText,
+  Trophy,
+  Clock,
+  Target,
+  BookOpen,
+  Award,
+  TrendingUp,
+  Brain,
+  Layers,
+} from 'lucide-react';
 
 export default function ProfessionalExamPage() {
-  const [selectedExamType, setSelectedExamType] = useState<string | null>(null)
-  const [examQuestions, setExamQuestions] = useState<any[]>([])
-  const [examResults, setExamResults] = useState<any[]>([])
+  const [selectedExamType, setSelectedExamType] = useState<string | null>(null);
+  const [examQuestions, setExamQuestions] = useState<any[]>([]);
+  const [examResults, setExamResults] = useState<any[]>([]);
 
   // AI大模型分类专项考试
   const classificationExamTypes = [
     {
-      type: "model-architecture",
-      title: "模型架构分类专项",
-      description: "语言模型、视觉模型、多模态模型分类",
+      type: 'model-architecture',
+      title: '模型架构分类专项',
+      description: '语言模型、视觉模型、多模态模型分类',
       duration: 90,
       questions: 15,
       points: 75,
       icon: Brain,
-      color: "from-blue-500 to-blue-600",
+      color: 'from-blue-500 to-blue-600',
     },
     {
-      type: "training-methods",
-      title: "训练方式分类专项",
-      description: "有监督、无监督、预训练+微调等方式",
+      type: 'training-methods',
+      title: '训练方式分类专项',
+      description: '有监督、无监督、预训练+微调等方式',
       duration: 80,
       questions: 12,
       points: 60,
       icon: Layers,
-      color: "from-green-500 to-green-600",
+      color: 'from-green-500 to-green-600',
     },
     {
-      type: "application-scenarios",
-      title: "应用场景分类专项",
-      description: "文本生成、图像生成、对话系统等应用",
+      type: 'application-scenarios',
+      title: '应用场景分类专项',
+      description: '文本生成、图像生成、对话系统等应用',
       duration: 70,
       questions: 10,
       points: 50,
       icon: Target,
-      color: "from-purple-500 to-purple-600",
+      color: 'from-purple-500 to-purple-600',
     },
     {
-      type: "comprehensive-classification",
-      title: "AI大模型分类综合测试",
-      description: "全面考查AI大模型分类体系知识",
+      type: 'comprehensive-classification',
+      title: 'AI大模型分类综合测试',
+      description: '全面考查AI大模型分类体系知识',
       duration: 120,
       questions: 25,
       points: 125,
       icon: Trophy,
-      color: "from-orange-500 to-orange-600",
+      color: 'from-orange-500 to-orange-600',
     },
-  ]
+  ];
 
   const basicExamTypes = [
     {
-      type: "practice" as const,
-      title: "练习测试",
-      description: "快速练习，检验学习效果",
+      type: 'practice' as const,
+      title: '练习测试',
+      description: '快速练习，检验学习效果',
       duration: 60,
       questions: 35,
       icon: BookOpen,
-      color: "from-blue-500 to-blue-600",
+      color: 'from-blue-500 to-blue-600',
     },
     {
-      type: "mock" as const,
-      title: "模拟考试",
-      description: "完整模拟，熟悉考试流程",
+      type: 'mock' as const,
+      title: '模拟考试',
+      description: '完整模拟，熟悉考试流程',
       duration: 90,
       questions: 60,
       icon: Target,
-      color: "from-green-500 to-green-600",
+      color: 'from-green-500 to-green-600',
     },
     {
-      type: "formal" as const,
-      title: "正式考试",
-      description: "官方认证，获得专业证书",
+      type: 'formal' as const,
+      title: '正式考试',
+      description: '官方认证，获得专业证书',
       duration: 120,
       questions: 85,
       icon: Award,
-      color: "from-purple-500 to-purple-600",
+      color: 'from-purple-500 to-purple-600',
     },
-  ]
+  ];
 
   const handleExamComplete = (results: any) => {
-    setExamResults((prev) => [results, ...prev])
-  }
+    setExamResults((prev) => [results, ...prev]);
+  };
 
   const handleStartExam = (examType: string) => {
-    let questions: any[] = []
+    let questions: any[] = [];
 
     // 根据考试类型生成题目
-    if (examType === "model-architecture") {
+    if (examType === 'model-architecture') {
       questions = generateClassificationExam({
-        classifications: ["模型架构分类"],
-        questionTypes: ["single", "multiple", "definition"],
-        difficulty: ["初级", "中级"],
+        classifications: ['模型架构分类'],
+        questionTypes: ['single', 'multiple', 'definition'],
+        difficulty: ['初级', '中级'],
         questionCount: 15,
-      })
-    } else if (examType === "training-methods") {
+      });
+    } else if (examType === 'training-methods') {
       questions = generateClassificationExam({
-        classifications: ["训练方式分类"],
-        questionTypes: ["single", "multiple", "comparison"],
-        difficulty: ["中级", "高级"],
+        classifications: ['训练方式分类'],
+        questionTypes: ['single', 'multiple', 'comparison'],
+        difficulty: ['中级', '高级'],
         questionCount: 12,
-      })
-    } else if (examType === "application-scenarios") {
+      });
+    } else if (examType === 'application-scenarios') {
       questions = generateClassificationExam({
-        classifications: ["应用场景分类"],
-        questionTypes: ["single", "multiple", "application"],
-        difficulty: ["初级", "中级"],
+        classifications: ['应用场景分类'],
+        questionTypes: ['single', 'multiple', 'application'],
+        difficulty: ['初级', '中级'],
         questionCount: 10,
-      })
-    } else if (examType === "comprehensive-classification") {
+      });
+    } else if (examType === 'comprehensive-classification') {
       questions = generateClassificationExam({
         classifications: [
-          "模型架构分类",
-          "训练方式分类",
-          "应用场景分类",
-          "规模大小分类",
-          "开源状态分类",
-          "技术发展阶段",
+          '模型架构分类',
+          '训练方式分类',
+          '应用场景分类',
+          '规模大小分类',
+          '开源状态分类',
+          '技术发展阶段',
         ],
-        questionTypes: ["single", "multiple", "essay", "definition", "comparison"],
-        difficulty: ["初级", "中级", "高级"],
+        questionTypes: ['single', 'multiple', 'essay', 'definition', 'comparison'],
+        difficulty: ['初级', '中级', '高级'],
         questionCount: 25,
-      })
+      });
     }
 
-    setExamQuestions(questions)
-    setSelectedExamType(examType)
-  }
+    setExamQuestions(questions);
+    setSelectedExamType(examType);
+  };
 
   const isClassificationExam = (type: string) => {
-    return ["model-architecture", "training-methods", "application-scenarios", "comprehensive-classification"].includes(
-      type,
-    )
-  }
+    return [
+      'model-architecture',
+      'training-methods',
+      'application-scenarios',
+      'comprehensive-classification',
+    ].includes(type);
+  };
 
   if (selectedExamType) {
     return (
       <ResponsiveLayout
         title="专业考试"
-        user={{ name: "张同学", avatar: "/placeholder.svg?height=40&width=40", level: "中级工程师" }}
+        user={{
+          name: '张同学',
+          avatar: '/placeholder.svg?height=40&width=40',
+          level: '中级工程师',
+        }}
       >
         <div className="mb-4">
           <Button variant="ghost" onClick={() => setSelectedExamType(null)}>
@@ -163,21 +180,27 @@ export default function ProfessionalExamPage() {
           </Button>
         </div>
         {isClassificationExam(selectedExamType) ? (
-          <ComprehensiveExam examType={selectedExamType} questions={examQuestions} onComplete={handleExamComplete} />
+          <ComprehensiveExam
+            examType={selectedExamType}
+            questions={examQuestions}
+            onComplete={handleExamComplete}
+          />
         ) : (
           <ProfessionalExam examType={selectedExamType as any} onComplete={handleExamComplete} />
         )}
       </ResponsiveLayout>
-    )
+    );
   }
 
   return (
     <ResponsiveLayout
       title="专业考试"
-      user={{ name: "张同学", avatar: "/placeholder.svg?height=40&width=40", level: "中级工程师" }}
+      user={{ name: '张同学', avatar: '/placeholder.svg?height=40&width=40', level: '中级工程师' }}
     >
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">生成式AI应用工程师专业考试</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          生成式AI应用工程师专业考试
+        </h1>
         <p className="text-gray-600">通过专业考试，验证您的AI技能水平，获得权威认证</p>
       </div>
 
@@ -193,12 +216,14 @@ export default function ProfessionalExamPage() {
         <TabsContent value="classification" className="space-y-6">
           <div className="mb-4">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">AI大模型分类专项测试</h2>
-            <p className="text-gray-600">全面考查AI大模型的分类体系和技术特点，涵盖模型架构、训练方式、应用场景等</p>
+            <p className="text-gray-600">
+              全面考查AI大模型的分类体系和技术特点，涵盖模型架构、训练方式、应用场景等
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {classificationExamTypes.map((exam) => {
-              const Icon = exam.icon
+              const Icon = exam.icon;
               return (
                 <Card
                   key={exam.type}
@@ -247,7 +272,7 @@ export default function ProfessionalExamPage() {
                     </Button>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
 
@@ -297,7 +322,7 @@ export default function ProfessionalExamPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {basicExamTypes.map((exam) => {
-              const Icon = exam.icon
+              const Icon = exam.icon;
               return (
                 <Card
                   key={exam.type}
@@ -333,7 +358,7 @@ export default function ProfessionalExamPage() {
                     </Button>
                   </CardContent>
                 </Card>
-              )
+              );
             })}
           </div>
         </TabsContent>
@@ -360,12 +385,12 @@ export default function ProfessionalExamPage() {
                         <div
                           className={`w-12 h-12 rounded-full flex items-center justify-center ${
                             result.percentage >= 90
-                              ? "bg-green-100 text-green-600"
+                              ? 'bg-green-100 text-green-600'
                               : result.percentage >= 80
-                                ? "bg-blue-100 text-blue-600"
+                                ? 'bg-blue-100 text-blue-600'
                                 : result.percentage >= 60
-                                  ? "bg-yellow-100 text-yellow-600"
-                                  : "bg-red-100 text-red-600"
+                                  ? 'bg-yellow-100 text-yellow-600'
+                                  : 'bg-red-100 text-red-600'
                           }`}
                         >
                           <span className="font-bold">{result.percentage}%</span>
@@ -381,21 +406,21 @@ export default function ProfessionalExamPage() {
                         <Badge
                           variant={
                             result.percentage >= 90
-                              ? "default"
+                              ? 'default'
                               : result.percentage >= 80
-                                ? "secondary"
+                                ? 'secondary'
                                 : result.percentage >= 60
-                                  ? "outline"
-                                  : "destructive"
+                                  ? 'outline'
+                                  : 'destructive'
                           }
                         >
                           {result.percentage >= 90
-                            ? "优秀"
+                            ? '优秀'
                             : result.percentage >= 80
-                              ? "良好"
+                              ? '良好'
                               : result.percentage >= 60
-                                ? "及格"
-                                : "不及格"}
+                                ? '及格'
+                                : '不及格'}
                         </Badge>
                         <Button variant="outline" size="sm">
                           查看详情
@@ -431,7 +456,7 @@ export default function ProfessionalExamPage() {
                 <h3 className="text-lg font-medium text-gray-900 mb-2">暂无证书</h3>
                 <p className="text-gray-600 mb-4">完成正式考试后，您将获得专业认证证书</p>
                 <Button
-                  onClick={() => setSelectedExamType("formal")}
+                  onClick={() => setSelectedExamType('formal')}
                   className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
                 >
                   参加正式考试
@@ -442,5 +467,5 @@ export default function ProfessionalExamPage() {
         </TabsContent>
       </Tabs>
     </ResponsiveLayout>
-  )
+  );
 }

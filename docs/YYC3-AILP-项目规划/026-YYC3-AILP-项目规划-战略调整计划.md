@@ -97,7 +97,7 @@ const educationSolution = {
   intelligentTutoring: true,
   personalizedLearning: true,
   assessmentGeneration: true,
-  progressTracking: true
+  progressTracking: true,
 };
 
 // 企业服务AI助手
@@ -105,7 +105,7 @@ const enterpriseSolution = {
   documentAnalysis: true,
   workflowOptimization: true,
   meetingAssistant: true,
-  knowledgeManagement: true
+  knowledgeManagement: true,
 };
 ```
 

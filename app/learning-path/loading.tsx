@@ -5,5 +5,5 @@
  * @license MIT
  */
 export default function Loading() {
-  return null
+  return null;
 }

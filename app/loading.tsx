@@ -4,9 +4,9 @@
  * @version 1.0.0
  * @license MIT
  */
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Loader2 } from "lucide-react"
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Loader2 } from 'lucide-react';
 
 export default function GlobalLoading() {
   return (
@@ -130,5 +130,5 @@ export default function GlobalLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -4,7 +4,7 @@ export enum CacheLevel {
   L1 = 'memory',
   L2 = 'shared',
   L3 = 'persistent',
-  L4 = 'remote'
+  L4 = 'remote',
 }
 
 export enum CacheStrategy {
@@ -14,7 +14,7 @@ export enum CacheStrategy {
   MRU = 'mru',
   FIFO = 'fifo',
   TTL = 'ttl',
-  HYBRID = 'hybrid'
+  HYBRID = 'hybrid',
 }
 
 export interface CacheMetadata {
@@ -223,7 +223,7 @@ class OptimizedLRUCache extends EventEmitter {
       value,
       metadata,
       prev: null,
-      next: null
+      next: null,
     };
 
     this.cache.set(key, newNode);
@@ -264,17 +264,20 @@ class OptimizedLRUCache extends EventEmitter {
       size: this.cache.size,
       maxSize: this.config.maxSize,
       evictions: this.evictions,
-      avgLatency: this.latencies.length > 0 ? this.latencies.reduce((a, b) => a + b, 0) / this.latencies.length : 0,
+      avgLatency:
+        this.latencies.length > 0
+          ? this.latencies.reduce((a, b) => a + b, 0) / this.latencies.length
+          : 0,
       memoryUsage: this.calculateMemoryUsage(),
       p50Latency: p50,
       p95Latency: p95,
-      p99Latency: p99
+      p99Latency: p99,
     };
   }
 
   async findKeys(pattern: string | RegExp): Promise<string[]> {
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-    return Array.from(this.cache.keys()).filter(key => regex.test(key));
+    return Array.from(this.cache.keys()).filter((key) => regex.test(key));
   }
 
   private moveToHead(node: LRUNode): void {
@@ -407,7 +410,7 @@ class OptimizedLFUCache extends EventEmitter {
       value,
       metadata: { ...metadata, frequency: 1 },
       prev: null,
-      next: null
+      next: null,
     };
 
     this.cache.set(key, newNode);
@@ -449,17 +452,20 @@ class OptimizedLFUCache extends EventEmitter {
       size: this.cache.size,
       maxSize: this.config.maxSize,
       evictions: this.evictions,
-      avgLatency: this.latencies.length > 0 ? this.latencies.reduce((a, b) => a + b, 0) / this.latencies.length : 0,
+      avgLatency:
+        this.latencies.length > 0
+          ? this.latencies.reduce((a, b) => a + b, 0) / this.latencies.length
+          : 0,
       memoryUsage: this.calculateMemoryUsage(),
       p50Latency: p50,
       p95Latency: p95,
-      p99Latency: p99
+      p99Latency: p99,
     };
   }
 
   async findKeys(pattern: string | RegExp): Promise<string[]> {
     const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern;
-    return Array.from(this.cache.keys()).filter(key => regex.test(key));
+    return Array.from(this.cache.keys()).filter((key) => regex.test(key));
   }
 
   private updateFrequency(node: LRUNode): void {
@@ -553,7 +559,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       strategy: CacheStrategy.LRU,
       ttl: config.l1TTL || 60000,
       enableCompression: config.enableCompression || false,
-      serialization: 'json'
+      serialization: 'json',
     });
 
     this.l2Cache = new OptimizedLFUCache({
@@ -561,7 +567,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       connection: config.redisConfig,
       maxMemory: config.l2Size || '1gb',
       policy: config.l2Policy || CacheStrategy.LFU,
-      clustering: config.clusteringEnabled || false
+      clustering: config.clusteringEnabled || false,
     });
 
     this.l3Cache = new OptimizedLRUCache({
@@ -569,7 +575,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       path: config.persistentPath || './cache',
       maxSize: config.l3Size || '10gb',
       compression: config.enableCompression ? 'gzip' : 'none',
-      writeBuffer: config.writeBufferSize || 1024 * 1024
+      writeBuffer: config.writeBufferSize || 1024 * 1024,
     });
 
     this.l4Cache = new OptimizedLRUCache({
@@ -577,7 +583,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       bucket: config.cdnBucket || 'default',
       region: config.cdnRegion || 'us-east-1',
       ttl: config.l4TTL || 86400000,
-      edgeLocations: config.edgeLocations || []
+      edgeLocations: config.edgeLocations || [],
     });
   }
 
@@ -603,7 +609,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       if (result.hit) {
         await Promise.all([
           this.l1Cache.set(key, result.value, result.metadata),
-          this.l2Cache.set(key, result.value, result.metadata)
+          this.l2Cache.set(key, result.value, result.metadata),
         ]);
         this.recordHit('L3', traceId);
         return this.wrapResult(result, CacheLevel.L3, Date.now() - startTime);
@@ -614,7 +620,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
         await Promise.all([
           this.l1Cache.set(key, result.value, result.metadata),
           this.l2Cache.set(key, result.value, result.metadata),
-          this.l3Cache.set(key, result.value, result.metadata)
+          this.l3Cache.set(key, result.value, result.metadata),
         ]);
         this.recordHit('L4', traceId);
         return this.wrapResult(result, CacheLevel.L4, Date.now() - startTime);
@@ -631,8 +637,8 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
           metadata: {
             loadTime: Date.now() - startTime,
             size: this.calculateSize(data),
-            timestamp: new Date()
-          }
+            timestamp: new Date(),
+          },
         };
       }
 
@@ -643,17 +649,20 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
         source: 'none',
         metadata: {
           missTime: Date.now() - startTime,
-          timestamp: new Date()
-        }
+          timestamp: new Date(),
+        },
       };
     } catch (error) {
       return await this.handleCacheError<T>(error, key, options, traceId);
     }
   }
 
-  async getBatch<T>(keys: string[], options: CacheGetOptions = {}): Promise<Map<string, CacheResult<T>>> {
+  async getBatch<T>(
+    keys: string[],
+    options: CacheGetOptions = {}
+  ): Promise<Map<string, CacheResult<T>>> {
     const results = new Map<string, CacheResult<T>>();
-    const promises = keys.map(async key => {
+    const promises = keys.map(async (key) => {
       const result = await this.get<T>(key, options);
       results.set(key, result);
     });
@@ -674,7 +683,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       size: this.calculateSize(value),
       accessCount: 0,
       lastAccessedAt: new Date(),
-      frequency: 0
+      frequency: 0,
     };
 
     switch (options.strategy || 'write-through') {
@@ -683,7 +692,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
           this.l1Cache.set(key, value, metadata),
           this.l2Cache.set(key, value, metadata),
           this.l3Cache.set(key, value, metadata),
-          this.l4Cache.set(key, value, metadata)
+          this.l4Cache.set(key, value, metadata),
         ]);
         break;
 
@@ -707,7 +716,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       default:
         await Promise.all([
           this.l1Cache.set(key, value, metadata),
-          this.l2Cache.set(key, value, metadata)
+          this.l2Cache.set(key, value, metadata),
         ]);
     }
 
@@ -727,13 +736,13 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       this.l1Cache.delete(key),
       this.l2Cache.delete(key),
       this.l3Cache.delete(key),
-      this.l4Cache.delete(key)
+      this.l4Cache.delete(key),
     ]);
     this.emit('cache:delete', { key });
   }
 
   async deleteBatch(keys: string[]): Promise<void> {
-    await Promise.all(keys.map(key => this.delete(key)));
+    await Promise.all(keys.map((key) => this.delete(key)));
   }
 
   async clear(): Promise<void> {
@@ -741,34 +750,34 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       this.l1Cache.clear(),
       this.l2Cache.clear(),
       this.l3Cache.clear(),
-      this.l4Cache.clear()
+      this.l4Cache.clear(),
     ]);
     this.emit('cache:clear');
   }
 
   async invalidate(pattern: string | RegExp): Promise<void> {
     const keys = await this.findKeys(pattern);
-    await Promise.all(keys.map(key => this.delete(key)));
+    await Promise.all(keys.map((key) => this.delete(key)));
   }
 
   async warmup(patterns: WarmupPattern[]): Promise<WarmupReport> {
     const report: WarmupReport = {
       startTime: new Date(),
       patterns: [],
-      results: {}
+      results: {},
     };
 
     for (const pattern of patterns) {
       const patternStart = Date.now();
       const keysToWarm = await this.identifyKeysForWarmup(pattern);
 
-      const warmupPromises = keysToWarm.map(async key => {
+      const warmupPromises = keysToWarm.map(async (key) => {
         try {
           const data = await pattern.loader(key);
           await this.set(key, data, {
             strategy: 'write-through',
             ttl: pattern.ttl,
-            priority: pattern.priority || 'medium'
+            priority: pattern.priority || 'medium',
           });
           return { key, success: true, size: this.calculateSize(data) };
         } catch (error) {
@@ -781,9 +790,9 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       report.patterns.push({
         pattern: pattern.name,
         keysAttempted: keysToWarm.length,
-        keysWarmed: results.filter(r => r.success).length,
+        keysWarmed: results.filter((r) => r.success).length,
         totalSize: results.reduce((sum, r) => sum + (r.size || 0), 0),
-        duration: Date.now() - patternStart
+        duration: Date.now() - patternStart,
       });
 
       report.results[pattern.name] = results;
@@ -800,7 +809,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       this.l1Cache.getStats(),
       this.l2Cache.getStats(),
       this.l3Cache.getStats(),
-      this.l4Cache.getStats()
+      this.l4Cache.getStats(),
     ]);
   }
 
@@ -820,13 +829,13 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
         issue: 'Low hit rate',
         severity: 'high',
         currentValue: stats[0].hitRate,
-        targetValue: 0.8
+        targetValue: 0.8,
       });
       recommendations.push({
         level: 'L1',
         action: 'Increase L1 cache size',
         reason: 'Current hit rate is below 80%',
-        priority: 'high'
+        priority: 'high',
       });
     }
 
@@ -836,13 +845,13 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
         issue: 'High latency',
         severity: 'medium',
         currentValue: stats[0].avgLatency,
-        targetValue: 10
+        targetValue: 10,
       });
       recommendations.push({
         level: 'L1',
         action: 'Optimize cache access patterns',
         reason: 'Average latency exceeds 10ms',
-        priority: 'medium'
+        priority: 'medium',
       });
     }
 
@@ -854,15 +863,15 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
         hitRate,
         totalSize: stats.reduce((sum, s) => sum + s.size, 0),
         totalMemoryUsage: stats.reduce((sum, s) => sum + s.memoryUsage, 0),
-        avgLatency: stats.reduce((sum, s) => sum + s.avgLatency, 0) / stats.length
+        avgLatency: stats.reduce((sum, s) => sum + s.avgLatency, 0) / stats.length,
       },
       bottlenecks,
       recommendations,
       forecast: {
         projectedHitRate: hitRate * 1.1,
-        projectedLatency: stats[0].avgLatency * 0.9
+        projectedLatency: stats[0].avgLatency * 0.9,
       },
-      healthScore: hitRate * 100
+      healthScore: hitRate * 100,
     };
   }
 
@@ -874,8 +883,8 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
       metadata: {
         loadTime,
         size: result.metadata?.size || 0,
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+      },
     };
   }
 
@@ -895,7 +904,12 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
     return JSON.stringify(data).length;
   }
 
-  private async handleCacheError<T>(error: any, key: string, options: CacheGetOptions, traceId: string): Promise<CacheResult<T>> {
+  private async handleCacheError<T>(
+    error: any,
+    key: string,
+    options: CacheGetOptions,
+    traceId: string
+  ): Promise<CacheResult<T>> {
     this.emit('cache:error', { error, key, traceId });
 
     if (options.loader) {
@@ -908,8 +922,8 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
           metadata: {
             loadTime: 0,
             size: this.calculateSize(data),
-            timestamp: new Date()
-          }
+            timestamp: new Date(),
+          },
         };
       } catch (loaderError) {
         throw loaderError;
@@ -925,7 +939,7 @@ export class OptimizedIntelligentCacheLayer extends EventEmitter {
         await Promise.all([
           this.l2Cache.set(key, value, metadata),
           this.l3Cache.set(key, value, metadata),
-          this.l4Cache.set(key, value, metadata)
+          this.l4Cache.set(key, value, metadata),
         ]);
       } catch (error) {
         this.emit('cache:background-write-error', { error, key });

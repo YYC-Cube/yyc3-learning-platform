@@ -13,7 +13,7 @@ import type {
   DecisionContext,
   DecisionOption,
   DecisionConstraints,
-  DecisionPreferences
+  DecisionPreferences,
 } from './EnhancedDecisionEngine';
 
 describe('EnhancedDecisionEngine', () => {
@@ -26,7 +26,7 @@ describe('EnhancedDecisionEngine', () => {
       enableAIAssistedDecision: false,
       enableLearning: true,
       maxOptionsToEvaluate: 10,
-      decisionTimeout: 30000
+      decisionTimeout: 30000,
     });
 
     mockContext = {
@@ -40,14 +40,14 @@ describe('EnhancedDecisionEngine', () => {
         maxTime: 5000,
         maxResources: { cpu: 4, memory: 8192, storage: 100, network: 1000 },
         securityLevel: 'medium',
-        compliance: ['GDPR']
+        compliance: ['GDPR'],
       },
       preferences: {
         prioritizeSpeed: false,
         prioritizeCost: true,
         prioritizeQuality: false,
-        riskTolerance: 'medium'
-      }
+        riskTolerance: 'medium',
+      },
     };
 
     mockOptions = [
@@ -56,41 +56,37 @@ describe('EnhancedDecisionEngine', () => {
         description: '低成本选项',
         actions: [
           { type: 'action1', parameters: {}, dependencies: [] },
-          { type: 'action2', parameters: {}, dependencies: ['action1'] }
+          { type: 'action2', parameters: {}, dependencies: ['action1'] },
         ],
         estimatedCost: 200,
         estimatedTime: 1000,
         resourceRequirements: { cpu: 1, memory: 512, storage: 10, network: 100 },
         riskLevel: 0.2,
         confidence: 0.8,
-        expectedOutcome: { success: true }
+        expectedOutcome: { success: true },
       },
       {
         id: 'option-2',
         description: '高质量选项',
-        actions: [
-          { type: 'action1', parameters: {}, dependencies: [] }
-        ],
+        actions: [{ type: 'action1', parameters: {}, dependencies: [] }],
         estimatedCost: 800,
         estimatedTime: 3000,
         resourceRequirements: { cpu: 2, memory: 1024, storage: 20, network: 200 },
         riskLevel: 0.3,
         confidence: 0.9,
-        expectedOutcome: { success: true, quality: 'high' }
+        expectedOutcome: { success: true, quality: 'high' },
       },
       {
         id: 'option-3',
         description: '高风险选项',
-        actions: [
-          { type: 'action1', parameters: {}, dependencies: [] }
-        ],
+        actions: [{ type: 'action1', parameters: {}, dependencies: [] }],
         estimatedCost: 500,
         estimatedTime: 2000,
         resourceRequirements: { cpu: 1.5, memory: 768, storage: 15, network: 150 },
         riskLevel: 0.7,
         confidence: 0.6,
-        expectedOutcome: { success: true }
-      }
+        expectedOutcome: { success: true },
+      },
     ];
   });
 
@@ -109,7 +105,7 @@ describe('EnhancedDecisionEngine', () => {
         enableAIAssistedDecision: false,
         enableLearning: false,
         maxOptionsToEvaluate: 5,
-        decisionTimeout: 10000
+        decisionTimeout: 10000,
       });
       expect(engine).toBeDefined();
     });
@@ -117,7 +113,7 @@ describe('EnhancedDecisionEngine', () => {
     it('should initialize with AI assisted decision enabled', () => {
       const engine = new EnhancedDecisionEngine({
         enableAIAssistedDecision: true,
-        modelAdapterConfig: { defaultModel: 'gpt-4' }
+        modelAdapterConfig: { defaultModel: 'gpt-4' },
       });
       expect(engine).toBeDefined();
     });
@@ -153,7 +149,7 @@ describe('EnhancedDecisionEngine', () => {
         resourceRequirements: { cpu: 1, memory: 512, storage: 10, network: 100 },
         riskLevel: 0.3,
         confidence: 0.8,
-        expectedOutcome: { success: true }
+        expectedOutcome: { success: true },
       }));
 
       const result = await decisionEngine.makeDecision(mockContext, manyOptions);
@@ -175,7 +171,7 @@ describe('EnhancedDecisionEngine', () => {
 
     it('should emit decision:started event', async () => {
       const emitSpy = jest.spyOn(decisionEngine as any, 'emit');
-      
+
       await decisionEngine.makeDecision(mockContext, mockOptions);
 
       expect(emitSpy).toHaveBeenCalledWith('decision:started');
@@ -183,7 +179,7 @@ describe('EnhancedDecisionEngine', () => {
 
     it('should emit decision:made event', async () => {
       const emitSpy = jest.spyOn(decisionEngine as any, 'emit');
-      
+
       await decisionEngine.makeDecision(mockContext, mockOptions);
 
       expect(emitSpy).toHaveBeenCalledWith('decision:made', expect.any(Object));
@@ -304,10 +300,10 @@ describe('EnhancedDecisionEngine', () => {
     it('should consider risk tolerance', async () => {
       const highRiskContext = {
         ...mockContext,
-        preferences: { ...mockContext.preferences, riskTolerance: 'high' as const }
+        preferences: { ...mockContext.preferences, riskTolerance: 'high' as const },
       };
       const highRiskOption = { ...mockOptions[0], riskLevel: 0.7 };
-      
+
       const result = await decisionEngine.makeDecision(highRiskContext, [highRiskOption]);
 
       expect(result.evaluation.riskScore).toBeGreaterThan(0);
@@ -318,7 +314,7 @@ describe('EnhancedDecisionEngine', () => {
     it('should prioritize cost when prioritizeCost is true', async () => {
       const costPriorityContext = {
         ...mockContext,
-        preferences: { ...mockContext.preferences, prioritizeCost: true }
+        preferences: { ...mockContext.preferences, prioritizeCost: true },
       };
       const result = await decisionEngine.makeDecision(costPriorityContext, mockOptions);
 
@@ -328,7 +324,7 @@ describe('EnhancedDecisionEngine', () => {
     it('should prioritize speed when prioritizeSpeed is true', async () => {
       const speedPriorityContext = {
         ...mockContext,
-        preferences: { ...mockContext.preferences, prioritizeSpeed: true }
+        preferences: { ...mockContext.preferences, prioritizeSpeed: true },
       };
       const result = await decisionEngine.makeDecision(speedPriorityContext, mockOptions);
 
@@ -338,7 +334,7 @@ describe('EnhancedDecisionEngine', () => {
     it('should prioritize quality when prioritizeQuality is true', async () => {
       const qualityPriorityContext = {
         ...mockContext,
-        preferences: { ...mockContext.preferences, prioritizeQuality: true }
+        preferences: { ...mockContext.preferences, prioritizeQuality: true },
       };
       const result = await decisionEngine.makeDecision(qualityPriorityContext, mockOptions);
 
@@ -363,8 +359,8 @@ describe('EnhancedDecisionEngine', () => {
         actions: [
           { type: 'action1', parameters: {}, dependencies: [] },
           { type: 'action2', parameters: {}, dependencies: ['action1'] },
-          { type: 'action3', parameters: {}, dependencies: ['action2'] }
-        ]
+          { type: 'action3', parameters: {}, dependencies: ['action2'] },
+        ],
       };
 
       const result = await decisionEngine.makeDecision(mockContext, [optionWithDependencies]);
@@ -401,7 +397,7 @@ describe('EnhancedDecisionEngine', () => {
       const clearBestOptions = [
         { ...mockOptions[0], estimatedCost: 100, confidence: 0.95 },
         { ...mockOptions[1], estimatedCost: 900, confidence: 0.5 },
-        { ...mockOptions[2], estimatedCost: 800, confidence: 0.5 }
+        { ...mockOptions[2], estimatedCost: 800, confidence: 0.5 },
       ];
 
       const result = await decisionEngine.makeDecision(mockContext, clearBestOptions);
@@ -422,7 +418,7 @@ describe('EnhancedDecisionEngine', () => {
 
     it('should not record decision when learning is disabled', async () => {
       const noLearningEngine = new EnhancedDecisionEngine({
-        enableLearning: false
+        enableLearning: false,
       });
 
       await noLearningEngine.makeDecision(mockContext, mockOptions);
@@ -440,7 +436,7 @@ describe('EnhancedDecisionEngine', () => {
       (decisionEngine as any).learnFromOutcome({
         context: mockContext,
         outcome,
-        success: true
+        success: true,
       });
 
       const history = decisionEngine.getDecisionHistory();
@@ -527,7 +523,7 @@ describe('EnhancedDecisionEngine', () => {
     it('should handle options with same scores', async () => {
       const sameScoreOptions = [
         { ...mockOptions[0], estimatedCost: 500, estimatedTime: 2500, confidence: 0.8 },
-        { ...mockOptions[1], estimatedCost: 500, estimatedTime: 2500, confidence: 0.8 }
+        { ...mockOptions[1], estimatedCost: 500, estimatedTime: 2500, confidence: 0.8 },
       ];
 
       const result = await decisionEngine.makeDecision(mockContext, sameScoreOptions);

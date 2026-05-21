@@ -60,10 +60,7 @@ export class StateManager<T = any> extends EventEmitter {
   private isDirty: boolean = false;
   private version: string = '1.0.0';
 
-  constructor(
-    initialState: T,
-    config: Partial<StateManagerConfig> = {}
-  ) {
+  constructor(initialState: T, config: Partial<StateManagerConfig> = {}) {
     super();
 
     this.config = {
@@ -72,13 +69,13 @@ export class StateManager<T = any> extends EventEmitter {
       maxSnapshots: 50,
       enableCompression: false,
       enableEncryption: false,
-      ...config
+      ...config,
     };
 
     this.currentState = initialState;
     this.history = {
       snapshots: [],
-      currentIndex: -1
+      currentIndex: -1,
     };
 
     // 创建初始快照
@@ -116,7 +113,7 @@ export class StateManager<T = any> extends EventEmitter {
     } else {
       this.currentState = {
         ...this.currentState,
-        ...updater
+        ...updater,
       };
     }
 
@@ -128,15 +125,12 @@ export class StateManager<T = any> extends EventEmitter {
     this.emit('state:changed', {
       prevState,
       currentState: this.currentState,
-      diff
+      diff,
     });
 
     // 创建快照
     if (options.createSnapshot) {
-      this.createSnapshot(
-        options.reason || 'manual_update',
-        options.tags
-      );
+      this.createSnapshot(options.reason || 'manual_update', options.tags);
     }
   }
 
@@ -147,7 +141,7 @@ export class StateManager<T = any> extends EventEmitter {
     updates: Array<Partial<T> | ((prevState: T) => T)>,
     reason: string = 'batch_update'
   ): void {
-    updates.forEach(update => {
+    updates.forEach((update) => {
       this.setState(update, { createSnapshot: false });
     });
 
@@ -171,9 +165,9 @@ export class StateManager<T = any> extends EventEmitter {
         createdBy: 'system',
         reason,
         tags,
-        persistent
+        persistent,
       },
-      checksum: this.calculateChecksum(this.currentState)
+      checksum: this.calculateChecksum(this.currentState),
     };
 
     // 添加到历史
@@ -183,12 +177,8 @@ export class StateManager<T = any> extends EventEmitter {
     // 限制快照数量
     if (this.history.snapshots.length > this.config.maxSnapshots) {
       // 保留持久化快照
-      const persistentSnapshots = this.history.snapshots.filter(
-        s => s.metadata.persistent
-      );
-      const nonPersistentSnapshots = this.history.snapshots.filter(
-        s => !s.metadata.persistent
-      );
+      const persistentSnapshots = this.history.snapshots.filter((s) => s.metadata.persistent);
+      const nonPersistentSnapshots = this.history.snapshots.filter((s) => !s.metadata.persistent);
 
       // 删除最旧的非持久化快照
       if (nonPersistentSnapshots.length > 0) {
@@ -205,11 +195,11 @@ export class StateManager<T = any> extends EventEmitter {
 
     // 持久化快照
     if (this.config.persistenceAdapter && persistent) {
-      this.config.persistenceAdapter.save(snapshot).catch(err => {
-        this.emit('error', { 
-          type: 'persistence_failed', 
-          snapshot, 
-          error: err 
+      this.config.persistenceAdapter.save(snapshot).catch((err) => {
+        this.emit('error', {
+          type: 'persistence_failed',
+          snapshot,
+          error: err,
         });
       });
     }
@@ -221,12 +211,12 @@ export class StateManager<T = any> extends EventEmitter {
    * 恢复快照
    */
   restoreSnapshot(snapshotId: string): boolean {
-    const snapshot = this.history.snapshots.find(s => s.id === snapshotId);
-    
+    const snapshot = this.history.snapshots.find((s) => s.id === snapshotId);
+
     if (!snapshot) {
       this.emit('error', {
         type: 'snapshot_not_found',
-        snapshotId
+        snapshotId,
       });
       return false;
     }
@@ -238,7 +228,7 @@ export class StateManager<T = any> extends EventEmitter {
     this.emit('state:restored', {
       snapshotId,
       prevState,
-      currentState: this.currentState
+      currentState: this.currentState,
     });
 
     return true;
@@ -254,13 +244,13 @@ export class StateManager<T = any> extends EventEmitter {
 
     this.history.currentIndex--;
     const snapshot = this.history.snapshots[this.history.currentIndex];
-    
+
     this.currentState = this.deepClone(snapshot.state);
     this.isDirty = true;
 
     this.emit('state:undo', {
       snapshotId: snapshot.id,
-      currentState: this.currentState
+      currentState: this.currentState,
     });
 
     return true;
@@ -276,13 +266,13 @@ export class StateManager<T = any> extends EventEmitter {
 
     this.history.currentIndex++;
     const snapshot = this.history.snapshots[this.history.currentIndex];
-    
+
     this.currentState = this.deepClone(snapshot.state);
     this.isDirty = true;
 
     this.emit('state:redo', {
       snapshotId: snapshot.id,
-      currentState: this.currentState
+      currentState: this.currentState,
     });
 
     return true;
@@ -293,8 +283,8 @@ export class StateManager<T = any> extends EventEmitter {
    */
   getHistory(): StateHistory<T> {
     return {
-      snapshots: this.history.snapshots.map(s => ({ ...s })),
-      currentIndex: this.history.currentIndex
+      snapshots: this.history.snapshots.map((s) => ({ ...s })),
+      currentIndex: this.history.currentIndex,
     };
   }
 
@@ -302,22 +292,22 @@ export class StateManager<T = any> extends EventEmitter {
    * 获取快照列表
    */
   getSnapshots(): StateSnapshot<T>[] {
-    return this.history.snapshots.map(s => ({ ...s }));
+    return this.history.snapshots.map((s) => ({ ...s }));
   }
 
   /**
    * 获取快照
    */
   getSnapshot(snapshotId: string): StateSnapshot<T> | null {
-    return this.history.snapshots.find(s => s.id === snapshotId) || null;
+    return this.history.snapshots.find((s) => s.id === snapshotId) || null;
   }
 
   /**
    * 删除快照
    */
   deleteSnapshot(snapshotId: string): boolean {
-    const index = this.history.snapshots.findIndex(s => s.id === snapshotId);
-    
+    const index = this.history.snapshots.findIndex((s) => s.id === snapshotId);
+
     if (index === -1) {
       return false;
     }
@@ -330,7 +320,7 @@ export class StateManager<T = any> extends EventEmitter {
     const snapshot = this.history.snapshots[index];
 
     this.history.snapshots.splice(index, 1);
-    
+
     if (index < this.history.currentIndex) {
       this.history.currentIndex--;
     }
@@ -345,7 +335,7 @@ export class StateManager<T = any> extends EventEmitter {
    */
   clearHistory(): void {
     const currentSnapshot = this.history.snapshots[this.history.currentIndex];
-    
+
     this.history.snapshots = currentSnapshot ? [currentSnapshot] : [];
     this.history.currentIndex = 0;
 
@@ -428,34 +418,27 @@ export class StateManager<T = any> extends EventEmitter {
   private calculateDiff(oldState: T, newState: T): StateDiff[] {
     const diffs: StateDiff[] = [];
 
-    const compare = (
-      oldObj: any,
-      newObj: any,
-      path: string = ''
-    ): void => {
+    const compare = (oldObj: any, newObj: any, path: string = ''): void => {
       // 处理对象
       if (this.isObject(oldObj) && this.isObject(newObj)) {
-        const allKeys = new Set([
-          ...Object.keys(oldObj),
-          ...Object.keys(newObj)
-        ]);
+        const allKeys = new Set([...Object.keys(oldObj), ...Object.keys(newObj)]);
 
-        allKeys.forEach(key => {
+        allKeys.forEach((key) => {
           const newPath = path ? `${path}.${key}` : key;
-          
+
           if (!(key in oldObj)) {
             diffs.push({
               path: newPath,
               oldValue: undefined,
               newValue: newObj[key],
-              operation: 'add'
+              operation: 'add',
             });
           } else if (!(key in newObj)) {
             diffs.push({
               path: newPath,
               oldValue: oldObj[key],
               newValue: undefined,
-              operation: 'delete'
+              operation: 'delete',
             });
           } else if (oldObj[key] !== newObj[key]) {
             if (this.isObject(oldObj[key]) && this.isObject(newObj[key])) {
@@ -465,7 +448,7 @@ export class StateManager<T = any> extends EventEmitter {
                 path: newPath,
                 oldValue: oldObj[key],
                 newValue: newObj[key],
-                operation: 'update'
+                operation: 'update',
               });
             }
           }
@@ -475,7 +458,7 @@ export class StateManager<T = any> extends EventEmitter {
           path,
           oldValue: oldObj,
           newValue: newObj,
-          operation: 'update'
+          operation: 'update',
         });
       }
     };
@@ -497,12 +480,12 @@ export class StateManager<T = any> extends EventEmitter {
     }
 
     if (obj instanceof Array) {
-      return obj.map(item => this.deepClone(item)) as any;
+      return obj.map((item) => this.deepClone(item)) as any;
     }
 
     if (obj instanceof Object) {
       const cloned: any = {};
-      Object.keys(obj).forEach(key => {
+      Object.keys(obj).forEach((key) => {
         cloned[key] = this.deepClone((obj as any)[key]);
       });
       return cloned;
@@ -524,13 +507,13 @@ export class StateManager<T = any> extends EventEmitter {
   private calculateChecksum(state: T): string {
     const str = JSON.stringify(state);
     let hash = 0;
-    
+
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash;
     }
-    
+
     return Math.abs(hash).toString(16);
   }
 
@@ -556,7 +539,7 @@ export class StateManager<T = any> extends EventEmitter {
       currentIndex: this.history.currentIndex,
       isDirty: this.isDirty,
       canUndo: this.history.currentIndex > 0,
-      canRedo: this.history.currentIndex < this.history.snapshots.length - 1
+      canRedo: this.history.currentIndex < this.history.snapshots.length - 1,
     };
   }
 
@@ -617,7 +600,7 @@ export class LocalStoragePersistenceAdapter implements PersistenceAdapter {
 
     const key = `${this.prefix}${snapshotId}`;
     const data = localStorage.getItem(key);
-    
+
     return data ? JSON.parse(data) : null;
   }
 
@@ -627,7 +610,7 @@ export class LocalStoragePersistenceAdapter implements PersistenceAdapter {
     }
 
     const snapshots: StateSnapshot[] = [];
-    
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (key?.startsWith(this.prefix)) {
@@ -637,7 +620,7 @@ export class LocalStoragePersistenceAdapter implements PersistenceAdapter {
         }
       }
     }
-    
+
     return snapshots;
   }
 

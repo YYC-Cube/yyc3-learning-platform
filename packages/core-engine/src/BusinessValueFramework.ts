@@ -1,13 +1,13 @@
 /**
  * 业务价值框架系统 (Business Value Framework)
- * 
+ *
  * 实现价值驱动的业务闭环，包括：
  * - 价值发现与定义
  * - 价值交付与度量
  * - ROI分析与优化
  * - 价值验证与放大
  * - 规模化扩展指导
- * 
+ *
  * @module BusinessValueFramework
  */
 
@@ -40,7 +40,13 @@ export interface Problem {
 
 export interface Benefit {
   id: string;
-  type: 'efficiency' | 'quality' | 'speed' | 'cost_reduction' | 'revenue_growth' | 'risk_mitigation';
+  type:
+    | 'efficiency'
+    | 'quality'
+    | 'speed'
+    | 'cost_reduction'
+    | 'revenue_growth'
+    | 'risk_mitigation';
   description: string;
   quantifiedImpact: {
     metric: string;
@@ -658,7 +664,7 @@ export interface BusinessValueFrameworkConfig {
 
 /**
  * 业务价值框架系统
- * 
+ *
  * 实现完整的价值驱动业务闭环
  */
 export class BusinessValueFramework extends EventEmitter {
@@ -676,7 +682,9 @@ export class BusinessValueFramework extends EventEmitter {
   /**
    * 初始化配置
    */
-  private initializeConfig(config: Partial<BusinessValueFrameworkConfig>): BusinessValueFrameworkConfig {
+  private initializeConfig(
+    config: Partial<BusinessValueFrameworkConfig>
+  ): BusinessValueFrameworkConfig {
     return {
       measurement: {
         frequency: config.measurement?.frequency || 'monthly',
@@ -1316,8 +1324,8 @@ export class BusinessValueFramework extends EventEmitter {
       initiatives,
       roadmap: {
         horizon: {
-          immediate: initiatives.filter(i => i.type === 'quick_win'),
-          shortTerm: initiatives.filter(i => i.type === 'strategic'),
+          immediate: initiatives.filter((i) => i.type === 'quick_win'),
+          shortTerm: initiatives.filter((i) => i.type === 'strategic'),
           mediumTerm: [],
           longTerm: [],
         },
@@ -1537,7 +1545,8 @@ export class BusinessValueFramework extends EventEmitter {
     const previousCycle = this.cycleHistory[this.cycleHistory.length - 1];
 
     const valueCreated = {
-      financial: measurement.financialMetrics.revenue.total - measurement.financialMetrics.costs.total,
+      financial:
+        measurement.financialMetrics.revenue.total - measurement.financialMetrics.costs.total,
       operational:
         measurement.operationalMetrics.efficiency.processEfficiency *
         measurement.financialMetrics.revenue.total *
@@ -1547,7 +1556,10 @@ export class BusinessValueFramework extends EventEmitter {
       total: 0,
     };
     valueCreated.total =
-      valueCreated.financial + valueCreated.operational + valueCreated.customer + valueCreated.strategic;
+      valueCreated.financial +
+      valueCreated.operational +
+      valueCreated.customer +
+      valueCreated.strategic;
 
     return {
       cycleNumber,
@@ -1564,17 +1576,13 @@ export class BusinessValueFramework extends EventEmitter {
         '制定明确的优化计划',
         '规划规模化路径',
       ],
-      challenges: [
-        '市场竞争加剧',
-        '技术复杂度增加',
-        '资源限制',
-      ],
+      challenges: ['市场竞争加剧', '技术复杂度增加', '资源限制'],
       insights: [
         '价值驱动的决策提升投资回报',
         '持续优化比一次性改进更有效',
         '规模化需要系统化能力建设',
       ],
-      nextPriorities: plan.initiatives.slice(0, 3).map(i => i.name),
+      nextPriorities: plan.initiatives.slice(0, 3).map((i) => i.name),
     };
   }
 

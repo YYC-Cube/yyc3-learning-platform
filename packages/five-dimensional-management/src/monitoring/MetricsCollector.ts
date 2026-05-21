@@ -1,4 +1,8 @@
-import { ManagementConfig, ManagementMetrics, DashboardData } from '../types/IFiveDimensionalManagement';
+import {
+  ManagementConfig,
+  ManagementMetrics,
+  DashboardData,
+} from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 
 export class MetricsCollector {
@@ -33,7 +37,7 @@ export class MetricsCollector {
         failedConnections: 1,
         dataSyncStatus: 'synced',
         lastSyncTime: new Date(),
-        apiResponseTime: 120
+        apiResponseTime: 120,
       },
       systemLoad: {
         cpuUtilization: 45,
@@ -42,10 +46,10 @@ export class MetricsCollector {
         networkUtilization: 25,
         activeProcesses: 24,
         queueSize: 15,
-        throughput: 850
+        throughput: 850,
       },
       responseTime: 180,
-      uptime: 99.8
+      uptime: 99.8,
     };
   }
 
@@ -61,7 +65,7 @@ export class MetricsCollector {
         keyHighlights: ['System performing well', 'Low error rates'],
         criticalIssues: [],
         topRecommendations: ['Monitor memory usage', 'Update security patches'],
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
       },
       dimensions: {
         goal: {
@@ -71,7 +75,7 @@ export class MetricsCollector {
           atRiskGoals: 2,
           overallProgress: 73,
           topPriorities: [],
-          upcomingDeadlines: []
+          upcomingDeadlines: [],
         },
         technology: {
           systemHealth: 95,
@@ -83,7 +87,7 @@ export class MetricsCollector {
             diskUtilization: 38,
             networkLatency: 25,
             databaseQueryTime: 45,
-            cacheHitRate: 94
+            cacheHitRate: 94,
           },
           reliability: {
             uptime: 99.8,
@@ -91,11 +95,11 @@ export class MetricsCollector {
             mttr: 15,
             errorRate: 0.2,
             availability: 99.8,
-            slaCompliance: 99.5
+            slaCompliance: 99.5,
           },
           securityScore: 92,
           technicalDebt: 24,
-          uptime: 99.8
+          uptime: 99.8,
         },
         data: {
           dataQuality: 96,
@@ -103,7 +107,7 @@ export class MetricsCollector {
           analyticsAccuracy: 94,
           pipelineHealth: 98,
           activeIssues: 2,
-          dataVolume: 1250
+          dataVolume: 1250,
         },
         ux: {
           userSatisfaction: 86,
@@ -111,7 +115,7 @@ export class MetricsCollector {
           accessibilityScore: 93,
           performanceScore: 88,
           netPromoterScore: 42,
-          activeUsers: 1250
+          activeUsers: 1250,
         },
         value: {
           roi: 18,
@@ -119,12 +123,12 @@ export class MetricsCollector {
           revenueImpact: 180000,
           efficiencyGain: 86,
           customerSatisfaction: 86,
-          marketPosition: 78
-        }
+          marketPosition: 78,
+        },
       },
       trends: [],
       alerts: [],
-      recommendations: []
+      recommendations: [],
     };
   }
 

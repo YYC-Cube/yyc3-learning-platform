@@ -7,27 +7,27 @@
  * @created 2025-03-17
  * @updated 2025-03-17
  */
-import { type NextRequest, NextResponse } from "next/server"
-import { getExamById } from "@/data/exams"
-import { getQuestionsByExamId } from "@/data/question-bank"
+import { type NextRequest, NextResponse } from 'next/server';
+import { getExamById } from '@/data/exams';
+import { getQuestionsByExamId } from '@/data/question-bank';
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params
-    const exam = getExamById(id)
+    const { id } = await params;
+    const exam = getExamById(id);
 
     if (!exam) {
-      return NextResponse.json({ error: "Exam not found" }, { status: 404 })
+      return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
     }
 
-    const questions = getQuestionsByExamId(id)
+    const questions = getQuestionsByExamId(id);
 
     return NextResponse.json({
       exam,
       questions,
       totalQuestions: questions.length,
-    })
+    });
   } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

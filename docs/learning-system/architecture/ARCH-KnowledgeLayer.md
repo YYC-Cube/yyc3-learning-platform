@@ -86,15 +86,18 @@ graph TB
 ### 模块职责
 
 #### 1. KnowledgeGraphManager (知识图谱管理器)
+
 **职责**: 管理知识图谱的存储和检索
 
 **核心功能**:
+
 - 图谱存储和索引
 - 节点和边管理
 - 图谱遍历和查询
 - 图谱统计分析
 
 **数据结构**:
+
 ```typescript
 interface KnowledgeGraphManager {
   graph: KnowledgeGraph;
@@ -111,15 +114,18 @@ interface KnowledgeGraphManager {
 ---
 
 #### 2. ReasoningEngine (推理引擎)
+
 **职责**: 执行知识推理
 
 **核心功能**:
+
 - 逻辑推理
 - 规则匹配
 - 因果推断
 - 不确定性推理
 
 **数据结构**:
+
 ```typescript
 interface ReasoningEngine {
   knowledgeBase: KnowledgeBase;
@@ -136,15 +142,18 @@ interface ReasoningEngine {
 ---
 
 #### 3. KnowledgeGeneralizer (知识泛化器)
+
 **职责**: 抽象和泛化知识
 
 **核心功能**:
+
 - 模式抽象
 - 规则归纳
 - 概念形成
 - 知识压缩
 
 **数据结构**:
+
 ```typescript
 interface KnowledgeGeneralizer {
   patterns: Pattern[];
@@ -162,15 +171,18 @@ interface KnowledgeGeneralizer {
 ---
 
 #### 4. KnowledgeValidator (知识验证器)
+
 **职责**: 验证知识质量
 
 **核心功能**:
+
 - 一致性检查
 - 置信度评估
 - 冲突检测
 - 知识剪枝
 
 **数据结构**:
+
 ```typescript
 interface KnowledgeValidator {
   validationRules: ValidationRule[];
@@ -225,22 +237,22 @@ graph TD
 ```typescript
 interface KnowledgeEdge {
   id: string;
-  source: string;               // 源节点 ID
-  target: string;               // 目标节点 ID
+  source: string; // 源节点 ID
+  target: string; // 目标节点 ID
   type: EdgeType;
   properties: EdgeProperties;
-  weight: number;               // 关联强度
-  confidence: number;           // 置信度
+  weight: number; // 关联强度
+  confidence: number; // 置信度
 }
 
 enum EdgeType {
-  IsA = 'is_a',                 // 是一种
+  IsA = 'is_a', // 是一种
   HasProperty = 'has_property', // 具有属性
-  RelatedTo = 'related_to',     // 相关联
-  Causes = 'causes',            // 导致
-  CausedBy = 'caused_by',      // 由...导致
-  PartOf = 'part_of',          // 是...的一部分
-  HasInstance = 'has_instance'  // 有实例
+  RelatedTo = 'related_to', // 相关联
+  Causes = 'causes', // 导致
+  CausedBy = 'caused_by', // 由...导致
+  PartOf = 'part_of', // 是...的一部分
+  HasInstance = 'has_instance', // 有实例
 }
 ```
 
@@ -376,21 +388,21 @@ interface GeneralizationMethod {
 
   // 归纳泛化
   induction?: {
-    minInstances: number;        // 最小实例数
-    minSupport: number;          // 最小支持度
-    maxExceptions: number;       // 最大异常数
+    minInstances: number; // 最小实例数
+    minSupport: number; // 最小支持度
+    maxExceptions: number; // 最大异常数
   };
 
   // 抽象泛化
   abstraction?: {
-    levels: number;              // 抽象层数
+    levels: number; // 抽象层数
     criteria: AbstractionCriteria[];
   };
 
   // 压缩泛化
   compression?: {
-    targetSize: number;          // 目标大小
-    retainEssential: boolean;    // 保留核心信息
+    targetSize: number; // 目标大小
+    retainEssential: boolean; // 保留核心信息
   };
 }
 ```
@@ -426,11 +438,11 @@ sequenceDiagram
 
 ```typescript
 enum ValidationType {
-  Consistency = 'consistency',       // 一致性验证
-  Completeness = 'completeness',     // 完整性验证
-  Accuracy = 'accuracy',             // 准确性验证
-  Relevance = 'relevance',           // 相关性验证
-  Freshness = 'freshness'            // 新鲜度验证
+  Consistency = 'consistency', // 一致性验证
+  Completeness = 'completeness', // 完整性验证
+  Accuracy = 'accuracy', // 准确性验证
+  Relevance = 'relevance', // 相关性验证
+  Freshness = 'freshness', // 新鲜度验证
 }
 ```
 
@@ -444,9 +456,9 @@ interface ValidationRule {
 
   // 规则定义
   condition: {
-    property: string;              // 验证属性
-    operator: string;              // 比较操作符
-    value: unknown;                // 期望值
+    property: string; // 验证属性
+    operator: string; // 比较操作符
+    value: unknown; // 期望值
   };
 
   // 验证动作
@@ -543,9 +555,9 @@ interface IKnowledgeLearningLayer extends EventEmitter {
 ```typescript
 interface KnowledgeLayerConfig {
   enabled: boolean;
-  graphSize: number;               // 知识图谱大小
-  reasoningDepth: number;          // 推理深度
-  validationThreshold: number;     // 验证阈值
+  graphSize: number; // 知识图谱大小
+  reasoningDepth: number; // 推理深度
+  validationThreshold: number; // 验证阈值
 
   // 图谱配置
   graph?: {
@@ -634,11 +646,13 @@ interface ReasoningResult {
 ## 📚 相关文档
 
 ### 架构文档
+
 - [ARCH-LearningSystem-Overview.md](../ARCH-LearningSystem-Overview.md) - 系统架构概览
 - [ARCH-BehavioralLayer.md](../ARCH-BehavioralLayer.md) - 行为层架构
 - [ARCH-StrategicLayer.md](../ARCH-StrategicLayer.md) - 策略层架构
 
 ### API 文档
+
 - [API-KnowledgeLayer.md](../api/API-KnowledgeLayer.md) - 知识层 API
 
 ---

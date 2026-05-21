@@ -38,7 +38,7 @@ await layer.initialize({
   enabled: true,
   modelType: 'classification',
   updateFrequency: 1000,
-  maxHistorySize: 10000
+  maxHistorySize: 10000,
 });
 ```
 
@@ -81,6 +81,7 @@ recordBehavior(record: BehaviorRecord): Promise<void>
 **返回**: `Promise<void>`
 
 **示例**:
+
 ```typescript
 await layer.recordBehavior({
   id: 'beh_001',
@@ -89,7 +90,7 @@ await layer.recordBehavior({
   action: { type: 'click', parameters: { target: 'button' } },
   context: { situation: {}, environment: {} },
   outcome: { result: { success: true }, effectiveness: 1.0 },
-  metadata: { source: 'web' }
+  metadata: { source: 'web' },
 });
 ```
 
@@ -108,12 +109,13 @@ analyzePatterns(range?: TimeRange): Promise<BehaviorPattern[]>
 **返回**: `Promise<BehaviorPattern[]>`
 
 **示例**:
+
 ```typescript
 const patterns = await layer.analyzePatterns({
   start: Date.now() - 86400000,
-  end: Date.now()
+  end: Date.now(),
 });
-patterns.forEach(p => console.log(p.description, p.confidence));
+patterns.forEach((p) => console.log(p.description, p.confidence));
 ```
 
 ---
@@ -131,11 +133,12 @@ predict(context: BehaviorContext): Promise<BehaviorPrediction>
 **返回**: `Promise<BehaviorPrediction>`
 
 **示例**:
+
 ```typescript
 const prediction = await layer.predict({
   situation: { type: 'user_session' },
   environment: { state: 'active' },
-  actor: { id: 'user_001', type: 'human' }
+  actor: { id: 'user_001', type: 'human' },
 });
 console.log('预测:', prediction.predictedBehavior);
 console.log('置信度:', prediction.confidence);
@@ -154,6 +157,7 @@ optimize(): Promise<OptimizationResult>
 **返回**: `Promise<OptimizationResult>`
 
 **示例**:
+
 ```typescript
 const result = await layer.optimize();
 console.log('优化完成:', result.optimizations.length);

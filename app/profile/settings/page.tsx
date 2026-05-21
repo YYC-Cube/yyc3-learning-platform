@@ -4,15 +4,21 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { Separator } from "@/components/ui/separator"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   ArrowLeft,
   Bell,
@@ -30,31 +36,33 @@ import {
   AlertCircle,
   Save,
   RefreshCw,
-} from "lucide-react"
-import Link from "next/link"
-import { ResponsiveLayout } from "@/components/responsive-layout"
-import { AccessibleButton } from "@/components/accessibility/accessible-button"
+} from 'lucide-react';
+import Link from 'next/link';
+import { ResponsiveLayout } from '@/components/responsive-layout';
+import { AccessibleButton } from '@/components/accessibility/accessible-button';
 
 export default function SettingsPage() {
   const [currentUser] = useState({
-    name: "YanYu同学",
-    email: "yanyu@smartcloud.com",
-    avatar: "/placeholder.svg?height=80&width=80&text=YY",
-    level: "中级AI工程师",
-  })
+    name: 'YanYu同学',
+    email: 'yanyu@smartcloud.com',
+    avatar: '/placeholder.svg?height=80&width=80&text=YY',
+    level: '中级AI工程师',
+  });
 
   // 密码修改状态
   const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  })
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
     confirm: false,
-  })
-  const [passwordStatus, setPasswordStatus] = useState<"idle" | "changing" | "success" | "error">("idle")
+  });
+  const [passwordStatus, setPasswordStatus] = useState<'idle' | 'changing' | 'success' | 'error'>(
+    'idle'
+  );
 
   // 通知偏好设置
   const [notificationSettings, setNotificationSettings] = useState({
@@ -68,7 +76,7 @@ export default function SettingsPage() {
     communityMessages: true,
     systemAnnouncements: true,
     marketingEmails: false,
-  })
+  });
 
   // 学习提醒配置
   const [studyReminders, setStudyReminders] = useState({
@@ -76,39 +84,41 @@ export default function SettingsPage() {
     dailyReminder: true,
     weeklyGoal: true,
     streakReminder: true,
-    reminderTime: "19:00",
-    reminderDays: ["monday", "tuesday", "wednesday", "thursday", "friday"],
+    reminderTime: '19:00',
+    reminderDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
     goalHoursPerWeek: 10,
     breakReminder: true,
     breakInterval: 30,
-  })
+  });
 
   // 数据导出状态
-  const [exportStatus, setExportStatus] = useState<"idle" | "preparing" | "ready" | "error">("idle")
+  const [exportStatus, setExportStatus] = useState<'idle' | 'preparing' | 'ready' | 'error'>(
+    'idle'
+  );
   const [exportData, setExportData] = useState({
     includeProfile: true,
     includeCourses: true,
     includeProgress: true,
     includeNotes: true,
     includeCertificates: true,
-    format: "json",
-  })
+    format: 'json',
+  });
 
   // 账户注销状态
-  const [deleteConfirmation, setDeleteConfirmation] = useState("")
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handlePasswordChange = (field: string, value: string) => {
-    setPasswordData((prev) => ({ ...prev, [field]: value }))
-  }
+    setPasswordData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleNotificationChange = (setting: string, value: boolean) => {
-    setNotificationSettings((prev) => ({ ...prev, [setting]: value }))
-  }
+    setNotificationSettings((prev) => ({ ...prev, [setting]: value }));
+  };
 
   const handleStudyReminderChange = (setting: string, value: any) => {
-    setStudyReminders((prev) => ({ ...prev, [setting]: value }))
-  }
+    setStudyReminders((prev) => ({ ...prev, [setting]: value }));
+  };
 
   const handleReminderDayToggle = (day: string) => {
     setStudyReminders((prev) => ({
@@ -116,57 +126,57 @@ export default function SettingsPage() {
       reminderDays: prev.reminderDays.includes(day)
         ? prev.reminderDays.filter((d) => d !== day)
         : [...prev.reminderDays, day],
-    }))
-  }
+    }));
+  };
 
   const handlePasswordSubmit = async () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setPasswordStatus("error")
-      return
+      setPasswordStatus('error');
+      return;
     }
 
-    setPasswordStatus("changing")
+    setPasswordStatus('changing');
     // 模拟密码修改
     setTimeout(() => {
-      setPasswordStatus("success")
-      setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" })
-      setTimeout(() => setPasswordStatus("idle"), 3000)
-    }, 2000)
-  }
+      setPasswordStatus('success');
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setTimeout(() => setPasswordStatus('idle'), 3000);
+    }, 2000);
+  };
 
   const handleDataExport = async () => {
-    setExportStatus("preparing")
+    setExportStatus('preparing');
     // 模拟数据准备过程
     setTimeout(() => {
-      setExportStatus("ready")
+      setExportStatus('ready');
       // 实际应用中这里会触发文件下载
-      setTimeout(() => setExportStatus("idle"), 5000)
-    }, 3000)
-  }
+      setTimeout(() => setExportStatus('idle'), 5000);
+    }, 3000);
+  };
 
   const handleAccountDelete = async () => {
-    if (deleteConfirmation !== "删除我的账户") {
-      return
+    if (deleteConfirmation !== '删除我的账户') {
+      return;
     }
     // 实际删除逻辑
-    alert("账户删除功能已确认（演示模式）")
-  }
+    alert('账户删除功能已确认（演示模式）');
+  };
 
   const weekDays = [
-    { key: "monday", label: "周一" },
-    { key: "tuesday", label: "周二" },
-    { key: "wednesday", label: "周三" },
-    { key: "thursday", label: "周四" },
-    { key: "friday", label: "周五" },
-    { key: "saturday", label: "周六" },
-    { key: "sunday", label: "周日" },
-  ]
+    { key: 'monday', label: '周一' },
+    { key: 'tuesday', label: '周二' },
+    { key: 'wednesday', label: '周三' },
+    { key: 'thursday', label: '周四' },
+    { key: 'friday', label: '周五' },
+    { key: 'saturday', label: '周六' },
+    { key: 'sunday', label: '周日' },
+  ];
 
   return (
     <ResponsiveLayout title="账户设置" user={currentUser}>
       <div className="max-w-4xl mx-auto space-y-6">
         {/* 页面状态提示 */}
-        {passwordStatus === "success" && (
+        {passwordStatus === 'success' && (
           <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
             <div className="flex items-center">
               <CheckCircle className="h-5 w-5 mr-2" />
@@ -175,7 +185,7 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {passwordStatus === "error" && (
+        {passwordStatus === 'error' && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
             <div className="flex items-center">
               <AlertCircle className="h-5 w-5 mr-2" />
@@ -184,7 +194,7 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {exportStatus === "ready" && (
+        {exportStatus === 'ready' && (
           <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6">
             <div className="flex items-center">
               <Download className="h-5 w-5 mr-2" />
@@ -223,18 +233,24 @@ export default function SettingsPage() {
                 <div className="relative">
                   <Input
                     id="currentPassword"
-                    type={showPasswords.current ? "text" : "password"}
+                    type={showPasswords.current ? 'text' : 'password'}
                     value={passwordData.currentPassword}
-                    onChange={(e) => handlePasswordChange("currentPassword", e.target.value)}
+                    onChange={(e) => handlePasswordChange('currentPassword', e.target.value)}
                     placeholder="请输入当前密码"
                     className="border-2 border-gray-200 focus:border-red-400 pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPasswords((prev) => ({ ...prev, current: !prev.current }))}
+                    onClick={() =>
+                      setShowPasswords((prev) => ({ ...prev, current: !prev.current }))
+                    }
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   >
-                    {showPasswords.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPasswords.current ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -244,9 +260,9 @@ export default function SettingsPage() {
                 <div className="relative">
                   <Input
                     id="newPassword"
-                    type={showPasswords.new ? "text" : "password"}
+                    type={showPasswords.new ? 'text' : 'password'}
                     value={passwordData.newPassword}
-                    onChange={(e) => handlePasswordChange("newPassword", e.target.value)}
+                    onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
                     placeholder="请输入新密码"
                     className="border-2 border-gray-200 focus:border-red-400 pr-10"
                   />
@@ -255,7 +271,11 @@ export default function SettingsPage() {
                     onClick={() => setShowPasswords((prev) => ({ ...prev, new: !prev.new }))}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   >
-                    {showPasswords.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPasswords.new ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 <div className="text-sm text-gray-600 space-y-1">
@@ -273,18 +293,24 @@ export default function SettingsPage() {
                 <div className="relative">
                   <Input
                     id="confirmPassword"
-                    type={showPasswords.confirm ? "text" : "password"}
+                    type={showPasswords.confirm ? 'text' : 'password'}
                     value={passwordData.confirmPassword}
-                    onChange={(e) => handlePasswordChange("confirmPassword", e.target.value)}
+                    onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
                     placeholder="请再次输入新密码"
                     className="border-2 border-gray-200 focus:border-red-400 pr-10"
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPasswords((prev) => ({ ...prev, confirm: !prev.confirm }))}
+                    onClick={() =>
+                      setShowPasswords((prev) => ({ ...prev, confirm: !prev.confirm }))
+                    }
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   >
-                    {showPasswords.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPasswords.confirm ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -292,10 +318,14 @@ export default function SettingsPage() {
 
             <AccessibleButton
               onClick={handlePasswordSubmit}
-              loading={passwordStatus === "changing"}
+              loading={passwordStatus === 'changing'}
               loadingText="修改中..."
               className="bg-red-600 hover:bg-red-700 text-white"
-              disabled={!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+              disabled={
+                !passwordData.currentPassword ||
+                !passwordData.newPassword ||
+                !passwordData.confirmPassword
+              }
             >
               <Key className="h-4 w-4 mr-2" />
               修改密码
@@ -327,7 +357,9 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     checked={notificationSettings.emailNotifications}
-                    onCheckedChange={(checked) => handleNotificationChange("emailNotifications", checked)}
+                    onCheckedChange={(checked) =>
+                      handleNotificationChange('emailNotifications', checked)
+                    }
                   />
                 </div>
 
@@ -338,7 +370,9 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     checked={notificationSettings.pushNotifications}
-                    onCheckedChange={(checked) => handleNotificationChange("pushNotifications", checked)}
+                    onCheckedChange={(checked) =>
+                      handleNotificationChange('pushNotifications', checked)
+                    }
                   />
                 </div>
 
@@ -349,7 +383,9 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     checked={notificationSettings.smsNotifications}
-                    onCheckedChange={(checked) => handleNotificationChange("smsNotifications", checked)}
+                    onCheckedChange={(checked) =>
+                      handleNotificationChange('smsNotifications', checked)
+                    }
                   />
                 </div>
               </div>
@@ -362,12 +398,16 @@ export default function SettingsPage() {
               <h3 className="font-semibold text-gray-800">通知内容</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { key: "courseUpdates", label: "课程更新", desc: "新课程发布和内容更新" },
-                  { key: "examReminders", label: "考试提醒", desc: "考试时间和截止日期提醒" },
-                  { key: "achievementNotifications", label: "成就通知", desc: "获得徽章和证书时通知" },
-                  { key: "weeklyProgress", label: "学习周报", desc: "每周学习进度总结" },
-                  { key: "communityMessages", label: "社区消息", desc: "讨论回复和私信通知" },
-                  { key: "systemAnnouncements", label: "系统公告", desc: "重要系统更新和维护通知" },
+                  { key: 'courseUpdates', label: '课程更新', desc: '新课程发布和内容更新' },
+                  { key: 'examReminders', label: '考试提醒', desc: '考试时间和截止日期提醒' },
+                  {
+                    key: 'achievementNotifications',
+                    label: '成就通知',
+                    desc: '获得徽章和证书时通知',
+                  },
+                  { key: 'weeklyProgress', label: '学习周报', desc: '每周学习进度总结' },
+                  { key: 'communityMessages', label: '社区消息', desc: '讨论回复和私信通知' },
+                  { key: 'systemAnnouncements', label: '系统公告', desc: '重要系统更新和维护通知' },
                 ].map((item) => (
                   <div
                     key={item.key}
@@ -378,7 +418,11 @@ export default function SettingsPage() {
                       <p className="text-xs text-gray-500">{item.desc}</p>
                     </div>
                     <Switch
-                      checked={notificationSettings[item.key as keyof typeof notificationSettings] as boolean}
+                      checked={
+                        notificationSettings[
+                          item.key as keyof typeof notificationSettings
+                        ] as boolean
+                      }
                       onCheckedChange={(checked) => handleNotificationChange(item.key, checked)}
                     />
                   </div>
@@ -407,7 +451,7 @@ export default function SettingsPage() {
                 </div>
                 <Switch
                   checked={studyReminders.enabled}
-                  onCheckedChange={(checked) => handleStudyReminderChange("enabled", checked)}
+                  onCheckedChange={(checked) => handleStudyReminderChange('enabled', checked)}
                 />
               </div>
 
@@ -418,7 +462,7 @@ export default function SettingsPage() {
                       <Label>提醒时间</Label>
                       <Select
                         value={studyReminders.reminderTime}
-                        onValueChange={(value) => handleStudyReminderChange("reminderTime", value)}
+                        onValueChange={(value) => handleStudyReminderChange('reminderTime', value)}
                       >
                         <SelectTrigger className="border-2 border-gray-200 focus:border-green-400">
                           <SelectValue />
@@ -441,7 +485,12 @@ export default function SettingsPage() {
                         min="1"
                         max="50"
                         value={studyReminders.goalHoursPerWeek}
-                        onChange={(e) => handleStudyReminderChange("goalHoursPerWeek", Number.parseInt(e.target.value))}
+                        onChange={(e) =>
+                          handleStudyReminderChange(
+                            'goalHoursPerWeek',
+                            Number.parseInt(e.target.value)
+                          )
+                        }
                         className="border-2 border-gray-200 focus:border-green-400"
                       />
                     </div>
@@ -456,8 +505,8 @@ export default function SettingsPage() {
                           onClick={() => handleReminderDayToggle(day.key)}
                           className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                             studyReminders.reminderDays.includes(day.key)
-                              ? "bg-green-600 text-white"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                              ? 'bg-green-600 text-white'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                           }`}
                         >
                           {day.label}
@@ -474,7 +523,9 @@ export default function SettingsPage() {
                       </div>
                       <Switch
                         checked={studyReminders.streakReminder}
-                        onCheckedChange={(checked) => handleStudyReminderChange("streakReminder", checked)}
+                        onCheckedChange={(checked) =>
+                          handleStudyReminderChange('streakReminder', checked)
+                        }
                       />
                     </div>
 
@@ -485,7 +536,9 @@ export default function SettingsPage() {
                       </div>
                       <Switch
                         checked={studyReminders.breakReminder}
-                        onCheckedChange={(checked) => handleStudyReminderChange("breakReminder", checked)}
+                        onCheckedChange={(checked) =>
+                          handleStudyReminderChange('breakReminder', checked)
+                        }
                       />
                     </div>
                   </div>
@@ -495,7 +548,9 @@ export default function SettingsPage() {
                       <Label>休息间隔（分钟）</Label>
                       <Select
                         value={studyReminders.breakInterval.toString()}
-                        onValueChange={(value) => handleStudyReminderChange("breakInterval", Number.parseInt(value))}
+                        onValueChange={(value) =>
+                          handleStudyReminderChange('breakInterval', Number.parseInt(value))
+                        }
                       >
                         <SelectTrigger className="border-2 border-gray-200 focus:border-green-400">
                           <SelectValue />
@@ -529,11 +584,11 @@ export default function SettingsPage() {
               <h3 className="font-semibold text-gray-800">选择导出内容</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { key: "includeProfile", label: "个人资料", desc: "基本信息、头像、简介等" },
-                  { key: "includeCourses", label: "课程数据", desc: "已学课程、收藏课程等" },
-                  { key: "includeProgress", label: "学习进度", desc: "学习时长、完成度等" },
-                  { key: "includeNotes", label: "学习笔记", desc: "课程笔记和心得" },
-                  { key: "includeCertificates", label: "证书记录", desc: "获得的证书和成就" },
+                  { key: 'includeProfile', label: '个人资料', desc: '基本信息、头像、简介等' },
+                  { key: 'includeCourses', label: '课程数据', desc: '已学课程、收藏课程等' },
+                  { key: 'includeProgress', label: '学习进度', desc: '学习时长、完成度等' },
+                  { key: 'includeNotes', label: '学习笔记', desc: '课程笔记和心得' },
+                  { key: 'includeCertificates', label: '证书记录', desc: '获得的证书和成就' },
                 ].map((item) => (
                   <div
                     key={item.key}
@@ -545,7 +600,9 @@ export default function SettingsPage() {
                     </div>
                     <Switch
                       checked={exportData[item.key as keyof typeof exportData] as boolean}
-                      onCheckedChange={(checked) => setExportData((prev) => ({ ...prev, [item.key]: checked }))}
+                      onCheckedChange={(checked) =>
+                        setExportData((prev) => ({ ...prev, [item.key]: checked }))
+                      }
                     />
                   </div>
                 ))}
@@ -586,16 +643,16 @@ export default function SettingsPage() {
 
             <AccessibleButton
               onClick={handleDataExport}
-              loading={exportStatus === "preparing"}
+              loading={exportStatus === 'preparing'}
               loadingText="准备中..."
               className="bg-purple-600 hover:bg-purple-700 text-white"
             >
-              {exportStatus === "preparing" ? (
+              {exportStatus === 'preparing' ? (
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
               ) : (
                 <Download className="h-4 w-4 mr-2" />
               )}
-              {exportStatus === "ready" ? "下载数据" : "开始导出"}
+              {exportStatus === 'ready' ? '下载数据' : '开始导出'}
             </AccessibleButton>
           </CardContent>
         </Card>
@@ -653,15 +710,15 @@ export default function SettingsPage() {
                   <AccessibleButton
                     variant="outline"
                     onClick={() => {
-                      setShowDeleteConfirm(false)
-                      setDeleteConfirmation("")
+                      setShowDeleteConfirm(false);
+                      setDeleteConfirmation('');
                     }}
                   >
                     取消
                   </AccessibleButton>
                   <AccessibleButton
                     onClick={handleAccountDelete}
-                    disabled={deleteConfirmation !== "删除我的账户"}
+                    disabled={deleteConfirmation !== '删除我的账户'}
                     className="bg-red-600 hover:bg-red-700 text-white"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
@@ -680,7 +737,7 @@ export default function SettingsPage() {
           </AccessibleButton>
           <AccessibleButton
             onClick={() => {
-              alert("设置已保存！")
+              alert('设置已保存！');
             }}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-8"
           >
@@ -690,5 +747,5 @@ export default function SettingsPage() {
         </div>
       </div>
     </ResponsiveLayout>
-  )
+  );
 }

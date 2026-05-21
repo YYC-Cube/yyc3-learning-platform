@@ -55,8 +55,8 @@ const PERFORMANCE_THRESHOLDS: PerformanceThreshold[] = [
 ];
 
 function evaluatePerformanceMetric(name: string, value: number): PerformanceMetric {
-  const threshold = PERFORMANCE_THRESHOLDS.find(t => t.name === name);
-  
+  const threshold = PERFORMANCE_THRESHOLDS.find((t) => t.name === name);
+
   if (!threshold) {
     return {
       name,
@@ -67,7 +67,7 @@ function evaluatePerformanceMetric(name: string, value: number): PerformanceMetr
   }
 
   let status: 'pass' | 'fail' | 'warning';
-  
+
   if (threshold.critical) {
     status = value <= threshold.threshold ? 'pass' : 'fail';
   } else {
@@ -114,27 +114,30 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   const metricsReported = useRef<Set<string>>(new Set());
 
   // 上报指标
-  const reportMetric = useCallback((name: string, value: number) => {
-    if (!enabled || !isSampled.current) return;
-    if (metricsReported.current.has(name)) return;
+  const reportMetric = useCallback(
+    (name: string, value: number) => {
+      if (!enabled || !isSampled.current) return;
+      if (metricsReported.current.has(name)) return;
 
-    metricsReported.current.add(name);
+      metricsReported.current.add(name);
 
-    const metric: PerformanceMetric = {
-      name,
-      value,
-      timestamp: Date.now(),
-      url: pathname,
-    };
+      const metric: PerformanceMetric = {
+        name,
+        value,
+        timestamp: Date.now(),
+        url: pathname,
+      };
 
-    // 调用自定义回调
-    if (onMetricReport) {
-      onMetricReport(metric);
-    }
+      // 调用自定义回调
+      if (onMetricReport) {
+        onMetricReport(metric);
+      }
 
-    // 发送到监控服务
-    sendToMonitoringService(metric);
-  }, [enabled, pathname, onMetricReport]);
+      // 发送到监控服务
+      sendToMonitoringService(metric);
+    },
+    [enabled, pathname, onMetricReport]
+  );
 
   // 发送指标到监控服务
   const sendToMonitoringService = async (metric: PerformanceMetric) => {
@@ -210,7 +213,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
 
     const handleUnload = () => {
       if (!enabled || !isSampled.current) return;
-      
+
       const pageDuration = Date.now() - startTime;
       reportMetric('page_duration', pageDuration);
     };

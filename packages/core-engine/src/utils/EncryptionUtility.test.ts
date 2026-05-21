@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import EncryptionUtility, { EncryptionConfig, EncryptedData, HashedData } from './EncryptionUtility';
+import EncryptionUtility, {
+  EncryptionConfig,
+  EncryptedData,
+  HashedData,
+} from './EncryptionUtility';
 
 describe('EncryptionUtility', () => {
   const encryption = EncryptionUtility.getInstance();
@@ -43,7 +47,7 @@ describe('EncryptionUtility', () => {
         name: 'John Doe',
         age: 30,
         email: 'john@example.com',
-        active: true
+        active: true,
       };
 
       const encrypted: EncryptedData = encryption.encryptObject(testObject, testPassword);
@@ -58,9 +62,9 @@ describe('EncryptionUtility', () => {
           name: 'John Doe',
           address: {
             city: 'New York',
-            country: 'USA'
-          }
-        }
+            country: 'USA',
+          },
+        },
       };
 
       const encrypted: EncryptedData = encryption.encryptObject(testObject, testPassword);
@@ -190,7 +194,9 @@ describe('EncryptionUtility', () => {
     it('should generate valid UUID v4', () => {
       const uuid = encryption.generateUUID();
 
-      expect(uuid).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+      expect(uuid).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      );
     });
 
     it('should generate different UUIDs each time', () => {
@@ -395,7 +401,7 @@ describe('EncryptionUtility', () => {
       const customConfig: EncryptionConfig = {
         algorithm: 'aes-256-cbc',
         keyLength: 32,
-        ivLength: 16
+        ivLength: 16,
       };
 
       const customEncryption = EncryptionUtility.getInstance(customConfig);

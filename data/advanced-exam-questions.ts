@@ -1,31 +1,31 @@
 // 扩展题目类型
 export interface ExamQuestion {
-  id: string
-  type: string
-  category: string
-  difficulty: string
-  question: string
-  correctAnswers: string[]
-  explanation: string
-  points: number
-  keywords: string[]
+  id: string;
+  type: string;
+  category: string;
+  difficulty: string;
+  question: string;
+  correctAnswers: string[];
+  explanation: string;
+  points: number;
+  keywords: string[];
 }
 
 export interface AdvancedExamQuestion extends ExamQuestion {
-  type: "single" | "multiple" | "essay" | "definition" | "comparison" | "application"
-  subType?: string
-  referenceAnswer?: string
-  scoringCriteria?: string[]
+  type: 'single' | 'multiple' | 'essay' | 'definition' | 'comparison' | 'application';
+  subType?: string;
+  referenceAnswer?: string;
+  scoringCriteria?: string[];
 }
 
 // 名词解释题
 export const definitionQuestions: AdvancedExamQuestion[] = [
   {
-    id: "def_001",
-    type: "definition",
-    category: "核心技术",
-    difficulty: "中级",
-    question: "生成对抗网络（GAN）",
+    id: 'def_001',
+    type: 'definition',
+    category: '核心技术',
+    difficulty: '中级',
+    question: '生成对抗网络（GAN）',
     correctAnswers: [],
     explanation: `生成对抗网络（Generative Adversarial Networks, GAN）是一种深度学习模型，由生成器（Generator）和判别器（Discriminator）组成。
 
@@ -34,21 +34,21 @@ export const definitionQuestions: AdvancedExamQuestion[] = [
 
 两者通过对抗训练（生成器试图"欺骗"判别器，判别器试图准确区分真伪）不断优化，最终使生成器输出的样本接近真实数据分布。GAN广泛应用于图像生成、数据增强、视频合成等领域。`,
     points: 5,
-    keywords: ["GAN", "生成器", "判别器", "对抗训练"],
-    referenceAnswer: "需包含GAN的基本组成、工作原理、对抗训练机制和应用领域",
+    keywords: ['GAN', '生成器', '判别器', '对抗训练'],
+    referenceAnswer: '需包含GAN的基本组成、工作原理、对抗训练机制和应用领域',
     scoringCriteria: [
-      "正确说明GAN由生成器和判别器组成（1分）",
-      "解释对抗训练的基本原理（2分）",
-      "说明GAN的应用场景（1分）",
-      "表述清晰、逻辑完整（1分）",
+      '正确说明GAN由生成器和判别器组成（1分）',
+      '解释对抗训练的基本原理（2分）',
+      '说明GAN的应用场景（1分）',
+      '表述清晰、逻辑完整（1分）',
     ],
   },
   {
-    id: "def_002",
-    type: "definition",
-    category: "核心技术",
-    difficulty: "高级",
-    question: "扩散模型（Diffusion Model）",
+    id: 'def_002',
+    type: 'definition',
+    category: '核心技术',
+    difficulty: '高级',
+    question: '扩散模型（Diffusion Model）',
     correctAnswers: [],
     explanation: `扩散模型是一种基于热力学扩散原理的生成模型，通过正向扩散和逆向扩散两个过程实现数据生成。
 
@@ -57,21 +57,21 @@ export const definitionQuestions: AdvancedExamQuestion[] = [
 
 其核心思想是通过学习噪声分布的逆过程，生成高质量、多样化的样本（如图像、语音）。扩散模型在图像生成领域（如Stable Diffusion）表现优异，能生成细节丰富、语义一致的内容。`,
     points: 5,
-    keywords: ["扩散模型", "正向扩散", "逆向扩散", "去噪"],
-    referenceAnswer: "需包含扩散模型的基本原理、正向和逆向过程、技术特点和应用",
+    keywords: ['扩散模型', '正向扩散', '逆向扩散', '去噪'],
+    referenceAnswer: '需包含扩散模型的基本原理、正向和逆向过程、技术特点和应用',
     scoringCriteria: [
-      "正确解释正向扩散过程（1.5分）",
-      "正确解释逆向扩散过程（1.5分）",
-      "说明扩散模型的优势特点（1分）",
-      "举例说明应用场景（1分）",
+      '正确解释正向扩散过程（1.5分）',
+      '正确解释逆向扩散过程（1.5分）',
+      '说明扩散模型的优势特点（1分）',
+      '举例说明应用场景（1分）',
     ],
   },
   {
-    id: "def_003",
-    type: "definition",
-    category: "模型能力",
-    difficulty: "高级",
-    question: "大语言模型（LLM）的涌现能力",
+    id: 'def_003',
+    type: 'definition',
+    category: '模型能力',
+    difficulty: '高级',
+    question: '大语言模型（LLM）的涌现能力',
     correctAnswers: [],
     explanation: `大语言模型的涌现能力（Emergent Abilities）指模型在参数规模达到一定阈值（如千亿级参数）后，突然表现出训练阶段未明确学习过的复杂能力。
 
@@ -83,25 +83,25 @@ export const definitionQuestions: AdvancedExamQuestion[] = [
 
 这种能力并非线性提升的结果，而是模型规模突破临界点后的"突现"特性，目前机制尚未完全明确，但已成为大模型核心优势之一。`,
     points: 5,
-    keywords: ["涌现能力", "大语言模型", "零样本学习", "逻辑推理"],
-    referenceAnswer: "需包含涌现能力的定义、具体表现、产生条件和重要意义",
+    keywords: ['涌现能力', '大语言模型', '零样本学习', '逻辑推理'],
+    referenceAnswer: '需包含涌现能力的定义、具体表现、产生条件和重要意义',
     scoringCriteria: [
-      "正确定义涌现能力概念（1分）",
-      "列举具体的涌现能力表现（2分）",
-      "说明产生条件和机制（1分）",
-      "阐述其重要意义（1分）",
+      '正确定义涌现能力概念（1分）',
+      '列举具体的涌现能力表现（2分）',
+      '说明产生条件和机制（1分）',
+      '阐述其重要意义（1分）',
     ],
   },
-]
+];
 
 // 技术对比题
 export const comparisonQuestions: AdvancedExamQuestion[] = [
   {
-    id: "comp_001",
-    type: "comparison",
-    category: "技术对比",
-    difficulty: "高级",
-    question: "对比扩散模型与GAN在训练方式、生成质量、计算成本上的差异（列表说明）",
+    id: 'comp_001',
+    type: 'comparison',
+    category: '技术对比',
+    difficulty: '高级',
+    question: '对比扩散模型与GAN在训练方式、生成质量、计算成本上的差异（列表说明）',
     correctAnswers: [],
     explanation: `
 | 维度 | 扩散模型（Diffusion Model） | 生成对抗网络（GAN） |
@@ -112,21 +112,21 @@ export const comparisonQuestions: AdvancedExamQuestion[] = [
 | 典型应用场景 | 高保真图像生成（如Stable Diffusion）、视频合成、3D建模 | 实时图像生成（如StyleGAN）、数据增强、虚拟人驱动 |
 `,
     points: 15,
-    keywords: ["扩散模型", "GAN", "训练方式", "生成质量", "计算成本"],
-    referenceAnswer: "需要从训练方式、生成质量、计算成本三个维度进行详细对比，并以表格形式呈现",
+    keywords: ['扩散模型', 'GAN', '训练方式', '生成质量', '计算成本'],
+    referenceAnswer: '需要从训练方式、生成质量、计算成本三个维度进行详细对比，并以表格形式呈现',
     scoringCriteria: [
-      "训练方式对比准确（5分）",
-      "生成质量对比准确（5分）",
-      "计算成本对比准确（3分）",
-      "表格格式清晰（2分）",
+      '训练方式对比准确（5分）',
+      '生成质量对比准确（5分）',
+      '计算成本对比准确（3分）',
+      '表格格式清晰（2分）',
     ],
   },
   {
-    id: "comp_002",
-    type: "comparison",
-    category: "技术对比",
-    difficulty: "中级",
-    question: "分析传统机器学习与生成式AI在核心目标、数据依赖上的主要区别",
+    id: 'comp_002',
+    type: 'comparison',
+    category: '技术对比',
+    difficulty: '中级',
+    question: '分析传统机器学习与生成式AI在核心目标、数据依赖上的主要区别',
     correctAnswers: [],
     explanation: `
 | 维度 | 传统机器学习 | 生成式AI |
@@ -138,26 +138,26 @@ export const comparisonQuestions: AdvancedExamQuestion[] = [
 | 典型应用 | 图像识别、垃圾邮件过滤、信用评分预测 | 文本生成（如ChatGPT）、图像生成（如DALL-E）、代码生成 |
 `,
     points: 15,
-    keywords: ["传统机器学习", "生成式AI", "核心目标", "数据依赖"],
-    referenceAnswer: "需要从核心目标、数据依赖、模型结构、输出特性等维度进行全面对比",
+    keywords: ['传统机器学习', '生成式AI', '核心目标', '数据依赖'],
+    referenceAnswer: '需要从核心目标、数据依赖、模型结构、输出特性等维度进行全面对比',
     scoringCriteria: [
-      "核心目标对比准确（4分）",
-      "数据依赖对比准确（4分）",
-      "模型结构对比准确（3分）",
-      "输出特性对比准确（2分）",
-      "典型应用举例恰当（2分）",
+      '核心目标对比准确（4分）',
+      '数据依赖对比准确（4分）',
+      '模型结构对比准确（3分）',
+      '输出特性对比准确（2分）',
+      '典型应用举例恰当（2分）',
     ],
   },
-]
+];
 
 // 应用分析题
 export const applicationQuestions: AdvancedExamQuestion[] = [
   {
-    id: "app_001",
-    type: "application",
-    category: "教育应用",
-    difficulty: "高级",
-    question: "结合教育领域，说明生成式AI如何实现个性化学习支持（至少3点）",
+    id: 'app_001',
+    type: 'application',
+    category: '教育应用',
+    difficulty: '高级',
+    question: '结合教育领域，说明生成式AI如何实现个性化学习支持（至少3点）',
     correctAnswers: [],
     explanation: `生成式AI通过动态分析学生特征、实时调整教学策略，实现"千人千面"的学习支持。具体应用包括：
 
@@ -170,21 +170,22 @@ export const applicationQuestions: AdvancedExamQuestion[] = [
 3. **实时互动答疑与反馈**
    基于大语言模型的智能答疑系统，可理解学生模糊提问（如"这道题为什么选C"），结合知识点漏洞生成针对性解析，并推送同类题目强化训练，实现"测—学—练"闭环。`,
     points: 15,
-    keywords: ["个性化学习", "自适应内容", "智能答疑", "教育AI"],
-    referenceAnswer: "需要从至少3个方面说明生成式AI在教育领域的个性化学习支持，每点需要具体说明技术实现和应用效果",
+    keywords: ['个性化学习', '自适应内容', '智能答疑', '教育AI'],
+    referenceAnswer:
+      '需要从至少3个方面说明生成式AI在教育领域的个性化学习支持，每点需要具体说明技术实现和应用效果',
     scoringCriteria: [
-      "个性化学习路径规划（5分）",
-      "自适应内容生成（5分）",
-      "实时互动答疑（3分）",
-      "技术实现描述清晰（2分）",
+      '个性化学习路径规划（5分）',
+      '自适应内容生成（5分）',
+      '实时互动答疑（3分）',
+      '技术实现描述清晰（2分）',
     ],
   },
   {
-    id: "app_002",
-    type: "application",
-    category: "代码生成",
-    difficulty: "中级",
-    question: "举例说明生成式AI在代码生成中的具体应用（如自动代码补全）及其关键技术",
+    id: 'app_002',
+    type: 'application',
+    category: '代码生成',
+    difficulty: '中级',
+    question: '举例说明生成式AI在代码生成中的具体应用（如自动代码补全）及其关键技术',
     correctAnswers: [],
     explanation: `生成式AI显著提升编码效率，降低开发门槛，典型场景与技术如下：
 
@@ -197,37 +198,42 @@ export const applicationQuestions: AdvancedExamQuestion[] = [
 3. **漏洞修复与优化建议**
    AI扫描代码发现潜在bug（如空指针异常），生成修复方案。依赖静态代码分析技术与生成模型的结合，如CodeBERT通过对比漏洞代码与安全代码的差异，生成修复补丁。`,
     points: 15,
-    keywords: ["代码生成", "自动补全", "代码转换", "漏洞修复"],
-    referenceAnswer: "需要举例说明代码生成的具体应用场景，并说明相关的关键技术",
-    scoringCriteria: ["自动代码补全应用（5分）", "跨语言转换应用（5分）", "漏洞修复应用（3分）", "关键技术说明（2分）"],
+    keywords: ['代码生成', '自动补全', '代码转换', '漏洞修复'],
+    referenceAnswer: '需要举例说明代码生成的具体应用场景，并说明相关的关键技术',
+    scoringCriteria: [
+      '自动代码补全应用（5分）',
+      '跨语言转换应用（5分）',
+      '漏洞修复应用（3分）',
+      '关键技术说明（2分）',
+    ],
   },
-]
+];
 
 // 获取所有高级题目
 export function getAllAdvancedQuestions(): AdvancedExamQuestion[] {
-  return [...definitionQuestions, ...comparisonQuestions, ...applicationQuestions]
+  return [...definitionQuestions, ...comparisonQuestions, ...applicationQuestions];
 }
 
 // 生成高级考试试卷
 export function generateAdvancedExamPaper(config: {
-  definitionCount: number
-  comparisonCount: number
-  applicationCount: number
-  difficulty?: string
+  definitionCount: number;
+  comparisonCount: number;
+  applicationCount: number;
+  difficulty?: string;
 }): AdvancedExamQuestion[] {
-  let availableDefinitions = definitionQuestions
-  let availableComparisons = comparisonQuestions
-  let availableApplications = applicationQuestions
+  let availableDefinitions = definitionQuestions;
+  let availableComparisons = comparisonQuestions;
+  let availableApplications = applicationQuestions;
 
   if (config.difficulty) {
-    availableDefinitions = availableDefinitions.filter((q) => q.difficulty === config.difficulty)
-    availableComparisons = availableComparisons.filter((q) => q.difficulty === config.difficulty)
-    availableApplications = availableApplications.filter((q) => q.difficulty === config.difficulty)
+    availableDefinitions = availableDefinitions.filter((q) => q.difficulty === config.difficulty);
+    availableComparisons = availableComparisons.filter((q) => q.difficulty === config.difficulty);
+    availableApplications = availableApplications.filter((q) => q.difficulty === config.difficulty);
   }
 
-  const selectedDefinitions = availableDefinitions.slice(0, config.definitionCount)
-  const selectedComparisons = availableComparisons.slice(0, config.comparisonCount)
-  const selectedApplications = availableApplications.slice(0, config.applicationCount)
+  const selectedDefinitions = availableDefinitions.slice(0, config.definitionCount);
+  const selectedComparisons = availableComparisons.slice(0, config.comparisonCount);
+  const selectedApplications = availableApplications.slice(0, config.applicationCount);
 
-  return [...selectedDefinitions, ...selectedComparisons, ...selectedApplications]
+  return [...selectedDefinitions, ...selectedComparisons, ...selectedApplications];
 }

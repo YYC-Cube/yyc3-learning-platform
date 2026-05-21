@@ -67,12 +67,12 @@ import { Check } from 'lucide-react'
 检查 `tsconfig.json`:
 \`\`\`json
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"]
-    }
-  }
+"compilerOptions": {
+"baseUrl": ".",
+"paths": {
+"@/_": ["./_"]
+}
+}
 }
 \`\`\`
 
@@ -99,11 +99,11 @@ const data = localStorage.getItem('key')
 import { useEffect, useState } from 'react'
 
 function Component() {
-  const [data, setData] = useState(null)
-  
-  useEffect(() => {
-    setData(localStorage.getItem('key'))
-  }, [])
+const [data, setData] = useState(null)
+
+useEffect(() => {
+setData(localStorage.getItem('key'))
+}, [])
 }
 \`\`\`
 
@@ -121,18 +121,19 @@ function Component() {
 
 \`\`\`tsx
 // ❌ 错误
+
 <div>{Date.now()}</div> // 每次渲染结果不同
 
 // ✅ 正确
 'use client'
 function Component() {
-  const [time, setTime] = useState(null)
-  
-  useEffect(() => {
-    setTime(Date.now())
-  }, [])
-  
-  return <div>{time}</div>
+const [time, setTime] = useState(null)
+
+useEffect(() => {
+setTime(Date.now())
+}, [])
+
+return <div>{time}</div>
 }
 \`\`\`
 
@@ -149,17 +150,17 @@ function Component() {
 \`\`\`tsx
 // ❌ 错误
 function Component() {
-  const [count, setCount] = useState(0)
-  setCount(count + 1) // 每次渲染都触发更新
+const [count, setCount] = useState(0)
+setCount(count + 1) // 每次渲染都触发更新
 }
 
 // ✅ 正确
 function Component() {
-  const [count, setCount] = useState(0)
-  
-  useEffect(() => {
-    setCount(count + 1)
-  }, []) // 只在挂载时执行
+const [count, setCount] = useState(0)
+
+useEffect(() => {
+setCount(count + 1)
+}, []) // 只在挂载时执行
 }
 \`\`\`
 
@@ -201,25 +202,25 @@ npm run dev
 检查 `app/globals.css`:
 \`\`\`css
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+--background: 0 0% 100%;
+--foreground: 222.2 84% 4.9%;
 }
 
 .dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
+--background: 222.2 84% 4.9%;
+--foreground: 210 40% 98%;
 }
 \`\`\`
 
 确保在 `tailwind.config.ts` 中引用:
 \`\`\`ts
 theme: {
-  extend: {
-    colors: {
-      background: 'hsl(var(--background))',
-      foreground: 'hsl(var(--foreground))',
-    }
-  }
+extend: {
+colors: {
+background: 'hsl(var(--background))',
+foreground: 'hsl(var(--foreground))',
+}
+}
 }
 \`\`\`
 
@@ -252,7 +253,7 @@ npx lighthouse <http://localhost:3000>
 \`\`\`tsx
 // 1. 使用动态导入
 const HeavyComponent = dynamic(() => import('./HeavyComponent'), {
-  loading: () => <p>Loading...</p>
+loading: () => <p>Loading...</p>
 })
 
 // 2. 图片优化
@@ -289,9 +290,9 @@ npm run build
 ## 确保 package.json 中指定的 Node 版本正确
 
 {
-  "engines": {
-    "node": ">=18.0.0"
-  }
+"engines": {
+"node": ">=18.0.0"
+}
 }
 
 ## ✅ 4. 检查构建日志
@@ -310,7 +311,7 @@ npm run build
 
 \`\`\`bash
 
-## 1. 客户端变量必须以 NEXT_PUBLIC_ 开头
+## 1. 客户端变量必须以 NEXT*PUBLIC* 开头
 
 NEXT_PUBLIC_API_URL=<https://api.example.com>
 
@@ -440,6 +441,7 @@ npm outdated
 [清楚描述问题]
 
 **复现步骤**:
+
 1.
 2.
 3.
@@ -460,7 +462,7 @@ npm outdated
 - [ ] 清理缓存
 - [ ] 重新安装依赖
 - [ ] 检查文档
-\`\`\`
+      \`\`\`
 
 ---
 

@@ -9,13 +9,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-  formatTime,
-  formatDate,
-  formatScore,
-  formatPercentage,
-  formatNumber,
-} from '@/lib/format';
+import { formatTime, formatDate, formatScore, formatPercentage, formatNumber } from '@/lib/format';
 
 describe('formatTime', () => {
   it('应该正确格式化秒数（只有分钟和秒）', () => {

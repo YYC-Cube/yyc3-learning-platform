@@ -4,16 +4,16 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { ResponsiveLayout } from "@/components/responsive-layout"
+import { ResponsiveLayout } from '@/components/responsive-layout';
 
 export default function TestPage() {
   const currentUser = {
-    name: "测试用户",
-    avatar: "/placeholder.svg",
-    level: "初级"
-  }
+    name: '测试用户',
+    avatar: '/placeholder.svg',
+    level: '初级',
+  };
 
   return (
     <ResponsiveLayout title="测试页面" user={currentUser}>
@@ -22,5 +22,5 @@ export default function TestPage() {
         <p>这是一个测试页面</p>
       </div>
     </ResponsiveLayout>
-  )
+  );
 }

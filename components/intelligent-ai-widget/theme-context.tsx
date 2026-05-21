@@ -33,7 +33,7 @@ const THEME_STORAGE_KEY = 'yyc3-theme';
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   children,
   defaultTheme = 'system',
-  storageKey = THEME_STORAGE_KEY
+  storageKey = THEME_STORAGE_KEY,
 }) => {
   const [theme, setThemeState] = React.useState<Theme>(defaultTheme);
   const [resolvedTheme, setResolvedTheme] = React.useState<'light' | 'dark'>('light');
@@ -53,7 +53,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   const applyTheme = (newTheme: 'light' | 'dark') => {
     if (typeof document !== 'undefined') {
       const root = document.documentElement;
-      
+
       if (newTheme === 'dark') {
         root.classList.add('dark');
       } else {
@@ -64,11 +64,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    
+
     const resolved = resolveTheme(newTheme);
     setResolvedTheme(resolved);
     applyTheme(resolved);
-    
+
     // 保存到本地存储
     if (typeof window !== 'undefined') {
       localStorage.setItem(storageKey, newTheme);
@@ -87,7 +87,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
       // 从本地存储加载主题
       const savedTheme = localStorage.getItem(storageKey) as Theme | null;
-      
+
       if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
         setTheme(savedTheme);
       } else {
@@ -120,23 +120,19 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     theme,
     setTheme,
     resolvedTheme,
-    toggleTheme
+    toggleTheme,
   };
 
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };
 
 export const useTheme = (): ThemeContextType => {
   const context = React.useContext(ThemeContext);
-  
+
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
-  
+
   return context;
 };
 

@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
-import { EnhancedMessageBus, MessageType, MessagePriority, MessageHandler } from './EnhancedMessageBus';
+import {
+  EnhancedMessageBus,
+  MessageType,
+  MessagePriority,
+  MessageHandler,
+} from './EnhancedMessageBus';
 
 describe('EnhancedMessageBus Integration Tests', () => {
   let messageBus: EnhancedMessageBus;
@@ -12,14 +17,14 @@ describe('EnhancedMessageBus Integration Tests', () => {
         backoffFactor: 2,
         initialDelayMs: 100,
         maxDelayMs: 5000,
-        retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED']
+        retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED'],
       },
       enablePersistence: false,
       deadLetterQueueSize: 50,
       enableMetrics: true,
       enableTracing: true,
       maxProcessingTime: 30000,
-      maxConcurrentMessages: 10
+      maxConcurrentMessages: 10,
     });
   });
 
@@ -38,18 +43,18 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       const messageId = await messageBus.publish(MessageType.TASK_REQUEST, {
         action: 'test',
-        data: { key: 'value' }
+        data: { key: 'value' },
       });
 
       expect(messageId).toBeDefined();
       expect(messageId).toMatch(/^msg_\d+_[a-z0-9]+$/);
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(receivedMessages.length).toBeGreaterThan(0);
       expect(receivedMessages[0].payload).toEqual({
         action: 'test',
-        data: { key: 'value' }
+        data: { key: 'value' },
       });
     });
 
@@ -70,10 +75,10 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       await messageBus.publish(MessageType.TASK_REQUEST, {
         action: 'test',
-        data: { key: 'value' }
+        data: { key: 'value' },
       });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(receivedMessages1.length).toBeGreaterThan(0);
       expect(receivedMessages2.length).toBeGreaterThan(0);
@@ -97,7 +102,7 @@ describe('EnhancedMessageBus Integration Tests', () => {
       await messageBus.publish(MessageType.TASK_REQUEST, { type: 'request' });
       await messageBus.publish(MessageType.TASK_RESPONSE, { type: 'response' });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(requestMessages.length).toBeGreaterThan(0);
       expect(responseMessages.length).toBeGreaterThan(0);
@@ -116,19 +121,31 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       messageBus.subscribe(MessageType.TASK_REQUEST, handler);
 
-      await messageBus.publish(MessageType.TASK_REQUEST, { id: 'low' }, {
-        priority: MessagePriority.LOW
-      });
+      await messageBus.publish(
+        MessageType.TASK_REQUEST,
+        { id: 'low' },
+        {
+          priority: MessagePriority.LOW,
+        }
+      );
 
-      await messageBus.publish(MessageType.TASK_REQUEST, { id: 'high' }, {
-        priority: MessagePriority.HIGH
-      });
+      await messageBus.publish(
+        MessageType.TASK_REQUEST,
+        { id: 'high' },
+        {
+          priority: MessagePriority.HIGH,
+        }
+      );
 
-      await messageBus.publish(MessageType.TASK_REQUEST, { id: 'normal' }, {
-        priority: MessagePriority.NORMAL
-      });
+      await messageBus.publish(
+        MessageType.TASK_REQUEST,
+        { id: 'normal' },
+        {
+          priority: MessagePriority.NORMAL,
+        }
+      );
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       expect(processedOrder.length).toBeGreaterThan(0);
     });
@@ -148,7 +165,7 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       await messageBus.publish(MessageType.TASK_REQUEST, { data: 'test' });
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       expect(attemptCount).toBeGreaterThanOrEqual(2);
     });
@@ -166,7 +183,7 @@ describe('EnhancedMessageBus Integration Tests', () => {
       await messageBus.publish(MessageType.TASK_REQUEST, { data: 'test2' });
       await messageBus.publish(MessageType.TASK_RESPONSE, { data: 'test3' });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       const metrics = messageBus.getMetrics();
 
@@ -189,10 +206,10 @@ describe('EnhancedMessageBus Integration Tests', () => {
       messageBus.subscribe(MessageType.TASK_REQUEST, handler);
 
       const messageId = await messageBus.publish(MessageType.TASK_REQUEST, {
-        data: 'test'
+        data: 'test',
       });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(traceIds.length).toBeGreaterThan(0);
 
@@ -216,13 +233,13 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       await messageBus.publish(MessageType.TASK_REQUEST, { data: 'test1' });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       messageBus.unsubscribe(subscriptionId);
 
       await messageBus.publish(MessageType.TASK_REQUEST, { data: 'test2' });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(receivedMessages.length).toBe(1);
       expect(receivedMessages[0].payload.data).toBe('test1');
@@ -239,7 +256,7 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       await messageBus.publish(MessageType.TASK_REQUEST, { data: 'test' });
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       const deadLetterMessages = messageBus.getDeadLetterQueue();
 
@@ -257,14 +274,14 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       messageBus.subscribe(MessageType.TASK_REQUEST, handler, {
         filter: {
-          customFilter: (message) => message.payload?.priority === 'high'
-        }
+          customFilter: (message) => message.payload?.priority === 'high',
+        },
       });
 
       await messageBus.publish(MessageType.TASK_REQUEST, { priority: 'high' });
       await messageBus.publish(MessageType.TASK_REQUEST, { priority: 'low' });
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(receivedMessages.length).toBeGreaterThan(0);
       expect(receivedMessages[0].payload.priority).toBe('high');
@@ -281,11 +298,15 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       messageBus.subscribe(MessageType.TASK_REQUEST, handler);
 
-      await messageBus.publish(MessageType.TASK_REQUEST, { data: 'test' }, {
-        ttl: 50
-      });
+      await messageBus.publish(
+        MessageType.TASK_REQUEST,
+        { data: 'test' },
+        {
+          ttl: 50,
+        }
+      );
 
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise((resolve) => setTimeout(resolve, 200));
 
       const metrics = messageBus.getMetrics();
       expect(metrics.messagesExpired).toBeGreaterThan(0);
@@ -299,22 +320,30 @@ describe('EnhancedMessageBus Integration Tests', () => {
 
       const handler: MessageHandler = async (message) => {
         if (message.replyTo) {
-          await messageBus.publish(MessageType.TASK_RESPONSE, {
-            replyToMessage: message.id
-          }, {
-            correlationId: message.id
-          });
+          await messageBus.publish(
+            MessageType.TASK_RESPONSE,
+            {
+              replyToMessage: message.id,
+            },
+            {
+              correlationId: message.id,
+            }
+          );
         }
       };
 
       messageBus.subscribe(MessageType.TASK_REQUEST, handler);
 
-      await messageBus.publish(MessageType.TASK_REQUEST, { data: 'test' }, {
-        correlationId,
-        replyTo
-      });
+      await messageBus.publish(
+        MessageType.TASK_REQUEST,
+        { data: 'test' },
+        {
+          correlationId,
+          replyTo,
+        }
+      );
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     });
   });
 });

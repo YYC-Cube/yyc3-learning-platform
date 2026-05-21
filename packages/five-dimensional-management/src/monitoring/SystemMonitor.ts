@@ -1,4 +1,9 @@
-import { ManagementConfig, PerformanceMetrics, ReliabilityMetrics, MaintainabilityMetrics } from '../types/IFiveDimensionalManagement';
+import {
+  ManagementConfig,
+  PerformanceMetrics,
+  ReliabilityMetrics,
+  MaintainabilityMetrics,
+} from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 
 export class SystemMonitor {
@@ -31,7 +36,7 @@ export class SystemMonitor {
       diskUtilization: 38,
       networkLatency: 25,
       databaseQueryTime: 45,
-      cacheHitRate: 94
+      cacheHitRate: 94,
     };
   }
 
@@ -42,7 +47,7 @@ export class SystemMonitor {
       mttr: 15,
       errorRate: 0.2,
       availability: 99.8,
-      slaCompliance: 99.5
+      slaCompliance: 99.5,
     };
   }
 
@@ -55,7 +60,7 @@ export class SystemMonitor {
       codeComplexity: 12,
       refactorability: 82,
       deploymentFrequency: 3,
-      leadTime: 4
+      leadTime: 4,
     };
   }
 }

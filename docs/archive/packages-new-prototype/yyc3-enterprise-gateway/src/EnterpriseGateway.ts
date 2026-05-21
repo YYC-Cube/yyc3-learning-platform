@@ -84,7 +84,6 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
 
       // 启动HTTP服务器
       this.startHTTPServer();
-
     } catch (error) {
       this._status = 'error';
       this.emit('error', error);
@@ -114,8 +113,8 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
         usage: {
           total_conversations: 0,
           total_users: 0,
-          last_activity: null
-        }
+          last_activity: null,
+        },
       };
 
       // 保存到数据库
@@ -125,12 +124,11 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       await this._aiEngine.chat({
         content: 'Initialize assistant',
         userId: 'system',
-        scenario: config.scenario || 'general'
+        scenario: config.scenario || 'general',
       });
 
       this.emit('assistant-created', assistant);
       return assistant;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -167,7 +165,6 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
 
       this.emit('assistant-updated', { id, updates });
       return success;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -193,7 +190,6 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
 
       this.emit('assistant-deleted', { id });
       return success;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -241,7 +237,6 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
 
       this.emit('assistant-created-from-template', { assistant, templateId });
       return assistant;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -303,7 +298,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
     return {
       valid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -327,8 +322,8 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
         resources: {
           cpu: deploymentConfig.resources?.cpu || '500m',
           memory: deploymentConfig.resources?.memory || '512Mi',
-          replicas: deploymentConfig.replicas || 1
-        }
+          replicas: deploymentConfig.replicas || 1,
+        },
       };
 
       // 保存部署信息
@@ -344,7 +339,6 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
 
       this.emit('assistant-deployed', { assistant, deployment });
       return deployment;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -363,9 +357,8 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
         status: deployment.status,
         endpoints: deployment.endpoints,
         resources: deployment.resources,
-        healthChecks: await this.performHealthChecks(deployment)
+        healthChecks: await this.performHealthChecks(deployment),
       };
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -389,7 +382,6 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
 
       this.emit('deployment-scaled', { id, replicas });
       return true;
-
     } catch (error) {
       this.emit('error', error);
       throw error;
@@ -417,11 +409,14 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       // 身份验证
       if (this.requiresAuth(request.path)) {
         const token = this.extractToken(request);
-        if (!token || !await this.authorizeUser(token, this.getRequiredPermissions(request.path))) {
+        if (
+          !token ||
+          !(await this.authorizeUser(token, this.getRequiredPermissions(request.path)))
+        ) {
           return {
             status: 401,
             body: { error: '未授权访问' },
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
           };
         }
       }
@@ -446,7 +441,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
           response = {
             status: 405,
             body: { error: '方法不允许' },
-            headers: { 'Content-Type': 'application/json' }
+            headers: { 'Content-Type': 'application/json' },
           };
       }
 
@@ -455,13 +450,12 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       this.emit('request-handled', { request, response, duration });
 
       return response;
-
     } catch (error) {
       this.emit('error', error);
       return {
         status: 500,
         body: { error: '服务器内部错误' },
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       };
     }
   }
@@ -497,7 +491,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
     for (const [type, data] of Object.entries(initialData)) {
       await this._dataService.store(type as any, {
         assistantId,
-        ...data
+        ...data,
       });
     }
   }
@@ -507,7 +501,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
     deployment.status = 'running';
     deployment.endpoints = [
       `https://api.yyc3.ai/assistants/${deployment.assistantId}`,
-      `wss://api.yyc3.ai/assistants/${deployment.assistantId}/ws`
+      `wss://api.yyc3.ai/assistants/${deployment.assistantId}/ws`,
     ];
 
     await this._dataService.update('deployment', deployment.id, deployment);
@@ -528,14 +522,14 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
         name: 'api-endpoint',
         status: 'healthy',
         lastCheck: new Date(),
-        responseTime: 150
+        responseTime: 150,
       },
       {
         name: 'websocket-endpoint',
         status: 'healthy',
         lastCheck: new Date(),
-        responseTime: 80
-      }
+        responseTime: 80,
+      },
     ];
   }
 
@@ -552,7 +546,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
 
   private requiresAuth(path: string): boolean {
     const publicPaths = ['/health', '/login', '/templates'];
-    return !publicPaths.some(p => path.startsWith(p));
+    return !publicPaths.some((p) => path.startsWith(p));
   }
 
   private extractToken(request: GatewayRequest): string | null {
@@ -570,7 +564,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       '/assistants/*/update': ['assistant:update'],
       '/assistants/*/delete': ['assistant:delete'],
       '/deployments': ['deployment:read'],
-      '/deployments/create': ['deployment:create']
+      '/deployments/create': ['deployment:create'],
     };
 
     for (const [pattern, permissions] of Object.entries(permissionMap)) {
@@ -594,7 +588,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       return {
         status: 200,
         body: { status: 'healthy', timestamp: new Date() },
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       };
     }
 
@@ -603,7 +597,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       return {
         status: 200,
         body: { templates },
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       };
     }
 
@@ -614,7 +608,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
         return {
           status: 200,
           body: { assistant },
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         };
       }
     }
@@ -622,7 +616,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
     return {
       status: 404,
       body: { error: '资源不存在' },
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     };
   }
 
@@ -635,7 +629,7 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       return {
         status: 201,
         body: { assistant },
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       };
     }
 
@@ -645,14 +639,14 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       return {
         status: 201,
         body: { assistant },
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       };
     }
 
     return {
       status: 404,
       body: { error: '接口不存在' },
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     };
   }
 
@@ -666,14 +660,14 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       return {
         status: 200,
         body: { success },
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       };
     }
 
     return {
       status: 404,
       body: { error: '接口不存在' },
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     };
   }
 
@@ -686,14 +680,14 @@ export class EnterpriseGateway extends EventEmitter implements IEnterpriseGatewa
       return {
         status: 200,
         body: { success },
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       };
     }
 
     return {
       status: 404,
       body: { error: '接口不存在' },
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
     };
   }
 
@@ -711,7 +705,7 @@ export class AuthService {
     return {
       token: 'jwt_token_example',
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-      permissions: ['assistant:read', 'assistant:create']
+      permissions: ['assistant:read', 'assistant:create'],
     };
   }
 
@@ -741,23 +735,23 @@ export class TemplateRegistry {
               recruitment: true,
               employeeService: true,
               training: true,
-              performance: false
-            }
+              performance: false,
+            },
           },
           ai: {
             provider: 'openai',
             model: 'gpt-4',
-            temperature: 0.7
+            temperature: 0.7,
           },
           integrations: {
             wechat: { enabled: true },
-            dingtalk: { enabled: true }
+            dingtalk: { enabled: true },
           },
           ui: {
             theme: 'light',
             brandColor: '#2196F3',
-            avatar: '👥'
-          }
+            avatar: '👥',
+          },
         },
         initialData: {
           knowledge: [
@@ -765,16 +759,16 @@ export class TemplateRegistry {
               title: '招聘流程指南',
               content: '公司招聘流程和最佳实践...',
               category: 'hr',
-              tags: ['招聘', '流程']
+              tags: ['招聘', '流程'],
             },
             {
               title: '员工福利政策',
               content: '公司员工福利详细介绍...',
               category: 'hr',
-              tags: ['福利', '政策']
-            }
-          ]
-        }
+              tags: ['福利', '政策'],
+            },
+          ],
+        },
       },
       {
         id: 'process-assistant',
@@ -790,15 +784,15 @@ export class TemplateRegistry {
               workflow: true,
               approval: true,
               documentation: true,
-              compliance: false
-            }
+              compliance: false,
+            },
           },
           ai: {
             provider: 'claude',
             model: 'claude-3-sonnet',
-            temperature: 0.5
-          }
-        }
+            temperature: 0.5,
+          },
+        },
       },
       {
         id: 'knowledge-assistant',
@@ -814,19 +808,19 @@ export class TemplateRegistry {
               qa: true,
               search: true,
               recommendations: true,
-              learning: false
-            }
+              learning: false,
+            },
           },
           ai: {
             provider: 'openai',
             model: 'gpt-3.5-turbo',
-            temperature: 0.3
-          }
-        }
-      }
+            temperature: 0.3,
+          },
+        },
+      },
     ];
 
-    enterpriseTemplates.forEach(template => {
+    enterpriseTemplates.forEach((template) => {
       this.templates.set(template.id, template);
     });
   }

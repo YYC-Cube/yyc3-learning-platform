@@ -209,7 +209,10 @@ export interface RegistryConfig {
 
 // 错误类
 export class ToolRegistrationError extends Error {
-  constructor(message: string, public cause?: Error) {
+  constructor(
+    message: string,
+    public cause?: Error
+  ) {
     super(message);
     this.name = 'ToolRegistrationError';
   }
@@ -284,8 +287,8 @@ export class ToolRegistry extends EventEmitter {
           ...tool.metadata,
           id: toolId,
           registeredAt: new Date(),
-          lastUpdated: new Date()
-        }
+          lastUpdated: new Date(),
+        },
       });
 
       // 6. 更新分类索引
@@ -299,28 +302,27 @@ export class ToolRegistry extends EventEmitter {
         successCount: 0,
         errorCount: 0,
         lastUsed: new Date(),
-        cacheHitRate: 0
+        cacheHitRate: 0,
       });
 
       // 8. 发布事件
       this.emit('toolRegistered', {
         toolId,
         metadata: tool.metadata,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
 
       return {
         success: true,
         toolId,
         message: '工具注册成功',
-        warnings: this.collectWarnings(toolDef)
+        warnings: this.collectWarnings(toolDef),
       };
-
     } catch (error) {
       this.emit('toolRegistrationFailed', {
         toolDef,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       });
 
       throw new ToolRegistrationError(
@@ -352,14 +354,18 @@ export class ToolRegistry extends EventEmitter {
       tools: sorted.slice(0, this.config.maxResults),
       categories: grouped,
       suggestions: this.generateSuggestions(query, sorted),
-      executionPlan: await this.generateExecutionPlan(query, sorted)
+      executionPlan: await this.generateExecutionPlan(query, sorted),
     };
   }
 
   /**
    * 执行工具
    */
-  async executeTool(toolId: string, input: unknown, context: ExecutionContext): Promise<ToolExecutionResult> {
+  async executeTool(
+    toolId: string,
+    input: unknown,
+    context: ExecutionContext
+  ): Promise<ToolExecutionResult> {
     const tool = this.tools.get(toolId);
     if (!tool) {
       throw new ToolNotFoundError(`工具 ${toolId} 未找到`);
@@ -393,8 +399,8 @@ export class ToolRegistry extends EventEmitter {
           toolId,
           executionTime: 0,
           cached: true,
-          cacheHit: true
-        }
+          cacheHit: true,
+        },
       };
     }
 
@@ -417,7 +423,7 @@ export class ToolRegistry extends EventEmitter {
         this.cache.set(cacheKey, {
           data: validatedOutput,
           timestamp: Date.now(),
-          ttl: tool.metadata.timeout || this.config.defaultCacheTTL
+          ttl: tool.metadata.timeout || this.config.defaultCacheTTL,
         });
 
         // 清理过期缓存
@@ -433,10 +439,9 @@ export class ToolRegistry extends EventEmitter {
           toolId,
           executionTime,
           cached: false,
-          cacheHit: false
-        }
+          cacheHit: false,
+        },
       };
-
     } catch (error) {
       const executionTime = Date.now() - startTime;
 
@@ -452,8 +457,8 @@ export class ToolRegistry extends EventEmitter {
           toolId,
           executionTime,
           error: error instanceof Error ? error.message : String(error),
-          cached: false
-        }
+          cached: false,
+        },
       };
     }
   }
@@ -467,10 +472,10 @@ export class ToolRegistry extends EventEmitter {
 
     // 2. 为每个子任务寻找工具
     const toolAssignments = await Promise.all(
-      subtasks.map(async subtask => ({
+      subtasks.map(async (subtask) => ({
         subtask,
         candidates: await this.findToolsForSubtask(subtask),
-        constraints: this.extractConstraints(subtask, constraints)
+        constraints: this.extractConstraints(subtask, constraints),
       }))
     );
 
@@ -490,17 +495,17 @@ export class ToolRegistry extends EventEmitter {
     return {
       goal,
       subtasks,
-      toolAssignments: toolAssignments.map(ta => ({
+      toolAssignments: toolAssignments.map((ta) => ({
         subtaskId: ta.subtask.id,
         candidates: ta.candidates,
         selected: ta.candidates[0] || '',
-        confidence: 0.8
+        confidence: 0.8,
       })),
       executionPlan: optimizedPlan,
       estimatedTime: this.estimateTime(optimizedPlan),
       confidence: this.calculateConfidence(optimizedPlan),
       alternatives: [],
-      fallbackStrategies: []
+      fallbackStrategies: [],
     };
   }
 
@@ -511,13 +516,13 @@ export class ToolRegistry extends EventEmitter {
     const allTools = Array.from(this.tools.values());
 
     // 基于多种策略的推荐
-    const recommendations = allTools.map(tool => ({
+    const recommendations = allTools.map((tool) => ({
       toolId: tool.metadata.id,
       confidence: this.calculateRecommendationScore(tool, context),
       reason: this.generateRecommendationReason(tool, context),
       category: tool.metadata.category[0] || 'general',
       estimatedTime: tool.metadata.timeout || 5000,
-      examples: tool.metadata.examples
+      examples: tool.metadata.examples,
     }));
 
     // 排序并返回推荐
@@ -538,21 +543,19 @@ export class ToolRegistry extends EventEmitter {
         checks: [],
         overallScore: 0,
         recommendations: ['工具未注册'],
-        lastChecked: new Date()
+        lastChecked: new Date(),
       };
     }
 
     const checks = [
       this.checkToolAvailability,
       this.checkToolPerformance,
-      this.checkToolDependencies
+      this.checkToolDependencies,
     ];
 
-    const results = await Promise.all(
-      checks.map(check => check.call(this, tool))
-    );
+    const results = await Promise.all(checks.map((check) => check.call(this, tool)));
 
-    const allPassed = results.every(r => r.passed);
+    const allPassed = results.every((r) => r.passed);
     const overallScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
 
     return {
@@ -561,7 +564,7 @@ export class ToolRegistry extends EventEmitter {
       checks: results,
       overallScore,
       recommendations: this.generateHealthRecommendations(results),
-      lastChecked: new Date()
+      lastChecked: new Date(),
     };
   }
 
@@ -601,13 +604,13 @@ export class ToolRegistry extends EventEmitter {
         ...toolDef.metadata,
         id: toolId,
         registeredAt: new Date(),
-        lastUpdated: new Date()
-      }
+        lastUpdated: new Date(),
+      },
     };
   }
 
   private updateCategoryIndex(toolId: string, categories: string[]): void {
-    categories.forEach(category => {
+    categories.forEach((category) => {
       if (!this.categories.has(category)) {
         this.categories.set(category, new Set());
       }
@@ -633,11 +636,11 @@ export class ToolRegistry extends EventEmitter {
     const allTools = Array.from(this.tools.values());
     const lowerQuery = query.toLowerCase();
 
-    return allTools.filter(tool => {
+    return allTools.filter((tool) => {
       const matchQuery =
         tool.metadata.name.toLowerCase().includes(lowerQuery) ||
         tool.metadata.description.toLowerCase().includes(lowerQuery) ||
-        tool.metadata.tags.some(tag => tag.toLowerCase().includes(lowerQuery));
+        tool.metadata.tags.some((tag) => tag.toLowerCase().includes(lowerQuery));
 
       return matchQuery && this.matchesFilters(tool, filters);
     });
@@ -646,13 +649,13 @@ export class ToolRegistry extends EventEmitter {
   private applyFilters(tools: RegisteredTool[], filters?: ToolFilters): RegisteredTool[] {
     if (!filters) return tools;
 
-    return tools.filter(tool => this.matchesFilters(tool, filters));
+    return tools.filter((tool) => this.matchesFilters(tool, filters));
   }
 
   private matchesFilters(tool: RegisteredTool, filters?: ToolFilters): boolean {
     if (!filters) return true;
 
-    if (filters.category && !filters.category.some(cat => tool.metadata.category.includes(cat))) {
+    if (filters.category && !filters.category.some((cat) => tool.metadata.category.includes(cat))) {
       return false;
     }
 
@@ -687,7 +690,7 @@ export class ToolRegistry extends EventEmitter {
       score += 5;
     }
 
-    tool.metadata.tags.forEach(tag => {
+    tool.metadata.tags.forEach((tag) => {
       if (tag.toLowerCase().includes(lowerQuery)) {
         score += 3;
       }
@@ -705,8 +708,8 @@ export class ToolRegistry extends EventEmitter {
   private groupByCategory(tools: RegisteredTool[]): Record<string, RegisteredTool[]> {
     const grouped: Record<string, RegisteredTool[]> = {};
 
-    tools.forEach(tool => {
-      tool.metadata.category.forEach(category => {
+    tools.forEach((tool) => {
+      tool.metadata.category.forEach((category) => {
         if (!grouped[category]) {
           grouped[category] = [];
         }
@@ -719,35 +722,34 @@ export class ToolRegistry extends EventEmitter {
 
   private generateSuggestions(_query: string, _tools: RegisteredTool[]): string[] {
     // 简化的建议生成
-    return [
-      '尝试使用更具体的关键词',
-      '查看相关分类',
-      '检查工具标签'
-    ];
+    return ['尝试使用更具体的关键词', '查看相关分类', '检查工具标签'];
   }
 
-  private async generateExecutionPlan(_query: string, tools: RegisteredTool[]): Promise<ExecutionPlan> {
+  private async generateExecutionPlan(
+    _query: string,
+    tools: RegisteredTool[]
+  ): Promise<ExecutionPlan> {
     return {
-      steps: tools.slice(0, 3).map(tool => ({
+      steps: tools.slice(0, 3).map((tool) => ({
         toolId: tool.metadata.id,
         input: {},
         outputType: 'any',
-        dependencies: []
+        dependencies: [],
       })),
-      estimatedTime: tools.slice(0, 3).reduce((sum, tool) => sum + (tool.metadata.timeout || 5000), 0),
+      estimatedTime: tools
+        .slice(0, 3)
+        .reduce((sum, tool) => sum + (tool.metadata.timeout || 5000), 0),
       confidence: 0.8,
-      dependencies: []
+      dependencies: [],
     };
   }
 
   private checkPermissions(tool: RegisteredTool, context: ExecutionContext): boolean {
     if (tool.metadata.requiresAuth) {
-      return tool.metadata.permissions.every(perm => context.permissions.includes(perm));
+      return tool.metadata.permissions.every((perm) => context.permissions.includes(perm));
     }
     return true;
   }
-
-
 
   private checkRateLimit(_toolId: string): boolean {
     // 简化的速率限制检查
@@ -814,8 +816,8 @@ export class ToolRegistry extends EventEmitter {
         description: `分析目标: ${goal}`,
         type: 'analysis',
         priority: 1,
-        constraints: {}
-      }
+        constraints: {},
+      },
     ];
   }
 
@@ -844,7 +846,10 @@ export class ToolRegistry extends EventEmitter {
     return plan.confidence;
   }
 
-  private calculateRecommendationScore(tool: RegisteredTool, context: RecommendationContext): number {
+  private calculateRecommendationScore(
+    tool: RegisteredTool,
+    context: RecommendationContext
+  ): number {
     let score = 0.5; // 基础分数
 
     // 基于使用频率
@@ -861,7 +866,10 @@ export class ToolRegistry extends EventEmitter {
     return Math.min(score, 1.0);
   }
 
-  private generateRecommendationReason(_tool: RegisteredTool, _context: RecommendationContext): string {
+  private generateRecommendationReason(
+    _tool: RegisteredTool,
+    _context: RecommendationContext
+  ): string {
     const reasons = [];
 
     const stats = this.usageStats.get(_tool.metadata.id);
@@ -882,7 +890,7 @@ export class ToolRegistry extends EventEmitter {
       name: 'availability',
       passed: true,
       score: 1.0,
-      message: '工具可用'
+      message: '工具可用',
     };
   }
 
@@ -894,7 +902,7 @@ export class ToolRegistry extends EventEmitter {
         name: 'performance',
         passed: true,
         score: 0.8,
-        message: '暂无性能数据'
+        message: '暂无性能数据',
       };
     }
 
@@ -905,7 +913,7 @@ export class ToolRegistry extends EventEmitter {
       name: 'performance',
       passed,
       score: successRate,
-      message: `成功率: ${(successRate * 100).toFixed(1)}%`
+      message: `成功率: ${(successRate * 100).toFixed(1)}%`,
     };
   }
 
@@ -915,13 +923,13 @@ export class ToolRegistry extends EventEmitter {
       name: 'dependencies',
       passed: true,
       score: 1.0,
-      message: '依赖正常'
+      message: '依赖正常',
     };
   }
 
   private generateHealthRecommendations(_results: HealthCheckResult[]): string[] {
     const recommendations: string[] = [];
-    _results.forEach(result => {
+    _results.forEach((result) => {
       if (!result.passed) {
         recommendations.push(`修复 ${result.name} 问题: ${result.message}`);
       }
@@ -954,18 +962,22 @@ export class ToolRegistry extends EventEmitter {
    */
   searchTools(query: string): RegisteredTool[] {
     const lowercaseQuery = query.toLowerCase();
-    return Array.from(this.tools.values())
-      .filter(tool => 
+    return Array.from(this.tools.values()).filter(
+      (tool) =>
         tool.metadata.name.toLowerCase().includes(lowercaseQuery) ||
         tool.metadata.description.toLowerCase().includes(lowercaseQuery) ||
-        tool.metadata.tags.some(tag => tag.toLowerCase().includes(lowercaseQuery))
-      );
+        tool.metadata.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery))
+    );
   }
 
   /**
    * 执行工具
    */
-  async execute(toolId: string, input: unknown, context: ExecutionContext): Promise<ToolExecutionResult> {
+  async execute(
+    toolId: string,
+    input: unknown,
+    context: ExecutionContext
+  ): Promise<ToolExecutionResult> {
     const tool = this.getToolById(toolId);
     if (!tool) {
       throw new ToolNotFoundError(toolId);
@@ -974,7 +986,7 @@ export class ToolRegistry extends EventEmitter {
     try {
       // 更新使用统计
       this.updateUsageStats(toolId, 0, true);
-      
+
       // 执行工具
       const result = await tool.execute(input, context);
       return {
@@ -985,8 +997,8 @@ export class ToolRegistry extends EventEmitter {
         metadata: {
           toolId,
           executionTime: 0,
-          cached: false
-        }
+          cached: false,
+        },
       };
     } catch (error) {
       this.updateErrorStats(toolId);
@@ -999,8 +1011,8 @@ export class ToolRegistry extends EventEmitter {
           toolId,
           executionTime: 0,
           error: error instanceof Error ? error.message : String(error),
-          cached: false
-        }
+          cached: false,
+        },
       };
     }
   }
@@ -1023,11 +1035,15 @@ export class ToolRegistry extends EventEmitter {
   } {
     return {
       totalTools: this.tools.size,
-      totalExecutions: Array.from(this.usageStats.values())
-        .reduce((sum, stats) => sum + stats.usageCount, 0),
-      totalErrors: Array.from(this.usageStats.values())
-        .reduce((sum, stats) => sum + stats.errorCount, 0),
-      avgSuccessRate: this.calculateOverallSuccessRate()
+      totalExecutions: Array.from(this.usageStats.values()).reduce(
+        (sum, stats) => sum + stats.usageCount,
+        0
+      ),
+      totalErrors: Array.from(this.usageStats.values()).reduce(
+        (sum, stats) => sum + stats.errorCount,
+        0
+      ),
+      avgSuccessRate: this.calculateOverallSuccessRate(),
     };
   }
 
@@ -1065,7 +1081,7 @@ export class ToolRegistry extends EventEmitter {
     if (!toolIds) return [];
 
     return Array.from(toolIds)
-      .map(id => this.tools.get(id))
+      .map((id) => this.tools.get(id))
       .filter((tool): tool is RegisteredTool => tool !== undefined);
   }
 
@@ -1081,7 +1097,7 @@ export class ToolRegistry extends EventEmitter {
     this.usageStats.delete(toolId);
 
     // 更新分类索引
-    tool.metadata.category.forEach(category => {
+    tool.metadata.category.forEach((category) => {
       const categorySet = this.categories.get(category);
       if (categorySet) {
         categorySet.delete(toolId);

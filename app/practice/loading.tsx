@@ -29,5 +29,5 @@ export default function PracticeLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,4 +1,11 @@
-import { ManagementConfig, ManagementMetrics, DashboardData, ReportConfig, Report, IDimension } from '../types/IFiveDimensionalManagement';
+import {
+  ManagementConfig,
+  ManagementMetrics,
+  DashboardData,
+  ReportConfig,
+  Report,
+  IDimension,
+} from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 
 export class ReportGenerator {
@@ -34,7 +41,7 @@ export class ReportGenerator {
       format: reportConfig.format,
       size: 1024,
       downloadUrl: `/reports/report_${Date.now()}.${reportConfig.format}`,
-      metadata: { config: reportConfig }
+      metadata: { config: reportConfig },
     };
   }
 

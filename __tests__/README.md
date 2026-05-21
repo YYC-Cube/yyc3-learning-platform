@@ -115,13 +115,13 @@ describe('Button', () => {
 
 ### 阶段性目标
 
-| 时间 | 目标覆盖率 |
-|------|-----------|
-| 第1周 | 10% |
-| 第2周 | 15% |
-| 第4周 | 20% |
-| 第8周 | 30% |
-| 第12周 | 50% |
+| 时间   | 目标覆盖率 |
+| ------ | ---------- |
+| 第1周  | 10%        |
+| 第2周  | 15%        |
+| 第4周  | 20%        |
+| 第8周  | 30%        |
+| 第12周 | 50%        |
 
 ### 当前状态 (第0周)
 
@@ -138,12 +138,14 @@ describe('Button', () => {
 ## 🎯 本周任务清单
 
 ### ✅ 已完成
+
 - [x] 配置Vitest
 - [x] 创建测试规范文档
 - [x] 建立测试目录结构
 - [x] 创建测试工具和fixture
 
 ### ⏳ 进行中
+
 - [ ] 编写核心组件测试（目标：20个组件）
 - [ ] 编写工具函数测试（目标：15个函数）
 - [ ] 编写API测试（目标：10个端点）
@@ -160,10 +162,12 @@ describe('Button', () => {
 ## 📖 参考文档
 
 ### 内部文档
+
 - [TESTING-STANDARDS.md](../docs/TESTING-STANDARDS.md) - 完整测试规范
 - [GLOBAL-ANALYSIS-EXECUTIVE-SUMMARY.md](../docs/GLOBAL-ANALYSIS-EXECUTIVE-SUMMARY.md) - 改进计划
 
 ### 官方文档
+
 - [Vitest文档](https://vitest.dev/)
 - [Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [Playwright文档](https://playwright.dev/docs/intro)
@@ -173,15 +177,18 @@ describe('Button', () => {
 ## 💡 提示
 
 ### 测试文件位置
+
 - 单元测试可以放在源文件旁边：`Component.tsx` → `Component.test.tsx`
 - 集成测试和E2E测试放在 `__tests__/` 目录
 
 ### 测试命名
+
 - 使用 `.test.ts` 或 `.test.tsx` 后缀
 - 使用 `describe` 分组相关测试
 - 使用清晰的测试描述
 
 ### 快速测试特定文件
+
 ```bash
 # 测试单个文件
 pnpm test Button.test.tsx

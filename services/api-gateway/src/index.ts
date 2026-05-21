@@ -8,7 +8,10 @@ import { ToolRegistry, RegisteredTool } from '../../../packages/tool-registry/sr
 import { VectorKnowledgeBase } from '../../../packages/knowledge-base/src/VectorKnowledgeBase';
 import { MetaLearningLayer } from '../../../packages/learning-system/src/MetaLearningLayer';
 import { LearningSystem } from '../../../packages/learning-system/src/LearningSystem';
-import { EventDispatcher, eventDispatcher } from '../../../packages/core-engine/src/EventDispatcher';
+import {
+  EventDispatcher,
+  eventDispatcher,
+} from '../../../packages/core-engine/src/EventDispatcher';
 import { logger } from '../../../lib/logger';
 import fetch from 'node-fetch';
 
@@ -61,23 +64,23 @@ export class APIGateway {
     this.eventDispatcher = eventDispatcher;
     this.agentEngine = new AgenticCore({
       maxConcurrentTasks: 10,
-      enableLearning: true
+      enableLearning: true,
     });
     // 实例化工具和服务
-    this.toolRegistry = new ToolRegistry({ 
+    this.toolRegistry = new ToolRegistry({
       enableHealthCheck: true,
       maxCacheSize: 1000,
       healthCheckInterval: 30000,
       maxResults: 100,
       defaultCacheTTL: 3600000, // 1小时
-      enableMetrics: true
+      enableMetrics: true,
     });
     this.vectorKnowledgeBase = new VectorKnowledgeBase(384);
     this.metaLearningLayer = new MetaLearningLayer();
     this.learningSystem = new LearningSystem();
     this.serviceUrls = {
       aiEngine: process.env.AI_ENGINE_URL || 'http://localhost:3201',
-      dataService: process.env.DATA_SERVICE_URL || 'http://localhost:3202'
+      dataService: process.env.DATA_SERVICE_URL || 'http://localhost:3202',
     };
 
     this.setupMiddleware();
@@ -90,12 +93,14 @@ export class APIGateway {
   private setupMiddleware(): void {
     // 安全中间件
     this.app.use(helmet());
-    
+
     // CORS
-    this.app.use(cors({
-      origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
-      credentials: true
-    }));
+    this.app.use(
+      cors({
+        origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+        credentials: true,
+      })
+    );
 
     // JSON解析
     this.app.use(express.json({ limit: '10mb' }));
@@ -105,7 +110,7 @@ export class APIGateway {
     const limiter = rateLimit({
       windowMs: 15 * 60 * 1000, // 15分钟
       max: 100, // 限制100个请求
-      message: '请求过于频繁，请稍后再试'
+      message: '请求过于频繁，请稍后再试',
     });
     this.app.use('/api/', limiter);
 
@@ -127,7 +132,7 @@ export class APIGateway {
       res.json({
         status: 'healthy',
         timestamp: Date.now(),
-        uptime: process.uptime()
+        uptime: process.uptime(),
       });
     });
 
@@ -149,8 +154,8 @@ export class APIGateway {
             userId: req.userId!,
             sessionId: req.sessionId!,
             environment: 'web',
-            permissions: ['read', 'write']
-          }
+            permissions: ['read', 'write'],
+          },
         });
 
         res.json(response);
@@ -211,7 +216,7 @@ export class APIGateway {
           sessionId: req.sessionId!,
           timestamp: Date.now(),
           environment: 'web',
-          permissions: ['read', 'write']
+          permissions: ['read', 'write'],
         });
 
         res.json(result);
@@ -263,7 +268,12 @@ export class APIGateway {
           return res.status(400).json({ error: '缺少必需的参数: query' });
         }
 
-        const results = await this.vectorKnowledgeBase.semanticSearch(query, topK, threshold, filters);
+        const results = await this.vectorKnowledgeBase.semanticSearch(
+          query,
+          topK,
+          threshold,
+          filters
+        );
         res.json({ results });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -283,7 +293,7 @@ export class APIGateway {
           query,
           topK,
           threshold,
-          filters
+          filters,
         });
 
         res.json(result);
@@ -307,18 +317,18 @@ export class APIGateway {
     // 用户数据路由
     this.app.get('/api/users/:id', this.proxyToDataService.bind(this));
     this.app.put('/api/users/:id', this.proxyToDataService.bind(this));
-    
+
     // 课程数据路由
     this.app.get('/api/courses', this.proxyToDataService.bind(this));
     this.app.get('/api/courses/:id', this.proxyToDataService.bind(this));
     this.app.post('/api/courses', this.proxyToDataService.bind(this));
-    
+
     // 考试结果路由
     this.app.get('/api/users/:userId/exam-results', this.proxyToDataService.bind(this));
     this.app.post('/api/exam-results', this.proxyToDataService.bind(this));
-    
+
     // ==================== AI引擎服务路由代理 ====================
-    
+
     // AI处理路由
     this.app.post('/api/ai/process', this.proxyToAIEngine.bind(this));
     this.app.post('/api/ai/generate', this.proxyToAIEngine.bind(this));
@@ -342,7 +352,7 @@ export class APIGateway {
           reward,
           nextState,
           timestamp: Date.now(),
-          metadata: metadata || {}
+          metadata: metadata || {},
         };
 
         this.metaLearningLayer.recordExperience(experience);
@@ -387,7 +397,7 @@ export class APIGateway {
           agent: this.agentEngine.getSystemStatus(),
           tools: this.toolRegistry.getSystemStats(),
           knowledge: this.vectorKnowledgeBase.getStats(),
-          learning: this.metaLearningLayer.getStatistics()
+          learning: this.metaLearningLayer.getStatistics(),
         };
 
         res.json(stats);
@@ -404,7 +414,11 @@ export class APIGateway {
 
   // ==================== 中间件实现 ====================
 
-  private async authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  private async authenticate(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       // 从请求头获取令牌
       const token = req.headers.authorization?.replace('Bearer ', '');
@@ -467,9 +481,9 @@ export class APIGateway {
         method: req.method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || ''
+          Authorization: req.headers.authorization || '',
         },
-        body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined
+        body: req.method !== 'GET' ? JSON.stringify(req.body) : undefined,
       });
 
       const data = await response.json();
@@ -487,9 +501,9 @@ export class APIGateway {
         method: req.method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || ''
+          Authorization: req.headers.authorization || '',
         },
-        body: JSON.stringify(req.body)
+        body: JSON.stringify(req.body),
       });
 
       const data = await response.json();
@@ -505,15 +519,14 @@ export class APIGateway {
 
     res.status(500).json({
       error: '服务器内部错误',
-      message: process.env.NODE_ENV === 'development' ? err.message : undefined
+      message: process.env.NODE_ENV === 'development' ? err.message : undefined,
     });
   }
 
   // ==================== 服务器管理 ====================
 
   public start(): void {
-    this.app.listen(this.port, () => {
-    });
+    this.app.listen(this.port, () => {});
   }
 
   public getApp(): express.Application {

@@ -160,10 +160,10 @@
     --chart-transparent: transparent;
 
     /* ========== 品牌渐变色 (SVG/图标专用) ========== */
-    --brand-blue: #60A5FA;
-    --brand-violet: #A78BFA;
-    --brand-pink: #F472B6;
-    --brand-text-light: #E0E7FF;
+    --brand-blue: #60a5fa;
+    --brand-violet: #a78bfa;
+    --brand-pink: #f472b6;
+    --brand-text-light: #e0e7ff;
   }
 
   .dark {
@@ -222,10 +222,10 @@
     --chart-transparent: transparent;
 
     /* ========== 品牌渐变色 (SVG/图标专用 Dark) ========== */
-    --brand-blue: #93C5FD;
-    --brand-violet: #C4B5FD;
-    --brand-pink: #F9A8D4;
-    --brand-text-light: #E0E7FF;
+    --brand-blue: #93c5fd;
+    --brand-violet: #c4b5fd;
+    --brand-pink: #f9a8d4;
+    --brand-text-light: #e0e7ff;
   }
 }
 
@@ -236,7 +236,9 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 
   ::selection {

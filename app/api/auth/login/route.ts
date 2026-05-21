@@ -3,70 +3,66 @@
  * @description 处理用户登录请求
  * @author YYC³
  */
-import { NextResponse } from 'next/server'
-import { loginSchema } from '@/lib/validators'
-import { query } from '@/lib/database'
-import { generateToken, verifyPassword } from '@/lib/auth'
-import { logger } from '@/lib/logger'
-import { checkRateLimit, getClientIp, RateLimits, createRateLimitResponse } from '@/lib/security/rate-limiter'
-import { applySecurityHeadersToNextResponse } from '@/lib/security/headers'
-import type { DbUser } from '@/types/user'
-import { logAuthenticationEvent, logRateLimitEvent } from '@/lib/security/audit-log'
+import { NextResponse } from 'next/server';
+import { loginSchema } from '@/lib/validators';
+import { query } from '@/lib/database';
+import { generateToken, verifyPassword } from '@/lib/auth';
+import { logger } from '@/lib/logger';
+import {
+  checkRateLimit,
+  getClientIp,
+  RateLimits,
+  createRateLimitResponse,
+} from '@/lib/security/rate-limiter';
+import { applySecurityHeadersToNextResponse } from '@/lib/security/headers';
+import type { DbUser } from '@/types/user';
+import { logAuthenticationEvent, logRateLimitEvent } from '@/lib/security/audit-log';
 
 export async function POST(request: Request) {
   try {
     // Rate limiting
-    const clientIp = getClientIp(request)
-    const rateLimitResult = await checkRateLimit(`login:${clientIp}`, RateLimits.auth)
+    const clientIp = getClientIp(request);
+    const rateLimitResult = await checkRateLimit(`login:${clientIp}`, RateLimits.auth);
 
     if (!rateLimitResult.allowed) {
-      logRateLimitEvent('login', clientIp)
-      return createRateLimitResponse(rateLimitResult.resetTime)
+      logRateLimitEvent('login', clientIp);
+      return createRateLimitResponse(rateLimitResult.resetTime);
     }
 
-    const body = await request.json()
+    const body = await request.json();
 
     // 验证请求数据
-    const validation = loginSchema.safeParse(body)
+    const validation = loginSchema.safeParse(body);
     if (!validation.success) {
       return applySecurityHeadersToNextResponse(
         NextResponse.json(
           { error: '请求数据格式错误', details: validation.error.errors },
           { status: 400 }
         )
-      )
+      );
     }
 
-    const { email, password } = validation.data
+    const { email, password } = validation.data;
 
     // 查询用户（使用 learning_users 表）
-    const users = await query<DbUser>(
-      'SELECT * FROM learning_users WHERE email = $1',
-      [email]
-    )
+    const users = await query<DbUser>('SELECT * FROM learning_users WHERE email = $1', [email]);
 
     if (users.length === 0) {
-      logAuthenticationEvent('login', false, undefined, clientIp, 'Email not found')
+      logAuthenticationEvent('login', false, undefined, clientIp, 'Email not found');
       return applySecurityHeadersToNextResponse(
-        NextResponse.json(
-          { error: '邮箱或密码错误' },
-          { status: 401 }
-        )
-      )
+        NextResponse.json({ error: '邮箱或密码错误' }, { status: 401 })
+      );
     }
 
-    const user = users[0]
+    const user = users[0];
 
     // 验证密码
-    const isPasswordValid = await verifyPassword(password, user.password_hash || '')
+    const isPasswordValid = await verifyPassword(password, user.password_hash || '');
     if (!isPasswordValid) {
-      logAuthenticationEvent('login', false, user.id.toString(), clientIp, 'Invalid password')
+      logAuthenticationEvent('login', false, user.id.toString(), clientIp, 'Invalid password');
       return applySecurityHeadersToNextResponse(
-        NextResponse.json(
-          { error: '邮箱或密码错误' },
-          { status: 401 }
-        )
-      )
+        NextResponse.json({ error: '邮箱或密码错误' }, { status: 401 })
+      );
     }
 
     // 生成 JWT token
@@ -74,38 +70,32 @@ export async function POST(request: Request) {
       id: user.id,
       email: user.email,
       role: user.role,
-    })
+    });
 
     // 更新最后登录时间
-    await query(
-      'UPDATE learning_users SET last_login_at = NOW() WHERE id = $1',
-      [user.id]
-    )
+    await query('UPDATE learning_users SET last_login_at = NOW() WHERE id = $1', [user.id]);
 
-    logAuthenticationEvent('login', true, user.id.toString(), clientIp)
+    logAuthenticationEvent('login', true, user.id.toString(), clientIp);
 
     // 返回用户信息（不包含密码）
-    const { password_hash: _, ...userWithoutPassword } = user
+    const { password_hash: _, ...userWithoutPassword } = user;
 
     const response = NextResponse.json({
       success: true,
       token,
       user: userWithoutPassword,
-    })
+    });
 
     // Apply security headers
-    response.headers.set('X-RateLimit-Limit', RateLimits.auth.limit.toString())
-    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
-    response.headers.set('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString())
+    response.headers.set('X-RateLimit-Limit', RateLimits.auth.limit.toString());
+    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString());
+    response.headers.set('X-RateLimit-Reset', new Date(rateLimitResult.resetTime).toISOString());
 
-    return applySecurityHeadersToNextResponse(response)
+    return applySecurityHeadersToNextResponse(response);
   } catch (error) {
-    logger.error('Login error:', error)
+    logger.error('Login error:', error);
     return applySecurityHeadersToNextResponse(
-      NextResponse.json(
-        { error: '服务器错误，请稍后重试' },
-        { status: 500 }
-      )
-    )
+      NextResponse.json({ error: '服务器错误，请稍后重试' }, { status: 500 })
+    );
   }
 }

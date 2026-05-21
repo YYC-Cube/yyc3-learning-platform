@@ -179,7 +179,7 @@ export class RealAIProvidersManager extends EventEmitter {
     if (config.providers.ollama) {
       const ollamaConfig = {
         baseUrl: config.providers.ollama.baseURL,
-        models: config.providers.ollama.models
+        models: config.providers.ollama.models,
       };
       const ollamaAdapter = new OllamaProviderAdapter(ollamaConfig);
       await ollamaAdapter.validateConnection();
@@ -211,13 +211,12 @@ export class RealAIProvidersManager extends EventEmitter {
         duration: Date.now() - startTime,
         tokens: this.estimateTokens(request),
         cost: await this.costOptimizer.calculateCost(provider.name, request, response),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
       this.monitor.recordUsage(usage);
 
       return processedResponse;
-
     } catch (error) {
       logger.error('AI聊天失败', error);
 
@@ -225,7 +224,7 @@ export class RealAIProvidersManager extends EventEmitter {
       if (fallbackProvider) {
         return await this.chat({
           ...request,
-          fallback: true
+          fallback: true,
         });
       }
 
@@ -261,11 +260,11 @@ export class RealAIProvidersManager extends EventEmitter {
         enterprise: {
           timestamp: new Date(),
           requestId: `req_${Date.now()}`,
-          session: this.generateSessionId()
-        }
+          session: this.generateSessionId(),
+        },
       },
       // 优化提示词
-      optimizedPrompt: await this.optimizePrompt(request.content, request.scenario)
+      optimizedPrompt: await this.optimizePrompt(request.content, request.scenario),
     };
   }
 
@@ -286,8 +285,8 @@ export class RealAIProvidersManager extends EventEmitter {
         securityStatus: securityCheck.safe ? 'safe' : 'flagged',
         sources: response.metadata?.sources || [],
         model: response.model || 'unknown',
-        usage: response.usage || {}
-      }
+        usage: response.usage || {},
+      },
     };
   }
 
@@ -299,8 +298,8 @@ export class RealAIProvidersManager extends EventEmitter {
       data: {
         content: content,
         scenario: scenario || 'general',
-        constraints: ['professional', 'helpful', 'accurate']
-      }
+        constraints: ['professional', 'helpful', 'accurate'],
+      },
     });
 
     return optimization?.content || content;
@@ -328,7 +327,7 @@ export class RealAIProvidersManager extends EventEmitter {
       const suspiciousPatterns = [
         /password|token|secret|key/i,
         /hack|exploit|vulnerability/i,
-        /illegal|fraud|scam/i
+        /illegal|fraud|scam/i,
       ];
 
       for (const pattern of suspiciousPatterns) {
@@ -367,7 +366,10 @@ export class RealAIProvidersManager extends EventEmitter {
 
 // AI提供商路由器
 export class AIProviderRouter {
-  async selectProvider(request: any, providers: Map<string, RealAIProvider>): Promise<RealAIProvider> {
+  async selectProvider(
+    request: any,
+    providers: Map<string, RealAIProvider>
+  ): Promise<RealAIProvider> {
     const complexity = this.analyzeComplexity(request);
     const priority = request.priority || 'medium';
     const costBudget = request.costBudget || 'medium';
@@ -398,7 +400,10 @@ export class AIProviderRouter {
     throw new Error('没有可用的AI提供商');
   }
 
-  async selectFallbackProvider(request: any, providers: Map<string, RealAIProvider>): Promise<RealAIProvider | null> {
+  async selectFallbackProvider(
+    request: any,
+    providers: Map<string, RealAIProvider>
+  ): Promise<RealAIProvider | null> {
     const excludedProvider = request.fallbackFrom;
 
     for (const [name, provider] of Array.from(providers.entries())) {
@@ -449,7 +454,7 @@ export class OpenAIRealProvider implements RealAIProvider {
     totalTokens: 0,
     totalCost: 0,
     lastUsed: null,
-    successRate: 1
+    successRate: 1,
   };
   private available = true;
 
@@ -469,15 +474,14 @@ export class OpenAIRealProvider implements RealAIProvider {
     try {
       const response = await fetch('https://api.openai.com/v1/models', {
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
       });
 
       if (!response.ok) {
         throw new Error(`OpenAI API连接失败: ${response.status}`);
       }
-
     } catch (error) {
       throw new Error(`OpenAI连接验证失败: ${error.message}`);
     }
@@ -488,27 +492,27 @@ export class OpenAIRealProvider implements RealAIProvider {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           model: request.model || 'gpt-4-turbo-preview',
           messages: [
             {
               role: 'system',
-              content: request.systemPrompt || '你是一个专业的AI助手。'
+              content: request.systemPrompt || '你是一个专业的AI助手。',
             },
             {
               role: 'user',
-              content: request.content
-            }
+              content: request.content,
+            },
           ],
           temperature: request.temperature || 0.7,
           max_tokens: request.maxTokens || 4000,
           top_p: request.topP || 1,
           frequency_penalty: request.frequencyPenalty || 0,
-          presence_penalty: request.presencePenalty || 0
-        })
+          presence_penalty: request.presencePenalty || 0,
+        }),
       });
 
       if (!response.ok) {
@@ -520,9 +524,8 @@ export class OpenAIRealProvider implements RealAIProvider {
         content: data.choices[0].message.content,
         confidence: 0.9,
         model: data.model,
-        usage: data.usage
+        usage: data.usage,
       };
-
     } catch (error) {
       logger.error('OpenAI聊天调用失败', error);
       throw error;
@@ -533,7 +536,7 @@ export class OpenAIRealProvider implements RealAIProvider {
     return await this.chat({
       ...request,
       content: `请分析以下内容：${JSON.stringify(request.data)}`,
-      systemPrompt: '你是一个专业的AI分析师，提供深入的分析和洞察。'
+      systemPrompt: '你是一个专业的AI分析师，提供深入的分析和洞察。',
     });
   }
 
@@ -541,7 +544,7 @@ export class OpenAIRealProvider implements RealAIProvider {
     return await this.chat({
       ...request,
       content: request.prompt,
-      systemPrompt: '你是一个专业的AI内容生成器。'
+      systemPrompt: '你是一个专业的AI内容生成器。',
     });
   }
 
@@ -549,7 +552,7 @@ export class OpenAIRealProvider implements RealAIProvider {
     return await this.chat({
       ...request,
       content: `请基于以下信息提供推荐：${JSON.stringify(request.context)}`,
-      systemPrompt: '你是一个专业的AI推荐系统，提供个性化的建议。'
+      systemPrompt: '你是一个专业的AI推荐系统，提供个性化的建议。',
     });
   }
 
@@ -570,7 +573,7 @@ export class ClaudeRealProvider implements RealAIProvider {
     totalTokens: 0,
     totalCost: 0,
     lastUsed: null,
-    successRate: 1
+    successRate: 1,
   };
   private available = true;
 
@@ -593,22 +596,23 @@ export class ClaudeRealProvider implements RealAIProvider {
         headers: {
           'x-api-key': this.apiKey,
           'Content-Type': 'application/json',
-          'anthropic-version': '2023-06-01'
+          'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
           model: 'claude-3-haiku-20240307',
           max_tokens: 10,
-          messages: [{
-            role: 'user',
-            content: 'Hello'
-          }]
-        })
+          messages: [
+            {
+              role: 'user',
+              content: 'Hello',
+            },
+          ],
+        }),
       });
 
       if (!response.ok) {
         throw new Error(`Claude API连接失败: ${response.status}`);
       }
-
     } catch (error) {
       throw new Error(`Claude连接验证失败: ${error.message}`);
     }
@@ -621,16 +625,18 @@ export class ClaudeRealProvider implements RealAIProvider {
         headers: {
           'x-api-key': this.apiKey,
           'Content-Type': 'application/json',
-          'anthropic-version': '2023-06-01'
+          'anthropic-version': '2023-06-01',
         },
         body: JSON.stringify({
           model: request.model || 'claude-3-sonnet-20240229',
           max_tokens: request.maxTokens || 4000,
-          messages: [{
-            role: 'user',
-            content: request.content
-          }]
-        })
+          messages: [
+            {
+              role: 'user',
+              content: request.content,
+            },
+          ],
+        }),
       });
 
       if (!response.ok) {
@@ -642,9 +648,8 @@ export class ClaudeRealProvider implements RealAIProvider {
         content: data.content[0].text,
         confidence: 0.85,
         model: data.model,
-        usage: data.usage
+        usage: data.usage,
       };
-
     } catch (error) {
       logger.error('Claude聊天调用失败', error);
       throw error;
@@ -654,21 +659,21 @@ export class ClaudeRealProvider implements RealAIProvider {
   async analyze(request: AnalysisRequest): Promise<any> {
     return await this.chat({
       ...request,
-      content: `分析以下内容：${JSON.stringify(request.data)}`
+      content: `分析以下内容：${JSON.stringify(request.data)}`,
     });
   }
 
   async generate(request: GenerationRequest): Promise<any> {
     return await this.chat({
       ...request,
-      content: request.prompt
+      content: request.prompt,
     });
   }
 
   async recommend(request: RecommendationRequest): Promise<any> {
     return await this.chat({
       ...request,
-      content: `基于以下信息提供推荐：${JSON.stringify(request.context)}`
+      content: `基于以下信息提供推荐：${JSON.stringify(request.context)}`,
     });
   }
 
@@ -689,7 +694,7 @@ export class OllamaProviderAdapter implements RealAIProvider {
     totalTokens: 0,
     totalCost: 0,
     lastUsed: null,
-    successRate: 1
+    successRate: 1,
   };
   private available = true;
 
@@ -714,12 +719,12 @@ export class OllamaProviderAdapter implements RealAIProvider {
     const ollamaRequest = {
       messages: [
         { role: 'system', content: request.systemPrompt || '你是一个专业的AI助手。' },
-        { role: 'user', content: request.content }
+        { role: 'user', content: request.content },
       ],
       model: request.model,
       temperature: request.temperature,
       maxTokens: request.maxTokens,
-      topP: request.topP
+      topP: request.topP,
     };
 
     const response = await this.ollamaProvider.chat(ollamaRequest);
@@ -729,28 +734,28 @@ export class OllamaProviderAdapter implements RealAIProvider {
       confidence: 0.8, // 本地模型置信度较高
       model: response.model,
       usage: response.usage,
-      metadata: response.metadata
+      metadata: response.metadata,
     };
   }
 
   async analyze(request: AnalysisRequest): Promise<any> {
     return await this.chat({
       content: `请分析以下内容：${JSON.stringify(request.data)}`,
-      systemPrompt: '你是一个专业的AI分析师，提供深入的分析和洞察。'
+      systemPrompt: '你是一个专业的AI分析师，提供深入的分析和洞察。',
     });
   }
 
   async generate(request: GenerationRequest): Promise<any> {
     return await this.chat({
       content: request.prompt,
-      systemPrompt: '你是一个专业的AI内容生成器。'
+      systemPrompt: '你是一个专业的AI内容生成器。',
     });
   }
 
   async recommend(request: RecommendationRequest): Promise<any> {
     return await this.chat({
       content: `请基于以下信息提供推荐：${JSON.stringify(request.context)}`,
-      systemPrompt: '你是一个专业的AI推荐系统，提供个性化的建议。'
+      systemPrompt: '你是一个专业的AI推荐系统，提供个性化的建议。',
     });
   }
 
@@ -766,7 +771,7 @@ export class AIUsageMonitor {
   recordUsage(usage: UsageRecord): void {
     this.usage.push({
       ...usage,
-      timestamp: usage.timestamp || new Date()
+      timestamp: usage.timestamp || new Date(),
     });
 
     if (this.usage.length > 1000) {
@@ -777,10 +782,13 @@ export class AIUsageMonitor {
   getStats(): UsageStats {
     const totalCost = this.usage.reduce((sum, record) => sum + record.cost, 0);
     const totalTokens = this.usage.reduce((sum, record) => sum + record.tokens, 0);
-    const providerStats = this.usage.reduce((stats, record) => {
-      stats[record.provider] = (stats[record.provider] || 0) + 1;
-      return stats;
-    }, {} as Record<string, number>);
+    const providerStats = this.usage.reduce(
+      (stats, record) => {
+        stats[record.provider] = (stats[record.provider] || 0) + 1;
+        return stats;
+      },
+      {} as Record<string, number>
+    );
 
     return {
       totalRequests: this.usage.length,
@@ -790,7 +798,7 @@ export class AIUsageMonitor {
       averageTokensPerRequest: this.usage.length > 0 ? totalTokens / this.usage.length : 0,
       providerUsage: providerStats,
       requestsByHour: this.getRequestsByHour(),
-      costByDay: this.getCostByDay()
+      costByDay: this.getCostByDay(),
     };
   }
 
@@ -803,7 +811,7 @@ export class AIUsageMonitor {
       dailyAverage: totalCost / Math.max(Object.keys(dailyCosts).length, 1),
       peakDay: this.getPeakDay(dailyCosts),
       costTrend: this.calculateCostTrend(dailyCosts),
-      projectedMonthlyCost: totalCost * 30
+      projectedMonthlyCost: totalCost * 30,
     };
   }
 
@@ -843,12 +851,15 @@ export class AIUsageMonitor {
     return peakDay;
   }
 
-  private calculateCostTrend(dailyCosts: Record<string, number>): 'increasing' | 'decreasing' | 'stable' {
+  private calculateCostTrend(
+    dailyCosts: Record<string, number>
+  ): 'increasing' | 'decreasing' | 'stable' {
     const costs = Object.values(dailyCosts);
     if (costs.length < 2) return 'stable';
 
     const recent = costs.slice(-7).reduce((sum, cost) => sum + cost, 0) / Math.min(7, costs.length);
-    const older = costs.slice(-14, -7).reduce((sum, cost) => sum + cost, 0) / Math.min(7, costs.length);
+    const older =
+      costs.slice(-14, -7).reduce((sum, cost) => sum + cost, 0) / Math.min(7, costs.length);
 
     if (recent > older * 1.1) return 'increasing';
     if (recent < older * 0.9) return 'decreasing';
@@ -870,12 +881,12 @@ export class AICostOptimizer {
     const inputTokens = response.usage?.prompt_tokens || this.estimateTokens(request);
     const outputTokens = response.usage?.completion_tokens || this.estimateTokens(response);
 
-    const cost = (inputTokens * pricing.input) + (outputTokens * pricing.output);
+    const cost = inputTokens * pricing.input + outputTokens * pricing.output;
 
     this.usageHistory.push({
       provider,
       cost,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     return cost;
@@ -883,18 +894,18 @@ export class AICostOptimizer {
 
   private getPricing(provider: string): Pricing {
     const pricingMap: Record<string, Pricing> = {
-      'openai': {
+      openai: {
         input: 0.01,
-        output: 0.03
+        output: 0.03,
       },
-      'claude': {
+      claude: {
         input: 0.003,
-        output: 0.015
+        output: 0.015,
       },
-      'local': {
+      local: {
         input: 0,
-        output: 0
-      }
+        output: 0,
+      },
     };
 
     return pricingMap[provider] || { input: 0.01, output: 0.03 };
@@ -914,10 +925,10 @@ export class AICostOptimizer {
     availableProviders: string[]
   ): Promise<{ provider: string; reason: string }> {
     const estimatedCosts = await Promise.all(
-      availableProviders.map(async provider => ({
+      availableProviders.map(async (provider) => ({
         provider,
         estimatedCost: await this.estimateRequestCost(provider, request),
-        efficiency: this.getCostEfficiency(provider)
+        efficiency: this.getCostEfficiency(provider),
       }))
     );
 
@@ -931,9 +942,10 @@ export class AICostOptimizer {
     const selected = sortedProviders[0];
     return {
       provider: selected.provider,
-      reason: selected.provider === 'local'
-        ? '成本优化：使用本地模型以降低成本'
-        : `效率优化：选择成本效率最高的提供商 (${selected.efficiency.toFixed(2)})`
+      reason:
+        selected.provider === 'local'
+          ? '成本优化：使用本地模型以降低成本'
+          : `效率优化：选择成本效率最高的提供商 (${selected.efficiency.toFixed(2)})`,
     };
   }
 
@@ -964,7 +976,7 @@ export class AICostOptimizer {
       dailyLimit: this.costLimits.dailyLimit,
       monthlyLimit: this.costLimits.monthlyLimit,
       percentageUsed: Math.max(dailyPercentage, monthlyPercentage),
-      warningLevel
+      warningLevel,
     };
   }
 
@@ -1001,11 +1013,11 @@ export class AICostOptimizer {
     const estimatedInputTokens = this.estimateTokens(request);
     const estimatedOutputTokens = estimatedInputTokens * 0.75;
 
-    return (estimatedInputTokens * pricing.input) + (estimatedOutputTokens * pricing.output);
+    return estimatedInputTokens * pricing.input + estimatedOutputTokens * pricing.output;
   }
 
   getCostEfficiency(provider: string): number {
-    const providerUsage = this.usageHistory.filter(u => u.provider === provider);
+    const providerUsage = this.usageHistory.filter((u) => u.provider === provider);
     if (providerUsage.length === 0) return 0.5;
 
     const avgCost = providerUsage.reduce((sum, u) => sum + u.cost, 0) / providerUsage.length;
@@ -1035,27 +1047,28 @@ export class AICostOptimizer {
         type: 'provider',
         priority: 'high',
         description: '当前成本接近限制，建议切换到本地模型或更经济的提供商',
-        estimatedSavings: 0.7
+        estimatedSavings: 0.7,
       });
     }
 
-    const openaiUsage = this.usageHistory.filter(u => u.provider === 'openai');
+    const openaiUsage = this.usageHistory.filter((u) => u.provider === 'openai');
     if (openaiUsage.length > 10) {
       suggestions.push({
         type: 'model',
         priority: 'medium',
         description: '考虑将部分GPT-4请求降级到GPT-3.5以降低成本',
-        estimatedSavings: 0.5
+        estimatedSavings: 0.5,
       });
     }
 
-    const avgCostPerRequest = this.usageHistory.reduce((sum, u) => sum + u.cost, 0) / this.usageHistory.length;
+    const avgCostPerRequest =
+      this.usageHistory.reduce((sum, u) => sum + u.cost, 0) / this.usageHistory.length;
     if (avgCostPerRequest > 0.01) {
       suggestions.push({
         type: 'caching',
         priority: 'medium',
         description: '实施响应缓存以减少重复请求',
-        estimatedSavings: 0.3
+        estimatedSavings: 0.3,
       });
     }
 
@@ -1064,7 +1077,7 @@ export class AICostOptimizer {
         type: 'batching',
         priority: 'low',
         description: '考虑批量处理相似请求以提高效率',
-        estimatedSavings: 0.15
+        estimatedSavings: 0.15,
       });
     }
 

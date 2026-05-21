@@ -32,7 +32,7 @@ describe('GET /api/courses', () => {
     expect(data.data).toBeDefined();
     expect(Array.isArray(data.data.courses)).toBe(true);
     expect(data.data.courses.length).toBeGreaterThan(0);
-    expect(data.message).toBe("课程列表获取成功");
+    expect(data.message).toBe('课程列表获取成功');
   });
 
   it('should return courses with required fields', async () => {
@@ -54,7 +54,7 @@ describe('GET /api/courses', () => {
     const data = await response.json();
 
     expect(response.status).toBe(200);
-    expect(data.data.courses.every(c => c.category === 'ai-basics')).toBe(true);
+    expect(data.data.courses.every((c) => c.category === 'ai-basics')).toBe(true);
   });
 
   it('should support pagination', async () => {

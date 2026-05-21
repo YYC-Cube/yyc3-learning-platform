@@ -88,15 +88,18 @@ graph TB
 ### 模块职责
 
 #### 1. BehaviorModelManager (行为模型管理器)
+
 **职责**: 管理预测模型的生命周期
 
 **核心功能**:
+
 - 模型注册和存储
 - 模型训练和更新
 - 模型评估和验证
 - 模型版本管理
 
 **数据结构**:
+
 ```typescript
 interface ModelManager {
   models: Map<string, PredictionModel>;
@@ -108,15 +111,18 @@ interface ModelManager {
 ---
 
 #### 2. BehaviorPatternAnalyzer (行为模式分析器)
+
 **职责**: 发现和分析行为模式
 
 **核心功能**:
+
 - 序列模式挖掘
 - 频繁模式识别
 - 异常模式检测
 - 模式相似度计算
 
 **数据结构**:
+
 ```typescript
 interface PatternAnalyzer {
   patterns: Map<string, BehaviorPattern>;
@@ -128,36 +134,42 @@ interface PatternAnalyzer {
 ---
 
 #### 3. BehaviorHistoryProcessor (行为历史处理器)
+
 **职责**: 管理和检索行为历史
 
 **核心功能**:
+
 - 行为记录存储
 - 时间窗口查询
 - 行为序列检索
 - 历史统计分析
 
 **数据结构**:
+
 ```typescript
 interface HistoryProcessor {
   records: BehaviorRecord[];
   timelineIndex: Map<number, string[]>; // timestamp -> record IDs
-  actorIndex: Map<string, string[]>;    // actor -> record IDs
-  contextIndex: Map<string, string[]>;  // context -> record IDs
+  actorIndex: Map<string, string[]>; // actor -> record IDs
+  contextIndex: Map<string, string[]>; // context -> record IDs
 }
 ```
 
 ---
 
 #### 4. BehaviorPredictor (行为预测器)
+
 **职责**: 进行行为预测
 
 **核心功能**:
+
 - 特征提取
 - 模型推理
 - 结果聚合
 - 置信度评估
 
 **数据结构**:
+
 ```typescript
 interface BehaviorPredictor {
   featureExtractor: FeatureExtractor;
@@ -169,15 +181,18 @@ interface BehaviorPredictor {
 ---
 
 #### 5. BehaviorAdaptationOptimizer (自适应优化器)
+
 **职责**: 优化模型和策略
 
 **核心功能**:
+
 - 反馈处理
 - 模型调整
 - 性能监控
 - 策略优化
 
 **数据结构**:
+
 ```typescript
 interface AdaptationOptimizer {
   feedbackBuffer: BehaviorFeedback[];
@@ -262,11 +277,11 @@ sequenceDiagram
 
 ```typescript
 enum ModelType {
-  Classification = 'classification',    // 分类模型
-  Regression = 'regression',            // 回归模型
-  Clustering = 'clustering',            // 聚类模型
+  Classification = 'classification', // 分类模型
+  Regression = 'regression', // 回归模型
+  Clustering = 'clustering', // 聚类模型
   AnomalyDetection = 'anomaly_detection', // 异常检测
-  SequencePrediction = 'sequence_prediction' // 序列预测
+  SequencePrediction = 'sequence_prediction', // 序列预测
 }
 ```
 
@@ -301,12 +316,12 @@ interface PredictionModel {
 ```typescript
 interface ModelConfig {
   // 基础配置
-  algorithm: string;              // 算法名称
-  parameters: ModelParameters;    // 算法参数
+  algorithm: string; // 算法名称
+  parameters: ModelParameters; // 算法参数
 
   // 训练配置
   training: {
-    algorithm: string;            // 训练算法
+    algorithm: string; // 训练算法
     hyperparameters: Record<string, unknown>; // 超参数
     validation: {
       strategy: 'cross_validation' | 'holdout';
@@ -318,8 +333,8 @@ interface ModelConfig {
   // 评估配置
   evaluation: {
     metrics: EvaluationMetric[];
-    frequency: number;           // 评估频率
-    threshold: number;           // 性能阈值
+    frequency: number; // 评估频率
+    threshold: number; // 性能阈值
   };
 }
 ```
@@ -350,11 +365,11 @@ interface ModelTrainingResult {
 
 ```typescript
 enum PatternType {
-  Sequential = 'sequential',       // 序列模式
-  Temporal = 'temporal',           // 时间模式
-  Conditional = 'conditional',     // 条件模式
-  Cyclic = 'cyclic',               // 循环模式
-  Anomalous = 'anomalous'          // 异常模式
+  Sequential = 'sequential', // 序列模式
+  Temporal = 'temporal', // 时间模式
+  Conditional = 'conditional', // 条件模式
+  Cyclic = 'cyclic', // 循环模式
+  Anomalous = 'anomalous', // 异常模式
 }
 ```
 
@@ -367,26 +382,26 @@ interface BehaviorPattern {
   description: string;
 
   // 模式特征
-  frequency: number;               // 出现频率
-  confidence: number;              // 置信度
-  support: number;                 // 支持度
+  frequency: number; // 出现频率
+  confidence: number; // 置信度
+  support: number; // 支持度
 
   // 模式组成
-  conditions: PatternCondition[];  // 前置条件
-  actions: PatternAction[];        // 行为动作
-  outcomes: PatternOutcome[];      // 预期结果
+  conditions: PatternCondition[]; // 前置条件
+  actions: PatternAction[]; // 行为动作
+  outcomes: PatternOutcome[]; // 预期结果
 
   // 模式元数据
   temporalFeatures: {
-    duration: number;              // 持续时间
-    periodicity: number;           // 周期性
-    seasonality: string;           // 季节性
+    duration: number; // 持续时间
+    periodicity: number; // 周期性
+    seasonality: string; // 季节性
   };
 
   contextualFeatures: {
-    actors: string[];              // 涉及主体
-    environments: string[];        // 环境特征
-    situations: string[];          // 情景特征
+    actors: string[]; // 涉及主体
+    environments: string[]; // 环境特征
+    situations: string[]; // 情景特征
   };
 
   timestamp: number;
@@ -466,17 +481,17 @@ interface FeatureExtractor {
 
 ```typescript
 enum AggregationStrategy {
-  WeightedVoting = 'weighted_voting',       // 加权投票
-  Stacking = 'stacking',                   // 模型堆叠
-  Bayesian = 'bayesian',                   // 贝叶斯融合
-  ConfidenceBased = 'confidence_based'     // 基于置信度
+  WeightedVoting = 'weighted_voting', // 加权投票
+  Stacking = 'stacking', // 模型堆叠
+  Bayesian = 'bayesian', // 贝叶斯融合
+  ConfidenceBased = 'confidence_based', // 基于置信度
 }
 
 interface AggregationConfig {
   strategy: AggregationStrategy;
-  weights: Map<string, number>;           // 模型权重
-  threshold: number;                      // 置信度阈值
-  diversityPenalty: number;               // 多样性惩罚
+  weights: Map<string, number>; // 模型权重
+  threshold: number; // 置信度阈值
+  diversityPenalty: number; // 多样性惩罚
 }
 ```
 
@@ -496,13 +511,13 @@ interface BehaviorFeedback {
   predictedBehavior: PredictedBehavior;
 
   // 反馈评估
-  accuracy: number;                       // 准确度
-  error: number;                          // 错误率
+  accuracy: number; // 准确度
+  error: number; // 错误率
 
   // 反馈元数据
   timestamp: number;
   source: 'user' | 'system' | 'expert';
-  confidence: number;                     // 反馈可信度
+  confidence: number; // 反馈可信度
 }
 ```
 
@@ -607,10 +622,10 @@ interface IBehavioralLearningLayer extends EventEmitter {
 interface BehavioralLayerConfig {
   enabled: boolean;
   modelType: ModelType;
-  updateFrequency: number;            // 更新频率 (ms)
-  maxHistorySize: number;             // 最大历史记录数
-  optimizationThreshold: number;      // 优化阈值
-  adaptationRate: number;             // 适应率
+  updateFrequency: number; // 更新频率 (ms)
+  maxHistorySize: number; // 最大历史记录数
+  optimizationThreshold: number; // 优化阈值
+  adaptationRate: number; // 适应率
 
   // 模型配置
   modelConfig?: ModelConfig;
@@ -641,35 +656,35 @@ interface BehavioralLayerConfig {
 interface BehavioralMetrics {
   // 预测性能
   prediction: {
-    accuracy: number;                 // 准确率
-    precision: number;                // 精确率
-    recall: number;                   // 召回率
-    f1Score: number;                  // F1 分数
-    rocAuc: number;                   // ROC-AUC
+    accuracy: number; // 准确率
+    precision: number; // 精确率
+    recall: number; // 召回率
+    f1Score: number; // F1 分数
+    rocAuc: number; // ROC-AUC
   };
 
   // 系统性能
   performance: {
-    avgResponseTime: number;          // 平均响应时间
-    throughput: number;               // 吞吐量
-    errorRate: number;                // 错误率
-    availability: number;             // 可用性
+    avgResponseTime: number; // 平均响应时间
+    throughput: number; // 吞吐量
+    errorRate: number; // 错误率
+    availability: number; // 可用性
   };
 
   // 模型性能
   models: {
-    totalModels: number;              // 总模型数
-    activeModels: number;             // 活跃模型数
-    avgPerformance: number;           // 平均性能
-    lastUpdateTime: number;           // 最后更新时间
+    totalModels: number; // 总模型数
+    activeModels: number; // 活跃模型数
+    avgPerformance: number; // 平均性能
+    lastUpdateTime: number; // 最后更新时间
   };
 
   // 模式性能
   patterns: {
-    totalPatterns: number;            // 总模式数
-    discoveredToday: number;          // 今日发现
-    avgConfidence: number;            // 平均置信度
-    lastDiscoveryTime: number;        // 最后发现时间
+    totalPatterns: number; // 总模式数
+    discoveredToday: number; // 今日发现
+    avgConfidence: number; // 平均置信度
+    lastDiscoveryTime: number; // 最后发现时间
   };
 }
 ```
@@ -704,14 +719,17 @@ interface BehavioralMetrics {
 ## 📚 相关文档
 
 ### 架构文档
+
 - [ARCH-LearningSystem-Overview.md](../ARCH-LearningSystem-Overview.md) - 系统架构概览
 - [ARCH-StrategicLayer.md](../ARCH-StrategicLayer.md) - 策略层架构
 - [ARCH-KnowledgeLayer.md](../ARCH-KnowledgeLayer.md) - 知识层架构
 
 ### API 文档
+
 - [API-BehavioralLayer.md](../api/API-BehavioralLayer.md) - 行为层 API
 
 ### 开发指南
+
 - [GUIDE-BestPractices.md](../guides/GUIDE-BestPractices.md) - 最佳实践
 
 ---

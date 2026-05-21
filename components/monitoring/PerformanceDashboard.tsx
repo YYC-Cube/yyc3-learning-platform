@@ -80,20 +80,27 @@ export function PerformanceDashboard({ refreshInterval = 5000 }: PerformanceDash
     return 'bg-red-500';
   };
 
-  const webVitalsMetrics = metrics.filter(m =>
-    ['firstContentfulPaint', 'largestContentfulPaint', 'firstInputDelay', 'cumulativeLayoutShift', 'interactionToNextPaint'].includes(m.name)
+  const webVitalsMetrics = metrics.filter((m) =>
+    [
+      'firstContentfulPaint',
+      'largestContentfulPaint',
+      'firstInputDelay',
+      'cumulativeLayoutShift',
+      'interactionToNextPaint',
+    ].includes(m.name)
   );
 
-  const resourceMetrics = metrics.filter(m =>
+  const resourceMetrics = metrics.filter((m) =>
     ['componentRenderTime', 'databaseQueryTime', 'apiResponseTime', 'cacheHitRate'].includes(m.name)
   );
 
-  const overallScore = metrics.length > 0
-    ? Math.round((metrics.filter(m => m.status === 'pass').length / metrics.length) * 100)
-    : 0;
+  const overallScore =
+    metrics.length > 0
+      ? Math.round((metrics.filter((m) => m.status === 'pass').length / metrics.length) * 100)
+      : 0;
 
-  const criticalIssues = metrics.filter(m => m.status === 'fail');
-  const warnings = metrics.filter(m => m.status === 'warning');
+  const criticalIssues = metrics.filter((m) => m.status === 'fail');
+  const warnings = metrics.filter((m) => m.status === 'warning');
 
   if (isLoading) {
     return (
@@ -118,7 +125,11 @@ export function PerformanceDashboard({ refreshInterval = 5000 }: PerformanceDash
           <CardContent>
             <div className="flex items-center justify-between">
               <span className="text-3xl font-bold">{overallScore}</span>
-              <Badge variant={overallScore >= 80 ? 'default' : overallScore >= 60 ? 'secondary' : 'destructive'}>
+              <Badge
+                variant={
+                  overallScore >= 80 ? 'default' : overallScore >= 60 ? 'secondary' : 'destructive'
+                }
+              >
                 {overallScore >= 80 ? '优秀' : overallScore >= 60 ? '良好' : '需改进'}
               </Badge>
             </div>
@@ -184,19 +195,18 @@ export function PerformanceDashboard({ refreshInterval = 5000 }: PerformanceDash
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-600">
-                          {metric.value.toFixed(2)}{metric.unit}
+                          {metric.value.toFixed(2)}
+                          {metric.unit}
                         </span>
-                        <Badge className={getMetricColor(metric.status)}>
-                          {metric.status}
-                        </Badge>
+                        <Badge className={getMetricColor(metric.status)}>{metric.status}</Badge>
                       </div>
                     </div>
-                    <Progress
-                      value={getProgressValue(metric)}
-                      className="h-2"
-                    />
+                    <Progress value={getProgressValue(metric)} className="h-2" />
                     <div className="flex justify-between text-xs text-gray-600">
-                      <span>阈值: {metric.threshold}{metric.unit}</span>
+                      <span>
+                        阈值: {metric.threshold}
+                        {metric.unit}
+                      </span>
                       <span>{new Date(metric.timestamp).toLocaleTimeString()}</span>
                     </div>
                   </div>
@@ -225,14 +235,13 @@ export function PerformanceDashboard({ refreshInterval = 5000 }: PerformanceDash
                     <CardContent>
                       <div className="space-y-2">
                         <div className="text-2xl font-bold">
-                          {metric.value.toFixed(2)}{metric.unit}
+                          {metric.value.toFixed(2)}
+                          {metric.unit}
                         </div>
-                        <Progress
-                          value={getProgressValue(metric)}
-                          className="h-2"
-                        />
+                        <Progress value={getProgressValue(metric)} className="h-2" />
                         <div className="text-xs text-gray-600">
-                          阈值: {metric.threshold}{metric.unit}
+                          阈值: {metric.threshold}
+                          {metric.unit}
                         </div>
                       </div>
                     </CardContent>
@@ -252,25 +261,33 @@ export function PerformanceDashboard({ refreshInterval = 5000 }: PerformanceDash
             <CardContent>
               <div className="space-y-4">
                 {resourceMetrics.map((metric) => (
-                  <div key={metric.name} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={metric.name}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-blue-100 rounded-lg">
-                        {metric.name.includes('component') && <Zap className="h-5 w-5 text-blue-600" />}
-                        {metric.name.includes('database') && <Database className="h-5 w-5 text-blue-600" />}
+                        {metric.name.includes('component') && (
+                          <Zap className="h-5 w-5 text-blue-600" />
+                        )}
+                        {metric.name.includes('database') && (
+                          <Database className="h-5 w-5 text-blue-600" />
+                        )}
                         {metric.name.includes('api') && <Globe className="h-5 w-5 text-blue-600" />}
-                        {metric.name.includes('cache') && <Clock className="h-5 w-5 text-blue-600" />}
+                        {metric.name.includes('cache') && (
+                          <Clock className="h-5 w-5 text-blue-600" />
+                        )}
                       </div>
                       <div>
                         <div className="font-medium">{metric.name}</div>
                         <div className="text-xs text-gray-600">
-                          {metric.value.toFixed(2)}{metric.unit}
+                          {metric.value.toFixed(2)}
+                          {metric.unit}
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge className={getMetricColor(metric.status)}>
-                        {metric.status}
-                      </Badge>
+                      <Badge className={getMetricColor(metric.status)}>{metric.status}</Badge>
                       {getMetricStatus(metric.status)}
                     </div>
                   </div>

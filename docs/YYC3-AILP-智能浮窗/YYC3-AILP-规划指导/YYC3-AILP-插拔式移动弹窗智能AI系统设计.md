@@ -51,19 +51,19 @@
 
 yyc3-platform/
 ├── packages/
-│   ├── core-engine/          # 自治引擎核心
-│   ├── widget-ui/            # 前端拖拽组件
-│   ├── knowledge-base/       # 知识库系统
-│   ├── tool-registry/        # 工具生态系统
-│   └── learning-system/      # 学习系统
+│ ├── core-engine/ # 自治引擎核心
+│ ├── widget-ui/ # 前端拖拽组件
+│ ├── knowledge-base/ # 知识库系统
+│ ├── tool-registry/ # 工具生态系统
+│ └── learning-system/ # 学习系统
 ├── services/
-│   ├── api-gateway/          # API网关
-│   ├── orchestration/        # 编排服务
-│   ├── vector-db/            # 向量数据库服务
-│   └── analytics/            # 分析服务
-├── docs/                     # 文档
-├── scripts/                  # 部署脚本
-└── docker-compose.yml        # Docker编排
+│ ├── api-gateway/ # API网关
+│ ├── orchestration/ # 编排服务
+│ ├── vector-db/ # 向量数据库服务
+│ └── analytics/ # 分析服务
+├── docs/ # 文档
+├── scripts/ # 部署脚本
+└── docker-compose.yml # Docker编排
 
 ## 1. 核心自治引擎 (Agentic Core)
 
@@ -87,7 +87,7 @@ export enum AgentState {
   PLANNING = 'planning',
   EXECUTING = 'executing',
   REFLECTING = 'reflecting',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 export interface AgentTask {
@@ -121,10 +121,10 @@ export class AgenticCore extends EventEmitter {
   private contextManager: ContextManager;
   private activeTasks: Map<string, AgentTask> = new Map();
   private taskQueue: Array<AgentTask> = [];
-  
+
   constructor(config: AgentConfig) {
     super();
-    
+
     // 初始化子系统
     this.goalManager = new GoalManager(config.goalConfig);
     this.actionPlanner = new ActionPlanner(config.planningConfig);
@@ -132,11 +132,11 @@ export class AgenticCore extends EventEmitter {
     this.reflectionEngine = new ReflectionEngine(config.reflectionConfig);
     this.knowledgeConnector = new KnowledgeConnector(config.knowledgeConfig);
     this.contextManager = new ContextManager(config.contextConfig);
-    
+
     // 设置事件监听
     this.setupEventListeners();
   }
-  
+
   /**
    * 处理用户输入，启动智能流程
    */
@@ -144,14 +144,14 @@ export class AgenticCore extends EventEmitter {
     try {
       // 1. 意图识别
       const intent = await this.analyzeIntent(input);
-      
+
       // 2. 上下文更新
       await this.contextManager.updateContext(intent.context);
-      
+
       // 3. 目标生成与分解
       const goal = await this.goalManager.createGoal(intent);
       const subtasks = await this.actionPlanner.decomposeGoal(goal);
-      
+
       // 4. 创建任务
       const task: AgentTask = {
         id: this.generateTaskId(),
@@ -162,89 +162,87 @@ export class AgenticCore extends EventEmitter {
         status: 'pending',
         metrics: {
           startTime: Date.now(),
-          complexity: this.calculateComplexity(subtasks)
-        }
+          complexity: this.calculateComplexity(subtasks),
+        },
       };
-      
+
       this.activeTasks.set(task.id, task);
       this.taskQueue.push(task);
-      
+
       // 5. 异步执行任务
       this.executeTask(task.id);
-      
+
       return {
         taskId: task.id,
         status: 'accepted',
         estimatedTime: this.estimateCompletionTime(task),
-        nextSteps: this.getNextStepsPreview(subtasks)
+        nextSteps: this.getNextStepsPreview(subtasks),
       };
-      
     } catch (error) {
       this.emit('error', error);
       return this.handleError(error);
     }
   }
-  
+
   /**
    * 执行任务（异步）
    */
   private async executeTask(taskId: string): Promise<void> {
     const task = this.activeTasks.get(taskId);
     if (!task) return;
-    
+
     task.status = 'executing';
     this.state = AgentState.EXECUTING;
-    
+
     try {
       // 执行子任务
       for (const subtask of task.subtasks) {
         // 工具选择与编排
         const toolSelection = await this.toolOrchestrator.selectTools(subtask);
-        
+
         // 执行工具链
         const result = await this.toolOrchestrator.executeToolChain(
           toolSelection,
           subtask,
           task.context
         );
-        
+
         // 更新任务状态
         subtask.result = result;
         subtask.completed = true;
-        
+
         // 实时通知进度
         this.emit('taskProgress', {
           taskId,
           subtaskId: subtask.id,
           progress: this.calculateProgress(task.subtasks),
-          result
+          result,
         });
-        
+
         // 检查是否需要中断
         if (this.shouldInterrupt(task)) {
           break;
         }
       }
-      
+
       // 任务完成
       task.status = 'completed';
       task.result = this.aggregateResults(task.subtasks);
       task.metrics.endTime = Date.now();
       task.metrics.success = true;
-      
+
       // 反思与学习
       await this.reflectionEngine.analyzeTask(task);
-      
+
       // 知识沉淀
       await this.knowledgeConnector.storeExperience(task);
-      
+
       this.emit('taskCompleted', task);
-      
     } catch (error) {
       task.status = 'failed';
       task.metrics.error = error.message;
       this.emit('taskFailed', { taskId, error });
-      
+
       // 失败反思与恢复策略
       await this.reflectionEngine.analyzeFailure(task, error);
     } finally {
@@ -252,7 +250,7 @@ export class AgenticCore extends EventEmitter {
       this.activeTasks.delete(taskId);
     }
   }
-  
+
   /**
    * 意图分析
    */
@@ -261,9 +259,9 @@ export class AgenticCore extends EventEmitter {
     const analysis = await this.knowledgeConnector.analyzeWithLLM({
       prompt: this.buildIntentAnalysisPrompt(input),
       context: this.contextManager.getCurrentContext(),
-      tools: this.toolOrchestrator.getAvailableTools()
+      tools: this.toolOrchestrator.getAvailableTools(),
     });
-    
+
     return {
       type: analysis.intentType,
       confidence: analysis.confidence,
@@ -271,11 +269,11 @@ export class AgenticCore extends EventEmitter {
       constraints: analysis.constraints,
       context: {
         ...this.contextManager.getCurrentContext(),
-        userIntent: analysis.intentType
-      }
+        userIntent: analysis.intentType,
+      },
     };
   }
-  
+
   /**
    * 获取系统状态
    */
@@ -285,10 +283,10 @@ export class AgenticCore extends EventEmitter {
       activeTasks: this.activeTasks.size,
       queuedTasks: this.taskQueue.length,
       memoryUsage: process.memoryUsage(),
-      performanceMetrics: this.collectPerformanceMetrics()
+      performanceMetrics: this.collectPerformanceMetrics(),
     };
   }
-  
+
   // 其他辅助方法...
 }
 ```
@@ -304,25 +302,25 @@ export class GoalManager {
   private goals: Map<string, Goal> = new Map();
   private okrManager: OKRManager;
   private valueCalculator: ValueCalculator;
-  
+
   constructor(private config: GoalConfig) {
     this.okrManager = new OKRManager(config.okrConfig);
     this.valueCalculator = new ValueCalculator(config.valueConfig);
   }
-  
+
   /**
    * 创建智能目标
    */
   async createGoal(intent: AnalyzedIntent): Promise<Goal> {
     // 1. 验证目标是否符合SMART原则
     const smartGoal = this.validateSMART(intent);
-    
+
     // 2. 计算预期业务价值
     const expectedValue = await this.valueCalculator.calculateExpectedValue(smartGoal);
-    
+
     // 3. 与现有目标对齐
     const alignedGoal = await this.alignWithExistingGoals(smartGoal);
-    
+
     // 4. 创建目标对象
     const goal: Goal = {
       id: `goal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -335,23 +333,23 @@ export class GoalManager {
       createdAt: new Date(),
       expectedValue,
       successCriteria: this.defineSuccessCriteria(alignedGoal),
-      dependencies: await this.identifyDependencies(alignedGoal)
+      dependencies: await this.identifyDependencies(alignedGoal),
     };
-    
+
     this.goals.set(goal.id, goal);
-    
+
     // 5. 注册到OKR系统
     await this.okrManager.registerGoal(goal);
-    
+
     return goal;
   }
-  
+
   /**
    * 目标分解为子目标
    */
   async decomposeGoal(goal: Goal): Promise<SubGoal[]> {
     const decompositionStrategy = await this.selectDecompositionStrategy(goal);
-    
+
     switch (decompositionStrategy) {
       case 'sequential':
         return this.decomposeSequentially(goal);
@@ -363,7 +361,7 @@ export class GoalManager {
         return this.decomposeAdaptively(goal);
     }
   }
-  
+
   /**
    * 验证SMART原则
    */
@@ -373,31 +371,31 @@ export class GoalManager {
       measurable: this.validateMeasurability,
       achievable: this.validateAchievability,
       relevant: this.validateRelevance,
-      timeBound: this.validateTimeBound
+      timeBound: this.validateTimeBound,
     };
-    
+
     const results = Object.entries(validators).map(([criterion, validator]) => ({
       criterion,
       isValid: validator.call(this, intent),
-      score: this.scoreCriterion(intent, criterion)
+      score: this.scoreCriterion(intent, criterion),
     }));
-    
+
     const overallScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
-    
+
     if (overallScore < this.config.minSMARTScore) {
       throw new GoalValidationError(
         `目标不符合SMART原则 (得分: ${overallScore.toFixed(2)}/${this.config.minSMARTScore})`,
         results
       );
     }
-    
+
     return {
       ...intent,
       smartScore: overallScore,
-      validationResults: results
+      validationResults: results,
     };
   }
-  
+
   /**
    * 生成关键结果
    */
@@ -409,7 +407,7 @@ export class GoalManager {
         target: 100,
         unit: 'percent',
         current: 0,
-        weight: 0.6
+        weight: 0.6,
       },
       {
         id: `kr_${goal.id}_quality`,
@@ -417,7 +415,7 @@ export class GoalManager {
         target: 90,
         unit: 'score',
         current: 0,
-        weight: 0.3
+        weight: 0.3,
       },
       {
         id: `kr_${goal.id}_efficiency`,
@@ -425,39 +423,39 @@ export class GoalManager {
         target: this.config.targetEfficiency,
         unit: 'tasks/hour',
         current: 0,
-        weight: 0.1
-      }
+        weight: 0.1,
+      },
     ];
   }
-  
+
   /**
    * 实时监控目标进度
    */
   async monitorGoalProgress(goalId: string): Promise<GoalProgress> {
     const goal = this.goals.get(goalId);
     if (!goal) throw new Error(`目标 ${goalId} 不存在`);
-    
+
     const progress = {
       goalId,
       overallProgress: this.calculateOverallProgress(goal),
-      keyResults: goal.keyResults.map(kr => ({
+      keyResults: goal.keyResults.map((kr) => ({
         ...kr,
-        progress: (kr.current / kr.target) * 100
+        progress: (kr.current / kr.target) * 100,
       })),
       blockers: await this.identifyBlockers(goal),
       recommendations: await this.generateRecommendations(goal),
       estimatedCompletion: this.estimateCompletionDate(goal),
-      valueRealized: await this.valueCalculator.calculateRealizedValue(goal)
+      valueRealized: await this.valueCalculator.calculateRealizedValue(goal),
     };
-    
+
     // 触发自动调整
     if (progress.overallProgress < this.config.progressThreshold) {
       await this.autoAdjustGoal(goal, progress);
     }
-    
+
     return progress;
   }
-  
+
   /**
    * 自动调整目标策略
    */
@@ -466,21 +464,21 @@ export class GoalManager {
       { condition: 'blockers', action: this.replanToAvoidBlockers },
       { condition: 'resource', action: this.requestAdditionalResources },
       { condition: 'complexity', action: this.simplifyGoal },
-      { condition: 'priority', action: this.adjustPriority }
+      { condition: 'priority', action: this.adjustPriority },
     ];
-    
+
     for (const strategy of adjustmentStrategies) {
       if (this.meetsCondition(progress, strategy.condition)) {
         await strategy.action.call(this, goal, progress);
         break;
       }
     }
-    
+
     // 记录调整
     await this.logAdjustment(goal, 'auto_adjust', {
       reason: 'progress_below_threshold',
       previousState: goal,
-      newState: this.goals.get(goal.id)
+      newState: this.goals.get(goal.id),
     });
   }
 }
@@ -548,7 +546,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
     unreadCount: 0,
     connectionStatus: 'connected'
   }));
-  
+
   const widgetRef = useRef<HTMLDivElement>(null);
   const positionOptimizer = useRef(new PositionOptimizer());
   const resizeController = useRef(new ResizeController());
@@ -556,22 +554,22 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
   const notificationCenter = useRef(new NotificationCenter());
   const [agentEngine, setAgentEngine] = useState<AgenticCore | null>(null);
   const { theme: currentTheme, toggleTheme } = useTheme();
-  
+
   // 检测设备类型
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isTouchDevice = 'ontouchstart' in window;
-  
+
   // 初始化
   useEffect(() => {
     initializeWidget();
     setupEventListeners();
     loadUserPreferences();
-    
+
     return () => {
       cleanup();
     };
   }, []);
-  
+
   const initializeWidget = async () => {
     try {
       // 初始化Agent引擎
@@ -580,14 +578,14 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
         userId,
         workspaceId
       });
-      
+
       setAgentEngine(engine);
-      
+
       // 监听引擎事件
       engine.on('taskProgress', handleTaskProgress);
       engine.on('taskCompleted', handleTaskCompleted);
       engine.on('error', handleEngineError);
-      
+
       // 加载用户偏好位置
       const savedPosition = await positionOptimizer.current.loadUserPreference(userId);
       if (savedPosition) {
@@ -596,16 +594,16 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
           position: savedPosition
         }));
       }
-      
+
       // 连接WebSocket
       await connectWebSocket();
-      
+
     } catch (error) {
       onError?.(error);
       notificationCenter.current.showError('Widget初始化失败', error.message);
     }
   };
-  
+
   // 拖拽实现
   const [{ isDragging }, drag, preview] = useDrag({
     type: 'widget',
@@ -624,24 +622,24 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
           height: state.position.height,
           zIndex: state.position.zIndex + 1
         };
-        
+
         // 优化位置
         const optimizedPosition = positionOptimizer.current.optimize(
           newPosition,
           getViewportInfo()
         );
-        
+
         setState(prev => ({
           ...prev,
           position: optimizedPosition
         }));
-        
+
         // 保存位置偏好
         positionOptimizer.current.savePreference(userId, optimizedPosition);
       }
     }
   });
-  
+
   // 放置目标
   const [{ isOver }, drop] = useDrop({
     accept: 'widget',
@@ -653,14 +651,14 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
       isOver: monitor.isOver()
     })
   });
-  
+
   // 合并拖拽refs
   const setWidgetRef = useCallback((node: HTMLDivElement) => {
     widgetRef.current = node;
     drag(node);
     drop(node);
   }, [drag, drop]);
-  
+
   // 调整大小
   const handleResize = useCallback((direction: ResizeDirection, deltaX: number, deltaY: number) => {
     const newSize = resizeController.current.calculateNewSize(
@@ -670,7 +668,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
       deltaY,
       getViewportInfo()
     );
-    
+
     setState(prev => ({
       ...prev,
       position: {
@@ -680,7 +678,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
       }
     }));
   }, [state.position]);
-  
+
   // 切换视图
   const switchView = useCallback((view: WidgetState['currentView']) => {
     setState(prev => ({
@@ -688,7 +686,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
       currentView: view,
       isMinimized: false
     }));
-    
+
     // 记录用户行为
     analytics.track('widget_view_switch', {
       from: prev.currentView,
@@ -696,7 +694,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
       userId
     });
   }, [userId]);
-  
+
   // 最小化/最大化
   const toggleMinimize = useCallback(() => {
     setState(prev => {
@@ -704,7 +702,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
         ...prev,
         isMinimized: !prev.isMinimized
       };
-      
+
       if (newState.isMinimized) {
         // 最小化动画
         gsap.to(widgetRef.current, {
@@ -720,19 +718,19 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
           duration: 0.3
         });
       }
-      
+
       return newState;
     });
   }, []);
-  
+
   // 处理用户输入
   const handleUserInput = useCallback(async (input: string, attachments?: File[]) => {
     if (!agentEngine) return;
-    
+
     try {
       // 显示思考状态
       setState(prev => ({ ...prev, isProcessing: true }));
-      
+
       // 发送到Agent引擎
       const response = await agentEngine.processInput({
         text: input,
@@ -742,17 +740,17 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
           timestamp: Date.now()
         }
       });
-      
+
       // 处理响应
       await handleAgentResponse(response);
-      
+
     } catch (error) {
       notificationCenter.current.showError('处理失败', error.message);
     } finally {
       setState(prev => ({ ...prev, isProcessing: false }));
     }
   }, [agentEngine, state]);
-  
+
   // 渲染组件
   return (
     <DndProvider backend={isTouchDevice ? TouchBackend : HTML5Backend}>
@@ -792,7 +790,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
                 <span className="unread-badge">{state.unreadCount}</span>
               )}
             </div>
-            
+
             <div className="header-right">
               <button
                 className="header-btn"
@@ -831,7 +829,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
               </button>
             </div>
           </div>
-          
+
           {/* 主内容区 */}
           {!state.isMinimized && (
             <div className="widget-content">
@@ -843,7 +841,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
                   userId={userId}
                 />
               )}
-              
+
               {state.currentView === 'tools' && (
                 <ToolboxPanel
                   userId={userId}
@@ -851,7 +849,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
                   onToolSelected={handleToolSelected}
                 />
               )}
-              
+
               {state.currentView === 'insights' && (
                 <InsightsDashboard
                   userId={userId}
@@ -859,14 +857,14 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
                   timeframe="7d"
                 />
               )}
-              
+
               {state.currentView === 'workflow' && (
                 <WorkflowDesigner
                   userId={userId}
                   onWorkflowSave={handleWorkflowSave}
                 />
               )}
-              
+
               {state.currentView === 'knowledge' && (
                 <KnowledgeBaseViewer
                   userId={userId}
@@ -876,12 +874,12 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
               )}
             </div>
           )}
-          
+
           {/* 调整大小手柄 */}
           {!state.isMinimized && state.mode === 'floating' && (
             <ResizeHandles onResize={handleResize} />
           )}
-          
+
           {/* 通知中心 */}
           <NotificationCenter
             ref={notificationCenter}
@@ -890,7 +888,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
             autoClose={5000}
           />
         </div>
-        
+
         {/* 拖拽遮罩层 */}
         {isDragging && <div className="drag-overlay" />}
       </ThemeProvider>
@@ -902,7 +900,7 @@ export const IntelligentAIWidget: React.FC<WidgetProps> = ({
 class PositionOptimizer {
   private userPreferences: Map<string, WidgetPosition> = new Map();
   private heatmap: Map<string, number> = new Map();
-  
+
   async loadUserPreference(userId: string): Promise<WidgetPosition | null> {
     try {
       const saved = localStorage.getItem(`widget_position_${userId}`);
@@ -914,7 +912,7 @@ class PositionOptimizer {
     }
     return null;
   }
-  
+
   savePreference(userId: string, position: WidgetPosition): void {
     try {
       localStorage.setItem(`widget_position_${userId}`, JSON.stringify(position));
@@ -922,33 +920,33 @@ class PositionOptimizer {
       console.warn('Failed to save position preference:', error);
     }
   }
-  
+
   optimize(position: WidgetPosition, viewport: ViewportInfo): WidgetPosition {
     // 边界检测
     position = this.ensureWithinBounds(position, viewport);
-    
+
     // 避免遮挡关键元素
     position = this.avoidOcclusion(position, viewport);
-    
+
     // 热图分析推荐
     const recommended = this.recommendBasedOnHeatmap(position, viewport);
-    
+
     // 平滑移动
     return this.applySmoothing(position, recommended);
   }
-  
+
   private ensureWithinBounds(pos: WidgetPosition, viewport: ViewportInfo): WidgetPosition {
     const margin = 20;
     const maxX = viewport.width - pos.width - margin;
     const maxY = viewport.height - pos.height - margin;
-    
+
     return {
       ...pos,
       x: Math.max(margin, Math.min(pos.x, maxX)),
       y: Math.max(margin, Math.min(pos.y, maxY))
     };
   }
-  
+
   updateHeatmap(x: number, y: number): void {
     const key = `${Math.floor(x / 50)}_${Math.floor(y / 50)}`;
     const current = this.heatmap.get(key) || 0;
@@ -1013,13 +1011,13 @@ export class ToolRegistry extends EventEmitter {
   private usageStats: Map<string, ToolUsageStats> = new Map();
   private cache: Map<string, CacheEntry> = new Map();
   private dependencies: Map<string, Set<string>> = new Map();
-  
+
   constructor(private config: RegistryConfig) {
     super();
     this.initializeVectorStore();
     this.loadBuiltinTools();
   }
-  
+
   /**
    * 注册新工具
    */
@@ -1027,16 +1025,16 @@ export class ToolRegistry extends EventEmitter {
     try {
       // 1. 验证工具定义
       await this.validateToolDefinition(toolDef);
-      
+
       // 2. 检查依赖
       await this.checkDependencies(toolDef);
-      
+
       // 3. 生成工具ID
       const toolId = this.generateToolId(toolDef);
-      
+
       // 4. 创建工具包装器
       const tool = this.createToolWrapper(toolDef, toolId);
-      
+
       // 5. 存储到注册表
       this.tools.set(toolId, {
         ...tool,
@@ -1044,93 +1042,96 @@ export class ToolRegistry extends EventEmitter {
           ...toolDef.metadata,
           id: toolId,
           registeredAt: new Date(),
-          lastUpdated: new Date()
-        }
+          lastUpdated: new Date(),
+        },
       });
-      
+
       // 6. 更新分类索引
       this.updateCategoryIndex(toolId, toolDef.metadata.category);
-      
+
       // 7. 向量化工具描述
       await this.embedToolDescription(tool);
-      
+
       // 8. 发布事件
       this.emit('toolRegistered', {
         toolId,
         metadata: tool.metadata,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-      
+
       return {
         success: true,
         toolId,
         message: '工具注册成功',
-        warnings: this.collectWarnings(toolDef)
+        warnings: this.collectWarnings(toolDef),
       };
-      
     } catch (error) {
       this.emit('toolRegistrationFailed', {
         toolDef,
         error: error.message,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
-      
+
       throw new ToolRegistrationError(`工具注册失败: ${error.message}`, error);
     }
   }
-  
+
   /**
    * 发现工具（基于语义搜索）
    */
   async discoverTools(query: string, filters?: ToolFilters): Promise<ToolDiscoveryResult> {
     // 1. 语义搜索
     const semanticResults = await this.semanticSearch(query);
-    
+
     // 2. 过滤
     const filtered = this.applyFilters(semanticResults, filters);
-    
+
     // 3. 排序（基于相关性和使用频率）
     const sorted = this.sortTools(filtered, query);
-    
+
     // 4. 分组（按类别）
     const grouped = this.groupByCategory(sorted);
-    
+
     return {
       query,
       total: sorted.length,
       tools: sorted.slice(0, config.maxResults),
       categories: grouped,
       suggestions: this.generateSuggestions(query, sorted),
-      executionPlan: await this.generateExecutionPlan(query, sorted)
+      executionPlan: await this.generateExecutionPlan(query, sorted),
     };
   }
-  
+
   /**
    * 执行工具
    */
-  async executeTool(toolId: string, input: any, context: ExecutionContext): Promise<ToolExecutionResult> {
+  async executeTool(
+    toolId: string,
+    input: any,
+    context: ExecutionContext
+  ): Promise<ToolExecutionResult> {
     const tool = this.tools.get(toolId);
     if (!tool) {
       throw new ToolNotFoundError(`工具 ${toolId} 未找到`);
     }
-    
+
     // 检查权限
     if (!this.checkPermissions(tool, context)) {
       throw new PermissionError(`无权访问工具 ${toolId}`);
     }
-    
+
     // 检查速率限制
     if (!this.checkRateLimit(toolId)) {
       throw new RateLimitError(`工具 ${toolId} 速率限制`);
     }
-    
+
     // 验证输入
     const validatedInput = await this.validateInput(tool, input);
-    
+
     // 检查缓存
     const cacheKey = this.generateCacheKey(toolId, validatedInput);
     const cached = this.cache.get(cacheKey);
-    
+
     if (cached && !this.isCacheExpired(cached)) {
       return {
         success: true,
@@ -1140,34 +1141,34 @@ export class ToolRegistry extends EventEmitter {
         metadata: {
           toolId,
           cached: true,
-          cacheHit: true
-        }
+          cacheHit: true,
+        },
       };
     }
-    
+
     // 执行工具
     const startTime = Date.now();
-    
+
     try {
       const result = await tool.execute(validatedInput, context);
-      
+
       const executionTime = Date.now() - startTime;
-      
+
       // 验证输出
       const validatedOutput = await this.validateOutput(tool, result);
-      
+
       // 更新使用统计
       this.updateUsageStats(toolId, executionTime, true);
-      
+
       // 缓存结果
       if (tool.metadata.cacheable) {
         this.cache.set(cacheKey, {
           data: validatedOutput,
           timestamp: Date.now(),
-          ttl: tool.metadata.cacheTTL || config.defaultCacheTTL
+          ttl: tool.metadata.cacheTTL || config.defaultCacheTTL,
         });
       }
-      
+
       // 记录执行日志
       await this.logExecution({
         toolId,
@@ -1175,9 +1176,9 @@ export class ToolRegistry extends EventEmitter {
         output: validatedOutput,
         executionTime,
         success: true,
-        context
+        context,
       });
-      
+
       return {
         success: true,
         data: validatedOutput,
@@ -1187,16 +1188,15 @@ export class ToolRegistry extends EventEmitter {
           toolId,
           executionTime,
           cached: false,
-          cacheHit: false
-        }
+          cacheHit: false,
+        },
       };
-      
     } catch (error) {
       const executionTime = Date.now() - startTime;
-      
+
       // 更新使用统计
       this.updateUsageStats(toolId, executionTime, false);
-      
+
       // 记录错误
       await this.logExecution({
         toolId,
@@ -1204,9 +1204,9 @@ export class ToolRegistry extends EventEmitter {
         error: error.message,
         executionTime,
         success: false,
-        context
+        context,
       });
-      
+
       return {
         success: false,
         error: error.message,
@@ -1215,41 +1215,41 @@ export class ToolRegistry extends EventEmitter {
         metadata: {
           toolId,
           executionTime,
-          error: error.message
-        }
+          error: error.message,
+        },
       };
     }
   }
-  
+
   /**
    * 自动编排工具链
    */
   async autoOrchestrate(goal: string, constraints: any): Promise<ToolOrchestrationPlan> {
     // 1. 分解目标为子任务
     const subtasks = await this.decomposeGoal(goal);
-    
+
     // 2. 为每个子任务寻找工具
     const toolAssignments = await Promise.all(
-      subtasks.map(async subtask => ({
+      subtasks.map(async (subtask) => ({
         subtask,
         candidates: await this.findToolsForSubtask(subtask),
-        constraints: this.extractConstraints(subtask, constraints)
+        constraints: this.extractConstraints(subtask, constraints),
       }))
     );
-    
+
     // 3. 生成执行计划
     const executionPlan = await this.generateExecutionPlan(toolAssignments);
-    
+
     // 4. 优化计划
     const optimizedPlan = await this.optimizePlan(executionPlan);
-    
+
     // 5. 验证可行性
     const validation = await this.validatePlan(optimizedPlan);
-    
+
     if (!validation.valid) {
       throw new OrchestrationError(`编排计划不可行: ${validation.reasons.join(', ')}`);
     }
-    
+
     return {
       goal,
       subtasks,
@@ -1258,10 +1258,10 @@ export class ToolRegistry extends EventEmitter {
       estimatedTime: this.estimateTime(optimizedPlan),
       confidence: this.calculateConfidence(optimizedPlan),
       alternatives: await this.generateAlternatives(optimizedPlan),
-      fallbackStrategies: await this.generateFallbackStrategies(optimizedPlan)
+      fallbackStrategies: await this.generateFallbackStrategies(optimizedPlan),
     };
   }
-  
+
   /**
    * 工具推荐系统
    */
@@ -1271,22 +1271,22 @@ export class ToolRegistry extends EventEmitter {
       this.recommendByUsagePattern,
       this.recommendBySimilarity,
       this.recommendByCollaboration,
-      this.recommendByTrend
+      this.recommendByTrend,
     ];
-    
+
     const recommendations = await Promise.all(
-      strategies.map(strategy => strategy.call(this, context))
+      strategies.map((strategy) => strategy.call(this, context))
     );
-    
+
     // 融合推荐结果
     const merged = this.mergeRecommendations(recommendations);
-    
+
     // 个性化过滤
     const personalized = this.personalizeRecommendations(merged, context.userId);
-    
+
     return personalized.slice(0, context.limit || 10);
   }
-  
+
   /**
    * 工具健康检查
    */
@@ -1296,30 +1296,28 @@ export class ToolRegistry extends EventEmitter {
       return {
         toolId,
         status: 'not_found',
-        message: '工具未注册'
+        message: '工具未注册',
       };
     }
-    
+
     const checks = [
       this.checkToolAvailability,
       this.checkToolPerformance,
       this.checkToolDependencies,
-      this.checkToolCompatibility
+      this.checkToolCompatibility,
     ];
-    
-    const results = await Promise.all(
-      checks.map(check => check.call(this, tool))
-    );
-    
-    const allPassed = results.every(r => r.passed);
-    
+
+    const results = await Promise.all(checks.map((check) => check.call(this, tool)));
+
+    const allPassed = results.every((r) => r.passed);
+
     return {
       toolId,
       status: allPassed ? 'healthy' : 'degraded',
       checks: results,
       overallScore: this.calculateHealthScore(results),
       recommendations: this.generateHealthRecommendations(results),
-      lastChecked: new Date()
+      lastChecked: new Date(),
     };
   }
 }
@@ -1370,22 +1368,22 @@ export class VectorKnowledgeBase {
   private splitter: RecursiveCharacterTextSplitter;
   private chunkCache: Map<string, KnowledgeChunk> = new Map();
   private relationCache: Map<string, Relation[]> = new Map();
-  
+
   constructor(private config: KnowledgeBaseConfig) {
     this.embeddings = new OpenAIEmbeddings({
       openAIApiKey: config.openAIApiKey,
-      model: 'text-embedding-3-small'
+      model: 'text-embedding-3-small',
     });
-    
+
     this.vectorStore = new MemoryVectorStore(this.embeddings);
     this.pinecone = new Pinecone({ apiKey: config.pineconeApiKey });
     this.knowledgeGraph = new KnowledgeGraph();
     this.splitter = new RecursiveCharacterTextSplitter({
       chunkSize: config.chunkSize || 1000,
-      chunkOverlap: config.chunkOverlap || 200
+      chunkOverlap: config.chunkOverlap || 200,
     });
   }
-  
+
   /**
    * 添加知识文档
    */
@@ -1393,67 +1391,63 @@ export class VectorKnowledgeBase {
     try {
       // 1. 预处理文档
       const processed = await this.preprocessDocument(document, metadata);
-      
+
       // 2. 分割为chunks
       const chunks = await this.splitter.splitDocuments([processed]);
-      
+
       // 3. 生成向量
       const vectors = await this.generateVectors(chunks);
-      
+
       // 4. 存储到向量数据库
       const chunkIds = await this.storeVectors(vectors);
-      
+
       // 5. 构建知识图谱
       await this.buildKnowledgeGraph(chunks, chunkIds);
-      
+
       // 6. 建立索引
       await this.updateIndices(chunkIds);
-      
+
       // 7. 触发相关度更新
       await this.updateRelevanceScores(chunkIds);
-      
+
       return chunkIds;
-      
     } catch (error) {
       throw new KnowledgeBaseError(`添加文档失败: ${error.message}`, error);
     }
   }
-  
+
   /**
    * 知识检索 (RAG)
    */
-  async retrieve(
-    query: string,
-    options: RetrieveOptions = {}
-  ): Promise<RetrievalResult> {
+  async retrieve(query: string, options: RetrieveOptions = {}): Promise<RetrievalResult> {
     const startTime = Date.now();
-    
+
     // 1. 生成查询向量
     const queryVector = await this.embeddings.embedQuery(query);
-    
+
     // 2. 向量相似度搜索
     const vectorResults = await this.vectorStore.similaritySearchVectorWithScore(
       queryVector,
       options.topK || 10
     );
-    
+
     // 3. 关键词搜索 (混合搜索)
     const keywordResults = await this.keywordSearch(query, options);
-    
+
     // 4. 融合搜索结果
     const fusedResults = this.fuseResults(vectorResults, keywordResults);
-    
+
     // 5. 相关性重排序
     const reranked = await this.rerankByRelevance(fusedResults, query);
-    
+
     // 6. 知识图谱扩展
     const expanded = await this.expandWithKnowledgeGraph(reranked);
-    
+
     // 7. 上下文增强
     const enhanced = await this.enhanceContext(expanded, query);
-    
+
     const retrievalTime = Date.now() - startTime;
-    
+
     return {
       query,
       results: enhanced,
@@ -1461,81 +1455,80 @@ export class VectorKnowledgeBase {
       retrievalTime,
       confidence: this.calculateConfidence(enhanced),
       suggestedQueries: await this.generateSuggestions(query, enhanced),
-      knowledgeGaps: await this.identifyKnowledgeGaps(query, enhanced)
+      knowledgeGaps: await this.identifyKnowledgeGaps(query, enhanced),
     };
   }
-  
+
   /**
    * 持续学习更新
    */
   async continuousLearningUpdate(): Promise<void> {
     // 1. 收集反馈数据
     const feedback = await this.collectFeedback();
-    
+
     // 2. 识别需要更新的知识
     const updatesNeeded = await this.identifyUpdatesNeeded(feedback);
-    
+
     // 3. 验证新知识源
     const validatedSources = await this.validateKnowledgeSources(updatesNeeded);
-    
+
     // 4. 增量更新
     for (const source of validatedSources) {
       try {
         // 提取新知识
         const newKnowledge = await this.extractNewKnowledge(source);
-        
+
         // 与现有知识融合
         const merged = await this.mergeWithExisting(newKnowledge);
-        
+
         // 更新向量存储
         await this.updateVectorStore(merged);
-        
+
         // 更新知识图谱
         await this.updateKnowledgeGraph(merged);
-        
+
         // 记录更新
         await this.logUpdate({
           source,
           knowledge: merged,
           timestamp: new Date(),
-          impact: await this.assessImpact(merged)
+          impact: await this.assessImpact(merged),
         });
-        
       } catch (error) {
         console.error(`更新知识源失败 ${source.id}:`, error);
         await this.queueForRetry(source);
       }
     }
-    
+
     // 5. 优化索引
     await this.optimizeIndices();
-    
+
     // 6. 清理过期知识
     await this.cleanupExpiredKnowledge();
   }
-  
+
   /**
    * 知识推理
    */
   async reasonAbout(query: string, context?: ReasoningContext): Promise<ReasoningResult> {
     // 1. 检索相关知识
     const knowledge = await this.retrieve(query, { topK: 20 });
-    
+
     // 2. 构建推理上下文
     const reasoningContext = this.buildReasoningContext(knowledge, context);
-    
+
     // 3. 多步骤推理
     const reasoningSteps = await this.multiStepReasoning(query, reasoningContext);
-    
+
     // 4. 验证推理结果
     const validated = await this.validateReasoning(reasoningSteps);
-    
+
     // 5. 生成解释
     const explanation = await this.generateExplanation(validated);
-    
+
     // 6. 识别不确定性
     const uncertainties = await this.identifyUncertainties(validated);
-    
+
     return {
       query,
       conclusion: validated.conclusion,
@@ -1544,10 +1537,10 @@ export class VectorKnowledgeBase {
       confidence: validated.confidence,
       uncertainties,
       supportingEvidence: knowledge.results.slice(0, 5),
-      alternativeConclusions: await this.generateAlternatives(validated)
+      alternativeConclusions: await this.generateAlternatives(validated),
     };
   }
-  
+
   /**
    * 知识质量评估
    */
@@ -1557,40 +1550,35 @@ export class VectorKnowledgeBase {
       this.assessAccuracy,
       this.assessCompleteness,
       this.assessConsistency,
-      this.assessRelevance
+      this.assessRelevance,
     ];
-    
-    const results = await Promise.all(
-      assessments.map(assess => assess.call(this))
-    );
-    
+
+    const results = await Promise.all(assessments.map((assess) => assess.call(this)));
+
     const overallScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
-    
+
     return {
       timestamp: new Date(),
       overallScore,
-      detailedScores: results.map(r => ({
+      detailedScores: results.map((r) => ({
         dimension: r.dimension,
         score: r.score,
         issues: r.issues,
-        recommendations: r.recommendations
+        recommendations: r.recommendations,
       })),
       topIssues: this.identifyTopIssues(results),
       improvementPlan: await this.generateImprovementPlan(results),
-      trend: await this.calculateQualityTrend()
+      trend: await this.calculateQualityTrend(),
     };
   }
-  
+
   /**
    * 生成知识图谱可视化
    */
-  async visualizeKnowledgeGraph(
-    query?: string,
-    depth: number = 2
-  ): Promise<GraphVisualization> {
+  async visualizeKnowledgeGraph(query?: string, depth: number = 2): Promise<GraphVisualization> {
     let nodes: Node[] = [];
     let edges: Edge[] = [];
-    
+
     if (query) {
       // 查询中心化的子图
       const subgraph = await this.knowledgeGraph.getSubgraph(query, depth);
@@ -1601,25 +1589,25 @@ export class VectorKnowledgeBase {
       nodes = await this.knowledgeGraph.getHotNodes(50);
       edges = await this.knowledgeGraph.getImportantEdges(100);
     }
-    
+
     // 计算布局
     const layout = await this.calculateGraphLayout(nodes, edges);
-    
+
     // 添加可视化属性
-    const enhancedNodes = nodes.map(node => ({
+    const enhancedNodes = nodes.map((node) => ({
       ...node,
       size: Math.log(node.weight + 1) * 10,
       color: this.getNodeColor(node),
-      label: this.truncateLabel(node.label, 30)
+      label: this.truncateLabel(node.label, 30),
     }));
-    
-    const enhancedEdges = edges.map(edge => ({
+
+    const enhancedEdges = edges.map((edge) => ({
       ...edge,
       width: Math.log(edge.weight + 1) * 2,
       color: this.getEdgeColor(edge),
-      label: edge.relation
+      label: edge.relation,
     }));
-    
+
     return {
       nodes: enhancedNodes,
       edges: enhancedEdges,
@@ -1628,15 +1616,15 @@ export class VectorKnowledgeBase {
         nodeCount: enhancedNodes.length,
         edgeCount: enhancedEdges.length,
         density: this.calculateGraphDensity(enhancedNodes, enhancedEdges),
-        clusters: await this.identifyClusters(enhancedNodes, enhancedEdges)
+        clusters: await this.identifyClusters(enhancedNodes, enhancedEdges),
       },
       interaction: {
         zoom: true,
         pan: true,
         nodeClick: this.handleNodeClick.bind(this),
         edgeClick: this.handleEdgeClick.bind(this),
-        search: this.graphSearch.bind(this)
-      }
+        search: this.graphSearch.bind(this),
+      },
     };
   }
 }
@@ -1666,41 +1654,41 @@ export class MetaLearningLayer extends EventEmitter {
   private transferLearner: TransferLearning;
   private experienceBuffer: ExperienceBuffer;
   private performanceAnalyzer: PerformanceAnalyzer;
-  
+
   private learningState: LearningState = {
     level: 'L1', // L1: 行为, L2: 策略, L3: 知识
     mode: 'exploration',
     confidence: 0.5,
     lastUpdate: new Date(),
-    metrics: {}
+    metrics: {},
   };
-  
+
   constructor(private config: LearningConfig) {
     super();
-    
+
     this.rlAgent = new ReinforcementLearning(config.rlConfig);
     this.bayesianOptimizer = new BayesianOptimization(config.boConfig);
     this.activeLearner = new ActiveLearning(config.alConfig);
     this.transferLearner = new TransferLearning(config.tlConfig);
     this.experienceBuffer = new ExperienceBuffer(config.bufferSize);
     this.performanceAnalyzer = new PerformanceAnalyzer();
-    
+
     this.startLearningCycle();
   }
-  
+
   /**
    * 记录经验
    */
   async recordExperience(experience: LearningExperience): Promise<void> {
     // 1. 验证经验
     const validated = await this.validateExperience(experience);
-    
+
     // 2. 添加到经验缓冲区
     await this.experienceBuffer.add(validated);
-    
+
     // 3. 提取特征
     const features = this.extractFeatures(validated);
-    
+
     // 4. 根据学习层级处理
     switch (this.learningState.level) {
       case 'L1':
@@ -1713,141 +1701,141 @@ export class MetaLearningLayer extends EventEmitter {
         await this.processKnowledgeLearning(features);
         break;
     }
-    
+
     // 5. 触发学习事件
     this.emit('experienceRecorded', {
       experience: validated,
       timestamp: new Date(),
-      learningLevel: this.learningState.level
+      learningLevel: this.learningState.level,
     });
   }
-  
+
   /**
    * L1: 行为学习 - 优化UI/UX
    */
   private async processBehavioralLearning(features: BehavioralFeatures): Promise<void> {
     const insights = await this.analyzeBehaviorPatterns(features);
-    
+
     // 生成优化建议
     const optimizations = await this.generateUXOptimizations(insights);
-    
+
     // 应用A/B测试
     const testResults = await this.runABTests(optimizations);
-    
+
     // 更新学习状态
     this.learningState.metrics.behavioral = {
       patternsIdentified: insights.patterns.length,
       optimizationsApplied: optimizations.length,
       successRate: this.calculateSuccessRate(testResults),
-      userSatisfaction: await this.measureUserSatisfaction()
+      userSatisfaction: await this.measureUserSatisfaction(),
     };
-    
+
     // 触发行为优化事件
     this.emit('behaviorOptimized', {
       insights,
       optimizations,
       testResults,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   }
-  
+
   /**
    * L2: 策略学习 - 优化决策策略
    */
   private async processStrategicLearning(features: StrategicFeatures): Promise<void> {
     // 1. 构建状态-行动-奖励元组
     const sarTuples = await this.buildSARTuples(features);
-    
+
     // 2. 强化学习训练
     const rlResults = await this.rlAgent.train(sarTuples);
-    
+
     // 3. 贝叶斯优化超参数
     const optimizedParams = await this.bayesianOptimizer.optimize(rlResults);
-    
+
     // 4. 更新策略模型
     await this.updateStrategyModel(optimizedParams);
-    
+
     // 5. 策略评估
     const evaluation = await this.evaluateStrategy();
-    
+
     this.learningState.metrics.strategic = {
       trainingEpisodes: rlResults.episodes,
       policyImprovement: evaluation.improvement,
       explorationRate: this.rlAgent.getExplorationRate(),
-      valueFunction: await this.calculateValueFunction()
+      valueFunction: await this.calculateValueFunction(),
     };
-    
+
     // 触发策略更新事件
     this.emit('strategyUpdated', {
       oldPolicy: rlResults.oldPolicy,
       newPolicy: rlResults.newPolicy,
       improvement: evaluation.improvement,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   }
-  
+
   /**
    * L3: 知识学习 - 更新知识库和模型
    */
   private async processKnowledgeLearning(features: KnowledgeFeatures): Promise<void> {
     // 1. 识别知识缺口
     const knowledgeGaps = await this.identifyKnowledgeGaps(features);
-    
+
     if (knowledgeGaps.length === 0) return;
-    
+
     // 2. 主动学习 - 获取标注数据
     const labeledData = await this.activeLearner.acquireLabels(knowledgeGaps);
-    
+
     // 3. 迁移学习 - 应用已有知识
     const transferredKnowledge = await this.transferLearner.transfer(
       labeledData,
       this.getExistingKnowledge()
     );
-    
+
     // 4. 微调底层模型
     const fineTuningResults = await this.fineTuneModel(transferredKnowledge);
-    
+
     // 5. 更新知识库
     await this.updateKnowledgeBase(fineTuningResults);
-    
+
     // 6. 验证学习效果
     const validation = await this.validateKnowledgeUpdate(fineTuningResults);
-    
+
     this.learningState.metrics.knowledge = {
       gapsIdentified: knowledgeGaps.length,
       dataAcquired: labeledData.length,
       modelImprovement: validation.improvement,
-      knowledgeCoverage: await this.calculateCoverage()
+      knowledgeCoverage: await this.calculateCoverage(),
     };
-    
+
     // 触发知识更新事件
     this.emit('knowledgeUpdated', {
       gaps: knowledgeGaps,
       newData: labeledData,
       modelResults: fineTuningResults,
       validation,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
   }
-  
+
   /**
    * 学习层级自适应
    */
   private async adaptLearningLevel(): Promise<void> {
     const metrics = this.learningState.metrics;
-    
+
     // 计算各层级成熟度
     const maturityScores = {
       L1: this.calculateBehavioralMaturity(metrics.behavioral),
       L2: this.calculateStrategicMaturity(metrics.strategic),
-      L3: this.calculateKnowledgeMaturity(metrics.knowledge)
+      L3: this.calculateKnowledgeMaturity(metrics.knowledge),
     };
-    
+
     // 确定是否需要升级
     const currentLevel = this.learningState.level;
     const currentScore = maturityScores[currentLevel];
     const threshold = this.config.levelUpThresholds[currentLevel];
-    
+
     if (currentScore >= threshold) {
       // 升级学习层级
       const nextLevel = this.getNextLevel(currentLevel);
@@ -1862,67 +1850,67 @@ export class MetaLearningLayer extends EventEmitter {
       }
     }
   }
-  
+
   /**
    * 生成学习报告
    */
   async generateLearningReport(timeframe: Timeframe = '7d'): Promise<LearningReport> {
     const experiences = await this.experienceBuffer.getByTimeframe(timeframe);
     const metrics = await this.performanceAnalyzer.analyze(experiences);
-    
+
     const report: LearningReport = {
       timeframe,
       summary: {
         totalExperiences: experiences.length,
         learningRate: this.calculateLearningRate(experiences),
         retentionRate: await this.calculateRetentionRate(timeframe),
-        adaptationSpeed: metrics.adaptationSpeed
+        adaptationSpeed: metrics.adaptationSpeed,
       },
       byLevel: {
         L1: await this.analyzeBehavioralLearning(experiences),
         L2: await this.analyzeStrategicLearning(experiences),
-        L3: await this.analyzeKnowledgeLearning(experiences)
+        L3: await this.analyzeKnowledgeLearning(experiences),
       },
       insights: await this.generateInsights(experiences),
       recommendations: await this.generateRecommendations(metrics),
-      forecast: await this.forecastLearningTrajectory(experiences)
+      forecast: await this.forecastLearningTrajectory(experiences),
     };
-    
+
     // 触发报告生成事件
     this.emit('reportGenerated', {
       report,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
-    
+
     return report;
   }
-  
+
   /**
    * 主动学习 - 请求用户反馈
    */
   async requestFeedback(context: FeedbackContext): Promise<FeedbackRequest> {
     // 1. 确定需要反馈的领域
     const feedbackAreas = await this.identifyFeedbackNeeds(context);
-    
+
     // 2. 生成反馈问题
     const questions = await this.generateFeedbackQuestions(feedbackAreas);
-    
+
     // 3. 确定最佳反馈时机
     const timing = await this.determineOptimalTiming(context);
-    
+
     // 4. 个性化反馈请求
     const personalizedRequest = await this.personalizeRequest(questions, context.userId);
-    
+
     return {
       questions: personalizedRequest.questions,
       context: feedbackAreas,
       timing,
       priority: this.calculateFeedbackPriority(feedbackAreas),
       expectedValue: await this.calculateFeedbackValue(feedbackAreas),
-      format: this.selectFeedbackFormat(context)
+      format: this.selectFeedbackFormat(context),
     };
   }
-  
+
   /**
    * 学习效果可视化
    */
@@ -1931,9 +1919,9 @@ export class MetaLearningLayer extends EventEmitter {
       this.getLearningCurveData(),
       this.getKnowledgeGrowthData(),
       this.getStrategyEvolutionData(),
-      this.getPerformanceTrendData()
+      this.getPerformanceTrendData(),
     ]);
-    
+
     return {
       charts: [
         {
@@ -1943,8 +1931,8 @@ export class MetaLearningLayer extends EventEmitter {
           options: {
             xAxis: { label: '经验数量' },
             yAxis: { label: '性能得分' },
-            showConfidenceBand: true
-          }
+            showConfidenceBand: true,
+          },
         },
         {
           type: 'heatmap',
@@ -1952,8 +1940,8 @@ export class MetaLearningLayer extends EventEmitter {
           data: datasets[1],
           options: {
             colorScale: 'viridis',
-            showLabels: true
-          }
+            showLabels: true,
+          },
         },
         {
           type: 'network',
@@ -1962,31 +1950,25 @@ export class MetaLearningLayer extends EventEmitter {
           options: {
             nodeSize: 'weight',
             edgeWidth: 'strength',
-            dynamicLayout: true
-          }
+            dynamicLayout: true,
+          },
         },
         {
           type: 'radar',
           title: '多维度性能',
           data: datasets[3],
           options: {
-            dimensions: [
-              'accuracy',
-              'speed',
-              'efficiency',
-              'adaptability',
-              'creativity'
-            ],
-            maxValues: [1, 1, 1, 1, 1]
-          }
-        }
+            dimensions: ['accuracy', 'speed', 'efficiency', 'adaptability', 'creativity'],
+            maxValues: [1, 1, 1, 1, 1],
+          },
+        },
       ],
       insights: await this.extractVisualInsights(datasets),
       interactive: {
         filters: ['timeframe', 'learningLevel', 'domain'],
         drillDown: true,
-        compareMode: true
-      }
+        compareMode: true,
+      },
     };
   }
 }
@@ -2004,7 +1986,7 @@ services:
   api-gateway:
     build: ./services/api-gateway
     ports:
-      - "8080:8080"
+      - '8080:8080'
     environment:
       - NODE_ENV=production
       - REDIS_URL=redis://redis:6379
@@ -2041,7 +2023,7 @@ services:
     networks:
       - yyc3-network
     healthcheck:
-      test: ["CMD", "node", "healthcheck.js"]
+      test: ['CMD', 'node', 'healthcheck.js']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -2056,8 +2038,8 @@ services:
   vectordb:
     image: qdrant/qdrant:latest
     ports:
-      - "6333:6333"
-      - "6334:6334"
+      - '6333:6333'
+      - '6334:6334'
     volumes:
       - vector_data:/qdrant/storage
     networks:
@@ -2072,7 +2054,7 @@ services:
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
@@ -2088,7 +2070,7 @@ services:
   mongo:
     image: mongo:6
     ports:
-      - "27017:27017"
+      - '27017:27017'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
@@ -2128,7 +2110,7 @@ services:
   mlflow:
     image: ghcr.io/mlflow/mlflow:latest
     ports:
-      - "5000:5000"
+      - '5000:5000'
     environment:
       - BACKEND_STORE_URI=postgresql://mlflow:${MLFLOW_PASSWORD}@postgres:5432/mlflow
       - DEFAULT_ARTIFACT_ROOT=/mlflow
@@ -2155,7 +2137,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"
+      - '9090:9090'
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -2172,7 +2154,7 @@ services:
   grafana:
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     volumes:
@@ -2190,11 +2172,11 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
+      - '9200:9200'
     networks:
       - yyc3-network
 
@@ -2210,7 +2192,7 @@ services:
   kibana:
     image: kibana:8.11.0
     ports:
-      - "5601:5601"
+      - '5601:5601'
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
     depends_on:
@@ -2292,14 +2274,14 @@ build_image() {
     local service=$1
     local context=$2
     local dockerfile=$3
-    
+
     echo "构建 ${service}..."
-    
+
     docker build \
         -f ${dockerfile:-"Dockerfile"} \
         -t "${REGISTRY}/${service}:${VERSION}" \
         ${context:-"."}
-    
+
     # 推送到镜像仓库
     if [ "${SKIP_PUSH}" != "true" ]; then
         docker push "${REGISTRY}/${service}:${VERSION}"
@@ -2330,13 +2312,13 @@ step "部署到Kubernetes"
 deploy_to_kubernetes() {
     # 创建命名空间
     kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
-    
+
     # 部署ConfigMaps和Secrets
     kubectl apply -f ./k8s/config/ -n ${NAMESPACE}
-    
+
     # 部署应用
     kubectl apply -f ./k8s/generated/ -n ${NAMESPACE}
-    
+
     # 等待部署完成
     echo "等待部署就绪..."
     kubectl wait --for=condition=available \
@@ -2358,7 +2340,7 @@ if [ "${RUN_MIGRATIONS}" = "true" ]; then
         --restart=Never \
         --command -- \
         npm run migrate
-    
+
     # 等待迁移完成
     kubectl wait --for=condition=complete \
         --timeout=600s \
@@ -2372,19 +2354,19 @@ check_health() {
     local endpoint="http://yyc3.${ENV}.example.com/health"
     local max_attempts=30
     local attempt=1
-    
+
     while [ $attempt -le $max_attempts ]; do
         echo "健康检查 ($attempt/$max_attempts)..."
-        
+
         if curl -f -s "${endpoint}" | grep -q "healthy"; then
             echo -e "${GREEN}✅ 系统健康${NC}"
             return 0
         fi
-        
+
         sleep 10
         attempt=$((attempt + 1))
     done
-    
+
     echo -e "${RED}❌ 健康检查失败${NC}"
     return 1
 }
@@ -2401,7 +2383,7 @@ if [ "${RUN_PERFORMANCE_TEST}" = "true" ]; then
         --command -- \
         k6 run --out influxdb=http://influxdb:8086/yyc3 \
         /scripts/performance-test.js
-    
+
     echo "性能测试已启动，查看结果: http://grafana.${ENV}.example.com"
 fi
 
@@ -2477,18 +2459,8 @@ echo -e "${YELLOW}⚠️  请注意: 初始部署后，系统需要几分钟来�
       "@types/*": ["../shared/types/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "test/**/*",
-    "shared/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "build",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  "include": ["src/**/*", "test/**/*", "shared/**/*"],
+  "exclude": ["node_modules", "dist", "build", "**/*.test.ts", "**/*.spec.ts"]
 }
 ```
 
@@ -2514,23 +2486,27 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // 安全中间件
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "ws:", "wss:"]
-    }
-  }
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'", 'ws:', 'wss:'],
+      },
+    },
+  })
+);
 
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-}));
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  })
+);
 
 // 速率限制
 const limiter = rateLimit({
@@ -2538,7 +2514,7 @@ const limiter = rateLimit({
   max: 100, // 每个IP限制100个请求
   message: '请求过于频繁，请稍后再试',
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
 
 app.use(limiter);
@@ -2562,10 +2538,10 @@ app.get('/health', (req, res) => {
       agentCore: checkServiceHealth('agent-core'),
       knowledgeBase: checkServiceHealth('knowledge-base'),
       learningSystem: checkServiceHealth('learning-system'),
-      toolRegistry: checkServiceHealth('tool-registry')
-    }
+      toolRegistry: checkServiceHealth('tool-registry'),
+    },
   };
-  
+
   res.json(health);
 });
 
@@ -2580,11 +2556,12 @@ const services = {
   '/api/knowledge': 'http://knowledge-base:3001',
   '/api/learning': 'http://learning-system:3002',
   '/api/tools': 'http://tool-registry:3003',
-  '/api/analytics': 'http://analytics:3004'
+  '/api/analytics': 'http://analytics:3004',
 };
 
 Object.entries(services).forEach(([path, target]) => {
-  app.use(path,
+  app.use(
+    path,
     authMiddleware,
     cacheMiddleware,
     circuitBreakerMiddleware,
@@ -2597,23 +2574,26 @@ Object.entries(services).forEach(([path, target]) => {
         res.status(502).json({
           error: '服务暂时不可用',
           message: err.message,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       },
-      proxyTimeout: 30000
+      proxyTimeout: 30000,
     })
   );
 });
 
 // WebSocket代理
-app.use('/ws', createProxyMiddleware({
-  target: 'ws://agent-core:3000',
-  ws: true,
-  changeOrigin: true,
-  onError: (err, req, res) => {
-    logger.error('WebSocket代理错误:', err);
-  }
-}));
+app.use(
+  '/ws',
+  createProxyMiddleware({
+    target: 'ws://agent-core:3000',
+    ws: true,
+    changeOrigin: true,
+    onError: (err, req, res) => {
+      logger.error('WebSocket代理错误:', err);
+    },
+  })
+);
 
 // 错误处理
 app.use(errorHandler);
@@ -2632,18 +2612,18 @@ app.listen(PORT, () => {
 // 优雅关闭
 process.on('SIGTERM', () => {
   console.log('收到SIGTERM信号，开始优雅关闭...');
-  
+
   // 停止接受新请求
   server.close(() => {
     console.log('HTTP服务器已关闭');
-    
+
     // 清理资源
     cleanupResources().then(() => {
       console.log('资源清理完成');
       process.exit(0);
     });
   });
-  
+
   // 强制关闭超时
   setTimeout(() => {
     console.error('强制关闭超时，立即退出');

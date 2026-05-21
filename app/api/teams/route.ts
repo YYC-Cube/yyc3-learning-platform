@@ -7,16 +7,16 @@
  * @created 2025-03-17
  * @updated 2025-03-17
  */
-import { NextResponse } from "next/server"
-import { teams } from "@/data/teams"
+import { NextResponse } from 'next/server';
+import { teams } from '@/data/teams';
 
 export async function GET() {
   try {
     return NextResponse.json({
       teams,
       total: teams.length,
-    })
+    });
   } catch {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

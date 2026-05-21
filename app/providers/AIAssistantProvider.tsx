@@ -4,7 +4,7 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client";
+'use client';
 
 import LazyAIWidgetWrapper from '@/components/intelligent-ai-widget/lazy-ai-widget';
 import { useEffect, useState } from 'react';
@@ -36,10 +36,7 @@ function AIAssistantContent({ children }: { children: React.ReactNode }) {
     <>
       {children}
       {isMounted && showWidget && userId && (
-        <LazyAIWidgetWrapper
-          userId={userId}
-          initialPosition="bottom-right"
-        />
+        <LazyAIWidgetWrapper userId={userId} initialPosition="bottom-right" />
       )}
     </>
   );

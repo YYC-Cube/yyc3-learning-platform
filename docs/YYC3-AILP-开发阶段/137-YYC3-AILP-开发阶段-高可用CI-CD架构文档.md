@@ -1,10 +1,10 @@
 # 🔖 YYC³ (Header)
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -12,15 +12,15 @@
 
 ## 📋 文档信息
 
-| 属性         | 内容                                           |
-| ------------ | ---------------------------------------------- |
+| 属性         | 内容                                          |
+| ------------ | --------------------------------------------- |
 | **文档标题** | YYC³ AILP - 高可用 CI/CD 架构文档             |
-| **文档版本** | v1.0.0                                         |
-| **创建时间** | 2026-01-02                                     |
-| **最后更新** | 2026-01-02                                     |
+| **文档版本** | v1.0.0                                        |
+| **创建时间** | 2026-01-02                                    |
+| **最后更新** | 2026-01-02                                    |
 | **文档编号** | 137-YYC3-AILP-开发阶段-高可用CI-CD架构文档.md |
 | **适用范围** | YYC³ AILP 项目的高可用部署架构                |
-| **维护团队** | YYC³ 开发团队                                  |
+| **维护团队** | YYC³ 开发团队                                 |
 
 ---
 
@@ -51,16 +51,16 @@ YYC³ AILP 高可用 CI/CD 架构旨在实现以下目标：
 
 ### 1.2 核心特性
 
-| 特性               | 描述                                   | 实现方式                          |
-| ------------------ | -------------------------------------- | --------------------------------- |
-| 多区域部署         | 主备区域冗余，自动故障转移             | AWS us-east-1 + us-west-2         |
-| 蓝绿部署           | 零停机部署，快速回滚                   | Kubernetes Service selector 切换  |
-| 自动伸缩           | 根据负载自动调整资源                   | HPA + VPA                         |
-| 健康检查           | 实时监控应用健康状态                   | Liveness + Readiness 探针         |
-| 自动回滚           | 部署失败时自动回滚                     | Kubernetes Deployment 回滚        |
-| 混沌工程           | 主动测试系统容错能力                   | Chaos Mesh + Litmus               |
-| 负载测试           | 验证系统在高负载下的表现               | k6 + Gatling                      |
-| 监控告警           | 实时监控和及时告警                     | Prometheus + Grafana + Alertmanager |
+| 特性       | 描述                       | 实现方式                            |
+| ---------- | -------------------------- | ----------------------------------- |
+| 多区域部署 | 主备区域冗余，自动故障转移 | AWS us-east-1 + us-west-2           |
+| 蓝绿部署   | 零停机部署，快速回滚       | Kubernetes Service selector 切换    |
+| 自动伸缩   | 根据负载自动调整资源       | HPA + VPA                           |
+| 健康检查   | 实时监控应用健康状态       | Liveness + Readiness 探针           |
+| 自动回滚   | 部署失败时自动回滚         | Kubernetes Deployment 回滚          |
+| 混沌工程   | 主动测试系统容错能力       | Chaos Mesh + Litmus                 |
+| 负载测试   | 验证系统在高负载下的表现   | k6 + Gatling                        |
+| 监控告警   | 实时监控和及时告警         | Prometheus + Grafana + Alertmanager |
 
 ---
 
@@ -150,10 +150,10 @@ YYC³ AILP 高可用 CI/CD 架构旨在实现以下目标：
 
 ### 3.1 区域选择
 
-| 区域          | 角色           | 用途                           | 资源配置                 |
-| ------------- | -------------- | ------------------------------ | ------------------------ |
-| us-east-1     | Primary        | 主生产环境，处理主要流量       | 3+ 节点，高配置          |
-| us-west-2     | Secondary      | 备用环境，故障转移目标         | 2+ 节点，中等配置        |
+| 区域      | 角色      | 用途                     | 资源配置          |
+| --------- | --------- | ------------------------ | ----------------- |
+| us-east-1 | Primary   | 主生产环境，处理主要流量 | 3+ 节点，高配置   |
+| us-west-2 | Secondary | 备用环境，故障转移目标   | 2+ 节点，中等配置 |
 
 ### 3.2 数据同步策略
 
@@ -171,10 +171,10 @@ spec:
   primaryUpdateStrategy: unsupervised
   postgresql:
     parameters:
-      max_connections: "200"
-      shared_buffers: "256MB"
+      max_connections: '200'
+      shared_buffers: '256MB'
       wal_level: logical
-      max_wal_senders: "10"
+      max_wal_senders: '10'
   replication:
     slots:
       highAvailability:
@@ -190,9 +190,9 @@ spec:
           name: aws-credentials
           key: secretAccessKey
       wal:
-        retention: "7d"
+        retention: '7d'
       data:
-        retention: "30d"
+        retention: '30d'
   monitoring:
     enabled: true
 ```
@@ -210,7 +210,7 @@ spec:
   nodes: 6
   redisConfig:
     maxmemory-policy: allkeys-lru
-    save: "900 1 300 10 60 10000"
+    save: '900 1 300 10 60 10000'
   security:
     tls:
       secretName: redis-tls
@@ -257,19 +257,19 @@ metadata:
   namespace: yyc3-learning
 spec:
   endpoints:
-  - dnsName: yyc3-learning.yyc3.0379.email
-    recordTTL: 60
-    recordType: A
-    targets:
-    - 1.2.3.4  # Primary Region LB
-    - 5.6.7.8  # Secondary Region LB
-    setIdentifier: primary
-    healthCheck:
-      protocol: HTTPS
-      port: 443
-      path: /health
-      requestInterval: 30
-      failureThreshold: 3
+    - dnsName: yyc3-learning.yyc3.0379.email
+      recordTTL: 60
+      recordType: A
+      targets:
+        - 1.2.3.4 # Primary Region LB
+        - 5.6.7.8 # Secondary Region LB
+      setIdentifier: primary
+      healthCheck:
+        protocol: HTTPS
+        port: 443
+        path: /health
+        requestInterval: 30
+        failureThreshold: 3
 ```
 
 #### 全局负载均衡器
@@ -288,13 +288,13 @@ spec:
         serviceName: yyc3-learning
         servicePort: 80
       rules:
-      - host: yyc3-learning.yyc3.0379.email
-        http:
-          paths:
-          - path: /*
-            backend:
-              serviceName: yyc3-learning
-              servicePort: 80
+        - host: yyc3-learning.yyc3.0379.email
+          http:
+            paths:
+              - path: /*
+                backend:
+                  serviceName: yyc3-learning
+                  servicePort: 80
 ```
 
 ---
@@ -354,7 +354,7 @@ metadata:
   namespace: yyc3-learning
   labels:
     app: yyc3-learning
-    color: blue  # blue 或 green
+    color: blue # blue 或 green
 spec:
   replicas: 3
   strategy:
@@ -376,56 +376,56 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: app
-                  operator: In
-                  values:
-                  - yyc3-learning
-              topologyKey: kubernetes.io/hostname
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - yyc3-learning
+                topologyKey: kubernetes.io/hostname
       containers:
-      - name: app
-        image: ghcr.io/YY-Nexus/yyc3-learning-platform:blue-latest
-        ports:
-        - containerPort: 3000
-          name: http
-        env:
-        - name: NODE_ENV
-          value: "production"
-        - name: REGION
-          value: "primary"
-        resources:
-          requests:
-            cpu: 500m
-            memory: 512Mi
-          limits:
-            cpu: 1000m
-            memory: 1Gi
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 3000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-          failureThreshold: 3
-        lifecycle:
-          preStop:
-            exec:
-              command:
-              - /bin/sh
-              - -c
-              - sleep 15
+        - name: app
+          image: ghcr.io/YY-Nexus/yyc3-learning-platform:blue-latest
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: NODE_ENV
+              value: 'production'
+            - name: REGION
+              value: 'primary'
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 15
 ```
 
 #### Service 配置
@@ -442,13 +442,13 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 80
-    targetPort: 3000
-    protocol: TCP
-    name: http
+    - port: 80
+      targetPort: 3000
+      protocol: TCP
+      name: http
   selector:
     app: yyc3-learning
-    color: blue  # 控制流量路由
+    color: blue # 控制流量路由
 ```
 
 #### PodDisruptionBudget 配置
@@ -546,15 +546,15 @@ echo "🎉 蓝绿部署完成！"
 
 ### 5.1 测试类型
 
-| 测试类型     | 执行时机           | 工具                          | 通过条件                     |
-| ------------ | ------------------ | ----------------------------- | ---------------------------- |
-| 单元测试     | 每次提交           | Jest                          | 覆盖率 ≥ 80%                 |
-| 集成测试     | 每次提交           | Supertest                     | 所有测试通过                 |
-| 端到端测试   | 每次提交           | Playwright                    | 所有测试通过                 |
-| 性能测试     | 每日               | k6, Lighthouse                | 性能评分 ≥ 90                |
-| 安全测试     | 每次提交           | Snyk, Trivy                   | 无高危漏洞                   |
-| 混沌测试     | 每周               | Chaos Mesh, Litmus            | 系统自动恢复                 |
-| 负载测试     | 每周               | k6, Gatling                   | 满足性能指标                 |
+| 测试类型   | 执行时机 | 工具               | 通过条件      |
+| ---------- | -------- | ------------------ | ------------- |
+| 单元测试   | 每次提交 | Jest               | 覆盖率 ≥ 80%  |
+| 集成测试   | 每次提交 | Supertest          | 所有测试通过  |
+| 端到端测试 | 每次提交 | Playwright         | 所有测试通过  |
+| 性能测试   | 每日     | k6, Lighthouse     | 性能评分 ≥ 90 |
+| 安全测试   | 每次提交 | Snyk, Trivy        | 无高危漏洞    |
+| 混沌测试   | 每周     | Chaos Mesh, Litmus | 系统自动恢复  |
+| 负载测试   | 每周     | k6, Gatling        | 满足性能指标  |
 
 ### 5.2 负载测试配置
 
@@ -571,15 +571,15 @@ const responseTime = new Trend('response_time');
 
 export const options = {
   stages: [
-    { duration: '2m', target: 100 },  // 预热
-    { duration: '5m', target: 500 },  // 正常负载
+    { duration: '2m', target: 100 }, // 预热
+    { duration: '5m', target: 500 }, // 正常负载
     { duration: '5m', target: 1000 }, // 高负载
-    { duration: '5m', target: 500 },  // 降级
-    { duration: '2m', target: 0 },    // 冷却
+    { duration: '5m', target: 500 }, // 降级
+    { duration: '2m', target: 0 }, // 冷却
   ],
   thresholds: {
     http_req_duration: ['p(95)<2000'], // 95% 请求 < 2s
-    http_req_failed: ['rate<0.05'],    // 错误率 < 5%
+    http_req_failed: ['rate<0.05'], // 错误率 < 5%
     errors: ['rate<0.05'],
   },
 };
@@ -598,7 +598,7 @@ export default function () {
       'status is 200': (r) => r.status === 200,
       'response time < 2s': (r) => r.timings.duration < 2000,
     }) || errorRate.add(1);
-    
+
     responseTime.add(res.timings.duration);
   });
 
@@ -689,14 +689,14 @@ spec:
     matchLabels:
       app: yyc3-learning
   endpoints:
-  - port: http
-    path: /metrics
-    interval: 15s
-    scrapeTimeout: 10s
-    metricRelabelings:
-    - sourceLabels: [__name__]
-      regex: 'go_.*|process_.*'
-      action: drop
+    - port: http
+      path: /metrics
+      interval: 15s
+      scrapeTimeout: 10s
+      metricRelabelings:
+        - sourceLabels: [__name__]
+          regex: 'go_.*|process_.*'
+          action: drop
 ```
 
 #### Prometheus 规则
@@ -714,7 +714,7 @@ spec:
     rules:
     - alert: HighErrorRate
       expr: |
-        rate(http_requests_total{job="yyc3-learning",code=~"5.."}[5m]) 
+        rate(http_requests_total{job="yyc3-learning",code=~"5.."}[5m])
         / rate(http_requests_total{job="yyc3-learning"}[5m]) > 0.05
       for: 5m
       labels:
@@ -725,7 +725,7 @@ spec:
 
     - alert: HighResponseTime
       expr: |
-        histogram_quantile(0.95, 
+        histogram_quantile(0.95,
           rate(http_request_duration_seconds_bucket{job="yyc3-learning"}[5m])
         ) > 2
       for: 5m
@@ -835,12 +835,12 @@ spec:
 
 ### 7.1 备份策略
 
-| 资源类型     | 备份频率     | 保留时间     | 存储位置           |
-| ------------ | ------------ | ------------ | ------------------ |
-| PostgreSQL   | 每小时       | 30 天        | S3 (跨区域复制)    |
-| Redis        | 每小时       | 7 天         | S3 (跨区域复制)    |
-| 应用配置     | 每次部署     | 30 天        | Git + S3          |
-| 日志         | 实时         | 30 天        | Elasticsearch      |
+| 资源类型   | 备份频率 | 保留时间 | 存储位置        |
+| ---------- | -------- | -------- | --------------- |
+| PostgreSQL | 每小时   | 30 天    | S3 (跨区域复制) |
+| Redis      | 每小时   | 7 天     | S3 (跨区域复制) |
+| 应用配置   | 每次部署 | 30 天    | Git + S3        |
+| 日志       | 实时     | 30 天    | Elasticsearch   |
 
 ### 7.2 恢复流程
 
@@ -966,15 +966,15 @@ echo "🎉 故障转移完成，备用区域已接管服务"
 
 ### 8.1 日常运维任务
 
-| 任务           | 频率     | 责任人   | 工具                          |
-| -------------- | -------- | -------- | ----------------------------- |
-| 监控检查       | 每日     | 运维     | Grafana, Prometheus           |
-| 日志审查       | 每日     | 运维     | Elasticsearch, Kibana         |
-| 备份验证       | 每周     | 运维     | AWS CLI, kubectl              |
-| 性能优化       | 每周     | 开发     | k6, Lighthouse                |
-| 安全扫描       | 每周     | 安全     | Snyk, Trivy                   |
-| 容量规划       | 每月     | 运维     | CloudWatch, Prometheus        |
-| 灾难恢复演练   | 每季度   | 全团队   | Chaos Mesh, Litmus            |
+| 任务         | 频率   | 责任人 | 工具                   |
+| ------------ | ------ | ------ | ---------------------- |
+| 监控检查     | 每日   | 运维   | Grafana, Prometheus    |
+| 日志审查     | 每日   | 运维   | Elasticsearch, Kibana  |
+| 备份验证     | 每周   | 运维   | AWS CLI, kubectl       |
+| 性能优化     | 每周   | 开发   | k6, Lighthouse         |
+| 安全扫描     | 每周   | 安全   | Snyk, Trivy            |
+| 容量规划     | 每月   | 运维   | CloudWatch, Prometheus |
+| 灾难恢复演练 | 每季度 | 全团队 | Chaos Mesh, Litmus     |
 
 ### 8.2 故障排查流程
 
@@ -1076,7 +1076,7 @@ kubectl rollout status deployment/yyc3-learning -n yyc3-learning
 
 ## 📄 文档标尾 (Footer)
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

@@ -11,7 +11,7 @@ import type {
   Content,
   NodeData,
   EventListener,
-  FunctionResult
+  FunctionResult,
 } from './types/common.types';
 
 export interface ILearningSystem {
@@ -1278,7 +1278,12 @@ export interface ModelParameters {
   validationMetrics: Record<string, number>;
 }
 
-export type ModelType = 'classification' | 'regression' | 'clustering' | 'sequence' | 'reinforcement';
+export type ModelType =
+  | 'classification'
+  | 'regression'
+  | 'clustering'
+  | 'sequence'
+  | 'reinforcement';
 
 export interface ModelPerformance {
   accuracy: number;
@@ -1798,7 +1803,11 @@ export interface ReasoningEngineConfig {
   evidenceRequirements: EvidenceRequirements;
 }
 
-export type ReasoningAlgorithm = 'forward_chaining' | 'backward_chaining' | 'graph_based' | 'probabilistic';
+export type ReasoningAlgorithm =
+  | 'forward_chaining'
+  | 'backward_chaining'
+  | 'graph_based'
+  | 'probabilistic';
 export type IndexingStrategy = 'semantic' | 'structural' | 'temporal' | 'hybrid';
 
 export interface EvidenceRequirements {

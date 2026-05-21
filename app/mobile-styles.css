@@ -9,7 +9,7 @@
 /* 移动端底部导航样式 */
 .bottom-nav,
 nav[data-bottom-nav],
-[data-bottom-nav="true"] {
+[data-bottom-nav='true'] {
   display: none;
 }
 
@@ -27,7 +27,7 @@ nav[data-bottom-nav],
 
   .bottom-nav,
   nav[data-bottom-nav],
-  [data-bottom-nav="true"] {
+  [data-bottom-nav='true'] {
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
@@ -70,8 +70,8 @@ nav[data-bottom-nav],
     -webkit-tap-highlight-color: transparent !important;
   }
 
-  .bottom-nav a[aria-current="page"],
-  nav[data-bottom-nav] a[aria-current="page"] {
+  .bottom-nav a[aria-current='page'],
+  nav[data-bottom-nav] a[aria-current='page'] {
     color: hsl(var(--primary)) !important;
     background-color: hsl(var(--primary) / 0.1) !important;
     font-weight: 600 !important;

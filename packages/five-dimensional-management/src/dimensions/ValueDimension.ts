@@ -12,7 +12,7 @@ import {
   CustomerValueMetrics,
   InnovationMetrics,
   Recommendation,
-  AlertLevel
+  AlertLevel,
 } from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 
@@ -90,7 +90,6 @@ export class ValueDimension extends EventEmitter implements IDimension {
 
       this.emit('started', { timestamp: new Date() });
       this._logger.info('ValueDimension started successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to start ValueDimension', error);
@@ -112,7 +111,6 @@ export class ValueDimension extends EventEmitter implements IDimension {
 
       this.emit('stopped', { timestamp: new Date() });
       this._logger.info('ValueDimension stopped successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to stop ValueDimension', error);
@@ -138,7 +136,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         monthlyRecurringRevenue: 185000,
         annualRecurringRevenue: 2220000,
         grossMargin: 72,
-        netMargin: 18
+        netMargin: 18,
       };
 
       const operational: OperationalMetrics = {
@@ -149,7 +147,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         resourceUtilization: 84,
         timeToMarket: 14,
         operationalExcellence: 81,
-        qualityImprovement: 88
+        qualityImprovement: 88,
       };
 
       const strategic: StrategicValueMetrics = {
@@ -160,7 +158,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         strategicAlignment: 88,
         riskMitigation: 91,
         longTermValue: 83,
-        sustainability: 79
+        sustainability: 79,
       };
 
       const customer: CustomerValueMetrics = {
@@ -171,7 +169,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         customerEffortScore: 76,
         customerSuccessRate: 91,
         customerLifetimeValue: 12500,
-        customerChurnRate: 11
+        customerChurnRate: 11,
       };
 
       const innovation: InnovationMetrics = {
@@ -182,7 +180,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         researchInvestment: 280000,
         rdEffectiveness: 84,
         technologyAdoption: 81,
-        breakthroughs: 2
+        breakthroughs: 2,
       };
 
       this._currentMetrics = {
@@ -192,7 +190,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         operational,
         strategic,
         customer,
-        innovation
+        innovation,
       };
 
       // Update health score
@@ -201,7 +199,6 @@ export class ValueDimension extends EventEmitter implements IDimension {
       this.emit('metric-update', { metrics: this._currentMetrics, timestamp: new Date() });
 
       return this._currentMetrics;
-
     } catch (error) {
       this._logger.error('Failed to collect value metrics', error);
       throw error;
@@ -231,7 +228,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         dependencies: ['financial-analysis', 'strategy-optimization'],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
       });
     }
 
@@ -242,7 +239,8 @@ export class ValueDimension extends EventEmitter implements IDimension {
         type: 'value',
         priority: 'medium',
         title: 'Enhance Customer Satisfaction',
-        description: 'Customer satisfaction scores can be improved through better service and product quality.',
+        description:
+          'Customer satisfaction scores can be improved through better service and product quality.',
         rationale: `Current satisfaction: ${this._currentMetrics.customer.customerSatisfaction}%`,
         expectedImpact: 'Higher customer retention and increased revenue',
         effort: 'medium',
@@ -250,7 +248,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         dependencies: ['customer-feedback-analysis'],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
+        validUntil: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
       });
     }
 
@@ -276,7 +274,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         monthlyRecurringRevenue: 0,
         annualRecurringRevenue: 0,
         grossMargin: 0,
-        netMargin: 0
+        netMargin: 0,
       },
       operational: {
         efficiency: 100,
@@ -286,7 +284,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         resourceUtilization: 100,
         timeToMarket: 0,
         operationalExcellence: 100,
-        qualityImprovement: 100
+        qualityImprovement: 100,
       },
       strategic: {
         marketPosition: 100,
@@ -296,7 +294,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         strategicAlignment: 100,
         riskMitigation: 100,
         longTermValue: 100,
-        sustainability: 100
+        sustainability: 100,
       },
       customer: {
         customerSatisfaction: 100,
@@ -306,7 +304,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
         customerEffortScore: 100,
         customerSuccessRate: 100,
         customerLifetimeValue: 0,
-        customerChurnRate: 0
+        customerChurnRate: 0,
       },
       innovation: {
         innovationRate: 0,
@@ -316,8 +314,8 @@ export class ValueDimension extends EventEmitter implements IDimension {
         researchInvestment: 0,
         rdEffectiveness: 100,
         technologyAdoption: 100,
-        breakthroughs: 0
-      }
+        breakthroughs: 0,
+      },
     };
   }
 
@@ -327,7 +325,7 @@ export class ValueDimension extends EventEmitter implements IDimension {
       operational: 0.25,
       strategic: 0.2,
       customer: 0.15,
-      innovation: 0.1
+      innovation: 0.1,
     };
 
     const scores = {
@@ -335,15 +333,15 @@ export class ValueDimension extends EventEmitter implements IDimension {
       operational: this.calculateOperationalScore(),
       strategic: this.calculateStrategicScore(),
       customer: this.calculateCustomerScore(),
-      innovation: this.calculateInnovationScore()
+      innovation: this.calculateInnovationScore(),
     };
 
     this._healthScore = Math.round(
       scores.financial * weights.financial +
-      scores.operational * weights.operational +
-      scores.strategic * weights.strategic +
-      scores.customer * weights.customer +
-      scores.innovation * weights.innovation
+        scores.operational * weights.operational +
+        scores.strategic * weights.strategic +
+        scores.customer * weights.customer +
+        scores.innovation * weights.innovation
     );
 
     this.emit('health-updated', { score: this._healthScore, timestamp: new Date() });
@@ -374,12 +372,13 @@ export class ValueDimension extends EventEmitter implements IDimension {
 
     return Math.round(
       (operational.efficiency +
-       operational.productivity +
-       operational.automationRate +
-       operational.processOptimization +
-       operational.resourceUtilization +
-       operational.operationalExcellence +
-       operational.qualityImprovement) / 7
+        operational.productivity +
+        operational.automationRate +
+        operational.processOptimization +
+        operational.resourceUtilization +
+        operational.operationalExcellence +
+        operational.qualityImprovement) /
+        7
     );
   }
 
@@ -388,13 +387,14 @@ export class ValueDimension extends EventEmitter implements IDimension {
 
     return Math.round(
       (strategic.marketPosition +
-       strategic.competitiveAdvantage +
-       strategic.brandValue +
-       strategic.innovationIndex +
-       strategic.strategicAlignment +
-       strategic.riskMitigation +
-       strategic.longTermValue +
-       strategic.sustainability) / 8
+        strategic.competitiveAdvantage +
+        strategic.brandValue +
+        strategic.innovationIndex +
+        strategic.strategicAlignment +
+        strategic.riskMitigation +
+        strategic.longTermValue +
+        strategic.sustainability) /
+        8
     );
   }
 

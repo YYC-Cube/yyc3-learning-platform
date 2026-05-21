@@ -33,12 +33,12 @@ export class SecurityScanner {
         hipaa: false,
         pciDss: false,
         lastAudit: new Date(),
-        nextAudit: new Date()
+        nextAudit: new Date(),
       },
       incidentCount: 0,
       authenticationAttempts: 1250,
       failedAuthentications: 12,
-      securityEvents: []
+      securityEvents: [],
     };
   }
 }

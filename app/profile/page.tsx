@@ -4,13 +4,13 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   Settings,
   Trophy,
@@ -28,32 +28,32 @@ import {
   MapPin,
   Phone,
   Briefcase,
-} from "lucide-react"
-import Link from "next/link"
-import { ResponsiveLayout } from "@/components/responsive-layout"
+} from 'lucide-react';
+import Link from 'next/link';
+import { ResponsiveLayout } from '@/components/responsive-layout';
 
 export default function ProfilePage() {
   const [currentUser] = useState({
-    name: "YanYu同学",
-    email: "yanyu@smartcloud.com",
-    avatar: "/user/User_61.png",
-    level: "中级AI工程师",
+    name: 'YanYu同学',
+    email: 'yanyu@smartcloud.com',
+    avatar: '/user/User_61.png',
+    level: '中级AI工程师',
     points: 2450,
     streak: 7,
-    joinDate: "2024年1月",
+    joinDate: '2024年1月',
     completedCourses: 12,
     totalStudyTime: 156,
     certificates: 5,
     rank: 156,
     // 新增个人信息
-    phone: "+86 138-0000-0000",
-    location: "北京市海淀区",
-    company: "YanYu智能科技",
-    position: "AI算法工程师",
-    bio: "专注于AI技术研发与应用，致力于推动人工智能在各行业的落地实践。",
-    skills: ["机器学习", "深度学习", "自然语言处理", "计算机视觉", "Python", "TensorFlow"],
-    interests: ["AI前沿技术", "开源项目", "技术分享", "团队协作"],
-  })
+    phone: '+86 138-0000-0000',
+    location: '北京市海淀区',
+    company: 'YanYu智能科技',
+    position: 'AI算法工程师',
+    bio: '专注于AI技术研发与应用，致力于推动人工智能在各行业的落地实践。',
+    skills: ['机器学习', '深度学习', '自然语言处理', '计算机视觉', 'Python', 'TensorFlow'],
+    interests: ['AI前沿技术', '开源项目', '技术分享', '团队协作'],
+  });
 
   return (
     <ResponsiveLayout
@@ -79,8 +79,13 @@ export default function ProfilePage() {
             <div className="relative">
               <div className="flex items-center space-x-4 mb-6">
                 <Avatar className="h-20 w-20 border-4 border-white/30 shadow-lg">
-                  <AvatarImage src={currentUser.avatar || "/placeholder.svg"} alt={currentUser.name} />
-                  <AvatarFallback className="text-blue-600 text-xl font-bold bg-white">YY</AvatarFallback>
+                  <AvatarImage
+                    src={currentUser.avatar || '/placeholder.svg'}
+                    alt={currentUser.name}
+                  />
+                  <AvatarFallback className="text-blue-600 text-xl font-bold bg-white">
+                    YY
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <h1 className="text-2xl font-bold mb-1 text-white">{currentUser.name}</h1>
@@ -89,7 +94,9 @@ export default function ProfilePage() {
                     <Badge className="bg-white/25 text-white border-white/40 backdrop-blur-sm font-medium">
                       {currentUser.level}
                     </Badge>
-                    <span className="text-sm text-white/80 font-medium">加入时间：{currentUser.joinDate}</span>
+                    <span className="text-sm text-white/80 font-medium">
+                      加入时间：{currentUser.joinDate}
+                    </span>
                   </div>
                 </div>
                 <Button
@@ -97,7 +104,10 @@ export default function ProfilePage() {
                   size="sm"
                   asChild
                 >
-                  <Link href="/profile/edit" className="inline-flex items-center justify-center gap-2">
+                  <Link
+                    href="/profile/edit"
+                    className="inline-flex items-center justify-center gap-2"
+                  >
                     <Edit className="h-4 w-4 mr-2" />
                     编辑资料
                   </Link>
@@ -146,7 +156,11 @@ export default function ProfilePage() {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {currentUser.skills.map((skill, index) => (
-                    <Badge key={index} variant="secondary" className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="bg-blue-100 text-blue-800 hover:bg-blue-200"
+                    >
                       {skill}
                     </Badge>
                   ))}
@@ -160,7 +174,11 @@ export default function ProfilePage() {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {currentUser.interests.map((interest, index) => (
-                    <Badge key={index} variant="outline" className="border-green-300 text-green-700 hover:bg-green-50">
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="border-green-300 text-green-700 hover:bg-green-50"
+                    >
                       {interest}
                     </Badge>
                   ))}
@@ -198,7 +216,9 @@ export default function ProfilePage() {
                     <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-800 mb-1">{currentUser.completedCourses}</p>
+                <p className="text-2xl font-bold text-gray-800 mb-1">
+                  {currentUser.completedCourses}
+                </p>
                 <p className="text-sm text-gray-700 font-medium">完成课程</p>
               </CardContent>
             </Card>
@@ -211,7 +231,9 @@ export default function ProfilePage() {
                     <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-gray-800 mb-1">{currentUser.totalStudyTime}小时</p>
+                <p className="text-2xl font-bold text-gray-800 mb-1">
+                  {currentUser.totalStudyTime}小时
+                </p>
                 <p className="text-sm text-gray-700 font-medium">学习时长</p>
               </CardContent>
             </Card>
@@ -272,7 +294,7 @@ export default function ProfilePage() {
                 <p className="text-sm text-gray-600 mb-2">帮助10位同学解答问题</p>
                 <div className="space-y-1">
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: "60%" }}></div>
+                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: '60%' }}></div>
                   </div>
                   <p className="text-xs text-gray-600">进度：60%</p>
                 </div>
@@ -297,7 +319,10 @@ export default function ProfilePage() {
                 className="h-20 flex-col space-y-2 border-2 border-blue-300 hover:border-blue-400 hover:bg-blue-100 text-blue-800 font-medium transition-all duration-200"
                 asChild
               >
-                <Link href="/profile/settings" className="inline-flex flex-col items-center justify-center space-y-2">
+                <Link
+                  href="/profile/settings"
+                  className="inline-flex flex-col items-center justify-center space-y-2"
+                >
                   <Settings className="h-6 w-6 text-blue-700" />
                   <span className="text-sm font-semibold text-blue-800">账户设置</span>
                 </Link>
@@ -308,7 +333,10 @@ export default function ProfilePage() {
                 className="h-20 flex-col space-y-2 border-2 border-green-300 hover:border-green-400 hover:bg-green-100 text-green-800 font-medium transition-all duration-200"
                 asChild
               >
-                <Link href="/profile/certificates" className="inline-flex flex-col items-center justify-center space-y-2">
+                <Link
+                  href="/profile/certificates"
+                  className="inline-flex flex-col items-center justify-center space-y-2"
+                >
                   <Download className="h-6 w-6 text-green-700" />
                   <span className="text-sm font-semibold text-green-800">下载证书</span>
                 </Link>
@@ -319,7 +347,10 @@ export default function ProfilePage() {
                 className="h-20 flex-col space-y-2 border-2 border-blue-300 hover:border-blue-400 hover:bg-blue-100 text-blue-800 font-medium transition-all duration-200"
                 asChild
               >
-                <Link href="/profile/share" className="inline-flex flex-col items-center justify-center space-y-2">
+                <Link
+                  href="/profile/share"
+                  className="inline-flex flex-col items-center justify-center space-y-2"
+                >
                   <Share2 className="h-6 w-6 text-blue-700" />
                   <span className="text-sm font-semibold text-blue-800">分享成就</span>
                 </Link>
@@ -330,7 +361,10 @@ export default function ProfilePage() {
                 className="h-20 flex-col space-y-2 border-2 border-purple-300 hover:border-purple-400 hover:bg-purple-100 text-purple-800 font-medium transition-all duration-200"
                 asChild
               >
-                <Link href="/help" className="inline-flex flex-col items-center justify-center space-y-2">
+                <Link
+                  href="/help"
+                  className="inline-flex flex-col items-center justify-center space-y-2"
+                >
                   <HelpCircle className="h-6 w-6 text-purple-700" />
                   <span className="text-sm font-semibold text-purple-800">帮助中心</span>
                 </Link>
@@ -340,5 +374,5 @@ export default function ProfilePage() {
         </Card>
       </div>
     </ResponsiveLayout>
-  )
+  );
 }

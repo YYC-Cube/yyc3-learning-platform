@@ -4,109 +4,111 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Progress } from "@/components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Textarea } from "@/components/ui/textarea"
-import type { ExamQuestion } from "@/data/exam-questions"
-import { generateExamPaper } from "@/data/exam-questions"
-import { AlertCircle, ArrowLeft, ArrowRight, Clock, FileText, Trophy } from "lucide-react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import type { ExamQuestion } from '@/data/exam-questions';
+import { generateExamPaper } from '@/data/exam-questions';
+import { AlertCircle, ArrowLeft, ArrowRight, Clock, FileText, Trophy } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 interface ProfessionalExamProps {
-  examType: "practice" | "formal" | "mock"
-  timeLimit?: number // 分钟
-  onComplete?: (results: ExamResults) => void
+  examType: 'practice' | 'formal' | 'mock';
+  timeLimit?: number; // 分钟
+  onComplete?: (results: ExamResults) => void;
 }
 
 interface ExamResults {
-  totalQuestions: number
-  correctAnswers: number
-  score: number
-  timeUsed: number
-  categoryScores: Record<string, { correct: number; total: number }>
-  answers: Record<string, any>
+  totalQuestions: number;
+  correctAnswers: number;
+  score: number;
+  timeUsed: number;
+  categoryScores: Record<string, { correct: number; total: number }>;
+  answers: Record<string, any>;
 }
 
 export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: ProfessionalExamProps) {
-  const [examQuestions, setExamQuestions] = useState<ExamQuestion[]>([])
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, any>>({})
-  const [timeRemaining, setTimeRemaining] = useState(timeLimit * 60) // 转换为秒
-  const [examStarted, setExamStarted] = useState(false)
-  const [examCompleted, setExamCompleted] = useState(false)
-  const [showResults, setShowResults] = useState(false)
-  const [results, setResults] = useState<ExamResults | null>(null)
+  const [examQuestions, setExamQuestions] = useState<ExamQuestion[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [timeRemaining, setTimeRemaining] = useState(timeLimit * 60); // 转换为秒
+  const [examStarted, setExamStarted] = useState(false);
+  const [examCompleted, setExamCompleted] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState<ExamResults | null>(null);
 
   // 初始化考试
   useEffect(() => {
     const questions = generateExamPaper({
-      singleCount: examType === "formal" ? 50 : 20,
-      multipleCount: examType === "formal" ? 25 : 10,
-      essayCount: examType === "formal" ? 10 : 5,
-    })
-    setExamQuestions(questions)
-  }, [examType])
+      singleCount: examType === 'formal' ? 50 : 20,
+      multipleCount: examType === 'formal' ? 25 : 10,
+      essayCount: examType === 'formal' ? 10 : 5,
+    });
+    setExamQuestions(questions);
+  }, [examType]);
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleStartExam = useCallback(() => {
-    setExamStarted(true)
-  }, [])
+    setExamStarted(true);
+  }, []);
 
   const handleAnswerChange = useCallback((questionId: string, answer: any) => {
     setAnswers((prev) => ({
       ...prev,
       [questionId]: answer,
-    }))
-  }, [])
+    }));
+  }, []);
 
   const handleSubmitExam = useCallback(() => {
-    const timeUsed = timeLimit * 60 - timeRemaining
-    let totalCorrect = 0
-    let totalPoints = 0
-    const categoryScores: Record<string, { correct: number; total: number }> = {}
+    const timeUsed = timeLimit * 60 - timeRemaining;
+    let totalCorrect = 0;
+    let totalPoints = 0;
+    const categoryScores: Record<string, { correct: number; total: number }> = {};
 
     examQuestions.forEach((question) => {
-      const userAnswer = answers[question.id]
-      const category = question.category
+      const userAnswer = answers[question.id];
+      const category = question.category;
 
       if (!categoryScores[category]) {
-        categoryScores[category] = { correct: 0, total: 0 }
+        categoryScores[category] = { correct: 0, total: 0 };
       }
-      categoryScores[category].total++
+      categoryScores[category].total++;
 
-      if (question.type === "single" || question.type === "multiple") {
+      if (question.type === 'single' || question.type === 'multiple') {
         const isCorrect =
-          question.type === "single"
+          question.type === 'single'
             ? userAnswer === question.correctAnswers[0]
             : Array.isArray(userAnswer) &&
               userAnswer.length === question.correctAnswers.length &&
-              userAnswer.every((ans: unknown) => (question.correctAnswers as number[]).includes(ans as number))
+              userAnswer.every((ans: unknown) =>
+                (question.correctAnswers as number[]).includes(ans as number)
+              );
 
         if (isCorrect) {
-          totalCorrect++
-          categoryScores[category].correct++
-          totalPoints += question.points
+          totalCorrect++;
+          categoryScores[category].correct++;
+          totalPoints += question.points;
         }
-      } else if (question.type === "essay") {
+      } else if (question.type === 'essay') {
         if (userAnswer && userAnswer.trim().length > 50) {
-          totalPoints += question.points * 0.7
-          categoryScores[category].correct += 0.7
+          totalPoints += question.points * 0.7;
+          categoryScores[category].correct += 0.7;
         }
       }
-    })
+    });
 
     const examResults: ExamResults = {
       totalQuestions: examQuestions.length,
@@ -115,39 +117,42 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
       timeUsed,
       categoryScores,
       answers,
-    }
+    };
 
-    setResults(examResults)
-    setExamCompleted(true)
-    setShowResults(true)
-    onComplete?.(examResults)
-  }, [timeLimit, timeRemaining, examQuestions, answers, onComplete])
+    setResults(examResults);
+    setExamCompleted(true);
+    setShowResults(true);
+    onComplete?.(examResults);
+  }, [timeLimit, timeRemaining, examQuestions, answers, onComplete]);
 
   // 计时器
   useEffect(() => {
-    if (!examStarted || examCompleted) return
+    if (!examStarted || examCompleted) return;
 
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          handleSubmitExam()
-          return 0
+          handleSubmitExam();
+          return 0;
         }
-        return prev - 1
-      })
-    }, 1000)
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [examStarted, examCompleted, handleSubmitExam])
+    return () => clearInterval(timer);
+  }, [examStarted, examCompleted, handleSubmitExam]);
 
-  const currentQuestion = useMemo(() => examQuestions[currentQuestionIndex], [examQuestions, currentQuestionIndex])
+  const currentQuestion = useMemo(
+    () => examQuestions[currentQuestionIndex],
+    [examQuestions, currentQuestionIndex]
+  );
 
   if (!examStarted) {
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
-            {examType === "formal" ? "正式考试" : examType === "mock" ? "模拟考试" : "练习测试"}
+            {examType === 'formal' ? '正式考试' : examType === 'mock' ? '模拟考试' : '练习测试'}
           </CardTitle>
           <CardDescription>生成式人工智能应用工程师专业能力测试</CardDescription>
         </CardHeader>
@@ -196,7 +201,7 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (showResults && results) {
@@ -249,26 +254,28 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
                     <Badge
                       variant={
                         results.score >= 90
-                          ? "default"
+                          ? 'default'
                           : results.score >= 80
-                            ? "secondary"
+                            ? 'secondary'
                             : results.score >= 60
-                              ? "outline"
-                              : "destructive"
+                              ? 'outline'
+                              : 'destructive'
                       }
                     >
                       {results.score >= 90
-                        ? "优秀"
+                        ? '优秀'
                         : results.score >= 80
-                          ? "良好"
+                          ? '良好'
                           : results.score >= 60
-                            ? "及格"
-                            : "不及格"}
+                            ? '及格'
+                            : '不及格'}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>正确率</span>
-                    <span>{Math.round((results.correctAnswers / results.totalQuestions) * 100)}%</span>
+                    <span>
+                      {Math.round((results.correctAnswers / results.totalQuestions) * 100)}%
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>用时效率</span>
@@ -287,10 +294,10 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  if (!currentQuestion) return null
+  if (!currentQuestion) return null;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pb-8">
@@ -304,11 +311,11 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
               </Badge>
               <Badge
                 variant={
-                  currentQuestion.difficulty === "初级"
-                    ? "default"
-                    : currentQuestion.difficulty === "中级"
-                      ? "secondary"
-                      : "destructive"
+                  currentQuestion.difficulty === '初级'
+                    ? 'default'
+                    : currentQuestion.difficulty === '中级'
+                      ? 'secondary'
+                      : 'destructive'
                 }
               >
                 {currentQuestion.difficulty}
@@ -317,7 +324,9 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-600">剩余时间</div>
-              <div className="text-lg font-mono font-bold text-red-600">{formatTime(timeRemaining)}</div>
+              <div className="text-lg font-mono font-bold text-red-600">
+                {formatTime(timeRemaining)}
+              </div>
             </div>
           </div>
           <div className="mt-4">
@@ -330,20 +339,27 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">
-            {currentQuestion.type === "single" && "【单选题】"}
-            {currentQuestion.type === "multiple" && "【多选题】"}
-            {currentQuestion.type === "essay" && "【简答题】"}（{currentQuestion.points}分）
+            {currentQuestion.type === 'single' && '【单选题】'}
+            {currentQuestion.type === 'multiple' && '【多选题】'}
+            {currentQuestion.type === 'essay' && '【简答题】'}（{currentQuestion.points}分）
           </CardTitle>
-          <CardDescription className="text-base text-gray-900">{currentQuestion.question}</CardDescription>
+          <CardDescription className="text-base text-gray-900">
+            {currentQuestion.question}
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          {currentQuestion.type === "single" && (
+          {currentQuestion.type === 'single' && (
             <RadioGroup
-              value={answers[currentQuestion.id]?.toString() || ""}
-              onValueChange={(value) => handleAnswerChange(currentQuestion.id, Number.parseInt(value))}
+              value={answers[currentQuestion.id]?.toString() || ''}
+              onValueChange={(value) =>
+                handleAnswerChange(currentQuestion.id, Number.parseInt(value))
+              }
             >
               {currentQuestion.options?.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50">
+                <div
+                  key={index}
+                  className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50"
+                >
                   <RadioGroupItem value={index.toString()} id={`option-${index}`} />
                   <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
                     <span className="font-medium mr-2">{String.fromCharCode(65 + index)}.</span>
@@ -354,22 +370,25 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
             </RadioGroup>
           )}
 
-          {currentQuestion.type === "multiple" && (
+          {currentQuestion.type === 'multiple' && (
             <div className="space-y-3">
               {currentQuestion.options?.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50">
+                <div
+                  key={index}
+                  className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50"
+                >
                   <Checkbox
                     id={`option-${index}`}
                     checked={answers[currentQuestion.id]?.includes(index) || false}
                     onCheckedChange={(checked) => {
-                      const currentAnswers = answers[currentQuestion.id] || []
+                      const currentAnswers = answers[currentQuestion.id] || [];
                       if (checked) {
-                        handleAnswerChange(currentQuestion.id, [...currentAnswers, index])
+                        handleAnswerChange(currentQuestion.id, [...currentAnswers, index]);
                       } else {
                         handleAnswerChange(
                           currentQuestion.id,
-                          currentAnswers.filter((a: number) => a !== index),
-                        )
+                          currentAnswers.filter((a: number) => a !== index)
+                        );
                       }
                     }}
                   />
@@ -382,11 +401,11 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
             </div>
           )}
 
-          {currentQuestion.type === "essay" && (
+          {currentQuestion.type === 'essay' && (
             <div className="space-y-4">
               <Textarea
                 placeholder="请在此输入您的答案..."
-                value={answers[currentQuestion.id] || ""}
+                value={answers[currentQuestion.id] || ''}
                 onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
                 className="min-h-[200px]"
               />
@@ -417,7 +436,9 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
             </Button>
           ) : (
             <Button
-              onClick={() => setCurrentQuestionIndex((prev) => Math.min(examQuestions.length - 1, prev + 1))}
+              onClick={() =>
+                setCurrentQuestionIndex((prev) => Math.min(examQuestions.length - 1, prev + 1))
+              }
               className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white"
             >
               下一题
@@ -427,5 +448,5 @@ export function ProfessionalExam({ examType, timeLimit = 120, onComplete }: Prof
         </div>
       </div>
     </div>
-  )
+  );
 }

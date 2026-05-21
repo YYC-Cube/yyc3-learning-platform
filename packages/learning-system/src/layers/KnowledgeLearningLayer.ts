@@ -13,7 +13,7 @@ import type {
   Content,
   NodeData,
   Pattern,
-  EventListener
+  EventListener,
 } from '../types/common.types';
 import {
   IKnowledgeLearningLayer,
@@ -55,7 +55,7 @@ import {
   LearningExperience,
   LearningResult,
   KnowledgeLearning,
-  ReasoningPath
+  ReasoningPath,
 } from '../ILearningSystem';
 
 // Additional interfaces for completeness
@@ -230,7 +230,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     try {
       // Extract knowledge from experience outcomes
       const knowledgeLearnings: KnowledgeLearning[] = [];
-      
+
       for (const outcome of experience.outcomes) {
         // Create knowledge item from outcome
         const knowledgeItem: KnowledgeItem = {
@@ -240,47 +240,50 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
             id: this.generateId(),
             type: 'fact',
             content: `Experience outcome: ${outcome.success ? 'success' : 'failure'} with effectiveness ${outcome.effectiveness}`,
-            format: 'text'
+            format: 'text',
           } as any,
           source: {
             id: experience.id,
             type: 'internal',
             name: 'experience-learning',
-            reliability: 0.8
+            reliability: 0.8,
           },
           confidence: outcome.effectiveness,
           validity: {
             start: Date.now(),
             end: Date.now() + 365 * 24 * 60 * 60 * 1000,
-            confidence: 0.8
+            confidence: 0.8,
           },
           relationships: [],
-          metadata: { id: this.generateId(),
+          metadata: {
+            id: this.generateId(),
 
             createdAt: Date.now(),
             updatedAt: Date.now(),
             tags: ['experience', 'outcome'],
             source: 'learning',
-            version: '1.0.0'
-          }
+            version: '1.0.0',
+          },
         };
-        
+
         // Add knowledge to graph
         await this.acquireKnowledge(knowledgeItem);
-        
+
         knowledgeLearnings.push({
           id: this.generateId(),
           knowledgeId: knowledgeItem.id,
-          learnings: [`Outcome: ${outcome.success ? 'success' : 'failure'}, effectiveness: ${outcome.effectiveness}`],
+          learnings: [
+            `Outcome: ${outcome.success ? 'success' : 'failure'}, effectiveness: ${outcome.effectiveness}`,
+          ],
           confidence: outcome.effectiveness,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         });
       }
-      
+
       // Update knowledge graph statistics
       this._metrics.knowledgeItems = this._knowledge.nodes.length;
       this._metrics.knowledgeEdges = this._knowledge.edges.length;
-      
+
       // Create learning result
       const result: LearningResult = {
         experienceId: experience.id,
@@ -293,13 +296,13 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
           contexts: ['knowledge-acquisition', 'reasoning'],
           timeRange: {
             start: Date.now() - 86400000,
-            end: Date.now() + 365 * 24 * 60 * 60 * 1000
+            end: Date.now() + 365 * 24 * 60 * 60 * 1000,
           },
           confidence: 0.85,
-          impact: 0.9
-        }
+          impact: 0.9,
+        },
       };
-      
+
       this.emit('knowledge_learned', result);
       return result;
     } catch (error) {
@@ -360,7 +363,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       const startTime = Date.now();
 
       // Extract entities
-      const entities = await this.extractEntities(source) as unknown as NodeData[];
+      const entities = (await this.extractEntities(source)) as unknown as NodeData[];
 
       // Extract relationships
       const relationships = await this.extractRelationships(source);
@@ -369,7 +372,11 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       const patterns = await this.extractPatterns(source);
 
       // Create knowledge items
-      const knowledgeItems = await this.createKnowledgeItemsFromExtraction(entities, relationships, patterns as Pattern[]);
+      const knowledgeItems = await this.createKnowledgeItemsFromExtraction(
+        entities,
+        relationships,
+        patterns as Pattern[]
+      );
 
       // Add extracted knowledge
       for (const item of knowledgeItems) {
@@ -381,7 +388,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         sourceId: source.id,
         extractedKnowledge: knowledgeItems,
         success: true,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       return {
@@ -389,7 +396,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         sourceId: source?.id || 'unknown',
         extractedKnowledge: [],
         success: false,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
   }
@@ -400,19 +407,21 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    */
   async validateKnowledge(knowledgeId: string): Promise<ValidationResult> {
     try {
-      const node = this._knowledge.nodes.find(n => n.id === knowledgeId);
+      const node = this._knowledge.nodes.find((n) => n.id === knowledgeId);
       if (!node) {
         throw new Error(`Knowledge item ${knowledgeId} not found`);
       }
 
       // Apply validation rules
       const results = await Promise.all(
-        this._validationRules.map(rule => this.applyValidationRule(node, rule))
+        this._validationRules.map((rule) => this.applyValidationRule(node, rule))
       );
 
-      const isValid = results.every(result => result.passed);
+      const isValid = results.every((result) => result.passed);
       const passed = isValid;
-      const issues = results.filter(result => !result.passed && result.error).map(result => result.error!);
+      const issues = results
+        .filter((result) => !result.passed && result.error)
+        .map((result) => result.error!);
 
       return {
         id: this.generateId(),
@@ -421,7 +430,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         passed,
         issues,
         confidence: isValid ? 1.0 : 0.5,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       return {
@@ -431,7 +440,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         passed: false,
         issues: [(error as Error).message],
         confidence: 0.0,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
   }
@@ -459,7 +468,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         categoriesCreated: categorized,
         linksCreated: linked,
         timestamp: Date.now(),
-        status: 'success'
+        status: 'success',
       };
     } catch (error) {
       return {
@@ -468,7 +477,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         categoriesCreated: 0,
         linksCreated: 0,
         timestamp: Date.now(),
-        status: 'failed'
+        status: 'failed',
       };
     }
   }
@@ -479,7 +488,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    */
   async categorizeKnowledge(knowledgeId: string): Promise<CategorizationResult> {
     try {
-      const node = this._knowledge.nodes.find(n => n.id === knowledgeId);
+      const node = this._knowledge.nodes.find((n) => n.id === knowledgeId);
       if (!node) {
         throw new Error(`Knowledge item ${knowledgeId} not found`);
       }
@@ -501,7 +510,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         knowledgeId,
         categories,
         confidence: analysis.confidence,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       this.emit('error', error);
@@ -519,8 +528,8 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       await this.validateKnowledge(link.sourceId);
 
       // Check if nodes exist
-      const sourceNode = this._knowledge.nodes.find(n => n.id === link.sourceId);
-      const targetNode = this._knowledge.nodes.find(n => n.id === link.targetId);
+      const sourceNode = this._knowledge.nodes.find((n) => n.id === link.sourceId);
+      const targetNode = this._knowledge.nodes.find((n) => n.id === link.targetId);
 
       if (!sourceNode || !targetNode) {
         throw new Error('Source or target node not found');
@@ -528,7 +537,8 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
 
       // Check for duplicate links
       const existingLink = this._knowledge.edges.find(
-        e => e.source === link.sourceId && e.target === link.targetId && e.type === link.type as any
+        (e) =>
+          e.source === link.sourceId && e.target === link.targetId && e.type === (link.type as any)
       );
 
       if (existingLink) {
@@ -536,7 +546,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         existingLink.weight = link.weight;
         existingLink.properties = {
           ...existingLink.properties,
-          metadata: { ...existingLink.properties.metadata, ...link.properties }
+          metadata: { ...existingLink.properties.metadata, ...link.properties },
         };
       } else {
         // Create new link
@@ -547,13 +557,12 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
           type: link.type as any,
           weight: link.weight,
           properties: {
-
             type: link.type,
             source: link.sourceId,
             target: link.targetId,
             weight: link.weight,
-            metadata: link.properties || {}
-          }
+            metadata: link.properties || {},
+          },
         };
 
         this._knowledge.edges.push(edge);
@@ -592,60 +601,56 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       let result: ReasoningResult;
       if (this._reasoning.reason) {
         const reasoningOutput = await this._reasoning.reason(query.query, query.context);
-        
+
         const reasoningPath: ReasoningPath = {
           steps: reasoningOutput.steps || [],
           logic: {
-
             type: 'deductive',
             structure: reasoningOutput.logic || {},
-            metadata: {}
+            metadata: {},
           },
           assumptions: reasoningOutput.assumptions || [],
-          conclusions: reasoningOutput.conclusions || []
+          conclusions: reasoningOutput.conclusions || [],
         };
-        
+
         result = {
           query: query,
           conclusion: reasoningOutput.conclusion || {
-
             content: reasoningOutput.answer || reasoningOutput.result || 'No conclusion',
             confidence: reasoningOutput.confidence || 0.5,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           },
           reasoning: reasoningPath,
           confidence: reasoningOutput.confidence || 0.5,
           evidence: reasoningOutput.evidence || [],
           assumptions: reasoningOutput.assumptions || [],
-          alternatives: reasoningOutput.alternatives || []
+          alternatives: reasoningOutput.alternatives || [],
         };
       } else {
         // Fallback: create a basic result
         const fallbackReasoningPath: ReasoningPath = {
           steps: [],
           logic: {
-
             type: 'fallback',
             structure: {},
-            metadata: {}
+            metadata: {},
           },
           assumptions: [],
-          conclusions: []
+          conclusions: [],
         };
-        
+
         result = {
           query: query,
           conclusion: {
-
             content: 'No reasoning engine available',
             confidence: 0,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           },
           reasoning: fallbackReasoningPath,
           confidence: 0,
           evidence: [],
           assumptions: [],
-          alternatives: []
+          alternatives: [],
         };
       }
 
@@ -679,15 +684,16 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         id: this.generateId(),
         query: `Inference: ${inference.premises.join(', ')}`,
         type: 'inferential',
-        context: inference.context || {}
+        context: inference.context || {},
       };
 
       // Execute reasoning
       const reasoningResult = await this.reason(query);
 
       // Convert ReasoningPath to string array for steps
-      const steps: string[] = reasoningResult.reasoning.steps.map(step => 
-        `${step.operation}: ${JSON.stringify(step.inputs)} -> ${JSON.stringify(step.output)}`
+      const steps: string[] = reasoningResult.reasoning.steps.map(
+        (step) =>
+          `${step.operation}: ${JSON.stringify(step.inputs)} -> ${JSON.stringify(step.output)}`
       );
 
       return {
@@ -695,7 +701,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         conclusions: [reasoningResult.conclusion.content],
         confidence: reasoningResult.confidence,
         steps: steps,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       this.emit('error', error);
@@ -710,7 +716,9 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   async explain(explanationRequest: ExplanationRequest): Promise<Explanation> {
     try {
       // Get knowledge item
-      const knowledgeItem = this._knowledge.nodes.find(n => n.id === explanationRequest.knowledgeId);
+      const knowledgeItem = this._knowledge.nodes.find(
+        (n) => n.id === explanationRequest.knowledgeId
+      );
       if (!knowledgeItem) {
         throw new Error(`Knowledge item ${explanationRequest.knowledgeId} not found`);
       }
@@ -721,13 +729,16 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
           id: crypto.randomUUID(),
           query: `Explain ${explanationRequest.knowledgeId}`,
           context: { levelOfDetail: explanationRequest.levelOfDetail },
-          type: 'explanatory'
+          type: 'explanatory',
         },
         conclusion: {
           id: crypto.randomUUID(),
-          content: typeof knowledgeItem.content === 'string' ? knowledgeItem.content : JSON.stringify(knowledgeItem.content),
+          content:
+            typeof knowledgeItem.content === 'string'
+              ? knowledgeItem.content
+              : JSON.stringify(knowledgeItem.content),
           confidence: knowledgeItem.properties.confidence || 0.8,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         },
         reasoning: {
           steps: [],
@@ -735,15 +746,15 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
             id: crypto.randomUUID(),
             type: 'explanatory',
             structure: {},
-            metadata: {}
+            metadata: {},
           },
           assumptions: [],
-          conclusions: []
+          conclusions: [],
         },
         confidence: knowledgeItem.properties.confidence || 0.8,
         evidence: [],
         assumptions: [],
-        alternatives: []
+        alternatives: [],
       };
 
       // Generate explanation
@@ -760,7 +771,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    * Generate explanation for reasoning result
    * 生成推理结果的解释
    */
-  private async generateExplanation(reasoningResult: ReasoningResult, request: ExplanationRequest): Promise<Explanation> {
+  private async generateExplanation(
+    reasoningResult: ReasoningResult,
+    request: ExplanationRequest
+  ): Promise<Explanation> {
     try {
       const { levelOfDetail } = request;
       let content = '';
@@ -773,9 +787,12 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         case 'detailed':
           content = `Conclusion: ${reasoningResult.conclusion.content}\n\n`;
           content += `Confidence: ${(reasoningResult.confidence * 100).toFixed(0)}%\n\n`;
-          content += `Reasoning steps:\n${reasoningResult.reasoning.steps.map((step, index) => 
-            `${index + 1}. ${step.operation}: ${JSON.stringify(step.inputs)} -> ${JSON.stringify(step.output)}`
-          ).join('\n')}`;
+          content += `Reasoning steps:\n${reasoningResult.reasoning.steps
+            .map(
+              (step, index) =>
+                `${index + 1}. ${step.operation}: ${JSON.stringify(step.inputs)} -> ${JSON.stringify(step.output)}`
+            )
+            .join('\n')}`;
           break;
         case 'technical':
           content = `Technical Explanation:\n\n`;
@@ -793,7 +810,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         id: crypto.randomUUID(),
         content,
         levelOfDetail,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       this.emit('error', error);
@@ -807,7 +824,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    */
   async updateKnowledge(knowledgeId: string, update: KnowledgeUpdate): Promise<void> {
     try {
-      const node = this._knowledge.nodes.find(n => n.id === knowledgeId);
+      const node = this._knowledge.nodes.find((n) => n.id === knowledgeId);
       if (!node) {
         throw new Error(`Knowledge item ${knowledgeId} not found`);
       }
@@ -879,9 +896,9 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
 
       return {
         id: crypto.randomUUID(),
-        generalizations: generalizedItems.map(item => item.id),
+        generalizations: generalizedItems.map((item) => item.id),
         confidence: this.calculateGeneralizationQuality(analysis),
-        coverage: patterns.length / (this._knowledge.nodes.length + 1)
+        coverage: patterns.length / (this._knowledge.nodes.length + 1),
       };
     } catch (error) {
       this.emit('error', error);
@@ -911,7 +928,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         knowledgeItemsRemoved: pruned.length,
         knowledgeItemsKept: this._knowledge.nodes.length - pruned.length,
         timestamp: Date.now(),
-        status: pruned.length > 0 ? 'success' : 'partial'
+        status: pruned.length > 0 ? 'success' : 'partial',
       };
     } catch (error) {
       this.emit('error', error);
@@ -920,7 +937,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         knowledgeItemsRemoved: 0,
         knowledgeItemsKept: this._knowledge.nodes.length,
         timestamp: Date.now(),
-        status: 'failed'
+        status: 'failed',
       };
     }
   }
@@ -943,7 +960,8 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         id: this.generateId(),
         format: format.type as 'json' | 'xml' | 'graphml',
         content: formattedData,
-        metadata: { id: this.generateId(),
+        metadata: {
+          id: this.generateId(),
           exportedAt: Date.now(),
           nodeCount: this._knowledge.nodes.length,
           edgeCount: this._knowledge.edges.length,
@@ -953,10 +971,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
             totalNodes: this._knowledge.nodes.length,
             totalEdges: this._knowledge.edges.length,
             categories: await this.getCategoryStatistics(),
-            lastUpdated: this._knowledge.properties.updatedAt
-          }
+            lastUpdated: this._knowledge.properties.updatedAt,
+          },
         },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       this.emit('error', error);
@@ -993,7 +1011,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       // Emit event
       this.emit('knowledge_imported', {
         itemsImported: parsedData.knowledgeItems.length,
-        relationshipsImported: parsedData.relationships.length
+        relationshipsImported: parsedData.relationships.length,
       });
     } catch (error) {
       this.emit('error', error);
@@ -1027,7 +1045,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       // Emit event
       this.emit('knowledge_synchronized', {
         source,
-        updatesApplied: updates.length
+        updatesApplied: updates.length,
       });
     } catch (error) {
       this.emit('error', error);
@@ -1075,7 +1093,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         maxDepth: 10,
         updateFrequency: 60,
         consistencyCheck: true,
-        indexingStrategy: 'semantic'
+        indexingStrategy: 'semantic',
       },
       reasoningEngine: {
         algorithm: 'graph_based',
@@ -1086,9 +1104,9 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
           minimumReliability: 0.6,
           minimumRelevance: 0.7,
           maximumAge: 365,
-          requiredTypes: ['empirical', 'theoretical']
-        }
-      }
+          requiredTypes: ['empirical', 'theoretical'],
+        },
+      },
     };
   }
 
@@ -1102,7 +1120,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       validationResults: [],
       reasoningQueries: 0,
       successfulReasoning: 0,
-      categorizedItems: 0
+      categorizedItems: 0,
     };
   }
 
@@ -1116,7 +1134,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         description: 'Knowledge graph for YYC³ AI System',
         version: '1.0.0',
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       },
       statistics: {
         id: this.generateId(),
@@ -1124,8 +1142,8 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         edges: 0,
         density: 0,
         averageDegree: 0,
-        clusteringCoefficient: 0
-      }
+        clusteringCoefficient: 0,
+      },
     };
   }
 
@@ -1141,14 +1159,14 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
           minimumReliability: 0.6,
           minimumRelevance: 0.7,
           maximumAge: 365,
-          requiredTypes: ['empirical', 'theoretical']
+          requiredTypes: ['empirical', 'theoretical'],
         },
         cache: {
           enabled: true,
           maxSize: 1000,
-          ttl: 300000
-        }
-      }
+          ttl: 300000,
+        },
+      },
     };
   }
 
@@ -1163,20 +1181,23 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       {
         id: 'content_completeness',
         description: 'Knowledge must have complete content',
-        validator: (node) => node.content && Object.keys(node.content).length > 0
+        validator: (node) => node.content && Object.keys(node.content).length > 0,
       },
       {
         id: 'relationship_consistency',
         description: 'Relationships must be consistent',
-        validator: (node) => this.validateRelationshipConsistency(node)
-      }
+        validator: (node) => this.validateRelationshipConsistency(node),
+      },
     ];
   }
 
   private startConsistencyChecking(): void {
-    setInterval(() => {
-      this.checkKnowledgeConsistency().catch(console.error);
-    }, this._config.knowledgeGraph.updateFrequency * 60 * 1000);
+    setInterval(
+      () => {
+        this.checkKnowledgeConsistency().catch(console.error);
+      },
+      this._config.knowledgeGraph.updateFrequency * 60 * 1000
+    );
   }
 
   private startKnowledgeIndexing(): void {
@@ -1202,8 +1223,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   }
 
   private async isDuplicateKnowledge(knowledge: KnowledgeItem): Promise<boolean> {
-    const duplicate = this._knowledge.nodes.find(node =>
-      JSON.stringify(node.content) === JSON.stringify(knowledge.content) && node.type === knowledge.type as any
+    const duplicate = this._knowledge.nodes.find(
+      (node) =>
+        JSON.stringify(node.content) === JSON.stringify(knowledge.content) &&
+        node.type === (knowledge.type as any)
     );
     return !!duplicate;
   }
@@ -1216,9 +1239,9 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       properties: {
         ...knowledge.metadata,
         createdAt: Date.now(),
-        confidence: knowledge.confidence
+        confidence: knowledge.confidence,
       },
-      relationships: []
+      relationships: [],
     };
 
     this._knowledge.nodes.push(node as any);
@@ -1258,19 +1281,19 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
 
   private extractKeywords(knowledge: KnowledgeItem): string[] {
     // Extract keywords from knowledge content
-    const content = typeof knowledge.content === 'string'
-      ? knowledge.content
-      : JSON.stringify(knowledge.content);
+    const content =
+      typeof knowledge.content === 'string' ? knowledge.content : JSON.stringify(knowledge.content);
 
-    return content.toLowerCase()
+    return content
+      .toLowerCase()
       .split(/\s+/)
-      .filter(word => word.length > 3)
+      .filter((word) => word.length > 3)
       .slice(0, 10); // Limit to top 10 keywords
   }
 
   private async validateKnowledgeItemIntegrity(nodeId: string): Promise<ValidationResult> {
     // Validate knowledge item integrity
-    const node = this._knowledge.nodes.find(n => n.id === nodeId);
+    const node = this._knowledge.nodes.find((n) => n.id === nodeId);
     if (!node) {
       return {
         id: this.generateId(),
@@ -1279,17 +1302,17 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         passed: false,
         issues: ['Node not found'],
         confidence: 0,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
 
     const results = await Promise.all(
-      this._validationRules.map(rule => this.applyValidationRule(node, rule))
+      this._validationRules.map((rule) => this.applyValidationRule(node, rule))
     );
 
-    const isValid = results.every(result => result.isValid);
+    const isValid = results.every((result) => result.isValid);
     const passed = isValid;
-    const issues = results.filter(result => !result.isValid).flatMap(result => result.issues);
+    const issues = results.filter((result) => !result.isValid).flatMap((result) => result.issues);
     const confidence = isValid ? 1.0 : 0.5;
 
     return {
@@ -1299,11 +1322,14 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       passed,
       issues,
       confidence,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
-  private async applyValidationRule(node: KnowledgeNode, rule: ValidationRule): Promise<ValidationResult> {
+  private async applyValidationRule(
+    node: KnowledgeNode,
+    rule: ValidationRule
+  ): Promise<ValidationResult> {
     try {
       const isValid = rule.validator(node);
       return {
@@ -1313,7 +1339,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         passed: isValid,
         issues: isValid ? [] : [rule.description],
         confidence: isValid ? 1.0 : 0.0,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     } catch (error) {
       return {
@@ -1323,7 +1349,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         passed: false,
         issues: [rule.description + ': ' + (error as Error).message],
         confidence: 0.0,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
     }
   }
@@ -1332,7 +1358,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     // Invalidate cache entries that might be affected by new knowledge
     const keywords = this.extractKeywords(knowledge);
     for (const [key, result] of Array.from(this._reasoningCache.entries())) {
-      if (keywords.some(keyword => key.includes(keyword))) {
+      if (keywords.some((keyword) => key.includes(keyword))) {
         this._reasoningCache.delete(key);
       }
     }
@@ -1341,7 +1367,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   private validateRelationshipConsistency(node: NodeData): boolean {
     // Validate relationship consistency
     return node.relationships.every((relId: string) =>
-      this._knowledge.edges.some(edge => edge.id === relId)
+      this._knowledge.edges.some((edge) => edge.id === relId)
     );
   }
 
@@ -1349,7 +1375,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     return JSON.stringify({
       type: query.type,
       content: query.context,
-      context: query.context
+      context: query.context,
     });
   }
 
@@ -1376,7 +1402,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
 
   private usesKnowledgeInResult(result: ReasoningResult, knowledgeId: string): boolean {
     // Check if reasoning result uses specific knowledge
-    return result.evidence.some(evidence => (evidence.source as any) === knowledgeId);
+    return result.evidence.some((evidence) => (evidence.source as any) === knowledgeId);
   }
 
   private async cleanupReasoningCache(): Promise<void> {
@@ -1406,7 +1432,11 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     return [];
   }
 
-  private async createKnowledgeItemsFromExtraction(entities: NodeData[], relationships: unknown[], patterns: Pattern[]): Promise<KnowledgeItem[]> {
+  private async createKnowledgeItemsFromExtraction(
+    entities: NodeData[],
+    relationships: unknown[],
+    patterns: Pattern[]
+  ): Promise<KnowledgeItem[]> {
     // Create knowledge items from extraction results
     return [];
   }
@@ -1426,7 +1456,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     // Implementation placeholder
     return {
       nodes: this._knowledge.nodes,
-      edges: this._knowledge.edges
+      edges: this._knowledge.edges,
     };
   }
 
@@ -1472,7 +1502,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   /**
    * Fetch knowledge updates
    */
-  private async fetchKnowledgeUpdates(connection: ConfigObject, source: KnowledgeSource): Promise<unknown[]> {
+  private async fetchKnowledgeUpdates(
+    connection: ConfigObject,
+    source: KnowledgeSource
+  ): Promise<unknown[]> {
     // Implementation placeholder
     return [];
   }
@@ -1482,7 +1515,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    */
   private async deleteKnowledge(knowledgeId: string): Promise<void> {
     // Implementation placeholder
-    const index = this._knowledge.nodes.findIndex(node => node.id === knowledgeId);
+    const index = this._knowledge.nodes.findIndex((node) => node.id === knowledgeId);
     if (index !== -1) {
       this._knowledge.nodes.splice(index, 1);
       this._knowledge.statistics.nodes--;
@@ -1492,7 +1525,9 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   /**
    * Analyze patterns for generalization
    */
-  private async analyzePatternsForGeneralization(patterns: KnowledgePattern[]): Promise<Generalization> {
+  private async analyzePatternsForGeneralization(
+    patterns: KnowledgePattern[]
+  ): Promise<Generalization> {
     return patterns;
   }
 
@@ -1527,7 +1562,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   /**
    * Perform pruning
    */
-  private async performPruning(candidates: KnowledgeNode[], criteria: PruningCriteria): Promise<KnowledgeNode[]> {
+  private async performPruning(
+    candidates: KnowledgeNode[],
+    criteria: PruningCriteria
+  ): Promise<KnowledgeNode[]> {
     return [];
   }
 
@@ -1542,10 +1580,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       if (!node.properties.categories || node.properties.categories.length === 0) {
         const analysis = await this.analyzeKnowledgeContent(node.id);
         const categories = await this.determineCategories(node.id);
-        
+
         node.properties.categories = categories;
         categorizedCount++;
-        
+
         this._metrics.categorizedItems++;
       }
     }
@@ -1562,19 +1600,18 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
 
     for (let i = 0; i < this._knowledge.nodes.length; i++) {
       const nodeA = this._knowledge.nodes[i];
-      
+
       if (!nodeA) continue;
-      
+
       for (let j = i + 1; j < this._knowledge.nodes.length; j++) {
         const nodeB = this._knowledge.nodes[j];
-        
+
         if (!nodeB) continue;
-        
+
         const similarity = await this.calculateKnowledgeSimilarity(nodeA, nodeB);
-        
+
         if (similarity > 0.7) {
           const link: KnowledgeLink = {
-
             sourceId: nodeA.id,
             targetId: nodeB.id,
             type: 'related',
@@ -1582,10 +1619,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
             timestamp: Date.now(),
             properties: {
               similarity,
-              createdAt: Date.now()
-            }
+              createdAt: Date.now(),
+            },
           };
-          
+
           await this.linkKnowledge(link);
           linksCreated++;
         }
@@ -1603,32 +1640,32 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     let optimizations = 0;
 
     const nodesToOptimize = [...this._knowledge.nodes];
-    
+
     for (const node of nodesToOptimize) {
       const edges = this._knowledge.edges.filter(
-        edge => edge.source === node.id || edge.target === node.id
+        (edge) => edge.source === node.id || edge.target === node.id
       );
-      
+
       if (edges.length > 10) {
         edges.sort((a, b) => b.weight - a.weight);
-        
+
         const weakEdges = edges.slice(10);
-        
+
         for (const edge of weakEdges) {
-          const index = this._knowledge.edges.findIndex(e => e.id === edge.id);
+          const index = this._knowledge.edges.findIndex((e) => e.id === edge.id);
           if (index !== -1) {
             this._knowledge.edges.splice(index, 1);
-            
-            const sourceNode = this._knowledge.nodes.find(n => n.id === edge.source);
-            const targetNode = this._knowledge.nodes.find(n => n.id === edge.target);
-            
+
+            const sourceNode = this._knowledge.nodes.find((n) => n.id === edge.source);
+            const targetNode = this._knowledge.nodes.find((n) => n.id === edge.target);
+
             if (sourceNode) {
-              sourceNode.relationships = sourceNode.relationships.filter(r => r !== edge.id);
+              sourceNode.relationships = sourceNode.relationships.filter((r) => r !== edge.id);
             }
             if (targetNode) {
-              targetNode.relationships = targetNode.relationships.filter(r => r !== edge.id);
+              targetNode.relationships = targetNode.relationships.filter((r) => r !== edge.id);
             }
-            
+
             optimizations++;
           }
         }
@@ -1642,7 +1679,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    * Calculate knowledge similarity
    * 计算知识相似度
    */
-  private async calculateKnowledgeSimilarity(nodeA: KnowledgeNode, nodeB: KnowledgeNode): Promise<number> {
+  private async calculateKnowledgeSimilarity(
+    nodeA: KnowledgeNode,
+    nodeB: KnowledgeNode
+  ): Promise<number> {
     if (!nodeA.content || !nodeB.content) {
       return 0;
     }
@@ -1653,7 +1693,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     const keywordsA = this.extractKeywordsFromContent(contentA);
     const keywordsB = this.extractKeywordsFromContent(contentB);
 
-    const intersection = keywordsA.filter(k => keywordsB.includes(k));
+    const intersection = keywordsA.filter((k) => keywordsB.includes(k));
     const union = [...new Set([...keywordsA, ...keywordsB])];
 
     if (union.length === 0) {
@@ -1668,7 +1708,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    * 从内容中提取关键词
    */
   private extractKeywordsFromContent(content: string): string[] {
-    const words = content.split(/\s+/).filter(word => word.length > 3);
+    const words = content.split(/\s+/).filter((word) => word.length > 3);
     return [...new Set(words)];
   }
 
@@ -1677,15 +1717,15 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    * 分析知识内容
    */
   public async analyzeKnowledgeContent(knowledgeId: string): Promise<Content> {
-    const node = this._knowledge.nodes.find(n => n.id === knowledgeId);
-    
+    const node = this._knowledge.nodes.find((n) => n.id === knowledgeId);
+
     if (!node || !node.content) {
       return { confidence: 0, keywords: [] };
     }
 
     const content = JSON.stringify(node.content).toLowerCase();
     const keywords = this.extractKeywordsFromContent(content);
-    
+
     const confidence = Math.min(1, keywords.length / 10);
 
     return { confidence, keywords };
@@ -1699,13 +1739,24 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     const analysis = await this.analyzeKnowledgeContent(knowledgeId);
     const categories: string[] = [];
 
-    if (analysis.keywords && analysis.keywords.some((k: string) => ['data', 'information', 'knowledge'].includes(k))) {
+    if (
+      analysis.keywords &&
+      analysis.keywords.some((k: string) => ['data', 'information', 'knowledge'].includes(k))
+    ) {
       categories.push('data');
     }
-    if (analysis.keywords && analysis.keywords.some((k: string) => ['reason', 'logic', 'inference', 'deduction'].includes(k))) {
+    if (
+      analysis.keywords &&
+      analysis.keywords.some((k: string) =>
+        ['reason', 'logic', 'inference', 'deduction'].includes(k)
+      )
+    ) {
       categories.push('reasoning');
     }
-    if (analysis.keywords && analysis.keywords.some((k: string) => ['pattern', 'rule', 'generalization'].includes(k))) {
+    if (
+      analysis.keywords &&
+      analysis.keywords.some((k: string) => ['pattern', 'rule', 'generalization'].includes(k))
+    ) {
       categories.push('pattern');
     }
     if (analysis.keywords.some((k: string) => ['entity', 'object', 'concept'].includes(k))) {

@@ -63,11 +63,11 @@
 
 ### 性能指标
 
-| 组件 | 响应时间 | 吞吐量 | 内存占用 |
-|------|----------|--------|----------|
-| ChatInterface | 150ms | 1K msg/s | 85MB |
-| ToolboxPanel | 400ms | 100 exec/s | 70MB |
-| InsightsDashboard | 800ms | 12K rec/s | 100MB |
+| 组件              | 响应时间 | 吞吐量     | 内存占用 |
+| ----------------- | -------- | ---------- | -------- |
+| ChatInterface     | 150ms    | 1K msg/s   | 85MB     |
+| ToolboxPanel      | 400ms    | 100 exec/s | 70MB     |
+| InsightsDashboard | 800ms    | 12K rec/s  | 100MB    |
 
 ## 🎯 技术亮点
 
@@ -228,6 +228,6 @@
 
 ---
 
-*生成时间: 2025-12-10 04:20*  
-*版本: v2.0.0*  
-*作者: GitHub Copilot*
+_生成时间: 2025-12-10 04:20_  
+_版本: v2.0.0_  
+_作者: GitHub Copilot_

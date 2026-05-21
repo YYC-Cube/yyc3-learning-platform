@@ -23,13 +23,21 @@ describe('环境变量验证模块', () => {
 
   describe('validateEnvConfig', () => {
     it('应该在开发环境中成功验证', () => {
-      process.env = { ...originalEnv, NODE_ENV: 'development', JWT_SECRET: 'test-secret-key-for-development-purposes-only' };
+      process.env = {
+        ...originalEnv,
+        NODE_ENV: 'development',
+        JWT_SECRET: 'test-secret-key-for-development-purposes-only',
+      };
 
       expect(() => validateEnvConfig()).not.toThrow();
     });
 
     it('应该在测试环境中成功验证', () => {
-      process.env = { ...originalEnv, NODE_ENV: 'test', JWT_SECRET: 'test-secret-key-for-testing-purposes-only' };
+      process.env = {
+        ...originalEnv,
+        NODE_ENV: 'test',
+        JWT_SECRET: 'test-secret-key-for-testing-purposes-only',
+      };
 
       expect(() => validateEnvConfig()).not.toThrow();
     });
@@ -41,13 +49,23 @@ describe('环境变量验证模块', () => {
     });
 
     it('应该在生产环境中验证数据库密码', () => {
-      process.env = { ...originalEnv, NODE_ENV: 'production', JWT_SECRET: 'a'.repeat(32), DB_PASS: 'your_secure_password_here' };
+      process.env = {
+        ...originalEnv,
+        NODE_ENV: 'production',
+        JWT_SECRET: 'a'.repeat(32),
+        DB_PASS: 'your_secure_password_here',
+      };
 
       expect(() => validateEnvConfig()).toThrow(/生产环境.*DB_PASS/i);
     });
 
     it('应该在生产环境中使用安全的配置', () => {
-      process.env = { ...originalEnv, NODE_ENV: 'production', JWT_SECRET: 'a'.repeat(32), DB_PASS: 'secure-production-password-12345' };
+      process.env = {
+        ...originalEnv,
+        NODE_ENV: 'production',
+        JWT_SECRET: 'a'.repeat(32),
+        DB_PASS: 'secure-production-password-12345',
+      };
 
       expect(() => validateEnvConfig()).not.toThrow();
     });
@@ -80,7 +98,13 @@ describe('环境变量验证模块', () => {
     });
 
     it('应该正确显示可选服务的状态', () => {
-      process.env = { ...originalEnv, REDIS_HOST: 'localhost', REDIS_PORT: '6379', SENTRY_DSN: 'https://sentry.io/dsn', OPENAI_API_KEY: 'sk-test' };
+      process.env = {
+        ...originalEnv,
+        REDIS_HOST: 'localhost',
+        REDIS_PORT: '6379',
+        SENTRY_DSN: 'https://sentry.io/dsn',
+        OPENAI_API_KEY: 'sk-test',
+      };
 
       const info = getEnvInfo();
 
@@ -103,7 +127,12 @@ describe('环境变量验证模块', () => {
     });
 
     it('应该正确识别生产环境', () => {
-      process.env = { ...originalEnv, NODE_ENV: 'production', DB_PASS: 'secure-production-password-12345', JWT_SECRET: 'a'.repeat(32) };
+      process.env = {
+        ...originalEnv,
+        NODE_ENV: 'production',
+        DB_PASS: 'secure-production-password-12345',
+        JWT_SECRET: 'a'.repeat(32),
+      };
 
       const envCheck = checkEnvironment();
 

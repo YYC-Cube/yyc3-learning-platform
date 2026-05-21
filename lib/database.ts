@@ -8,9 +8,9 @@
  * @copyright Copyright (c) 2025 YYC³
  * @license MIT
  */
-import { Pool, PoolClient, QueryResult, QueryResultRow } from "pg"
-import { env, DB_PORT, DB_CONNECTION_LIMIT, DB_IDLE_TIMEOUT, DB_MAX_LIFETIME, DB_SSL } from "./env"
-import { logger } from "./logger"
+import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
+import { env, DB_PORT, DB_CONNECTION_LIMIT, DB_IDLE_TIMEOUT, DB_MAX_LIFETIME, DB_SSL } from './env';
+import { logger } from './logger';
 
 // 数据库连接配置
 const dbConfig = {
@@ -24,61 +24,64 @@ const dbConfig = {
   maxLifetime: DB_MAX_LIFETIME,
   connectionTimeoutMillis: 5000,
   ssl: DB_SSL ? { rejectUnauthorized: false } : false,
-}
+};
 
 // 创建连接池
-let pool: Pool
+let pool: Pool;
 
 export function getPool(): Pool {
   if (!pool) {
-    pool = new Pool(dbConfig)
+    pool = new Pool(dbConfig);
   }
-  return pool
+  return pool;
 }
 
 // 执行查询
-export async function query<T extends QueryResultRow = Record<string, unknown>>(sql: string, params?: Array<string | number | boolean | null>): Promise<T[]> {
-  const client = await getPool().connect()
+export async function query<T extends QueryResultRow = Record<string, unknown>>(
+  sql: string,
+  params?: Array<string | number | boolean | null>
+): Promise<T[]> {
+  const client = await getPool().connect();
   try {
-    const result: QueryResult<T> = await client.query<T>(sql, params)
-    return result.rows
+    const result: QueryResult<T> = await client.query<T>(sql, params);
+    return result.rows;
   } finally {
-    client.release()
+    client.release();
   }
 }
 
 // 执行事务
 export async function transaction<T>(callback: (_client: PoolClient) => Promise<T>): Promise<T> {
-  const client = await getPool().connect()
+  const client = await getPool().connect();
   try {
-    await client.query('BEGIN')
-    const result = await callback(client)
-    await client.query('COMMIT')
-    return result
+    await client.query('BEGIN');
+    const result = await callback(client);
+    await client.query('COMMIT');
+    return result;
   } catch (error) {
-    await client.query('ROLLBACK')
-    throw error
+    await client.query('ROLLBACK');
+    throw error;
   } finally {
-    client.release()
+    client.release();
   }
 }
 
 // 测试数据库连接
 export async function testConnection(): Promise<boolean> {
   try {
-    const client = await getPool().connect()
-    await client.query('SELECT 1')
-    client.release()
-    return true
+    const client = await getPool().connect();
+    await client.query('SELECT 1');
+    client.release();
+    return true;
   } catch (error) {
-    logger.error("Database connection failed", error)
-    return false
+    logger.error('Database connection failed', error);
+    return false;
   }
 }
 
 // 关闭连接池
 export async function closePool(): Promise<void> {
   if (pool) {
-    await pool.end()
+    await pool.end();
   }
 }

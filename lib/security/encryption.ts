@@ -36,21 +36,16 @@ export function encrypt(plaintext: string, password: string): string {
   const salt = crypto.randomBytes(SALT_LENGTH);
   const key = deriveKey(password, salt);
   const iv = crypto.randomBytes(IV_LENGTH);
-  
+
   const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
-  
+
   let encrypted = cipher.update(plaintext, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  
+
   const authTag = cipher.getAuthTag();
-  
-  const combined = Buffer.concat([
-    salt,
-    iv,
-    authTag,
-    Buffer.from(encrypted, 'hex')
-  ]);
-  
+
+  const combined = Buffer.concat([salt, iv, authTag, Buffer.from(encrypted, 'hex')]);
+
   return combined.toString('base64');
 }
 
@@ -63,20 +58,20 @@ export function encrypt(plaintext: string, password: string): string {
  */
 export function decrypt(ciphertext: string, password: string): string {
   const combined = Buffer.from(ciphertext, 'base64');
-  
+
   const salt = combined.subarray(0, SALT_LENGTH);
   const iv = combined.subarray(SALT_LENGTH, SALT_LENGTH + IV_LENGTH);
   const authTag = combined.subarray(SALT_LENGTH + IV_LENGTH, SALT_LENGTH + IV_LENGTH + TAG_LENGTH);
   const encrypted = combined.subarray(SALT_LENGTH + IV_LENGTH + TAG_LENGTH);
-  
+
   const key = deriveKey(password, salt);
-  
+
   const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
   decipher.setAuthTag(authTag);
-  
+
   let decrypted = decipher.update(encrypted);
   decrypted = Buffer.concat([decrypted, decipher.final()]);
-  
+
   return decrypted.toString('utf8');
 }
 
@@ -172,11 +167,11 @@ export function maskSensitiveData(
   if (data.length <= visibleStart + visibleEnd) {
     return maskChar.repeat(data.length);
   }
-  
+
   const start = data.substring(0, visibleStart);
   const end = data.substring(data.length - visibleEnd);
   const middle = maskChar.repeat(data.length - visibleStart - visibleEnd);
-  
+
   return start + middle + end;
 }
 
@@ -228,7 +223,12 @@ export function generateHMAC(data: string, secret: string, algorithm: string = '
  * @param algorithm 算法（默认：sha256）
  * @returns 是否匹配
  */
-export function verifyHMAC(data: string, signature: string, secret: string, algorithm: string = 'sha256'): boolean {
+export function verifyHMAC(
+  data: string,
+  signature: string,
+  secret: string,
+  algorithm: string = 'sha256'
+): boolean {
   const computedSignature = generateHMAC(data, secret, algorithm);
   return computedSignature === signature;
 }

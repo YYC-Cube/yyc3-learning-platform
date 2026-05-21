@@ -67,9 +67,7 @@ export default defineConfig({
     testTimeout: 10000,
 
     // 测试文件匹配模式
-    include: [
-      '**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-    ],
+    include: ['**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
 
     // 排除的测试文件
     exclude: [

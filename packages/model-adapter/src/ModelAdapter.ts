@@ -22,7 +22,7 @@ class EventEmitter {
     if (!this.listeners.has(event)) {
       return false;
     }
-    this.listeners.get(event)!.forEach(listener => listener(...args));
+    this.listeners.get(event)!.forEach((listener) => listener(...args));
     return true;
   }
 
@@ -30,7 +30,7 @@ class EventEmitter {
     if (!this.listeners.has(event)) {
       return this;
     }
-    const listeners = this.listeners.get(event)!.filter(l => l !== listener);
+    const listeners = this.listeners.get(event)!.filter((l) => l !== listener);
     if (listeners.length === 0) {
       this.listeners.delete(event);
     } else {
@@ -50,10 +50,10 @@ const createHash = (algorithm: string) => {
           const dataBuffer = encoder.encode(data);
           const hashBuffer = await crypto.subtle.digest(algorithm.toUpperCase(), dataBuffer);
           const hashArray = Array.from(new Uint8Array(hashBuffer));
-          return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-        }
+          return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+        },
       };
-    }
+    },
   };
 };
 
@@ -61,7 +61,10 @@ const randomBytes = (size: number): Buffer => {
   const array = new Uint8Array(size);
   crypto.getRandomValues(array);
   // 简单模拟Buffer接口
-  return { ...array, toString: (encoding: BufferEncoding) => Buffer.from(array).toString(encoding) } as any;
+  return {
+    ...array,
+    toString: (encoding: BufferEncoding) => Buffer.from(array).toString(encoding),
+  } as any;
 };
 import {
   IModelAdapter,
@@ -93,7 +96,7 @@ import {
   ModelPricing,
   FinishReason,
   ToolChoice,
-  ContentBlock
+  ContentBlock,
 } from './IModelAdapter';
 
 import { EnhancedStreamingProcessor, StreamingConfig } from './core/EnhancedStreamingProcessor';
@@ -166,7 +169,7 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
         persistentPath: './cache',
         enableCompression: true,
         writeBufferSize: 1024 * 1024,
-        clusteringEnabled: false
+        clusteringEnabled: false,
       };
 
       // Reinitialize cache with configuration
@@ -349,7 +352,7 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
    * 按提供商列出模型
    */
   listModelsByProvider(provider: ModelProvider): ModelConfig[] {
-    return this.listModels().filter(model => model.provider === provider);
+    return this.listModels().filter((model) => model.provider === provider);
   }
 
   /**
@@ -357,8 +360,8 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
    * 获取特定任务类型的可用模型
    */
   getAvailableModels(taskType: TaskType): ModelConfig[] {
-    return this.listModels().filter(model =>
-      model.capabilities && this.isModelSuitableForTask(model, taskType)
+    return this.listModels().filter(
+      (model) => model.capabilities && this.isModelSuitableForTask(model, taskType)
     );
   }
 
@@ -399,9 +402,12 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
       this._activeRequests.set(request.id, controller);
 
       // Set timeout
-      const timeout = setTimeout(() => {
-        controller.abort();
-      }, request.metadata?.deadline ? request.metadata.deadline - Date.now() : 30000);
+      const timeout = setTimeout(
+        () => {
+          controller.abort();
+        },
+        request.metadata?.deadline ? request.metadata.deadline - Date.now() : 30000
+      );
 
       this._requestTimeouts.set(request.id, timeout);
 
@@ -422,7 +428,7 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
       await this._cache.set(cacheKey, response, {
         ttl: this._config.cache.ttl,
         strategy: 'write-through',
-        priority: 'medium'
+        priority: 'medium',
       });
 
       // Record response
@@ -483,13 +489,15 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
         retryOnFailure: true,
         maxRetries: 3,
         enablePrefetch: true,
-        prefetchThreshold: 0.8
+        prefetchThreshold: 0.8,
       };
 
       await this._streamingProcessor.processStream(
         request,
         (req: ModelRequest) => {
-          const streamProcessor = async function* (streamRequest: ModelRequest): AsyncIterable<ModelResponse> {
+          const streamProcessor = async function* (
+            streamRequest: ModelRequest
+          ): AsyncIterable<ModelResponse> {
             const chunks: ModelResponse[] = [];
             await provider.processStreamingRequest(streamRequest, (chunk) => {
               chunks.push(chunk);
@@ -524,8 +532,6 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
     }
   }
 
-
-
   /**
    * Generate streaming text from a prompt (callback version)
    * 从提示生成流式文本（回调版本）
@@ -545,15 +551,13 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
    * Generate streaming text from a prompt (async generator version)
    * 从提示生成流式文本（异步生成器版本）
    */
-  generateStream(
-    options: {
-      prompt: string;
-      maxTokens?: number;
-      temperature?: number;
-      model?: string;
-      systemPrompt?: string;
-    }
-  ): AsyncIterable<{ text: string }>;
+  generateStream(options: {
+    prompt: string;
+    maxTokens?: number;
+    temperature?: number;
+    model?: string;
+    systemPrompt?: string;
+  }): AsyncIterable<{ text: string }>;
 
   /**
    * Implementation of generateStream method overloads
@@ -569,15 +573,13 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
     onChunk: (chunk: string) => void
   ): Promise<void>;
 
-  generateStream(
-    options: {
-      prompt: string;
-      maxTokens?: number;
-      temperature?: number;
-      model?: string;
-      systemPrompt?: string;
-    }
-  ): AsyncIterable<{ text: string }>;
+  generateStream(options: {
+    prompt: string;
+    maxTokens?: number;
+    temperature?: number;
+    model?: string;
+    systemPrompt?: string;
+  }): AsyncIterable<{ text: string }>;
 
   generateStream(
     options: {
@@ -595,8 +597,8 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
       prompt: options.prompt,
       metadata: {
         requestId: `stream_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        priority: 'normal' as const
-      }
+        priority: 'normal' as const,
+      },
     };
 
     const request: ModelRequest = requestBase;
@@ -616,54 +618,57 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
     if (onChunk) {
       // Callback version - return a promise
       return this.processStreamingRequest(request, (chunk) => {
-        const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+        const content =
+          typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
         onChunk(content);
       });
     } else {
       // Async generator version - return an async iterable
       const modelAdapter = this;
-      
+
       return {
         [Symbol.asyncIterator]() {
           let done = false;
           let error: Error | null = null;
           const chunks: { text: string }[] = [];
           let resolveNext: ((value: IteratorResult<{ text: string }>) => void) | null = null;
-          
+
           // Start processing the request
-          modelAdapter.processStreamingRequest(request, (chunk) => {
-            const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
-            const iterResult = { value: { text: content }, done: false };
-            
-            if (resolveNext) {
-              resolveNext(iterResult);
-              resolveNext = null;
-            } else {
-              chunks.push({ text: content });
-            }
-          })
-          .then(() => {
-            done = true;
-            if (resolveNext) {
-              resolveNext({ value: undefined, done: true });
-              resolveNext = null;
-            }
-          })
-          .catch((err) => {
-            error = err;
-            done = true;
-            if (resolveNext) {
-              resolveNext({ value: undefined, done: true });
-              resolveNext = null;
-            }
-          });
-          
+          modelAdapter
+            .processStreamingRequest(request, (chunk) => {
+              const content =
+                typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+              const iterResult = { value: { text: content }, done: false };
+
+              if (resolveNext) {
+                resolveNext(iterResult);
+                resolveNext = null;
+              } else {
+                chunks.push({ text: content });
+              }
+            })
+            .then(() => {
+              done = true;
+              if (resolveNext) {
+                resolveNext({ value: undefined, done: true });
+                resolveNext = null;
+              }
+            })
+            .catch((err) => {
+              error = err;
+              done = true;
+              if (resolveNext) {
+                resolveNext({ value: undefined, done: true });
+                resolveNext = null;
+              }
+            });
+
           return {
             next() {
               if (error) {
                 throw error;
               }
-              
+
               if (chunks.length > 0) {
                 return Promise.resolve({ value: chunks.shift()!, done: false });
               } else if (done) {
@@ -673,9 +678,9 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
                   resolveNext = resolve;
                 });
               }
-            }
+            },
           };
-        }
+        },
       };
     }
   }
@@ -708,8 +713,8 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
             p95Latency: -1,
             p99Latency: -1,
             timeoutRate: 100,
-            queueDepth: 0
-          }
+            queueDepth: 0,
+          },
         };
       }
     }
@@ -731,10 +736,10 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
    */
   getModelMetrics(modelId: string): ModelMetrics | undefined {
     if (!this._metrics.providerMetrics) return undefined;
-    
+
     return Object.values(this._metrics.providerMetrics)
-      .flatMap(pm => pm.models)
-      .find(m => m.modelId === modelId);
+      .flatMap((pm) => pm.models)
+      .find((m) => m.modelId === modelId);
   }
 
   /**
@@ -756,8 +761,8 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
       prompt: options.prompt,
       metadata: options.metadata || {
         requestId: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        priority: 'normal'
-      }
+        priority: 'normal',
+      },
     };
 
     if (options.systemPrompt !== undefined) {
@@ -788,17 +793,17 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
       prompt: options.prompt,
       maxTokens: options.maxTokens,
       temperature: options.temperature,
-      systemPrompt: options.systemPrompt
+      systemPrompt: options.systemPrompt,
     });
 
     // Handle both string and ContentBlock[] response types
     const textContent = Array.isArray(response.content)
-      ? response.content.map(block => block.content as string).join('')
+      ? response.content.map((block) => block.content as string).join('')
       : response.content || '';
 
     return {
       text: textContent,
-      usage: response.usage
+      usage: response.usage,
     };
   }
 
@@ -839,15 +844,15 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
           retryDelay: 1000,
           exponentialBackoff: true,
           alternativeModels: [],
-          fallbackOnErrors: ['timeout', 'rate_limit', 'error']
-        }
+          fallbackOnErrors: ['timeout', 'rate_limit', 'error'],
+        },
       },
       loadBalancing: {
         strategy: 'round_robin',
         weights: {},
         healthCheckInterval: 60000,
         unhealthyThreshold: 3,
-        healthyThreshold: 2
+        healthyThreshold: 2,
       },
       cache: {
         enabled: true,
@@ -855,7 +860,7 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
         maxSize: 1000,
         strategy: 'lru',
         compressionEnabled: true,
-        encryptionEnabled: false
+        encryptionEnabled: false,
       },
       monitoring: {
         enabled: true,
@@ -866,9 +871,9 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
           latency: 5000,
           cost: 100,
           queueDepth: 100,
-          resourceUsage: 80
+          resourceUsage: 80,
         },
-        retentionPeriod: 2592000000 // 30 days
+        retentionPeriod: 2592000000, // 30 days
       },
       security: {
         encryptionEnabled: true,
@@ -880,9 +885,9 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
           rbacEnabled: false,
           defaultPermissions: [],
           adminRoles: ['admin'],
-          userRoles: ['user']
-        }
-      }
+          userRoles: ['user'],
+        },
+      },
     };
 
     await this.updateConfig(defaultConfig);
@@ -902,29 +907,29 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
    */
   async getCacheStats(): Promise<CacheStats> {
     const statsArray = await this._cache.getStats();
-    
+
     const aggregated: CacheStats = {
       size: 0,
       hitRate: 0,
       missRate: 0,
       evictions: 0,
-      memoryUsage: 0
+      memoryUsage: 0,
     };
-    
+
     for (const stats of statsArray) {
       aggregated.size += stats.size;
       aggregated.evictions += stats.evictions;
       aggregated.memoryUsage += stats.memoryUsage;
     }
-    
+
     const totalRequests = statsArray.reduce((sum, s) => sum + s.hits + s.misses, 0);
     const totalHits = statsArray.reduce((sum, s) => sum + s.hits, 0);
-    
+
     if (totalRequests > 0) {
       aggregated.hitRate = totalHits / totalRequests;
       aggregated.missRate = 1 - aggregated.hitRate;
     }
-    
+
     return aggregated;
   }
 
@@ -945,8 +950,8 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
         errorsByType: {} as Record<string, number>,
         errorsByProvider: {} as Record<ModelProvider, number>,
         errorsByModel: {} as Record<string, number>,
-        recentErrors: []
-      }
+        recentErrors: [],
+      },
     };
   }
 
@@ -988,7 +993,7 @@ export class ModelAdapter extends EventEmitter implements IModelAdapter {
       prompt: request.prompt,
       messages: request.messages,
       temperature: request.temperature,
-      maxTokens: request.maxTokens
+      maxTokens: request.maxTokens,
     };
     return await createHash('sha256').update(JSON.stringify(keyData)).digest('hex');
   }
@@ -1058,7 +1063,7 @@ class SmartModelRouter implements IModelRouter {
       routingByModel: {},
       routingByProvider: {} as Record<ModelProvider, number>,
       averageRoutingTime: 0,
-      routingErrors: 0
+      routingErrors: 0,
     };
   }
 
@@ -1103,7 +1108,7 @@ class ModelCache implements IModelCache {
   async set(key: string, response: ModelResponse, ttl = 300000): Promise<void> {
     this.cache.set(key, {
       response,
-      expires: Date.now() + ttl
+      expires: Date.now() + ttl,
     });
   }
 
@@ -1121,7 +1126,7 @@ class ModelCache implements IModelCache {
       hitRate: 0, // Would need to track hits/misses
       missRate: 0,
       evictions: 0,
-      memoryUsage: 0
+      memoryUsage: 0,
     };
   }
 }
@@ -1179,14 +1184,14 @@ class OpenAIProvider implements IModelProvider {
       codeGeneration: true,
       reasoning: true,
       multilingual: true,
-      customInstructions: true
+      customInstructions: true,
     };
   }
 
   async initialize(config: ModelConfig): Promise<void> {
     try {
       this.modelConfig = config;
-      
+
       // Update capabilities based on model config
       if (config.capabilities) {
         this.capabilities.maxTokens = config.capabilities.maxTokens;
@@ -1207,7 +1212,7 @@ class OpenAIProvider implements IModelProvider {
         baseURL: config.credentials.baseURL,
         organization: config.credentials.organization,
         timeout: config.credentials.timeout || 30000,
-        defaultHeaders: config.credentials.additionalHeaders
+        defaultHeaders: config.credentials.additionalHeaders,
       });
     } catch (error) {
       logger.error('Failed to initialize OpenAIProvider:', error);
@@ -1222,7 +1227,7 @@ class OpenAIProvider implements IModelProvider {
 
     try {
       const startTime = Date.now();
-      
+
       // Prepare base request parameters
       const baseRequest: Partial<OpenAI.Chat.ChatCompletionCreateParams> = {
         model: this.modelConfig.model,
@@ -1233,17 +1238,17 @@ class OpenAIProvider implements IModelProvider {
         frequency_penalty: request.frequencyPenalty || 0,
         presence_penalty: request.presencePenalty || 0,
         stop: request.stopSequences || null,
-        stream: false
+        stream: false,
       };
 
       // Conditionally add tools if available
       if (request.tools && request.tools.length > 0) {
-        baseRequest.tools = request.tools.map(tool => ({
+        baseRequest.tools = request.tools.map((tool) => ({
           type: 'function',
           function: {
             name: tool.function.name,
-            parameters: JSON.parse(tool.function.arguments)
-          }
+            parameters: JSON.parse(tool.function.arguments),
+          },
         }));
       }
 
@@ -1261,7 +1266,12 @@ class OpenAIProvider implements IModelProvider {
       const endTime = Date.now();
 
       // Map OpenAI response to ModelResponse
-      return this.mapOpenAIResponse(openaiResponse as OpenAI.Chat.ChatCompletion, request, startTime, endTime);
+      return this.mapOpenAIResponse(
+        openaiResponse as OpenAI.Chat.ChatCompletion,
+        request,
+        startTime,
+        endTime
+      );
     } catch (error) {
       logger.error('OpenAI API request failed:', error);
       throw error;
@@ -1287,17 +1297,17 @@ class OpenAIProvider implements IModelProvider {
         frequency_penalty: request.frequencyPenalty || 0,
         presence_penalty: request.presencePenalty || 0,
         stop: request.stopSequences || null,
-        stream: true
+        stream: true,
       };
 
       // Conditionally add tools if available
       if (request.tools && request.tools.length > 0) {
-        baseRequest.tools = request.tools.map(tool => ({
+        baseRequest.tools = request.tools.map((tool) => ({
           type: 'function',
           function: {
             name: tool.function.name,
-            parameters: JSON.parse(tool.function.arguments)
-          }
+            parameters: JSON.parse(tool.function.arguments),
+          },
         }));
       }
 
@@ -1312,7 +1322,7 @@ class OpenAIProvider implements IModelProvider {
 
       // Send streaming request to OpenAI API
       const stream = await this.client.chat.completions.create(openaiRequest);
-      
+
       // Process streaming chunks
       for await (const chunk of stream as any) {
         const modelResponse: ModelResponse = {
@@ -1324,7 +1334,7 @@ class OpenAIProvider implements IModelProvider {
           usage: {
             inputTokens: 0, // Not available in streaming
             outputTokens: 0, // Not available in streaming
-            totalTokens: 0
+            totalTokens: 0,
           },
           metadata: {
             latency: Date.now() - (request.metadata?.requestId ? Date.now() : 0),
@@ -1333,9 +1343,9 @@ class OpenAIProvider implements IModelProvider {
             timestamp: Date.now(),
             requestId: request.id,
             processingTime: 0,
-            cacheHit: false
+            cacheHit: false,
           },
-          streaming: true
+          streaming: true,
         };
 
         onChunk(modelResponse);
@@ -1366,17 +1376,17 @@ class OpenAIProvider implements IModelProvider {
           p95Latency: -1,
           p99Latency: -1,
           timeoutRate: 100,
-          queueDepth: 0
-        }
+          queueDepth: 0,
+        },
       };
     }
 
     try {
       const startTime = Date.now();
-      
+
       // Simple health check using models.list endpoint
       await this.client.models.list();
-      
+
       const responseTime = Date.now() - startTime;
       this.lastHealthCheck = Date.now();
 
@@ -1394,8 +1404,8 @@ class OpenAIProvider implements IModelProvider {
           p95Latency: responseTime,
           p99Latency: responseTime,
           timeoutRate: 0,
-          queueDepth: 0
-        }
+          queueDepth: 0,
+        },
       };
     } catch (error) {
       logger.error('OpenAI health check failed:', error);
@@ -1413,8 +1423,8 @@ class OpenAIProvider implements IModelProvider {
           p95Latency: -1,
           p99Latency: -1,
           timeoutRate: 100,
-          queueDepth: 0
-        }
+          queueDepth: 0,
+        },
       };
     }
   }
@@ -1440,7 +1450,7 @@ class OpenAIProvider implements IModelProvider {
     if (request.systemPrompt) {
       messages.push({
         role: 'system',
-        content: request.systemPrompt
+        content: request.systemPrompt,
       });
     }
 
@@ -1451,7 +1461,7 @@ class OpenAIProvider implements IModelProvider {
         if (msg.role === 'system' || msg.role === 'user' || msg.role === 'assistant') {
           messages.push({
             role: msg.role as 'system' | 'user' | 'assistant',
-            content: msg.content as string
+            content: msg.content as string,
           });
         }
         // Skip tool messages for now
@@ -1462,7 +1472,7 @@ class OpenAIProvider implements IModelProvider {
     if (request.prompt && !request.messages) {
       messages.push({
         role: 'user',
-        content: request.prompt
+        content: request.prompt,
       });
     }
 
@@ -1484,7 +1494,9 @@ class OpenAIProvider implements IModelProvider {
     }
   }
 
-  private mapToolChoice(toolChoice?: ToolChoice): OpenAI.Chat.ChatCompletionToolChoiceOption | undefined {
+  private mapToolChoice(
+    toolChoice?: ToolChoice
+  ): OpenAI.Chat.ChatCompletionToolChoiceOption | undefined {
     if (!toolChoice) return undefined;
 
     switch (toolChoice.type) {
@@ -1499,8 +1511,8 @@ class OpenAIProvider implements IModelProvider {
           return {
             type: 'function',
             function: {
-              name: toolChoice.function.name
-            }
+              name: toolChoice.function.name,
+            },
           };
         }
         return undefined;
@@ -1529,7 +1541,7 @@ class OpenAIProvider implements IModelProvider {
         inputTokens: usage?.prompt_tokens || 0,
         outputTokens: usage?.completion_tokens || 0,
         totalTokens: usage?.total_tokens || 0,
-        ...(cost !== undefined && { cost })
+        ...(cost !== undefined && { cost }),
       },
       metadata: {
         latency: endTime - startTime,
@@ -1538,15 +1550,16 @@ class OpenAIProvider implements IModelProvider {
         timestamp: Date.now(),
         requestId: request.id,
         processingTime: endTime - startTime,
-        cacheHit: false
+        cacheHit: false,
       },
-      toolCalls: choice?.message?.tool_calls?.map(toolCall => ({
-        id: toolCall.id,
-        toolName: toolCall.function.name,
-        success: true,
-        result: toolCall.function.arguments,
-        executionTime: endTime - startTime
-      })) || []
+      toolCalls:
+        choice?.message?.tool_calls?.map((toolCall) => ({
+          id: toolCall.id,
+          toolName: toolCall.function.name,
+          success: true,
+          result: toolCall.function.arguments,
+          executionTime: endTime - startTime,
+        })) || [],
     };
   }
 

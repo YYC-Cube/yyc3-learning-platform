@@ -7,13 +7,13 @@
 
 ## 🎯 组件速览
 
-| 组件 | 用途 | 核心功能 | 代码量 |
-|------|------|---------|--------|
-| DragManager | 拖拽管理 | 边界/吸附/惯性/多点触控 | 1,600行 |
-| PositionOptimizer | 位置优化 | 智能算法/碰撞检测/内容感知 | 1,500行 |
-| GestureRecognizer | 手势识别 | 基础/高级/自定义手势 | 1,400行 |
-| ThemeManager | 主题管理 | 浅色/深色/自动切换 | 1,350行 |
-| NotificationCenter | 通知中心 | 队列/分组/历史/统计 | 1,350行 |
+| 组件               | 用途     | 核心功能                   | 代码量  |
+| ------------------ | -------- | -------------------------- | ------- |
+| DragManager        | 拖拽管理 | 边界/吸附/惯性/多点触控    | 1,600行 |
+| PositionOptimizer  | 位置优化 | 智能算法/碰撞检测/内容感知 | 1,500行 |
+| GestureRecognizer  | 手势识别 | 基础/高级/自定义手势       | 1,400行 |
+| ThemeManager       | 主题管理 | 浅色/深色/自动切换         | 1,350行 |
+| NotificationCenter | 通知中心 | 队列/分组/历史/统计        | 1,350行 |
 
 ---
 
@@ -26,7 +26,7 @@ import { DragManager } from '@/packages/core-engine';
 
 const dragManager = new DragManager({
   enableSnapping: true,
-  snapThreshold: 20
+  snapThreshold: 20,
 });
 
 dragManager.on('drag:end', (data) => {
@@ -46,7 +46,7 @@ const result = await optimizer.optimizePosition({
   currentPosition: { x: 100, y: 100 },
   size: { width: 300, height: 400 },
   constraints: {},
-  priority: 1
+  priority: 1,
 });
 
 console.log('优化后位置:', result.optimizedPosition);
@@ -81,7 +81,7 @@ import { ThemeManager } from '@/packages/core-engine';
 const themeManager = new ThemeManager({
   defaultTheme: 'light',
   enableSystemTheme: true,
-  enableAutoSwitch: true
+  enableAutoSwitch: true,
 });
 
 // 切换主题
@@ -91,8 +91,8 @@ themeManager.setTheme('dark');
 const myTheme = themeManager.createCustomTheme({
   name: '我的主题',
   colors: {
-    primary: themeManager.generateColorScale('#6366f1')
-  }
+    primary: themeManager.generateColorScale('#6366f1'),
+  },
 });
 ```
 
@@ -103,7 +103,7 @@ import { NotificationCenter } from '@/packages/core-engine';
 
 const notificationCenter = new NotificationCenter({
   position: 'top-right',
-  maxVisible: 3
+  maxVisible: 3,
 });
 
 // 成功通知
@@ -116,9 +116,9 @@ notificationCenter.error('操作失败', '无法连接到服务器', {
       id: 'retry',
       label: '重试',
       type: 'primary',
-      handler: () => retryOperation()
-    }
-  ]
+      handler: () => retryOperation(),
+    },
+  ],
 });
 ```
 
@@ -132,7 +132,7 @@ notificationCenter.error('操作失败', '无法连接到服务器', {
 const dragManager = new DragManager({
   enableSnapping: true,
   snapThreshold: 20,
-  enableInertia: true
+  enableInertia: true,
 });
 
 // 添加吸附点（屏幕四角）
@@ -141,7 +141,7 @@ dragManager.addSnapPoint({
   position: { x: window.innerWidth - 50, y: 50 },
   threshold: 30,
   priority: 1,
-  enabled: true
+  enabled: true,
 });
 
 // 监听拖拽事件
@@ -157,9 +157,9 @@ dragManager.on('drag:end', async (data) => {
     currentPosition: data.finalPosition,
     size: { width: 300, height: 400 },
     constraints: {},
-    priority: 1
+    priority: 1,
   });
-  
+
   // 应用优化后的位置
   applyPosition(result.optimizedPosition);
 });
@@ -171,7 +171,7 @@ dragManager.on('drag:end', async (data) => {
 const recognizer = new GestureRecognizer({
   swipe: { enabled: true, minVelocity: 300 },
   pinch: { enabled: true },
-  doubleTap: { enabled: true }
+  doubleTap: { enabled: true },
 });
 
 // 下滑关闭
@@ -198,7 +198,7 @@ recognizer.on('doubleTap', () => {
 const notificationCenter = new NotificationCenter({
   position: 'top-right',
   maxVisible: 3,
-  deduplication: { enabled: true, window: 5000 }
+  deduplication: { enabled: true, window: 5000 },
 });
 
 // 分组通知
@@ -212,9 +212,9 @@ notificationCenter.warning('磁盘空间不足', '可用空间低于10%', {
       id: 'cleanup',
       label: '清理',
       type: 'primary',
-      handler: () => cleanupDisk()
-    }
-  ]
+      handler: () => cleanupDisk(),
+    },
+  ],
 });
 
 // 查询未读通知
@@ -227,13 +227,13 @@ console.log('未读通知:', unreadCount);
 ```typescript
 const themeManager = new ThemeManager({
   enableAutoSwitch: true,
-  enableSystemTheme: true
+  enableSystemTheme: true,
 });
 
 // 设置自动切换时间
 themeManager.setAutoSwitchSchedule({
-  lightTheme: { hour: 7, minute: 0 },   // 早上7点切换到浅色
-  darkTheme: { hour: 19, minute: 0 }    // 晚上7点切换到深色
+  lightTheme: { hour: 7, minute: 0 }, // 早上7点切换到浅色
+  darkTheme: { hour: 19, minute: 0 }, // 晚上7点切换到深色
 });
 
 // 监听主题变化
@@ -330,51 +330,51 @@ themeManager.on('theme:changed', (data) => {
 ### DragManager 事件
 
 ```typescript
-dragManager.on('drag:start', (data) => {});      // 开始拖拽
-dragManager.on('drag:move', (data) => {});       // 拖拽中
-dragManager.on('drag:end', (data) => {});        // 拖拽结束
-dragManager.on('snap:triggered', (data) => {});  // 触发吸附
-dragManager.on('boundary:hit', (data) => {});    // 触碰边界
+dragManager.on('drag:start', (data) => {}); // 开始拖拽
+dragManager.on('drag:move', (data) => {}); // 拖拽中
+dragManager.on('drag:end', (data) => {}); // 拖拽结束
+dragManager.on('snap:triggered', (data) => {}); // 触发吸附
+dragManager.on('boundary:hit', (data) => {}); // 触碰边界
 dragManager.on('gesture:recognized', (data) => {}); // 识别手势
 ```
 
 ### PositionOptimizer 事件
 
 ```typescript
-optimizer.on('optimization:start', (data) => {});    // 开始优化
+optimizer.on('optimization:start', (data) => {}); // 开始优化
 optimizer.on('optimization:complete', (data) => {}); // 优化完成
-optimizer.on('collision:detected', (data) => {});    // 检测碰撞
-optimizer.on('position:changed', (data) => {});      // 位置改变
+optimizer.on('collision:detected', (data) => {}); // 检测碰撞
+optimizer.on('position:changed', (data) => {}); // 位置改变
 ```
 
 ### GestureRecognizer 事件
 
 ```typescript
 recognizer.on('gesture:recognized', (gesture) => {}); // 识别手势
-recognizer.on('tap', (data) => {});                  // 点击
-recognizer.on('swipe', (data) => {});                // 滑动
-recognizer.on('pinch', (data) => {});                // 捏合
-recognizer.on('rotate', (data) => {});               // 旋转
-recognizer.on('longPress', (data) => {});            // 长按
+recognizer.on('tap', (data) => {}); // 点击
+recognizer.on('swipe', (data) => {}); // 滑动
+recognizer.on('pinch', (data) => {}); // 捏合
+recognizer.on('rotate', (data) => {}); // 旋转
+recognizer.on('longPress', (data) => {}); // 长按
 ```
 
 ### ThemeManager 事件
 
 ```typescript
-themeManager.on('theme:changed', (data) => {});          // 主题变化
-themeManager.on('theme:registered', (data) => {});       // 主题注册
-themeManager.on('system-theme:detected', (data) => {});  // 系统主题
-themeManager.on('auto-switch:triggered', (data) => {});  // 自动切换
+themeManager.on('theme:changed', (data) => {}); // 主题变化
+themeManager.on('theme:registered', (data) => {}); // 主题注册
+themeManager.on('system-theme:detected', (data) => {}); // 系统主题
+themeManager.on('auto-switch:triggered', (data) => {}); // 自动切换
 ```
 
 ### NotificationCenter 事件
 
 ```typescript
-notificationCenter.on('notification:shown', (data) => {});     // 显示
+notificationCenter.on('notification:shown', (data) => {}); // 显示
 notificationCenter.on('notification:dismissed', (data) => {}); // 关闭
-notificationCenter.on('notification:clicked', (data) => {});   // 点击
-notificationCenter.on('notification:action', (data) => {});    // 操作
-notificationCenter.on('queue:overflow', (data) => {});         // 溢出
+notificationCenter.on('notification:clicked', (data) => {}); // 点击
+notificationCenter.on('notification:action', (data) => {}); // 操作
+notificationCenter.on('queue:overflow', (data) => {}); // 溢出
 ```
 
 ---
@@ -444,16 +444,11 @@ import {
   PositionOptimizer,
   GestureRecognizer,
   ThemeManager,
-  NotificationCenter
+  NotificationCenter,
 } from '@/packages/core-engine';
 
 // 类型导入
-import type {
-  DragPosition,
-  GestureEvent,
-  Theme,
-  Notification
-} from '@/packages/core-engine';
+import type { DragPosition, GestureEvent, Theme, Notification } from '@/packages/core-engine';
 ```
 
 ---
@@ -465,7 +460,7 @@ import type {
 ```typescript
 // ✅ 推荐：使用节流
 const dragManager = new DragManager({
-  throttleDelay: 16  // 60fps
+  throttleDelay: 16, // 60fps
 });
 
 // ❌ 避免：频繁更新DOM
@@ -479,8 +474,8 @@ dragManager.on('drag:move', (data) => {
 ```typescript
 // ✅ 推荐：使用快速策略
 const optimizer = new PositionOptimizer({
-  optimizationStrategy: 'greedy',  // 贪心算法最快
-  performanceMode: 'fast'
+  optimizationStrategy: 'greedy', // 贪心算法最快
+  performanceMode: 'fast',
 });
 
 // ❌ 避免：过度优化
@@ -494,8 +489,8 @@ const optimizer = new PositionOptimizer({
 const recognizer = new GestureRecognizer({
   tap: { enabled: true },
   swipe: { enabled: true },
-  pinch: { enabled: false },      // 不需要就禁用
-  rotate: { enabled: false }
+  pinch: { enabled: false }, // 不需要就禁用
+  rotate: { enabled: false },
 });
 ```
 
@@ -506,9 +501,9 @@ const recognizer = new GestureRecognizer({
 const themeManager = new ThemeManager({
   transition: {
     enabled: true,
-    duration: 200,                // 较短的过渡时间
-    properties: ['background-color', 'color']  // 只过渡必要属性
-  }
+    duration: 200, // 较短的过渡时间
+    properties: ['background-color', 'color'], // 只过渡必要属性
+  },
 });
 ```
 
@@ -517,9 +512,9 @@ const themeManager = new ThemeManager({
 ```typescript
 // ✅ 推荐：限制显示数量
 const notificationCenter = new NotificationCenter({
-  maxVisible: 3,                  // 最多显示3个
-  maxQueue: 50,                   // 限制队列长度
-  deduplication: { enabled: true } // 启用去重
+  maxVisible: 3, // 最多显示3个
+  maxQueue: 50, // 限制队列长度
+  deduplication: { enabled: true }, // 启用去重
 });
 ```
 
@@ -528,58 +523,68 @@ const notificationCenter = new NotificationCenter({
 ## 🐛 常见问题
 
 ### Q1: 拖拽不流畅？
+
 **A**: 启用性能优化模式
+
 ```typescript
 dragManager.enablePerformanceMode();
 dragManager.throttleDragEvents(16); // 60fps
 ```
 
 ### Q2: 手势识别不准确？
+
 **A**: 调整识别阈值
+
 ```typescript
 const recognizer = new GestureRecognizer({
   swipe: {
-    minVelocity: 500,  // 提高速度阈值
-    minDistance: 80    // 提高距离阈值
-  }
+    minVelocity: 500, // 提高速度阈值
+    minDistance: 80, // 提高距离阈值
+  },
 });
 ```
 
 ### Q3: 主题切换有闪烁？
+
 **A**: 使用CSS变量和过渡
+
 ```typescript
 const themeManager = new ThemeManager({
   transition: {
     enabled: true,
     duration: 300,
-    easing: 'ease-in-out'
-  }
+    easing: 'ease-in-out',
+  },
 });
 ```
 
 ### Q4: 通知太多？
+
 **A**: 启用去重和分组
+
 ```typescript
 const notificationCenter = new NotificationCenter({
   deduplication: {
     enabled: true,
     window: 5000,
-    strategy: 'message'
+    strategy: 'message',
   },
   grouping: {
     enabled: true,
-    autoGroup: true
-  }
+    autoGroup: true,
+  },
 });
 ```
 
 ### Q5: 位置优化太慢？
+
 **A**: 使用快速算法
+
 ```typescript
 const optimizer = new PositionOptimizer({
-  optimizationStrategy: 'greedy',  // 贪心算法
+  optimizationStrategy: 'greedy', // 贪心算法
   performanceMode: 'fast',
-  maxIterations: 50                // 减少迭代次数
+  maxIterations: 50, // 减少迭代次数
 });
 ```
 

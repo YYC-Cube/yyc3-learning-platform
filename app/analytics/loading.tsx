@@ -150,5 +150,5 @@ export default function AnalyticsLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

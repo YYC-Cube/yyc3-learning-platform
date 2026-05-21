@@ -1,13 +1,13 @@
 /**
  * 数据优化循环系统 (Data Optimization Loop)
- * 
+ *
  * 实现数据驱动的智能增强闭环，包括：
  * - 数据收集与质量管理
  * - 特征工程与选择
  * - 模型训练与验证
  * - 性能监控与反馈
  * - 持续优化循环
- * 
+ *
  * @module DataOptimizationLoop
  */
 
@@ -19,14 +19,14 @@ import { EventEmitter } from 'events';
  * 数据质量指标
  */
 export interface DataQualityMetrics {
-  completeness: number;        // 完整性 (0-100)
-  accuracy: number;            // 准确性 (0-100)
-  consistency: number;         // 一致性 (0-100)
-  timeliness: number;          // 及时性 (0-100)
-  validity: number;            // 有效性 (0-100)
-  uniqueness: number;          // 唯一性 (0-100)
-  overallScore: number;        // 综合评分 (0-100)
-  issues: DataQualityIssue[];  // 质量问题列表
+  completeness: number; // 完整性 (0-100)
+  accuracy: number; // 准确性 (0-100)
+  consistency: number; // 一致性 (0-100)
+  timeliness: number; // 及时性 (0-100)
+  validity: number; // 有效性 (0-100)
+  uniqueness: number; // 唯一性 (0-100)
+  overallScore: number; // 综合评分 (0-100)
+  issues: DataQualityIssue[]; // 质量问题列表
 }
 
 /**
@@ -473,7 +473,12 @@ export interface OptimizationObjective {
 
 export interface OptimizationAction {
   id: string;
-  type: 'data_collection' | 'feature_engineering' | 'model_retraining' | 'deployment' | 'monitoring';
+  type:
+    | 'data_collection'
+    | 'feature_engineering'
+    | 'model_retraining'
+    | 'deployment'
+    | 'monitoring';
   description: string;
   dependencies: string[];
   effort: number;
@@ -509,7 +514,14 @@ export interface ExpectedImpact {
 export interface OptimizationCycleResult {
   cycleId: string;
   timestamp: Date;
-  phase: 'collection' | 'engineering' | 'training' | 'deployment' | 'monitoring' | 'feedback' | 'planning';
+  phase:
+    | 'collection'
+    | 'engineering'
+    | 'training'
+    | 'deployment'
+    | 'monitoring'
+    | 'feedback'
+    | 'planning';
   dataCollection: {
     dataset: TrainingDataset;
     qualityAssessment: DataQualityMetrics;
@@ -573,7 +585,7 @@ export interface DataOptimizationLoopConfig {
 
 /**
  * 数据优化循环系统
- * 
+ *
  * 实现完整的数据驱动优化闭环
  */
 export class DataOptimizationLoop extends EventEmitter {
@@ -592,7 +604,9 @@ export class DataOptimizationLoop extends EventEmitter {
   /**
    * 初始化配置
    */
-  private initializeConfig(config: Partial<DataOptimizationLoopConfig>): DataOptimizationLoopConfig {
+  private initializeConfig(
+    config: Partial<DataOptimizationLoopConfig>
+  ): DataOptimizationLoopConfig {
     return {
       dataCollection: {
         sources: config.dataCollection?.sources || ['user_interactions', 'system_logs', 'feedback'],
@@ -637,7 +651,7 @@ export class DataOptimizationLoop extends EventEmitter {
       this.emit('phase:started', { phase: 'collection', cycleId });
       const dataset = await this.collectAndLabelData();
       const qualityAssessment = await this.assessDataQuality(dataset);
-      
+
       if (qualityAssessment.overallScore < this.config.dataCollection.qualityThreshold) {
         throw new Error(`Data quality below threshold: ${qualityAssessment.overallScore}`);
       }
@@ -765,7 +779,8 @@ export class DataOptimizationLoop extends EventEmitter {
       });
     }
 
-    const overallScore = (completeness + accuracy + consistency + timeliness + validity + uniqueness) / 6;
+    const overallScore =
+      (completeness + accuracy + consistency + timeliness + validity + uniqueness) / 6;
 
     return {
       completeness,
@@ -810,7 +825,7 @@ export class DataOptimizationLoop extends EventEmitter {
 
     // 特征重要性评估
     const featureImportance: Record<string, number> = {};
-    [...originalFeatures, ...engineeredFeatures.map(f => f.name)].forEach(feature => {
+    [...originalFeatures, ...engineeredFeatures.map((f) => f.name)].forEach((feature) => {
       featureImportance[feature] = Math.random();
     });
 
@@ -861,8 +876,8 @@ export class DataOptimizationLoop extends EventEmitter {
     // 模拟训练过程
     const trainingMetrics: TrainingMetrics = {
       loss: Array.from({ length: 50 }, (_, i) => 1 / (i + 1)),
-      accuracy: Array.from({ length: 50 }, (_, i) => 0.5 + (i / 100)),
-      f1Score: Array.from({ length: 50 }, (_, i) => 0.5 + (i / 100)),
+      accuracy: Array.from({ length: 50 }, (_, i) => 0.5 + i / 100),
+      f1Score: Array.from({ length: 50 }, (_, i) => 0.5 + i / 100),
     };
 
     const validationMetrics: ValidationMetrics = {
@@ -947,7 +962,9 @@ export class DataOptimizationLoop extends EventEmitter {
   /**
    * 监控模型性能
    */
-  private async monitorModelPerformance(deployment: ModelDeployment): Promise<ModelPerformanceMonitoring> {
+  private async monitorModelPerformance(
+    deployment: ModelDeployment
+  ): Promise<ModelPerformanceMonitoring> {
     const monitoring: ModelPerformanceMonitoring = {
       deploymentId: deployment.deploymentId,
       monitoringPeriod: {
@@ -1140,13 +1157,16 @@ export class DataOptimizationLoop extends EventEmitter {
     const previousCycle = this.cycleHistory[this.cycleHistory.length - 1];
     const improvements = {
       accuracy: previousCycle
-        ? training.validationMetrics.accuracy! - previousCycle.modelTraining.validationMetrics.accuracy!
+        ? training.validationMetrics.accuracy! -
+          previousCycle.modelTraining.validationMetrics.accuracy!
         : training.validationMetrics.accuracy!,
       latency: previousCycle
-        ? previousCycle.monitoring.performanceMetrics.latency.p99 - monitoring.performanceMetrics.latency.p99
+        ? previousCycle.monitoring.performanceMetrics.latency.p99 -
+          monitoring.performanceMetrics.latency.p99
         : -monitoring.performanceMetrics.latency.p99,
       cost: previousCycle
-        ? previousCycle.feedback.systemMetrics.costPerPrediction - feedback.systemMetrics.costPerPrediction
+        ? previousCycle.feedback.systemMetrics.costPerPrediction -
+          feedback.systemMetrics.costPerPrediction
         : -feedback.systemMetrics.costPerPrediction,
       userSatisfaction: feedback.businessImpact.userSatisfaction,
     };
@@ -1160,15 +1180,8 @@ export class DataOptimizationLoop extends EventEmitter {
         '数据质量是模型成功的关键',
         '持续监控能及时发现问题',
       ],
-      challenges: [
-        '数据漂移检测需要更敏感的算法',
-        '训练时间较长需要优化',
-      ],
-      recommendations: [
-        '增加自动特征选择能力',
-        '实施A/B测试验证改进效果',
-        '建立更完善的反馈循环',
-      ],
+      challenges: ['数据漂移检测需要更敏感的算法', '训练时间较长需要优化'],
+      recommendations: ['增加自动特征选择能力', '实施A/B测试验证改进效果', '建立更完善的反馈循环'],
     };
   }
 
@@ -1188,7 +1201,13 @@ export class DataOptimizationLoop extends EventEmitter {
     return [
       { name: 'feature_1', type: 'numerical', description: '特征1', nullable: false },
       { name: 'feature_2', type: 'numerical', description: '特征2', nullable: false },
-      { name: 'feature_3', type: 'categorical', description: '特征3', nullable: false, categories: ['A', 'B'] },
+      {
+        name: 'feature_3',
+        type: 'categorical',
+        description: '特征3',
+        nullable: false,
+        categories: ['A', 'B'],
+      },
       { name: 'feature_4', type: 'numerical', description: '特征4', nullable: false },
       { name: 'feature_5', type: 'datetime', description: '特征5', nullable: false },
     ];
@@ -1196,7 +1215,7 @@ export class DataOptimizationLoop extends EventEmitter {
 
   private calculateLabelDistribution(records: DataRecord[]): Record<string, number> {
     const distribution: Record<string, number> = {};
-    records.forEach(record => {
+    records.forEach((record) => {
       const label = String(record.label);
       distribution[label] = (distribution[label] || 0) + 1;
     });
@@ -1206,7 +1225,14 @@ export class DataOptimizationLoop extends EventEmitter {
   private calculateDataStatistics(records: DataRecord[]): DataStatistics {
     return {
       numerical: {
-        feature_1: { mean: 0.5, median: 0.5, std: 0.29, min: 0, max: 1, quartiles: [0.25, 0.5, 0.75] },
+        feature_1: {
+          mean: 0.5,
+          median: 0.5,
+          std: 0.29,
+          min: 0,
+          max: 1,
+          quartiles: [0.25, 0.5, 0.75],
+        },
         feature_2: { mean: 50, median: 50, std: 29, min: 0, max: 100, quartiles: [25, 50, 75] },
       },
       categorical: {
@@ -1240,8 +1266,8 @@ export class DataOptimizationLoop extends EventEmitter {
     let totalFields = 0;
     let completeFields = 0;
 
-    records.forEach(record => {
-      Object.values(record.features).forEach(value => {
+    records.forEach((record) => {
+      Object.values(record.features).forEach((value) => {
         totalFields++;
         if (value !== null && value !== undefined && value !== '') {
           completeFields++;
@@ -1262,7 +1288,8 @@ export class DataOptimizationLoop extends EventEmitter {
 
   private calculateTimeliness(records: DataRecord[]): number {
     const now = Date.now();
-    const avgAge = records.reduce((sum, r) => sum + (now - r.timestamp.getTime()), 0) / records.length;
+    const avgAge =
+      records.reduce((sum, r) => sum + (now - r.timestamp.getTime()), 0) / records.length;
     const maxAge = 86400000; // 1天
     return Math.max(0, (1 - avgAge / maxAge) * 100);
   }
@@ -1272,7 +1299,7 @@ export class DataOptimizationLoop extends EventEmitter {
   }
 
   private calculateUniqueness(records: DataRecord[]): number {
-    const uniqueIds = new Set(records.map(r => r.id));
+    const uniqueIds = new Set(records.map((r) => r.id));
     return (uniqueIds.size / records.length) * 100;
   }
 

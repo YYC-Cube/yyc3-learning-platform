@@ -1,10 +1,10 @@
 # 🔒 YYC³ Learning Platform 安全审计报告
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -25,6 +25,7 @@
 ### 总体安全评级：⚠️ C (需要改进)
 
 **关键发现：**
+
 - 🔴 **严重问题 (2项)**：敏感信息暴露、缺少 .gitignore 文件
 - 🟡 **警告 (5项)**：console.log 使用、innerHTML 使用、硬编码配置
 - ✅ **合规 (8项)**：无依赖漏洞、无 SQL 注入风险、无 child_process 使用
@@ -33,9 +34,9 @@
 
 | 风险等级 | 数量 | 占比 |
 | -------- | ---- | ---- |
-| 🔴 严重   | 2    | 13%  |
-| 🟡 警告   | 5    | 33%  |
-| ✅ 合规   | 8    | 54%  |
+| 🔴 严重  | 2    | 13%  |
+| 🟡 警告  | 5    | 33%  |
+| ✅ 合规  | 8    | 54%  |
 
 ---
 
@@ -46,16 +47,19 @@
 **审计方法：** `npm audit --audit-level=moderate`
 
 **审计结果：**
+
 ```
 found 0 vulnerabilities
 ```
 
 **结论：**
+
 - ✅ 所有依赖项均无已知安全漏洞
 - ✅ 依赖版本管理良好
 - ✅ 建议定期运行 `npm audit` 以持续监控
 
 **建议：**
+
 - 在 CI/CD 流程中集成自动化依赖扫描
 - 考虑使用 `npm audit fix` 自动修复低风险漏洞
 - 定期更新依赖项到最新稳定版本
@@ -69,6 +73,7 @@ found 0 vulnerabilities
 **位置：** [`.env`](file:///Users/yanyu/learning-platform/.env)
 
 **发现：**
+
 ```bash
 # PostgreSQL 数据库配置
 DB_HOST=192.168.3.45
@@ -84,17 +89,20 @@ JWT_SECRET=your-32-character-jwt-secret-key-here-abc123
 **风险等级：** 🔴 严重
 
 **风险说明：**
+
 - 数据库密码和用户名明文存储
 - JWT 密钥使用默认占位符值
 - 如果 .env 文件被提交到版本控制，将导致严重的安全泄露
 
 **建议：**
+
 1. **立即创建 `.gitignore` 文件**，确保 `.env` 文件不被提交
 2. 使用强密码和随机生成的 JWT 密钥
 3. 使用环境变量管理工具（如 `dotenv-safe`）
 4. 在生产环境中使用密钥管理服务（如 AWS Secrets Manager、Azure Key Vault）
 
 **修复示例：**
+
 ```bash
 # .gitignore
 .env
@@ -117,11 +125,13 @@ JWT_SECRET=your-jwt-secret
 **审计方法：** 搜索 `BEARER|TOKEN|API_KEY|SECRET_KEY|PRIVATE_KEY` 模式
 
 **审计结果：**
+
 - ✅ 在源代码中未发现硬编码的 API 密钥或令牌
 - ✅ 所有敏感配置均通过环境变量管理
 - ⚠️ 发现 `RateLimiter.ts` 中使用了 `TOKEN` 常量，但仅为配置键名，非实际密钥
 
 **结论：**
+
 - ✅ 敏感信息管理符合最佳实践
 - ✅ 建议继续使用环境变量管理所有敏感配置
 
@@ -132,12 +142,14 @@ JWT_SECRET=your-jwt-secret
 #### 3.1 `innerHTML` 使用 🟡
 
 **位置：**
+
 - [`components/ui/chart.tsx`](file:///Users/yanyu/learning-platform/components/ui/chart.tsx#L57-L74)
 - [`components/course-image.tsx`](file:///Users/yanyu/learning-platform/components/course-image.tsx#L14-L24)
 
 **发现：**
 
 **chart.tsx (Line 57-74):**
+
 ```typescript
 return (
   <style
@@ -164,62 +176,66 @@ ${colorConfig
 ```
 
 **course-image.tsx (Line 14-24):**
+
 ```typescript
 const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-  const target = e.target as HTMLImageElement
-  target.style.display = "none"
-  const parent = target.parentElement
+  const target = e.target as HTMLImageElement;
+  target.style.display = 'none';
+  const parent = target.parentElement;
   if (parent) {
     parent.innerHTML = `
       <div class="w-full h-48 bg-gradient-to-r ${color} flex items-center justify-center">
         <div class="text-white text-center p-4">
-          <div class="text-2xl font-bold mb-2">${title.split(" ")[0]}</div>
+          <div class="text-2xl font-bold mb-2">${title.split(' ')[0]}</div>
           <div class="text-sm opacity-90">${title}</div>
         </div>
       </div>
-    `
+    `;
   }
-}
+};
 ```
 
 **风险等级：** 🟡 中等
 
 **风险说明：**
+
 - `chart.tsx` 中的 `dangerouslySetInnerHTML` 用于动态生成 CSS 样式，内容受控，风险较低
 - `course-image.tsx` 中的 `innerHTML` 直接插入 `title` 属性值，存在 XSS 风险
 
 **建议：**
+
 1. **course-image.tsx**：对 `title` 进行 HTML 转义或使用 React 组件替代
 2. **chart.tsx**：当前实现相对安全，但建议添加输入验证
 
 **修复示例（course-image.tsx）：**
+
 ```typescript
 const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-  const target = e.target as HTMLImageElement
-  target.style.display = "none"
-  const parent = target.parentElement
+  const target = e.target as HTMLImageElement;
+  target.style.display = 'none';
+  const parent = target.parentElement;
   if (parent) {
     // 使用 React 组件替代 innerHTML
-    const fallbackElement = document.createElement('div')
-    fallbackElement.className = `w-full h-48 bg-gradient-to-r ${color} flex items-center justify-center`
+    const fallbackElement = document.createElement('div');
+    fallbackElement.className = `w-full h-48 bg-gradient-to-r ${color} flex items-center justify-center`;
     fallbackElement.innerHTML = `
       <div class="text-white text-center p-4">
-        <div class="text-2xl font-bold mb-2">${escapeHtml(title.split(" ")[0])}</div>
+        <div class="text-2xl font-bold mb-2">${escapeHtml(title.split(' ')[0])}</div>
         <div class="text-sm opacity-90">${escapeHtml(title)}</div>
       </div>
-    `
-    parent.appendChild(fallbackElement)
+    `;
+    parent.appendChild(fallbackElement);
   }
-}
+};
 
 // 添加 HTML 转义函数
 function escapeHtml(unsafe: string): string {
   return unsafe
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;")
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 ```
 
@@ -228,10 +244,12 @@ function escapeHtml(unsafe: string): string {
 **审计方法：** 搜索 `eval\s*\(` 和 `exec\s*\(` 模式
 
 **审计结果：**
+
 - ✅ 在源代码中未发现 `eval` 使用
 - ✅ 在源代码中未发现 `exec` 使用
 
 **结论：**
+
 - ✅ 代码中未使用危险的动态执行函数
 - ✅ 符合安全最佳实践
 
@@ -242,6 +260,7 @@ function escapeHtml(unsafe: string): string {
 **审计方法：** 搜索 `console.log` 模式
 
 **审计结果：**
+
 - 🟡 在以下文件中发现 `console.log` 使用：
   - [`packages/core-engine/src/ChatInterface.ts`](file:///Users/yanyu/learning-platform/packages/core-engine/src/ChatInterface.ts) - 1 处
   - 其他测试文件和文档文件
@@ -249,16 +268,19 @@ function escapeHtml(unsafe: string): string {
 **风险等级：** 🟡 低
 
 **风险说明：**
+
 - 生产代码中的 `console.log` 可能泄露敏感信息
 - 影响性能和日志管理
 - 可能暴露调试信息给攻击者
 
 **建议：**
+
 1. 移除或注释掉生产代码中的 `console.log`
 2. 使用专业的日志库（如 `winston`、`pino`）
 3. 在构建过程中使用工具自动移除 `console.log`（如 `terser`）
 
 **修复示例：**
+
 ```typescript
 // ❌ 不推荐
 console.log('Message sent:', message);
@@ -275,32 +297,36 @@ logger.info('Message sent', { messageId: message.id });
 **审计方法：** 搜索 `process.env` 模式
 
 **审计结果：**
+
 - ✅ 环境变量使用规范
 - ✅ 所有敏感配置均通过环境变量管理
 - ✅ 未发现硬编码的敏感信息
 
 **发现的环境变量：**
+
 ```typescript
 // 数据库配置
-process.env.DB_HOST
-process.env.DB_PORT
-process.env.DB_USER
-process.env.DB_PASS
-process.env.DB_NAME
+process.env.DB_HOST;
+process.env.DB_PORT;
+process.env.DB_USER;
+process.env.DB_PASS;
+process.env.DB_NAME;
 
 // JWT 配置
-process.env.JWT_SECRET
+process.env.JWT_SECRET;
 
 // 其他配置
-process.env.NODE_ENV
-process.env.PORT
+process.env.NODE_ENV;
+process.env.PORT;
 ```
 
 **结论：**
+
 - ✅ 环境变量管理符合最佳实践
 - ✅ 建议添加环境变量验证和类型定义
 
 **建议：**
+
 ```typescript
 // 创建环境变量验证
 import { z } from 'zod';
@@ -326,15 +352,18 @@ export const env = envSchema.parse(process.env);
 **审计方法：** 搜索 SQL 查询模式和字符串拼接
 
 **审计结果：**
+
 - ✅ 在源代码中未发现直接的 SQL 查询
 - ✅ 未发现字符串拼接的 SQL 查询
 - ✅ 项目使用 ORM 或参数化查询
 
 **结论：**
+
 - ✅ SQL 注入风险极低
 - ✅ 符合安全最佳实践
 
 **建议：**
+
 - 继续使用 ORM 或参数化查询
 - 定期审计数据库访问代码
 - 对用户输入进行验证和清理
@@ -346,19 +375,23 @@ export const env = envSchema.parse(process.env);
 **审计方法：** 搜索外部 HTTP 请求模式
 
 **审计结果：**
+
 - ✅ 外部 HTTP 调用使用安全的 HTTP 客户端
 - ✅ 实现了请求超时和错误处理
 - ✅ 使用了 HTTPS 协议
 
 **发现的外部调用：**
+
 - Google API 调用（通过 GoogleProvider）
 - 其他 AI 模型 API 调用
 
 **结论：**
+
 - ✅ HTTP 调用实现安全
 - ✅ 建议添加请求速率限制和重试机制
 
 **建议：**
+
 ```typescript
 // 添加请求超时和重试
 import axios from 'axios';
@@ -386,10 +419,12 @@ apiClient.interceptors.request.use(
 **审计方法：** 搜索 `child_process` 模式
 
 **审计结果：**
+
 - ✅ 在源代码中未发现 `child_process` 使用
 - ✅ 未发现命令注入风险
 
 **结论：**
+
 - ✅ 无命令执行风险
 - ✅ 符合安全最佳实践
 
@@ -398,11 +433,13 @@ apiClient.interceptors.request.use(
 ### 9. .gitignore 文件检查 🔴
 
 **审计结果：**
+
 - 🔴 **项目根目录缺少 `.gitignore` 文件**
 
 **风险等级：** 🔴 严重
 
 **风险说明：**
+
 - 敏感文件（如 `.env`、`node_modules`、构建产物）可能被意外提交
 - 可能导致敏感信息泄露
 - 增加仓库大小和混乱
@@ -411,6 +448,7 @@ apiClient.interceptors.request.use(
 **立即创建 `.gitignore` 文件**
 
 **推荐的 `.gitignore` 内容：**
+
 ```bash
 # Dependencies
 node_modules/
@@ -469,15 +507,15 @@ Thumbs.db
 
 | 审核项目      | 得分 | 权重 | 加权得分 | 状态 |
 | ------------- | ---- | ---- | -------- | ---- |
-| 依赖安全      | 100  | 15%  | 15       | ✅    |
-| 敏感信息管理  | 40   | 25%  | 10       | 🔴    |
-| 危险代码模式  | 70   | 20%  | 14       | 🟡    |
-| 日志管理      | 60   | 10%  | 6        | 🟡    |
-| 环境变量使用  | 100  | 10%  | 10       | ✅    |
-| SQL 注入防护  | 100  | 10%  | 10       | ✅    |
-| HTTP 调用安全 | 90   | 5%   | 4.5      | ✅    |
-| 命令注入防护  | 100  | 5%   | 5        | ✅    |
-| **总分**      | -    | 100% | **74.5** | ⚠️    |
+| 依赖安全      | 100  | 15%  | 15       | ✅   |
+| 敏感信息管理  | 40   | 25%  | 10       | 🔴   |
+| 危险代码模式  | 70   | 20%  | 14       | 🟡   |
+| 日志管理      | 60   | 10%  | 6        | 🟡   |
+| 环境变量使用  | 100  | 10%  | 10       | ✅   |
+| SQL 注入防护  | 100  | 10%  | 10       | ✅   |
+| HTTP 调用安全 | 90   | 5%   | 4.5      | ✅   |
+| 命令注入防护  | 100  | 5%   | 5        | ✅   |
+| **总分**      | -    | 100% | **74.5** | ⚠️   |
 
 **评级：** C (需要改进)
 
@@ -531,26 +569,31 @@ Thumbs.db
 ## 🛡️ 安全最佳实践建议
 
 ### 1. 持续安全监控
+
 - 在 CI/CD 流程中集成 `npm audit`
 - 使用 Snyk 或 Dependabot 进行依赖监控
 - 定期进行安全代码审查
 
 ### 2. 敏感信息管理
+
 - 使用密钥管理服务（AWS Secrets Manager、Azure Key Vault）
 - 实施最小权限原则
 - 定期轮换密钥和凭证
 
 ### 3. 代码安全
+
 - 使用 ESLint 和 Prettier 进行代码规范检查
 - 集成 SonarQube 进行代码质量分析
 - 实施安全编码培训
 
 ### 4. 部署安全
+
 - 使用 HTTPS 加密所有通信
 - 实施内容安全策略（CSP）
 - 配置安全头部（CORS、HSTS、X-Frame-Options）
 
 ### 5. 监控和日志
+
 - 使用专业的日志管理工具（ELK Stack、Splunk）
 - 实施实时监控和告警
 - 定期审计日志文件
@@ -590,7 +633,7 @@ Thumbs.db
 
 ---
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

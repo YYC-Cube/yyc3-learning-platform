@@ -4,18 +4,24 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ResponsiveLayout } from "@/components/responsive-layout"
-import { AccessibleButton } from "@/components/accessibility/accessible-button"
-import { LiveRegion } from "@/components/accessibility/live-region"
-import { Eye, Volume2, Keyboard, MousePointer } from "lucide-react"
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { ResponsiveLayout } from '@/components/responsive-layout';
+import { AccessibleButton } from '@/components/accessibility/accessible-button';
+import { LiveRegion } from '@/components/accessibility/live-region';
+import { Eye, Volume2, Keyboard, MousePointer } from 'lucide-react';
 
 export default function AccessibilityPage() {
   const [settings, setSettings] = useState({
@@ -25,22 +31,22 @@ export default function AccessibilityPage() {
     screenReader: false,
     keyboardNavigation: true,
     fontSize: [16],
-    colorScheme: "auto",
+    colorScheme: 'auto',
     soundEnabled: true,
     focusIndicator: true,
-  })
+  });
 
-  const [announcements, setAnnouncements] = useState("")
+  const [announcements, setAnnouncements] = useState('');
 
   const updateSetting = (key: string, value: any) => {
-    setSettings((prev) => ({ ...prev, [key]: value }))
-    setAnnouncements(`设置已更新：${key}`)
-  }
+    setSettings((prev) => ({ ...prev, [key]: value }));
+    setAnnouncements(`设置已更新：${key}`);
+  };
 
   return (
     <ResponsiveLayout
       title="无障碍访问设置"
-      user={{ name: "张同学", avatar: "/placeholder.svg?height=40&width=40", level: "中级工程师" }}
+      user={{ name: '张同学', avatar: '/placeholder.svg?height=40&width=40', level: '中级工程师' }}
     >
       <LiveRegion message={announcements} />
 
@@ -69,7 +75,7 @@ export default function AccessibilityPage() {
                   <Switch
                     id="high-contrast"
                     checked={settings.highContrast}
-                    onCheckedChange={(checked) => updateSetting("highContrast", checked)}
+                    onCheckedChange={(checked) => updateSetting('highContrast', checked)}
                     aria-describedby="high-contrast-desc"
                   />
                 </div>
@@ -84,7 +90,7 @@ export default function AccessibilityPage() {
                   <Switch
                     id="large-text"
                     checked={settings.largeText}
-                    onCheckedChange={(checked) => updateSetting("largeText", checked)}
+                    onCheckedChange={(checked) => updateSetting('largeText', checked)}
                     aria-describedby="large-text-desc"
                   />
                 </div>
@@ -102,7 +108,7 @@ export default function AccessibilityPage() {
                     max={24}
                     step={1}
                     value={settings.fontSize}
-                    onValueChange={(value) => updateSetting("fontSize", value)}
+                    onValueChange={(value) => updateSetting('fontSize', value)}
                     aria-describedby="font-size-desc"
                     className="w-full"
                   />
@@ -115,7 +121,10 @@ export default function AccessibilityPage() {
                   <Label htmlFor="color-scheme" className="text-sm font-medium">
                     颜色主题
                   </Label>
-                  <Select value={settings.colorScheme} onValueChange={(value) => updateSetting("colorScheme", value)}>
+                  <Select
+                    value={settings.colorScheme}
+                    onValueChange={(value) => updateSetting('colorScheme', value)}
+                  >
                     <SelectTrigger id="color-scheme" aria-describedby="color-scheme-desc">
                       <SelectValue />
                     </SelectTrigger>
@@ -151,7 +160,7 @@ export default function AccessibilityPage() {
                   <Switch
                     id="reduced-motion"
                     checked={settings.reducedMotion}
-                    onCheckedChange={(checked) => updateSetting("reducedMotion", checked)}
+                    onCheckedChange={(checked) => updateSetting('reducedMotion', checked)}
                     aria-describedby="reduced-motion-desc"
                   />
                 </div>
@@ -166,7 +175,7 @@ export default function AccessibilityPage() {
                   <Switch
                     id="keyboard-nav"
                     checked={settings.keyboardNavigation}
-                    onCheckedChange={(checked) => updateSetting("keyboardNavigation", checked)}
+                    onCheckedChange={(checked) => updateSetting('keyboardNavigation', checked)}
                     aria-describedby="keyboard-nav-desc"
                   />
                 </div>
@@ -181,7 +190,7 @@ export default function AccessibilityPage() {
                   <Switch
                     id="focus-indicator"
                     checked={settings.focusIndicator}
-                    onCheckedChange={(checked) => updateSetting("focusIndicator", checked)}
+                    onCheckedChange={(checked) => updateSetting('focusIndicator', checked)}
                     aria-describedby="focus-indicator-desc"
                   />
                 </div>
@@ -210,7 +219,7 @@ export default function AccessibilityPage() {
                   <Switch
                     id="sound-enabled"
                     checked={settings.soundEnabled}
-                    onCheckedChange={(checked) => updateSetting("soundEnabled", checked)}
+                    onCheckedChange={(checked) => updateSetting('soundEnabled', checked)}
                     aria-describedby="sound-enabled-desc"
                   />
                 </div>
@@ -225,7 +234,7 @@ export default function AccessibilityPage() {
                   <Switch
                     id="screen-reader"
                     checked={settings.screenReader}
-                    onCheckedChange={(checked) => updateSetting("screenReader", checked)}
+                    onCheckedChange={(checked) => updateSetting('screenReader', checked)}
                     aria-describedby="screen-reader-desc"
                   />
                 </div>
@@ -278,7 +287,7 @@ export default function AccessibilityPage() {
           <AccessibleButton
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white"
-            onClick={() => setAnnouncements("设置已保存")}
+            onClick={() => setAnnouncements('设置已保存')}
           >
             保存设置
           </AccessibleButton>
@@ -293,11 +302,11 @@ export default function AccessibilityPage() {
                 screenReader: false,
                 keyboardNavigation: true,
                 fontSize: [16],
-                colorScheme: "auto",
+                colorScheme: 'auto',
                 soundEnabled: true,
                 focusIndicator: true,
-              })
-              setAnnouncements("设置已重置为默认值")
+              });
+              setAnnouncements('设置已重置为默认值');
             }}
           >
             重置为默认
@@ -305,5 +314,5 @@ export default function AccessibilityPage() {
         </div>
       </div>
     </ResponsiveLayout>
-  )
+  );
 }

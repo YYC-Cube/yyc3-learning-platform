@@ -1,10 +1,10 @@
 # YYC³ Learning Platform - Kubernetes 部署指南
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ## 📋 目录
 
@@ -78,6 +78,7 @@ vim secret.yaml
 ```
 
 必须更新的字段：
+
 - `POSTGRES_PASSWORD`: PostgreSQL 密码
 - `DATABASE_URL`: PostgreSQL 连接字符串
 - `REDIS_PASSWORD`: Redis 密码
@@ -418,7 +419,7 @@ kubectl delete namespace yyc3-learning
 
 ## 📄 文档标尾 (Footer)
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

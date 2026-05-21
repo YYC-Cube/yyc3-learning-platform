@@ -5,7 +5,7 @@ describe('RateLimiter', () => {
   let rateLimiter: RateLimiter;
   const defaultConfig = {
     windowMs: 60000,
-    maxRequests: 10
+    maxRequests: 10,
   };
 
   beforeEach(() => {
@@ -24,17 +24,14 @@ describe('RateLimiter', () => {
     it('should create a rate limiter with custom configuration', () => {
       const customLimiter = new RateLimiter({
         windowMs: 30000,
-        maxRequests: 5
+        maxRequests: 5,
       });
       expect(customLimiter).toBeDefined();
       customLimiter.destroy();
     });
 
     it('should create a rate limiter with specified strategy', () => {
-      const slidingWindowLimiter = new RateLimiter(
-        defaultConfig,
-        RateLimitStrategy.SLIDING_WINDOW
-      );
+      const slidingWindowLimiter = new RateLimiter(defaultConfig, RateLimitStrategy.SLIDING_WINDOW);
       expect(slidingWindowLimiter).toBeDefined();
       slidingWindowLimiter.destroy();
     });
@@ -74,7 +71,7 @@ describe('RateLimiter', () => {
       const skipSuccessLimiter = new RateLimiter({
         windowMs: 60000,
         maxRequests: 5,
-        skipSuccessfulRequests: true
+        skipSuccessfulRequests: true,
       });
 
       for (let i = 0; i < 10; i++) {
@@ -92,7 +89,7 @@ describe('RateLimiter', () => {
       const skipFailedLimiter = new RateLimiter({
         windowMs: 60000,
         maxRequests: 5,
-        skipFailedRequests: true
+        skipFailedRequests: true,
       });
 
       for (let i = 0; i < 10; i++) {
@@ -110,7 +107,7 @@ describe('RateLimiter', () => {
       const customKeyLimiter = new RateLimiter({
         windowMs: 60000,
         maxRequests: 5,
-        keyGenerator: (id: string) => `prefix:${id}`
+        keyGenerator: (id: string) => `prefix:${id}`,
       });
 
       const result1 = await customKeyLimiter.check('user1');
@@ -283,7 +280,7 @@ describe('RateLimiter', () => {
     it('should update configuration', async () => {
       await rateLimiter.setConfig({
         windowMs: 120000,
-        maxRequests: 20
+        maxRequests: 20,
       });
 
       const result = await rateLimiter.check('user1');
@@ -294,10 +291,7 @@ describe('RateLimiter', () => {
   describe('RateLimitStrategy', () => {
     describe('FIXED_WINDOW', () => {
       it('should use fixed window strategy', async () => {
-        const fixedLimiter = new RateLimiter(
-          defaultConfig,
-          RateLimitStrategy.FIXED_WINDOW
-        );
+        const fixedLimiter = new RateLimiter(defaultConfig, RateLimitStrategy.FIXED_WINDOW);
 
         for (let i = 0; i < 10; i++) {
           const result = await fixedLimiter.check('user1');
@@ -313,10 +307,7 @@ describe('RateLimiter', () => {
 
     describe('SLIDING_WINDOW', () => {
       it('should use sliding window strategy', async () => {
-        const slidingLimiter = new RateLimiter(
-          defaultConfig,
-          RateLimitStrategy.SLIDING_WINDOW
-        );
+        const slidingLimiter = new RateLimiter(defaultConfig, RateLimitStrategy.SLIDING_WINDOW);
 
         for (let i = 0; i < 10; i++) {
           const result = await slidingLimiter.check('user1');
@@ -332,10 +323,7 @@ describe('RateLimiter', () => {
 
     describe('TOKEN_BUCKET', () => {
       it('should use token bucket strategy', async () => {
-        const tokenBucketLimiter = new RateLimiter(
-          defaultConfig,
-          RateLimitStrategy.TOKEN_BUCKET
-        );
+        const tokenBucketLimiter = new RateLimiter(defaultConfig, RateLimitStrategy.TOKEN_BUCKET);
 
         for (let i = 0; i < 10; i++) {
           const result = await tokenBucketLimiter.check('user1');
@@ -351,10 +339,7 @@ describe('RateLimiter', () => {
 
     describe('LEAKY_BUCKET', () => {
       it('should use leaky bucket strategy', async () => {
-        const leakyBucketLimiter = new RateLimiter(
-          defaultConfig,
-          RateLimitStrategy.LEAKY_BUCKET
-        );
+        const leakyBucketLimiter = new RateLimiter(defaultConfig, RateLimitStrategy.LEAKY_BUCKET);
 
         for (let i = 0; i < 10; i++) {
           const result = await leakyBucketLimiter.check('user1');
@@ -413,12 +398,12 @@ describe('RateLimiter', () => {
     it('should clean up expired entries', async () => {
       const shortWindowLimiter = new RateLimiter({
         windowMs: 100,
-        maxRequests: 5
+        maxRequests: 5,
       });
 
       await shortWindowLimiter.check('user1');
 
-      await new Promise(resolve => setTimeout(resolve, 150));
+      await new Promise((resolve) => setTimeout(resolve, 150));
 
       const usage = await shortWindowLimiter.getCurrentUsage('user1');
       expect(usage).toBeNull();

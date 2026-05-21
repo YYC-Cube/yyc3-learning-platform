@@ -1,13 +1,13 @@
 /**
  * ToolboxPanel - 工具箱面板组件
  * 提供直观、智能的工具发现和使用体验，支持快速操作和复杂工作流
- * 
+ *
  * 设计理念：
  * - 可发现性：智能推荐、语义搜索、分类导航
  * - 易用性：一键执行、快捷键、拖拽操作
  * - 可扩展性：插件化架构、动态加载、热更新
  * - 个性化：学习用户习惯、自适应布局、定制化配置
- * 
+ *
  * @module ToolboxPanel
  */
 
@@ -44,7 +44,7 @@ export enum ToolCategory {
   DEVELOPMENT = 'development',
   ANALYSIS = 'analysis',
   AUTOMATION = 'automation',
-  CUSTOM = 'custom'
+  CUSTOM = 'custom',
 }
 
 export interface ToolConfig {
@@ -85,7 +85,10 @@ export interface ToolDefinition {
   metadata?: Record<string, any>;
 }
 
-export type ToolExecutor = (parameters: any, context: ExecutionContext) => Promise<ToolExecutionResult>;
+export type ToolExecutor = (
+  parameters: any,
+  context: ExecutionContext
+) => Promise<ToolExecutionResult>;
 
 export interface ExecutionContext {
   userId: string;
@@ -140,7 +143,7 @@ export interface ToolSearchResult {
 export enum ViewMode {
   GRID = 'grid',
   LIST = 'list',
-  COMPACT = 'compact'
+  COMPACT = 'compact',
 }
 
 export interface PanelLayout {
@@ -275,7 +278,7 @@ class ToolRegistry {
       tags: definition.metadata?.tags || [],
       enabled: true,
       pinned: false,
-      usageCount: 0
+      usageCount: 0,
     };
 
     this.tools.set(tool.id, tool);
@@ -290,15 +293,15 @@ class ToolRegistry {
     let tools = Array.from(this.tools.values());
 
     if (filter?.category) {
-      tools = tools.filter(t => t.category === filter.category);
+      tools = tools.filter((t) => t.category === filter.category);
     }
 
     if (filter?.enabled !== undefined) {
-      tools = tools.filter(t => t.enabled === filter.enabled);
+      tools = tools.filter((t) => t.enabled === filter.enabled);
     }
 
     if (filter?.pinned !== undefined) {
-      tools = tools.filter(t => t.pinned === filter.pinned);
+      tools = tools.filter((t) => t.pinned === filter.pinned);
     }
 
     return tools;
@@ -339,11 +342,11 @@ class ExecutionEngine {
 
   async execute(tool: Tool, env: ExecutionContext): Promise<ToolExecutionResult> {
     const executor = this.executors.get(tool.id);
-    
+
     if (!executor) {
       return {
         success: false,
-        error: `未找到工具 ${tool.id} 的执行器`
+        error: `未找到工具 ${tool.id} 的执行器`,
       };
     }
 
@@ -351,14 +354,14 @@ class ExecutionEngine {
 
     try {
       const result = await this.executeWithTimeout(executor, {}, env);
-      
+
       return {
         ...result,
         metrics: {
           startTime,
           endTime: new Date(),
-          duration: Date.now() - startTime.getTime()
-        }
+          duration: Date.now() - startTime.getTime(),
+        },
       };
     } catch (error) {
       return {
@@ -367,8 +370,8 @@ class ExecutionEngine {
         metrics: {
           startTime,
           endTime: new Date(),
-          duration: Date.now() - startTime.getTime()
-        }
+          duration: Date.now() - startTime.getTime(),
+        },
       };
     }
   }
@@ -382,7 +385,7 @@ class ExecutionEngine {
       executor(parameters, context),
       new Promise<ToolExecutionResult>((_, reject) =>
         setTimeout(() => reject(new Error('执行超时')), this.config.timeout)
-      )
+      ),
     ]);
   }
 }
@@ -393,7 +396,10 @@ class RecommendationEngine {
     updateInterval: number;
   };
 
-  constructor(config: { algorithm: 'collaborative' | 'content-based' | 'hybrid'; updateInterval: number }) {
+  constructor(config: {
+    algorithm: 'collaborative' | 'content-based' | 'hybrid';
+    updateInterval: number;
+  }) {
     this.config = config;
   }
 
@@ -414,15 +420,16 @@ class UIRenderer {
     this.config = config;
   }
 
-  addTool(tool: Tool): void {
-  }
+  addTool(tool: Tool): void {}
 
-  render(components: any[]): void {
-  }
+  render(components: any[]): void {}
 }
 
 class ToolboxError extends Error {
-  constructor(message: string, public originalError?: Error) {
+  constructor(
+    message: string,
+    public originalError?: Error
+  ) {
     super(message);
     this.name = 'ToolboxError';
   }
@@ -453,30 +460,30 @@ export interface IToolboxPanel {
   getTool(toolId: string): Tool | undefined;
   listTools(filter?: ToolFilter): Tool[];
   searchTools(query: string, options?: SearchOptions): ToolSearchResult[];
-  
+
   // 面板控制
   show(): void;
   hide(): void;
   toggle(): void;
   setViewMode(mode: ViewMode): void;
   setLayout(layout: PanelLayout): void;
-  
+
   // 工具执行
   executeTool(toolId: string, parameters?: any): Promise<ToolExecutionResult>;
   executeToolChain(chain: ToolChain): Promise<ChainExecutionResult>;
   scheduleTool(toolId: string, schedule: Schedule): Promise<string>;
-  
+
   // 个性化
   pinTool(toolId: string): void;
   unpinTool(toolId: string): void;
   createToolGroup(group: ToolGroup): string;
   reorderTools(order: ToolOrder): void;
-  
+
   // 智能功能
   suggestTools(context: SuggestionContext): Promise<ToolSuggestion[]>;
   learnToolUsage(pattern: UsagePattern): Promise<void>;
   optimizeToolLayout(userId: string): Promise<void>;
-  
+
   // 生命周期
   initialize(): Promise<void>;
   shutdown(): Promise<void>;
@@ -504,22 +511,22 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
 
     this.toolRegistry = new ToolRegistry({
       maxTools: config.maxTools,
-      cacheEnabled: config.cacheEnabled
+      cacheEnabled: config.cacheEnabled,
     });
 
     this.layoutManager = new LayoutManager({
       defaultLayout: config.defaultLayout,
-      responsive: config.responsive
+      responsive: config.responsive,
     });
 
     this.executionEngine = new ExecutionEngine({
       timeout: config.executionTimeout,
-      retryPolicy: config.retryPolicy
+      retryPolicy: config.retryPolicy,
     });
 
     this.recommendationEngine = new RecommendationEngine({
       algorithm: config.recommendationAlgorithm,
-      updateInterval: config.recommendationUpdateInterval
+      updateInterval: config.recommendationUpdateInterval,
     });
 
     this.uiRenderer = new UIRenderer(config.ui);
@@ -529,10 +536,10 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
     try {
       this.loadDefaultTools();
       this.setupEventHandlers();
-      
+
       this.status.initialized = true;
       this.status.toolCount = this.listTools().length;
-      
+
       this.emit('initialized');
     } catch (error) {
       this.status.error = (error as Error).message;
@@ -560,7 +567,7 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
       if (!validation.valid) {
         return {
           success: false,
-          errors: validation.errors
+          errors: validation.errors,
         };
       }
 
@@ -569,7 +576,7 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
       if (dependencies.missing.length > 0) {
         return {
           success: false,
-          errors: [`缺少依赖: ${dependencies.missing.join(', ')}`]
+          errors: [`缺少依赖: ${dependencies.missing.join(', ')}`],
         };
       }
 
@@ -594,9 +601,8 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
       return {
         success: true,
         toolId: registeredTool.id,
-        warnings: validation.warnings
+        warnings: validation.warnings,
       };
-
     } catch (error) {
       throw new ToolboxError(`工具注册失败: ${(error as Error).message}`, error as Error);
     }
@@ -625,12 +631,12 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
 
     for (const tool of allTools) {
       const relevance = this.calculateRelevance(tool, query);
-      
+
       if (relevance > 0) {
         results.push({
           tool,
           relevance,
-          highlights: this.getHighlights(tool, query)
+          highlights: this.getHighlights(tool, query),
         });
       }
     }
@@ -676,7 +682,7 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
    */
   async executeTool(toolId: string, parameters?: any): Promise<ToolExecutionResult> {
     const tool = this.toolRegistry.get(toolId);
-    
+
     if (!tool) {
       throw new ToolNotFoundError(`工具 ${toolId} 未找到`);
     }
@@ -694,7 +700,7 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
     const executionEnv: ExecutionContext = {
       userId: 'current-user',
       sessionId: 'current-session',
-      environment: {}
+      environment: {},
     };
 
     // 3. 执行工具
@@ -734,12 +740,11 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
             success: false,
             results,
             failedStep: i,
-            error: result.error
+            error: result.error,
           };
         }
 
         previousResult = result.data;
-
       } catch (error) {
         if (step.errorHandler) {
           step.errorHandler(error as Error);
@@ -749,14 +754,14 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
           success: false,
           results,
           failedStep: i,
-          error: (error as Error).message
+          error: (error as Error).message,
         };
       }
     }
 
     return {
       success: true,
-      results
+      results,
     };
   }
 
@@ -829,7 +834,7 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
 
   private async checkDependencies(tool: ToolDefinition): Promise<{ missing: string[] }> {
     const missing: string[] = [];
-    
+
     if (tool.dependencies) {
       for (const dep of tool.dependencies) {
         if (!this.toolRegistry.get(dep)) {
@@ -852,7 +857,7 @@ export class ToolboxPanel extends EventEmitter implements IToolboxPanel {
 
     if (tool.name.toLowerCase().includes(lowerQuery)) score += 10;
     if (tool.description.toLowerCase().includes(lowerQuery)) score += 5;
-    if (tool.tags.some(tag => tag.toLowerCase().includes(lowerQuery))) score += 3;
+    if (tool.tags.some((tag) => tag.toLowerCase().includes(lowerQuery))) score += 3;
 
     return score;
   }
@@ -888,20 +893,20 @@ export const toolboxPanel = new ToolboxPanel({
     mode: ViewMode.GRID,
     columns: 3,
     groupBy: 'category',
-    showPinned: true
+    showPinned: true,
   },
   responsive: true,
   executionTimeout: 30000,
   retryPolicy: {
     maxRetries: 3,
     backoffMultiplier: 2,
-    initialDelay: 1000
+    initialDelay: 1000,
   },
   recommendationAlgorithm: 'hybrid',
   recommendationUpdateInterval: 3600000,
   ui: {
     theme: 'auto',
     animations: true,
-    compactMode: false
-  }
+    compactMode: false,
+  },
 });

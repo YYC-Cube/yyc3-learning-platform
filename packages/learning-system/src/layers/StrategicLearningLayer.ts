@@ -30,7 +30,7 @@ import {
   StrategyDefinition,
   StrategyEvaluation,
   StrategyMetrics,
-  StrategyUpdate
+  StrategyUpdate,
 } from '../ILearningSystem';
 import type {
   ConfigObject,
@@ -39,7 +39,7 @@ import type {
   StrategyEfficiency,
   PlanEffectiveness,
   LearningInsight,
-  EventListener
+  EventListener,
 } from '../types/common.types';
 
 /**
@@ -175,7 +175,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         metrics: this.initializeStrategyMetrics(),
         status: 'planning',
         createdAt: Date.now(),
-        updatedAt: Date.now()
+        updatedAt: Date.now(),
       };
 
       // Store strategy
@@ -270,7 +270,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         sustainability,
         risk,
         recommendations,
-        nextActions
+        nextActions,
       };
 
       // Update strategy metrics
@@ -279,7 +279,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         lastEvaluation: Date.now(),
         effectiveness,
         efficiency,
-        risk: risk.overall
+        risk: risk.overall,
       };
 
       // Store evaluation
@@ -314,7 +314,10 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       const currentEvaluation = await this.evaluateStrategy(strategyId);
 
       // Identify optimization opportunities
-      const opportunities = await this.identifyOptimizationOpportunities(strategy, currentEvaluation);
+      const opportunities = await this.identifyOptimizationOpportunities(
+        strategy,
+        currentEvaluation
+      );
 
       // Apply optimizations
       const optimizations = await this.applyStrategyOptimizations(strategy, opportunities);
@@ -327,7 +330,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         timestamp: Date.now(),
         improvements: { count: optimizations.length },
         recommendations: [],
-        cost: 0
+        cost: 0,
       };
     } catch (error) {
       return {
@@ -335,7 +338,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         timestamp: Date.now(),
         improvements: { count: 0 },
         recommendations: [(error as Error).message],
-        cost: 0
+        cost: 0,
       };
     }
   }
@@ -357,7 +360,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       }
 
       // Update metrics
-      this._metrics.goalProgress = goals.map(goal => this.calculateGoalProgress(goal));
+      this._metrics.goalProgress = goals.map((goal) => this.calculateGoalProgress(goal));
 
       // Check for goal conflicts
       await this.checkForGoalConflicts(goals);
@@ -449,7 +452,11 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       const selectedOption = await this.selectBestOption(context, evaluatedOptions);
 
       // Generate decision reasoning
-      const reasoning = await this.generateDecisionReasoning(context, selectedOption, evaluatedOptions);
+      const reasoning = await this.generateDecisionReasoning(
+        context,
+        selectedOption,
+        evaluatedOptions
+      );
 
       // Calculate expected outcomes
       const expectedOutcomes = await this.calculateExpectedOutcomes(selectedOption);
@@ -466,7 +473,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         confidence: this.calculateDecisionConfidence(selectedOption, evaluatedOptions),
         expectedOutcomes,
         risks,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       // Store decision
@@ -536,7 +543,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         success: true,
         effectiveness: 0.8,
         lessonsLearned: [],
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       // Analyze decision effectiveness
@@ -551,9 +558,9 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       const learning: DecisionLearning = {
         id: this.generateId(),
         decisionId,
-        learnings: learningPoints.map(point => JSON.stringify(point)),
+        learnings: learningPoints.map((point) => JSON.stringify(point)),
         improvements: { recommendations: recommendations.length },
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
 
       // Apply learning to strategies
@@ -594,7 +601,8 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       this._resourceAllocations = optimalAllocation;
 
       // Update metrics
-      this._metrics.resourceUtilization = await this.calculateResourceUtilization(optimalAllocation);
+      this._metrics.resourceUtilization =
+        await this.calculateResourceUtilization(optimalAllocation);
 
       // Emit event
       this.emit('resource_allocation_optimized', optimalAllocation);
@@ -622,7 +630,12 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       const strategicNeeds = await this.calculateStrategicResourceNeeds(timeHorizon);
 
       // Generate prediction
-      const prediction = await this.generateResourcePrediction(currentUsage, trends, strategicNeeds, timeHorizon);
+      const prediction = await this.generateResourcePrediction(
+        currentUsage,
+        trends,
+        strategicNeeds,
+        timeHorizon
+      );
 
       // Calculate confidence
       prediction.confidence = await this.calculatePredictionConfidence(prediction);
@@ -666,7 +679,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         goals: objectives,
         strategies,
         timeline,
-        resources
+        resources,
       };
 
       // Store plan
@@ -748,7 +761,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
         timestamp: Date.now(),
         effectiveness,
         efficiency,
-        recommendations: []
+        recommendations: [],
       };
 
       // Update plan - StrategicPlan doesn't have lastEvaluation property, so we don't store it here
@@ -801,7 +814,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       resourcePlanningEnabled: true,
       planningHorizon: 90,
       evaluationFrequency: 24,
-      riskAssessmentEnabled: true
+      riskAssessmentEnabled: true,
     };
   }
 
@@ -811,7 +824,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       goalProgress: [],
       decisionEffectiveness: 0,
       resourceUtilization: [],
-      riskAssessments: []
+      riskAssessments: [],
     };
   }
 
@@ -820,7 +833,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       effectiveness: 0,
       efficiency: 0,
       risk: 0,
-      lastEvaluation: 0
+      lastEvaluation: 0,
     };
   }
 
@@ -837,21 +850,30 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
   }
 
   private startStrategyEvaluation(): void {
-    setInterval(() => {
-      this.evaluateAllStrategies().catch(console.error);
-    }, this._config.evaluationFrequency * 60 * 60 * 1000);
+    setInterval(
+      () => {
+        this.evaluateAllStrategies().catch(console.error);
+      },
+      this._config.evaluationFrequency * 60 * 60 * 1000
+    );
   }
 
   private startGoalProgressTracking(): void {
-    setInterval(() => {
-      this.trackAllGoalsProgress().catch(console.error);
-    }, 60 * 60 * 1000); // Track every hour
+    setInterval(
+      () => {
+        this.trackAllGoalsProgress().catch(console.error);
+      },
+      60 * 60 * 1000
+    ); // Track every hour
   }
 
   private startResourceMonitoring(): void {
-    setInterval(() => {
-      this.optimizeResourceAllocation().catch(console.error);
-    }, 4 * 60 * 60 * 1000); // Optimize every 4 hours
+    setInterval(
+      () => {
+        this.optimizeResourceAllocation().catch(console.error);
+      },
+      4 * 60 * 60 * 1000
+    ); // Optimize every 4 hours
   }
 
   private async evaluateAllStrategies(): Promise<void> {
@@ -896,7 +918,11 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
   }
 
   private requiresReevaluation(updates: StrategyUpdate): boolean {
-    return !!(updates.updates['objectives'] || updates.updates['tactics'] || updates.updates['resources']);
+    return !!(
+      updates.updates['objectives'] ||
+      updates.updates['tactics'] ||
+      updates.updates['resources']
+    );
   }
 
   // Placeholder implementations for complex methods
@@ -904,43 +930,66 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     // Implement feasibility evaluation
   }
 
-  private async collectStrategyPerformanceData(strategyId: string): Promise<Record<string, unknown>> {
+  private async collectStrategyPerformanceData(
+    strategyId: string
+  ): Promise<Record<string, unknown>> {
     // Collect performance data for strategy
     return {};
   }
 
-  private async calculateStrategyEffectiveness(strategy: Strategy, data: Record<string, unknown>): Promise<number> {
+  private async calculateStrategyEffectiveness(
+    strategy: Strategy,
+    data: Record<string, unknown>
+  ): Promise<number> {
     // Calculate strategy effectiveness
     return 0.8;
   }
 
-  private async calculateStrategyEfficiency(strategy: Strategy, data: ConfigObject): Promise<number> {
+  private async calculateStrategyEfficiency(
+    strategy: Strategy,
+    data: ConfigObject
+  ): Promise<number> {
     // Calculate strategy efficiency
     return 0.75;
   }
 
-  private async assessStrategySustainability(strategy: Strategy, data: ConfigObject): Promise<number> {
+  private async assessStrategySustainability(
+    strategy: Strategy,
+    data: ConfigObject
+  ): Promise<number> {
     // Assess strategy sustainability
     return 0.7;
   }
 
-  private async evaluateStrategyRisks(strategy: Strategy, data: ConfigObject): Promise<RiskAssessment> {
+  private async evaluateStrategyRisks(
+    strategy: Strategy,
+    data: ConfigObject
+  ): Promise<RiskAssessment> {
     // Evaluate strategy risks
     return { overall: 0.3, categories: [] };
   }
 
-  private async generateStrategyRecommendations(strategy: Strategy, data: ConfigObject): Promise<Recommendation[]> {
+  private async generateStrategyRecommendations(
+    strategy: Strategy,
+    data: ConfigObject
+  ): Promise<Recommendation[]> {
     // Generate strategy recommendations
     return [];
   }
 
-  private async generateNextActions(strategy: Strategy, data: ConfigObject): Promise<LearningInsight[]> {
+  private async generateNextActions(
+    strategy: Strategy,
+    data: ConfigObject
+  ): Promise<LearningInsight[]> {
     // Generate next actions for strategy
     return [];
   }
 
   // Missing method implementations
-  private async calculatePlanEffectiveness(plan: StrategicPlan, data: ConfigObject): Promise<number> {
+  private async calculatePlanEffectiveness(
+    plan: StrategicPlan,
+    data: ConfigObject
+  ): Promise<number> {
     // Calculate plan effectiveness
     return 0.85;
   }
@@ -955,7 +1004,10 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return 0.82;
   }
 
-  private async identifyPlanLessons(plan: StrategicPlan, data: ConfigObject): Promise<LearningInsight[]> {
+  private async identifyPlanLessons(
+    plan: StrategicPlan,
+    data: ConfigObject
+  ): Promise<LearningInsight[]> {
     // Identify plan lessons learned
     return [];
   }
@@ -964,44 +1016,59 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     // Update metrics from evaluation
   }
 
-  private async identifyOptimizationOpportunities(strategy: Strategy, evaluation: StrategyEvaluation): Promise<any[]> {
+  private async identifyOptimizationOpportunities(
+    strategy: Strategy,
+    evaluation: StrategyEvaluation
+  ): Promise<any[]> {
     // Identify optimization opportunities
     return [];
   }
 
-  private async applyStrategyOptimizations(strategy: Strategy, opportunities: LearningInsight[]): Promise<Recommendation[]> {
+  private async applyStrategyOptimizations(
+    strategy: Strategy,
+    opportunities: LearningInsight[]
+  ): Promise<Recommendation[]> {
     // Apply strategy optimizations
     return [];
   }
 
-  private async validateOptimizations(strategy: Strategy, optimizations: Recommendation[]): Promise<ValidationResult> {
+  private async validateOptimizations(
+    strategy: Strategy,
+    optimizations: Recommendation[]
+  ): Promise<ValidationResult> {
     // Validate optimizations
     return { success: true, performanceGain: 0.1 };
   }
 
   private calculateGoalProgress(goal: StrategicGoal): GoalProgress {
     // Check if both currentValue and targetValue are available and numeric
-    const isNumeric = (value: unknown): value is number => typeof value === 'number' && isFinite(value);
+    const isNumeric = (value: unknown): value is number =>
+      typeof value === 'number' && isFinite(value);
     const currentValue = isNumeric(goal.currentValue) ? goal.currentValue : 0;
 
     // Handle targetValue which might be an object or number
     let targetValue = 1; // Default to 1 to avoid division by zero
     if (isNumeric(goal.targetValue)) {
       targetValue = goal.targetValue;
-    } else if (goal.targetValue && typeof goal.targetValue === 'object' && 'value' in goal.targetValue) {
+    } else if (
+      goal.targetValue &&
+      typeof goal.targetValue === 'object' &&
+      'value' in goal.targetValue
+    ) {
       targetValue = isNumeric(goal.targetValue.value) ? goal.targetValue.value : 1;
     }
 
     const progress = targetValue > 0 ? Math.min(currentValue / targetValue, 1) : 0;
 
     // Count completed milestones - use completion property not completed
-    const milestonesCompleted = goal.milestones?.filter(milestone => milestone.completion >= 1).length || 0;
+    const milestonesCompleted =
+      goal.milestones?.filter((milestone) => milestone.completion >= 1).length || 0;
 
     return {
       goalId: goal.id,
       progress,
       milestonesCompleted,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -1024,7 +1091,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
   }
 
   private updateGoalMetrics(progress: GoalProgress): void {
-    const index = this._metrics.goalProgress.findIndex(p => p.goalId === progress.goalId);
+    const index = this._metrics.goalProgress.findIndex((p) => p.goalId === progress.goalId);
     if (index >= 0) {
       this._metrics.goalProgress[index] = progress;
     } else {
@@ -1036,7 +1103,10 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     // Check for conflicts between goals
   }
 
-  private async applyGoalAdjustment(goal: StrategicGoal, adjustment: GoalAdjustment): Promise<StrategicGoal> {
+  private async applyGoalAdjustment(
+    goal: StrategicGoal,
+    adjustment: GoalAdjustment
+  ): Promise<StrategicGoal> {
     // Apply adjustment to goal
     return { ...goal, ...adjustment };
   }
@@ -1046,11 +1116,14 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return context.availableOptions || [];
   }
 
-  private async gevaluateDecisionOptions(context: DecisionContext, options: ConfigObject[]): Promise<Recommendation[]> {
+  private async gevaluateDecisionOptions(
+    context: DecisionContext,
+    options: ConfigObject[]
+  ): Promise<Recommendation[]> {
     // Evaluate decision options
-    return options.map(option => ({
+    return options.map((option) => ({
       ...option,
-      score: this.calculateOptionScore(context, option)
+      score: this.calculateOptionScore(context, option),
     }));
   }
 
@@ -1059,23 +1132,35 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return 0.7;
   }
 
-  private async selectBestOption(context: DecisionContext, options: ConfigObject[]): Promise<ConfigObject> {
+  private async selectBestOption(
+    context: DecisionContext,
+    options: ConfigObject[]
+  ): Promise<ConfigObject> {
     // Select best option
-    return options.reduce((best, current) =>
-      current.score > best.score ? current : best, options[0]);
+    return options.reduce(
+      (best, current) => (current.score > best.score ? current : best),
+      options[0]
+    );
   }
 
-  private async generateDecisionReasoning(context: DecisionContext, option: ConfigObject, allOptions: ConfigObject[]): Promise<LearningInsight> {
+  private async generateDecisionReasoning(
+    context: DecisionContext,
+    option: ConfigObject,
+    allOptions: ConfigObject[]
+  ): Promise<LearningInsight> {
     // Generate decision reasoning
     return {
       rationale: `Selected option with highest score: ${option.score}`,
       factors: ['effectiveness', 'cost', 'risk', 'timeline'],
-      comparison: allOptions.map(opt => ({ id: opt.id, score: opt.score }))
+      comparison: allOptions.map((opt) => ({ id: opt.id, score: opt.score })),
     };
   }
 
-  private calculateDecisionConfidence(selectedOption: ConfigObject, allOptions: ConfigObject[]): number {
-    const scores = allOptions.map(opt => opt.score);
+  private calculateDecisionConfidence(
+    selectedOption: ConfigObject,
+    allOptions: ConfigObject[]
+  ): number {
+    const scores = allOptions.map((opt) => opt.score);
     const maxScore = Math.max(...scores);
     const minScore = Math.min(...scores);
     const range = maxScore - minScore;
@@ -1087,7 +1172,10 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return option.expectedOutcomes || [];
   }
 
-  private async assessDecisionRisks(option: ConfigObject, context: DecisionContext): Promise<RiskAssessment[]> {
+  private async assessDecisionRisks(
+    option: ConfigObject,
+    context: DecisionContext
+  ): Promise<RiskAssessment[]> {
     // Assess decision risks
     return option.risks || [];
   }
@@ -1096,28 +1184,40 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     // Update decision metrics
   }
 
-  private async analyzeDecisionEffectiveness(decision: StrategicDecision, outcome: DecisionOutcome): Promise<number> {
+  private async analyzeDecisionEffectiveness(
+    decision: StrategicDecision,
+    outcome: DecisionOutcome
+  ): Promise<number> {
     // Analyze decision effectiveness
     return outcome.effectiveness;
   }
 
-  private async identifyLearningPoints(decision: StrategicDecision, outcome: DecisionOutcome): Promise<any[]> {
+  private async identifyLearningPoints(
+    decision: StrategicDecision,
+    outcome: DecisionOutcome
+  ): Promise<any[]> {
     // Identify learning points
     return [];
   }
 
-  private async generateDecisionLearning(decision: StrategicDecision, outcome: DecisionOutcome): Promise<DecisionLearning> {
+  private async generateDecisionLearning(
+    decision: StrategicDecision,
+    outcome: DecisionOutcome
+  ): Promise<DecisionLearning> {
     // Generate decision learning
     return {
       id: this.generateId(),
       decisionId: decision.id,
       learnings: outcome.lessonsLearned || [],
       improvements: {},
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
-  private async generateDecisionRecommendations(decision: StrategicDecision, learningPoints: LearningInsight[]): Promise<Recommendation[]> {
+  private async generateDecisionRecommendations(
+    decision: StrategicDecision,
+    learningPoints: LearningInsight[]
+  ): Promise<Recommendation[]> {
     // Generate decision recommendations
     return [];
   }
@@ -1130,7 +1230,10 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     // Update learning metrics
   }
 
-  private async updateDecisionOutcomeMetrics(decision: StrategicDecision, outcome: DecisionOutcome): Promise<void> {
+  private async updateDecisionOutcomeMetrics(
+    decision: StrategicDecision,
+    outcome: DecisionOutcome
+  ): Promise<void> {
     // Update decision outcome metrics
   }
 
@@ -1144,7 +1247,10 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return { compute: 200, memory: 100, storage: 50, network: 25 };
   }
 
-  private async calculateOptimalAllocation(requirements: ConfigObject, available: ConfigObject): Promise<ResourceAllocation> {
+  private async calculateOptimalAllocation(
+    requirements: ConfigObject,
+    available: ConfigObject
+  ): Promise<ResourceAllocation> {
     // Calculate optimal resource allocation
     return {
       id: this.generateId(),
@@ -1152,8 +1258,8 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       timestamp: Date.now(),
       allocations: {
         compute: Math.min(requirements.compute, available.compute),
-        memory: Math.min(requirements.memory, available.memory)
-      }
+        memory: Math.min(requirements.memory, available.memory),
+      },
     };
   }
 
@@ -1166,7 +1272,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return Object.entries(allocation.allocations).map(([type, allocated]) => ({
       type,
       utilization: allocated / 100,
-      efficiency: 0.9
+      efficiency: 0.9,
     }));
   }
 
@@ -1185,17 +1291,22 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return { compute: 120, memory: 60, storage: 25, network: 15 };
   }
 
-  private async generateResourcePrediction(current: ConfigObject, trends: ConfigObject, strategic: ConfigObject, timeHorizon: number): Promise<ResourcePrediction> {
+  private async generateResourcePrediction(
+    current: ConfigObject,
+    trends: ConfigObject,
+    strategic: ConfigObject,
+    timeHorizon: number
+  ): Promise<ResourcePrediction> {
     // Generate resource prediction
     return {
       id: this.generateId(),
       timeHorizon,
       predictions: {
-        compute: current.compute * (1 + trends.growthRate * timeHorizon / 30),
-        memory: current.memory * (1 + trends.growthRate * timeHorizon / 30)
+        compute: current.compute * (1 + (trends.growthRate * timeHorizon) / 30),
+        memory: current.memory * (1 + (trends.growthRate * timeHorizon) / 30),
       },
       confidence: 0.8,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -1234,7 +1345,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       id: this.generateId(),
       resources: [],
       allocations: { compute: 100, memory: 50, storage: 20, network: 10 },
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -1245,7 +1356,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
       startDate: Date.now(),
       endDate: Date.now() + 30 * 24 * 60 * 60 * 1000, // 30 days from now
       milestones: [],
-      dependencies: []
+      dependencies: [],
     };
   }
 
@@ -1254,7 +1365,10 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return [];
   }
 
-  private async applyPlanChanges(plan: StrategicPlan, changes: PlanAdaptation): Promise<StrategicPlan> {
+  private async applyPlanChanges(
+    plan: StrategicPlan,
+    changes: PlanAdaptation
+  ): Promise<StrategicPlan> {
     // Apply plan changes
     return plan;
   }
@@ -1282,7 +1396,7 @@ export class StrategicLearningLayer extends EventEmitter implements IStrategicLe
     return {
       id: this.generateId(),
       timestamp: Date.now(),
-      learned: true
+      learned: true,
     };
   }
 

@@ -4,13 +4,9 @@
 // ============================================================================
 
 // Main System Exports
-export {
-  FiveDimensionalManagement
-} from './core/FiveDimensionalManagement';
+export { FiveDimensionalManagement } from './core/FiveDimensionalManagement';
 
-export type {
-  IFiveDimensionalManagement
-} from './types/IFiveDimensionalManagement';
+export type { IFiveDimensionalManagement } from './types/IFiveDimensionalManagement';
 
 // Dimension Exports
 export { GoalDimension } from './dimensions/GoalDimension';
@@ -48,7 +44,7 @@ export type {
   ValueDashboardData,
   ExecutiveSummary,
   TrendData,
-  AlertFilters
+  AlertFilters,
 } from './types/IFiveDimensionalManagement';
 
 // Utility Exports
@@ -89,33 +85,33 @@ export const defaultConfig: ManagementConfig = {
     technology: { enabled: true, priority: 2 },
     data: { enabled: true, priority: 3 },
     ux: { enabled: true, priority: 4 },
-    value: { enabled: true, priority: 5 }
+    value: { enabled: true, priority: 5 },
   },
   alerts: {
     thresholds: {
       goalDeviation: 0.15,
       performanceDegradation: 0.2,
       errorRate: 0.05,
-      userSatisfactionDrop: 0.1
+      userSatisfactionDrop: 0.1,
     },
     notifications: {
       email: true,
       slack: false,
       webhook: false,
-      dashboard: true
-    }
+      dashboard: true,
+    },
   },
   optimization: {
     enabled: true,
     autoAdjustment: false,
-    learningEnabled: true
+    learningEnabled: true,
   },
   security: {
     level: 'standard',
     encryptionEnabled: true,
     auditLog: true,
-    accessControl: true
-  }
+    accessControl: true,
+  },
 };
 
 /**
@@ -128,7 +124,9 @@ export function createFiveDimensionalManagement(): FiveDimensionalManagement {
 /**
  * Create a new Five-Dimensional Management System with custom configuration
  */
-export function createFiveDimensionalManagementWithConfig(config: Partial<ManagementConfig>): FiveDimensionalManagement {
+export function createFiveDimensionalManagementWithConfig(
+  config: Partial<ManagementConfig>
+): FiveDimensionalManagement {
   const mergedConfig = { ...defaultConfig, ...config };
 
   // Validate the final configuration
@@ -143,7 +141,9 @@ export function createFiveDimensionalManagementWithConfig(config: Partial<Manage
 /**
  * Create a production-ready Five-Dimensional Management System
  */
-export function createProductionFiveDimensionalManagement(overrides?: Partial<ManagementConfig>): FiveDimensionalManagement {
+export function createProductionFiveDimensionalManagement(
+  overrides?: Partial<ManagementConfig>
+): FiveDimensionalManagement {
   const productionConfig: ManagementConfig = {
     ...defaultConfig,
     environment: 'production',
@@ -153,34 +153,34 @@ export function createProductionFiveDimensionalManagement(overrides?: Partial<Ma
       technology: { enabled: true, priority: 2 },
       data: { enabled: true, priority: 3 },
       ux: { enabled: true, priority: 4 },
-      value: { enabled: true, priority: 5 }
+      value: { enabled: true, priority: 5 },
     },
     alerts: {
       thresholds: {
         goalDeviation: 0.1,
         performanceDegradation: 0.15,
         errorRate: 0.02,
-        userSatisfactionDrop: 0.05
+        userSatisfactionDrop: 0.05,
       },
       notifications: {
         email: true,
         slack: true,
         webhook: true,
-        dashboard: true
-      }
+        dashboard: true,
+      },
     },
     optimization: {
       enabled: true,
       autoAdjustment: true,
-      learningEnabled: true
+      learningEnabled: true,
     },
     security: {
       level: 'enhanced',
       encryptionEnabled: true,
       auditLog: true,
-      accessControl: true
+      accessControl: true,
     },
-    ...overrides
+    ...overrides,
   };
 
   return createFiveDimensionalManagementWithConfig(productionConfig);
@@ -247,7 +247,7 @@ export const BUILD_DATE = new Date().toISOString();
 export const COMPATIBILITY = {
   node: '>=18.0.0',
   bun: '>=1.0.0',
-  typescript: '>=5.0.0'
+  typescript: '>=5.0.0',
 };
 
 // ============================================================================
@@ -256,7 +256,8 @@ export const COMPATIBILITY = {
 
 export const SYSTEM_INFO = {
   name: '@yyc3/five-dimensional-management',
-  description: 'YYC³ Five-Dimensional Closed-Loop Management System - Enterprise goal, technology, data, UX, and value management',
+  description:
+    'YYC³ Five-Dimensional Closed-Loop Management System - Enterprise goal, technology, data, UX, and value management',
   version: VERSION,
   author: 'YYC³ AI Team',
   license: 'MIT',
@@ -272,8 +273,8 @@ export const SYSTEM_INFO = {
     'Intelligent Recommendations',
     'Executive Dashboard',
     'Automated Reporting',
-    'Closed-loop Optimization'
-  ]
+    'Closed-loop Optimization',
+  ],
 } as const;
 
 // Default export
@@ -284,5 +285,5 @@ export default {
   createProductionFiveDimensionalManagement,
   defaultConfig,
   VERSION,
-  SYSTEM_INFO
+  SYSTEM_INFO,
 };

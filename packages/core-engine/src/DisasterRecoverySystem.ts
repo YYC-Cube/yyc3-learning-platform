@@ -9,7 +9,7 @@ const logger = createLogger('DisasterRecoverySystem');
 export enum BackupType {
   FULL = 'full',
   INCREMENTAL = 'incremental',
-  DIFFERENTIAL = 'differential'
+  DIFFERENTIAL = 'differential',
 }
 
 export enum BackupStatus {
@@ -17,7 +17,7 @@ export enum BackupStatus {
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   FAILED = 'failed',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export enum RestoreStatus {
@@ -25,7 +25,7 @@ export enum RestoreStatus {
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   FAILED = 'failed',
-  PARTIAL = 'partial'
+  PARTIAL = 'partial',
 }
 
 export enum DisasterLevel {
@@ -33,7 +33,7 @@ export enum DisasterLevel {
   MINOR = 'minor',
   MODERATE = 'moderate',
   MAJOR = 'major',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 export interface BackupConfig {
@@ -215,9 +215,14 @@ export class DisasterRecoverySystem extends EventEmitter {
       encryptionKey: config.encryptionKey || '',
       storageLocation: config.storageLocation || './backups',
       remoteBackupEnabled: config.remoteBackupEnabled || false,
-      remoteStorageConfig: config.remoteStorageConfig || { type: 's3', endpoint: '', accessKey: '', secretKey: '' },
+      remoteStorageConfig: config.remoteStorageConfig || {
+        type: 's3',
+        endpoint: '',
+        accessKey: '',
+        secretKey: '',
+      },
       verificationEnabled: config.verificationEnabled !== false,
-      checksumAlgorithm: config.checksumAlgorithm || 'sha256'
+      checksumAlgorithm: config.checksumAlgorithm || 'sha256',
     };
 
     this.metrics = this.initializeMetrics();
@@ -242,7 +247,7 @@ export class DisasterRecoverySystem extends EventEmitter {
       averageRestoreTime: 0,
       disasterTests: 0,
       successfulTests: 0,
-      startTime: Date.now()
+      startTime: Date.now(),
     };
   }
 
@@ -278,7 +283,7 @@ export class DisasterRecoverySystem extends EventEmitter {
       files: [],
       previousBackupId: options?.previousBackupId,
       tags: options?.tags || [],
-      description: options?.description
+      description: options?.description,
     };
 
     this.backups.set(backupId, backup);
@@ -337,7 +342,8 @@ export class DisasterRecoverySystem extends EventEmitter {
       if (backup.compressedSize) {
         this.metrics.totalCompressedSize += backup.compressedSize;
       }
-      this.metrics.compressionRatio = this.metrics.totalCompressedSize / this.metrics.totalBackupSize;
+      this.metrics.compressionRatio =
+        this.metrics.totalCompressedSize / this.metrics.totalBackupSize;
       this.metrics.lastBackupTime = backup.endTime;
 
       const backupTime = backup.endTime - backup.startTime;
@@ -383,7 +389,7 @@ export class DisasterRecoverySystem extends EventEmitter {
           path: fullPath,
           size: stats.size,
           checksum,
-          modifiedTime: stats.mtimeMs
+          modifiedTime: stats.mtimeMs,
         });
       }
     }
@@ -430,8 +436,7 @@ export class DisasterRecoverySystem extends EventEmitter {
     await fs.writeFile(metadataPath, JSON.stringify(backup, null, 2));
   }
 
-  private async uploadToRemoteStorage(backupId: string, backupDir: string): Promise<void> {
-  }
+  private async uploadToRemoteStorage(backupId: string, backupDir: string): Promise<void> {}
 
   async restoreBackup(config: RestoreConfig): Promise<string> {
     const restoreId = this.generateRestoreId();
@@ -452,7 +457,7 @@ export class DisasterRecoverySystem extends EventEmitter {
       startTime,
       restoredFiles: [],
       skippedFiles: [],
-      failedFiles: []
+      failedFiles: [],
     };
 
     this.restores.set(restoreId, restore);
@@ -482,8 +487,7 @@ export class DisasterRecoverySystem extends EventEmitter {
             await fs.access(restoreFilePath);
             restore.skippedFiles.push(file.path);
             continue;
-          } catch {
-          }
+          } catch {}
         }
 
         const restoreDir = path.dirname(restoreFilePath);
@@ -536,7 +540,10 @@ export class DisasterRecoverySystem extends EventEmitter {
     }
   }
 
-  private async verifyRestore(restoreId: string, config: RestoreConfig): Promise<VerificationResult> {
+  private async verifyRestore(
+    restoreId: string,
+    config: RestoreConfig
+  ): Promise<VerificationResult> {
     const restore = this.restores.get(restoreId);
     if (!restore) {
       throw new Error(`Restore not found: ${restoreId}`);
@@ -554,11 +561,11 @@ export class DisasterRecoverySystem extends EventEmitter {
       failedFiles: [],
       checksumMatches: 0,
       checksumMismatches: [],
-      integrityScore: 0
+      integrityScore: 0,
     };
 
     for (const filePath of restore.restoredFiles) {
-      const backupFile = backup.files.find(f => f.path === filePath);
+      const backupFile = backup.files.find((f) => f.path === filePath);
       if (!backupFile) {
         result.failedFiles.push(filePath);
         continue;
@@ -566,7 +573,10 @@ export class DisasterRecoverySystem extends EventEmitter {
 
       try {
         const restoreFilePath = path.join(config.targetLocation, filePath.replace(/^[\/\\]/, ''));
-        const checksum = await this.calculateFileChecksum(restoreFilePath, this.config.checksumAlgorithm);
+        const checksum = await this.calculateFileChecksum(
+          restoreFilePath,
+          this.config.checksumAlgorithm
+        );
 
         if (checksum === backupFile.checksum) {
           result.checksumMatches++;
@@ -586,11 +596,13 @@ export class DisasterRecoverySystem extends EventEmitter {
     return result;
   }
 
-  async createRecoveryPlan(plan: Omit<DisasterRecoveryPlan, 'id' | 'lastUpdated'>): Promise<string> {
+  async createRecoveryPlan(
+    plan: Omit<DisasterRecoveryPlan, 'id' | 'lastUpdated'>
+  ): Promise<string> {
     const recoveryPlan: DisasterRecoveryPlan = {
       ...plan,
       id: this.generatePlanId(),
-      lastUpdated: Date.now()
+      lastUpdated: Date.now(),
     };
 
     this.recoveryPlans.set(recoveryPlan.id, recoveryPlan);
@@ -613,7 +625,7 @@ export class DisasterRecoverySystem extends EventEmitter {
       stepsPassed: 0,
       stepsFailed: 0,
       issues: [],
-      recommendations: []
+      recommendations: [],
     };
 
     this.metrics.disasterTests++;
@@ -625,8 +637,8 @@ export class DisasterRecoverySystem extends EventEmitter {
 
       for (const step of sortedSteps) {
         if (step.dependencies.length > 0) {
-          const dependenciesMet = step.dependencies.every(depId => {
-            const depStep = plan.recoverySteps.find(s => s.id === depId);
+          const dependenciesMet = step.dependencies.every((depId) => {
+            const depStep = plan.recoverySteps.find((s) => s.id === depId);
             return depStep?.status === 'completed';
           });
 
@@ -681,7 +693,7 @@ export class DisasterRecoverySystem extends EventEmitter {
       case 'backup':
         await this.createBackup(step.parameters.sourcePaths, {
           description: step.parameters.description,
-          tags: step.parameters.tags
+          tags: step.parameters.tags,
         });
         break;
 
@@ -727,8 +739,9 @@ export class DisasterRecoverySystem extends EventEmitter {
       }
     }
 
-    const sortedBackups = Array.from(this.backups.values())
-      .sort((a, b) => b.startTime - a.startTime);
+    const sortedBackups = Array.from(this.backups.values()).sort(
+      (a, b) => b.startTime - a.startTime
+    );
 
     if (sortedBackups.length > this.config.maxBackups) {
       const toDelete = sortedBackups.slice(this.config.maxBackups);
@@ -807,7 +820,7 @@ export class DisasterRecoverySystem extends EventEmitter {
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private generateBackupId(): string {

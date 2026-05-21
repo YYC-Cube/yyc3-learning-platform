@@ -13,14 +13,14 @@ export enum TaskStatus {
   COMPLETED = 'completed',
   FAILED = 'failed',
   CANCELLED = 'cancelled',
-  TIMEOUT = 'timeout'
+  TIMEOUT = 'timeout',
 }
 
 export enum TaskPriority {
   LOW = 0,
   NORMAL = 1,
   HIGH = 2,
-  CRITICAL = 3
+  CRITICAL = 3,
 }
 
 export interface Task {
@@ -96,14 +96,14 @@ export class TaskScheduler extends EventEmitter {
 
   constructor(config: Partial<SchedulerConfig> = {}) {
     super();
-    
+
     this.config = {
       maxConcurrentTasks: 10,
       timeoutMs: 30000,
       priorityLevels: 5,
       enableTaskPersistence: false,
       enableMetrics: true,
-      ...config
+      ...config,
     };
 
     this.metrics = {
@@ -115,7 +115,7 @@ export class TaskScheduler extends EventEmitter {
       queuedTasks: 0,
       averageExecutionTime: 0,
       averageWaitTime: 0,
-      throughput: 0
+      throughput: 0,
     };
 
     this.startTime = Date.now();
@@ -147,9 +147,9 @@ export class TaskScheduler extends EventEmitter {
         maxRetries: 3,
         backoffMs: 1000,
         backoffFactor: 2,
-        ...options.retryPolicy
+        ...options.retryPolicy,
       },
-      metadata: options.metadata || {}
+      metadata: options.metadata || {},
     };
 
     // 验证依赖
@@ -182,11 +182,7 @@ export class TaskScheduler extends EventEmitter {
       };
     }>
   ): Promise<string[]> {
-    return Promise.all(
-      tasks.map(({ executor, options }) => 
-        this.submitTask(executor, options)
-      )
-    );
+    return Promise.all(tasks.map(({ executor, options }) => this.submitTask(executor, options)));
   }
 
   /**
@@ -205,7 +201,7 @@ export class TaskScheduler extends EventEmitter {
     }
 
     // 检查队列中的任务
-    const queueIndex = this.taskQueue.findIndex(t => t.id === taskId);
+    const queueIndex = this.taskQueue.findIndex((t) => t.id === taskId);
     if (queueIndex > -1) {
       const task = this.taskQueue.splice(queueIndex, 1)[0];
       this.metrics.queuedTasks = this.taskQueue.length;
@@ -227,7 +223,7 @@ export class TaskScheduler extends EventEmitter {
     const completedTask = this.completedTasks.get(taskId);
     if (completedTask) return completedTask.status;
 
-    const queuedTask = this.taskQueue.find(t => t.id === taskId);
+    const queuedTask = this.taskQueue.find((t) => t.id === taskId);
     if (queuedTask) return TaskStatus.QUEUED;
 
     return null;
@@ -246,15 +242,17 @@ export class TaskScheduler extends EventEmitter {
    */
   async waitForTask<T = any>(taskId: string, timeoutMs?: number): Promise<T> {
     return new Promise((resolve, reject) => {
-      const timeout = timeoutMs ? setTimeout(() => {
-        reject(new Error(`Task wait timeout: ${taskId}`));
-      }, timeoutMs) : null;
+      const timeout = timeoutMs
+        ? setTimeout(() => {
+            reject(new Error(`Task wait timeout: ${taskId}`));
+          }, timeoutMs)
+        : null;
 
       const checkCompletion = () => {
         const completedTask = this.completedTasks.get(taskId);
         if (completedTask) {
           if (timeout) clearTimeout(timeout);
-          
+
           if (completedTask.status === TaskStatus.COMPLETED) {
             resolve(completedTask.result);
           } else {
@@ -274,7 +272,7 @@ export class TaskScheduler extends EventEmitter {
           if (timeout) clearTimeout(timeout);
           this.off('task:completed', handler);
           this.off('task:failed', handler);
-          
+
           if (task.status === TaskStatus.COMPLETED) {
             resolve(task.result);
           } else {
@@ -301,15 +299,12 @@ export class TaskScheduler extends EventEmitter {
    * 调度下一批任务
    */
   private async scheduleNextTasks(): Promise<void> {
-    while (
-      this.activeTasks.size < this.config.maxConcurrentTasks &&
-      this.taskQueue.length > 0
-    ) {
+    while (this.activeTasks.size < this.config.maxConcurrentTasks && this.taskQueue.length > 0) {
       const task = this.dequeueTask();
       if (!task) break;
 
       // 检查依赖是否满足
-      if (!await this.areDependenciesMet(task)) {
+      if (!(await this.areDependenciesMet(task))) {
         // 重新入队
         this.taskQueue.push(task);
         break;
@@ -325,14 +320,14 @@ export class TaskScheduler extends EventEmitter {
    */
   private async executeTask(task: Task): Promise<void> {
     const abortController = new AbortController();
-    
+
     const activeTask: ActiveTask = {
       task,
       status: TaskStatus.RUNNING,
       startTime: Date.now(),
       retryCount: 0,
       progress: 0,
-      abortController
+      abortController,
     };
 
     this.activeTasks.set(task.id, activeTask);
@@ -354,7 +349,7 @@ export class TaskScheduler extends EventEmitter {
           activeTask.progress = percentage;
           this.emit('task:progress', { taskId: task.id, percentage, message });
         },
-        metadata: task.metadata
+        metadata: task.metadata,
       };
 
       // 执行任务
@@ -369,7 +364,6 @@ export class TaskScheduler extends EventEmitter {
       activeTask.progress = 100;
 
       this.completeTask(activeTask);
-
     } catch (error: any) {
       // 任务失败
       activeTask.error = error;
@@ -431,13 +425,14 @@ export class TaskScheduler extends EventEmitter {
     activeTask.retryCount++;
 
     // 计算退避延迟
-    const delay = task.retryPolicy.backoffMs * 
+    const delay =
+      task.retryPolicy.backoffMs *
       Math.pow(task.retryPolicy.backoffFactor, activeTask.retryCount - 1);
 
-    this.emit('task:retrying', { 
-      task, 
+    this.emit('task:retrying', {
+      task,
       attempt: activeTask.retryCount,
-      delay 
+      delay,
     });
 
     // 延迟后重新入队
@@ -452,7 +447,7 @@ export class TaskScheduler extends EventEmitter {
    */
   private enqueueTask(task: Task): void {
     let inserted = false;
-    
+
     for (let i = 0; i < this.taskQueue.length; i++) {
       if (task.priority > this.taskQueue[i].priority) {
         this.taskQueue.splice(i, 0, task);
@@ -480,9 +475,11 @@ export class TaskScheduler extends EventEmitter {
    */
   private async validateDependencies(task: Task): Promise<void> {
     for (const depId of task.dependencies) {
-      if (!this.completedTasks.has(depId) && 
-          !this.activeTasks.has(depId) &&
-          !this.taskQueue.find(t => t.id === depId)) {
+      if (
+        !this.completedTasks.has(depId) &&
+        !this.activeTasks.has(depId) &&
+        !this.taskQueue.find((t) => t.id === depId)
+      ) {
         throw new Error(`Dependency not found: ${depId}`);
       }
     }
@@ -506,7 +503,7 @@ export class TaskScheduler extends EventEmitter {
    */
   private updateAverageExecutionTime(executionTime: number): void {
     const total = this.metrics.completedTasks + this.metrics.failedTasks;
-    this.metrics.averageExecutionTime = 
+    this.metrics.averageExecutionTime =
       (this.metrics.averageExecutionTime * (total - 1) + executionTime) / total;
 
     // 计算吞吐量
@@ -541,7 +538,7 @@ export class TaskScheduler extends EventEmitter {
       queued: this.taskQueue.length,
       active: this.activeTasks.size,
       completed: this.metrics.completedTasks,
-      failed: this.metrics.failedTasks
+      failed: this.metrics.failedTasks,
     };
   }
 

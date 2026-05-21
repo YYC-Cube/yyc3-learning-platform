@@ -284,7 +284,7 @@ describe('shuffleArray', () => {
     const shuffled = shuffleArray(array);
 
     expect(shuffled).toHaveLength(3);
-    expect(shuffled.map(item => item.id).sort()).toEqual([1, 2, 3]);
+    expect(shuffled.map((item) => item.id).sort()).toEqual([1, 2, 3]);
   });
 });
 
@@ -340,23 +340,23 @@ describe('getQuestionsByDifficulty', () => {
     const result = getQuestionsByDifficulty(mockQuestions, 'easy');
 
     expect(result).toHaveLength(2);
-    expect(result.every(q => q.difficulty === 'easy')).toBe(true);
-    expect(result.map(q => q.id)).toEqual(['1', '3']);
+    expect(result.every((q) => q.difficulty === 'easy')).toBe(true);
+    expect(result.map((q) => q.id)).toEqual(['1', '3']);
   });
 
   it('应该正确筛选中等题目', () => {
     const result = getQuestionsByDifficulty(mockQuestions, 'medium');
 
     expect(result).toHaveLength(2);
-    expect(result.every(q => q.difficulty === 'medium')).toBe(true);
-    expect(result.map(q => q.id)).toEqual(['2', '5']);
+    expect(result.every((q) => q.difficulty === 'medium')).toBe(true);
+    expect(result.map((q) => q.id)).toEqual(['2', '5']);
   });
 
   it('应该正确筛选困难题目', () => {
     const result = getQuestionsByDifficulty(mockQuestions, 'hard');
 
     expect(result).toHaveLength(1);
-    expect(result.every(q => q.difficulty === 'hard')).toBe(true);
+    expect(result.every((q) => q.difficulty === 'hard')).toBe(true);
     expect(result[0].id).toBe('4');
   });
 
@@ -460,23 +460,23 @@ describe('getQuestionsByCategory', () => {
     const result = getQuestionsByCategory(mockQuestions, 'math');
 
     expect(result).toHaveLength(2);
-    expect(result.every(q => q.category === 'math')).toBe(true);
-    expect(result.map(q => q.id)).toEqual(['1', '3']);
+    expect(result.every((q) => q.category === 'math')).toBe(true);
+    expect(result.map((q) => q.id)).toEqual(['1', '3']);
   });
 
   it('应该正确筛选科学题目', () => {
     const result = getQuestionsByCategory(mockQuestions, 'science');
 
     expect(result).toHaveLength(2);
-    expect(result.every(q => q.category === 'science')).toBe(true);
-    expect(result.map(q => q.id)).toEqual(['2', '5']);
+    expect(result.every((q) => q.category === 'science')).toBe(true);
+    expect(result.map((q) => q.id)).toEqual(['2', '5']);
   });
 
   it('应该正确筛选历史题目', () => {
     const result = getQuestionsByCategory(mockQuestions, 'history');
 
     expect(result).toHaveLength(1);
-    expect(result.every(q => q.category === 'history')).toBe(true);
+    expect(result.every((q) => q.category === 'history')).toBe(true);
     expect(result[0].id).toBe('4');
   });
 
@@ -577,9 +577,30 @@ describe('综合测试', () => {
 
   it('应该正确组合使用多个函数', () => {
     const allQuestions: Question[] = [
-      { id: '1', text: 'Q1', options: ['A', 'B'], correctAnswer: 'A', difficulty: 'easy', category: 'math' },
-      { id: '2', text: 'Q2', options: ['A', 'B'], correctAnswer: 'B', difficulty: 'medium', category: 'math' },
-      { id: '3', text: 'Q3', options: ['A', 'B'], correctAnswer: 'A', difficulty: 'easy', category: 'science' },
+      {
+        id: '1',
+        text: 'Q1',
+        options: ['A', 'B'],
+        correctAnswer: 'A',
+        difficulty: 'easy',
+        category: 'math',
+      },
+      {
+        id: '2',
+        text: 'Q2',
+        options: ['A', 'B'],
+        correctAnswer: 'B',
+        difficulty: 'medium',
+        category: 'math',
+      },
+      {
+        id: '3',
+        text: 'Q3',
+        options: ['A', 'B'],
+        correctAnswer: 'A',
+        difficulty: 'easy',
+        category: 'science',
+      },
     ];
 
     // 获取数学题目

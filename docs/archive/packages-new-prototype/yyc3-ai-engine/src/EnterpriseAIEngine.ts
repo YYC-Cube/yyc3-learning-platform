@@ -625,8 +625,8 @@ class OpenAIProvider implements AIProvider {
       metadata: {
         processedAt: new Date(),
         analysisType: request.analysisType,
-        language: 'zh-CN'
-      }
+        language: 'zh-CN',
+      },
     };
   }
 
@@ -649,8 +649,8 @@ class ClaudeProvider implements AIProvider {
       metadata: {
         processedAt: new Date(),
         analysisType: request.analysisType,
-        language: 'zh-CN'
-      }
+        language: 'zh-CN',
+      },
     };
   }
 
@@ -673,8 +673,8 @@ class LocalLLMProvider implements AIProvider {
       metadata: {
         processedAt: new Date(),
         analysisType: request.analysisType,
-        language: 'zh-CN'
-      }
+        language: 'zh-CN',
+      },
     };
   }
 
@@ -691,7 +691,7 @@ class HRProvider {
     return {
       result: { status: 'processed' },
       recommendations: ['Recommendation 1'],
-      nextSteps: ['Step 1', 'Step 2']
+      nextSteps: ['Step 1', 'Step 2'],
     };
   }
 
@@ -699,7 +699,7 @@ class HRProvider {
     return {
       result: { status: 'processed' },
       recommendations: ['Recommendation 1'],
-      nextSteps: ['Step 1']
+      nextSteps: ['Step 1'],
     };
   }
 
@@ -707,7 +707,7 @@ class HRProvider {
     return {
       result: { status: 'processed' },
       recommendations: ['Recommendation 1'],
-      nextSteps: ['Step 1', 'Step 2']
+      nextSteps: ['Step 1', 'Step 2'],
     };
   }
 
@@ -715,7 +715,7 @@ class HRProvider {
     return {
       result: { status: 'processed' },
       recommendations: ['Recommendation 1'],
-      nextSteps: ['Step 1']
+      nextSteps: ['Step 1'],
     };
   }
 }
@@ -728,7 +728,7 @@ class ProcessEngine {
       processId: request.processId,
       status: 'completed',
       result: { success: true },
-      nextSteps: ['Step 1']
+      nextSteps: ['Step 1'],
     };
   }
 }
@@ -742,11 +742,11 @@ class KnowledgeEngine {
         {
           content: 'Answer 1',
           source: 'Source 1',
-          confidence: 0.9
-        }
+          confidence: 0.9,
+        },
       ],
       relatedTopics: ['Topic 1', 'Topic 2'],
-      totalCount: 1
+      totalCount: 1,
     };
   }
 }
@@ -761,11 +761,11 @@ class AnalyticsEngine {
           type: 'trend',
           description: 'Insight 1',
           value: 100,
-          confidence: 0.9
-        }
+          confidence: 0.9,
+        },
       ],
       visualizations: [],
-      recommendations: ['Recommendation 1']
+      recommendations: ['Recommendation 1'],
     };
   }
 }
@@ -777,7 +777,7 @@ class AutomationEngine {
     return {
       result: { success: true },
       status: 'completed',
-      executionTime: 100
+      executionTime: 100,
     };
   }
 }
@@ -792,10 +792,10 @@ class RecommendationEngine {
           id: '1',
           title: 'Recommendation 1',
           description: 'Description 1',
-          score: 0.9
-        }
+          score: 0.9,
+        },
       ],
-      totalCount: 1
+      totalCount: 1,
     };
   }
 }

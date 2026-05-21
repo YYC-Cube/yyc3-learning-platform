@@ -67,7 +67,10 @@ export interface IAutonomousAIEngine {
   // === 协作与通信 ===
   sendMessage(_message: EngineMessage): Promise<void>;
   receiveMessages(): readonly EngineMessage[];
-  collaborateWith(_otherEngines: readonly string[], _task: CollaborativeTask): Promise<CollaborativeResult>;
+  collaborateWith(
+    _otherEngines: readonly string[],
+    _task: CollaborativeTask
+  ): Promise<CollaborativeResult>;
 
   // === 监控与诊断 ===
   getHealthStatus(): HealthStatus;
@@ -172,13 +175,7 @@ export type GoalType =
 
 export type Priority = 'low' | 'medium' | 'high' | 'critical';
 
-export type GoalStatus =
-  | 'draft'
-  | 'active'
-  | 'paused'
-  | 'completed'
-  | 'failed'
-  | 'cancelled';
+export type GoalStatus = 'draft' | 'active' | 'paused' | 'completed' | 'failed' | 'cancelled';
 
 export interface KeyResult {
   id: string;
@@ -766,13 +763,7 @@ export interface Feedback {
   actionability: Actionability;
 }
 
-export type FeedbackType =
-  | 'user'
-  | 'system'
-  | 'peer'
-  | 'automated'
-  | 'expert'
-  | 'performance';
+export type FeedbackType = 'user' | 'system' | 'peer' | 'automated' | 'expert' | 'performance';
 
 export type Sentiment = 'very_positive' | 'positive' | 'neutral' | 'negative' | 'very_negative';
 
@@ -2064,12 +2055,7 @@ export interface FeedbackProcessingConfig {
   integration: IntegrationMethod;
 }
 
-export type AggregationMethod =
-  | 'average'
-  | 'weighted_average'
-  | 'median'
-  | 'mode'
-  | 'consensus';
+export type AggregationMethod = 'average' | 'weighted_average' | 'median' | 'mode' | 'consensus';
 
 export type FilterMethod =
   | 'outlier_removal'
@@ -2085,12 +2071,7 @@ export type ValidationMethod =
   | 'historical_validation'
   | 'automated_validation';
 
-export type IntegrationMethod =
-  | 'immediate'
-  | 'batch'
-  | 'incremental'
-  | 'selective'
-  | 'conditional';
+export type IntegrationMethod = 'immediate' | 'batch' | 'incremental' | 'selective' | 'conditional';
 
 export interface DecisionMakingConfiguration {
   enableDecisionMaking: boolean;
@@ -2238,13 +2219,7 @@ export interface LogDestination {
   configuration: Record<string, unknown>;
 }
 
-export type LogDestinationType =
-  | 'file'
-  | 'console'
-  | 'syslog'
-  | 'database'
-  | 'external'
-  | 'stream';
+export type LogDestinationType = 'file' | 'console' | 'syslog' | 'database' | 'external' | 'stream';
 
 export interface LogRotationConfig {
   enabled: boolean;
@@ -2380,12 +2355,7 @@ export interface AuditStorageConfig {
   configuration: Record<string, unknown>;
 }
 
-export type AuditStorageType =
-  | 'file'
-  | 'database'
-  | 'log'
-  | 'external'
-  | 'stream';
+export type AuditStorageType = 'file' | 'database' | 'log' | 'external' | 'stream';
 
 export interface IntegrationConfiguration {
   enableIntegration: boolean;

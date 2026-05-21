@@ -1,4 +1,9 @@
-import { ManagementConfig, ManagementMetrics, Recommendation, IDimension } from '../types/IFiveDimensionalManagement';
+import {
+  ManagementConfig,
+  ManagementMetrics,
+  Recommendation,
+  IDimension,
+} from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 
 export class RecommendationEngine {
@@ -18,7 +23,10 @@ export class RecommendationEngine {
     this.config = config;
   }
 
-  async generateRecommendations(metrics: ManagementMetrics, dimensions: IDimension[]): Promise<Recommendation[]> {
+  async generateRecommendations(
+    metrics: ManagementMetrics,
+    dimensions: IDimension[]
+  ): Promise<Recommendation[]> {
     this.logger.info('Generating recommendations...');
     return []; // Simplified for now
   }

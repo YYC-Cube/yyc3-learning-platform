@@ -4,24 +4,24 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import * as React from "react"
-import { ThemeProvider as NextThemesProvider } from "next-themes"
-import type { ThemeProviderProps } from "next-themes"
-import { useTheme as useNextTheme } from "next-themes"
+import * as React from 'react';
+import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import type { ThemeProviderProps } from 'next-themes';
+import { useTheme as useNextTheme } from 'next-themes';
 
 export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
-  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
 
 export function useTheme() {
-  const [mounted, setMounted] = React.useState(false)
-  const { theme, setTheme, resolvedTheme, systemTheme } = useNextTheme()
+  const [mounted, setMounted] = React.useState(false);
+  const { theme, setTheme, resolvedTheme, systemTheme } = useNextTheme();
 
   React.useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   return {
     theme,
@@ -29,28 +29,28 @@ export function useTheme() {
     resolvedTheme,
     systemTheme,
     mounted,
-  }
+  };
 }
 
 // 主题切换组件
 export function ThemeToggle() {
-  const { theme, setTheme, mounted } = useTheme()
+  const { theme, setTheme, mounted } = useTheme();
 
   if (!mounted) {
     return (
       <button className="w-9 h-9 rounded-lg border border-gray-200 bg-white flex items-center justify-center">
         <div className="w-4 h-4 bg-gray-300 rounded animate-pulse" />
       </button>
-    )
+    );
   }
 
   return (
     <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       className="w-9 h-9 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 flex items-center justify-center transition-colors"
-      aria-label={`切换到${theme === "dark" ? "浅色" : "深色"}模式`}
+      aria-label={`切换到${theme === 'dark' ? '浅色' : '深色'}模式`}
     >
-      {theme === "dark" ? (
+      {theme === 'dark' ? (
         <svg
           className="w-4 h-4 text-yellow-500"
           fill="currentColor"
@@ -74,101 +74,101 @@ export function ThemeToggle() {
         </svg>
       )}
     </button>
-  )
+  );
 }
 
 // 品牌主题配置
 export const brandTheme = {
   light: {
-    primary: "hsl(221, 83%, 53%)", // #2563eb
-    secondary: "hsl(224, 76%, 48%)", // #1e40af
-    accent: "hsl(217, 91%, 60%)", // #3b82f6
-    background: "hsl(0, 0%, 100%)", // #ffffff
-    foreground: "hsl(222, 84%, 5%)", // #0f172a
-    muted: "hsl(210, 40%, 98%)", // #f8fafc
-    border: "hsl(214, 32%, 91%)", // #e2e8f0
+    primary: 'hsl(221, 83%, 53%)', // #2563eb
+    secondary: 'hsl(224, 76%, 48%)', // #1e40af
+    accent: 'hsl(217, 91%, 60%)', // #3b82f6
+    background: 'hsl(0, 0%, 100%)', // #ffffff
+    foreground: 'hsl(222, 84%, 5%)', // #0f172a
+    muted: 'hsl(210, 40%, 98%)', // #f8fafc
+    border: 'hsl(214, 32%, 91%)', // #e2e8f0
     gradient: {
-      brand: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      header: "linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #1d4ed8 100%)",
-      learning: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      success: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      brand: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      header: 'linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #1d4ed8 100%)',
+      learning: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      success: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     },
   },
   dark: {
-    primary: "hsl(217, 91%, 60%)", // #3b82f6
-    secondary: "hsl(221, 83%, 53%)", // #2563eb
-    accent: "hsl(224, 76%, 48%)", // #1e40af
-    background: "hsl(222, 84%, 5%)", // #0f172a
-    foreground: "hsl(210, 40%, 98%)", // #f8fafc
-    muted: "hsl(215, 28%, 17%)", // #1e293b
-    border: "hsl(215, 28%, 17%)", // #1e293b
+    primary: 'hsl(217, 91%, 60%)', // #3b82f6
+    secondary: 'hsl(221, 83%, 53%)', // #2563eb
+    accent: 'hsl(224, 76%, 48%)', // #1e40af
+    background: 'hsl(222, 84%, 5%)', // #0f172a
+    foreground: 'hsl(210, 40%, 98%)', // #f8fafc
+    muted: 'hsl(215, 28%, 17%)', // #1e293b
+    border: 'hsl(215, 28%, 17%)', // #1e293b
     gradient: {
-      brand: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-      header: "linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)",
-      learning: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
-      success: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      brand: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      header: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)',
+      learning: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      success: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     },
   },
-}
+};
 
 // 主题应用Hook
 export function useBrandTheme() {
-  const { resolvedTheme } = useTheme()
-  const currentTheme = brandTheme[resolvedTheme as keyof typeof brandTheme] || brandTheme.light
+  const { resolvedTheme } = useTheme();
+  const currentTheme = brandTheme[resolvedTheme as keyof typeof brandTheme] || brandTheme.light;
 
   const applyGradient = (gradientName: keyof typeof currentTheme.gradient) => {
     return {
       background: currentTheme.gradient[gradientName],
-    }
-  }
+    };
+  };
 
-  const getThemeColor = (colorName: keyof Omit<typeof currentTheme, "gradient">) => {
-    return currentTheme[colorName]
-  }
+  const getThemeColor = (colorName: keyof Omit<typeof currentTheme, 'gradient'>) => {
+    return currentTheme[colorName];
+  };
 
   return {
     theme: currentTheme,
     applyGradient,
     getThemeColor,
-    isDark: resolvedTheme === "dark",
-  }
+    isDark: resolvedTheme === 'dark',
+  };
 }
 
 // 主题持久化配置
 export const themeConfig = {
-  attribute: "class",
-  defaultTheme: "system",
+  attribute: 'class',
+  defaultTheme: 'system',
   enableSystem: true,
   disableTransitionOnChange: false,
-  storageKey: "yanyu-theme",
-  themes: ["light", "dark", "system"],
-}
+  storageKey: 'yanyu-theme',
+  themes: ['light', 'dark', 'system'],
+};
 
 // CSS变量注入组件
 export function ThemeVariables() {
-  const { resolvedTheme } = useTheme()
-  const currentTheme = brandTheme[resolvedTheme as keyof typeof brandTheme] || brandTheme.light
+  const { resolvedTheme } = useTheme();
+  const currentTheme = brandTheme[resolvedTheme as keyof typeof brandTheme] || brandTheme.light;
 
   React.useEffect(() => {
-    const root = document.documentElement
+    const root = document.documentElement;
 
     // 注入CSS变量
     Object.entries(currentTheme).forEach(([key, value]) => {
-      if (key !== "gradient" && typeof value === "string") {
-        root.style.setProperty(`--theme-${key}`, value)
+      if (key !== 'gradient' && typeof value === 'string') {
+        root.style.setProperty(`--theme-${key}`, value);
       }
-    })
+    });
 
     // 注入渐变变量
-    const gradient = currentTheme.gradient
-    if (typeof gradient === "object" && gradient !== null) {
+    const gradient = currentTheme.gradient;
+    if (typeof gradient === 'object' && gradient !== null) {
       Object.entries(gradient).forEach(([key, value]) => {
-        root.style.setProperty(`--gradient-${key}`, value)
-      })
+        root.style.setProperty(`--gradient-${key}`, value);
+      });
     }
-  }, [currentTheme])
+  }, [currentTheme]);
 
-  return null
+  return null;
 }
 
 // 主题感知组件包装器
@@ -178,5 +178,5 @@ export function ThemeAware({ children }: { children: React.ReactNode }) {
       <ThemeVariables />
       {children}
     </>
-  )
+  );
 }

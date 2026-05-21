@@ -9,18 +9,18 @@
 \`\`\`typescript
 // Good
 interface User {
-  id: string
-  name: string
-  email: string
+id: string
+name: string
+email: string
 }
 
 function getUser(id: string): Promise<User | null> {
-  // ...
+// ...
 }
 
 // Bad
 function getUser(id: any): any {
-  // ...
+// ...
 }
 \`\`\`
 
@@ -57,13 +57,13 @@ import "./styles.css"
 
 \`\`\`typescript
 interface ButtonProps {
-  onClick: () => void
-  children: React.ReactNode
-  variant?: "default" | "outline"
+onClick: () => void
+children: React.ReactNode
+variant?: "default" | "outline"
 }
 
 export function Button({ onClick, children, variant = "default" }: ButtonProps) {
-  return <button onClick={onClick}>{children}</button>
+return <button onClick={onClick}>{children}</button>
 }
 \`\`\`
 
@@ -72,14 +72,14 @@ export function Button({ onClick, children, variant = "default" }: ButtonProps) 
 \`\`\`typescript
 // 将复杂逻辑抽取为自定义Hook
 function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+const [user, setUser] = useState<User | null>(null)
+const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    // 认证逻辑
-  }, [])
+useEffect(() => {
+// 认证逻辑
+}, [])
 
-  return { user, loading }
+return { user, loading }
 }
 \`\`\`
 
@@ -109,9 +109,9 @@ type ApiResponse = {}
 // 组件: PascalCase
 function UserCard() {}
 
-// 私有成员: _camelCase
+// 私有成员: \_camelCase
 class Service {
-  private _token: string
+private \_token: string
 }
 \`\`\`
 
@@ -143,9 +143,9 @@ const status = isActive ? "active" : "inactive"
 
 // 复杂条件使用if语句
 if (user.isAdmin && user.hasPermission("edit")) {
-  // ...
+// ...
 } else {
-  // ...
+// ...
 }
 \`\`\`
 
@@ -154,16 +154,17 @@ if (user.isAdmin && user.hasPermission("edit")) {
 ### 函数注释
 
 \`\`\`typescript
-/**
- * 获取用户信息
- * @param userId - 用户ID
- * @returns 用户对象或null
- * @throws {Error} 当用户不存在时
- */
-async function getUser(userId: string): Promise<User | null> {
+/\*\*
+
+- 获取用户信息
+- @param userId - 用户ID
+- @returns 用户对象或null
+- @throws {Error} 当用户不存在时
+  \*/
+  async function getUser(userId: string): Promise<User | null> {
   // ...
-}
-\`\`\`
+  }
+  \`\`\`
 
 ### 行内注释
 
@@ -179,14 +180,14 @@ async function getUser(userId: string): Promise<User | null> {
 
 \`\`\`typescript
 async function fetchData() {
-  try {
-    const response = await fetch("/api/data")
-    const data = await response.json()
-    return data
-  } catch (error) {
-    console.error("Failed to fetch data:", error)
-    throw new Error("Data fetch failed")
-  }
+try {
+const response = await fetch("/api/data")
+const data = await response.json()
+return data
+} catch (error) {
+console.error("Failed to fetch data:", error)
+throw new Error("Data fetch failed")
+}
 }
 \`\`\`
 
@@ -194,7 +195,7 @@ async function fetchData() {
 
 \`\`\`typescript
 <ErrorBoundary fallback={<ErrorFallback />}>
-  <MyComponent />
+<MyComponent />
 </ErrorBoundary>
 \`\`\`
 
@@ -241,9 +242,9 @@ const activeUsers = users.filter((u) => u.isActive)
 // Bad
 const activeUsers = []
 for (let i = 0; i < users.length; i++) {
-  if (users[i].isActive) {
-    activeUsers.push(users[i])
-  }
+if (users[i].isActive) {
+activeUsers.push(users[i])
+}
 }
 \`\`\`
 
@@ -252,25 +253,25 @@ for (let i = 0; i < users.length; i++) {
 \`\`\`typescript
 // Good
 async function processUser(userId: string) {
-  const user = await getUser(userId)
-  if (!user) return null
+const user = await getUser(userId)
+if (!user) return null
 
-  const profile = await getProfile(user.id)
-  if (!profile) return null
+const profile = await getProfile(user.id)
+if (!profile) return null
 
-  return { user, profile }
+return { user, profile }
 }
 
 // Bad
 async function processUser(userId: string) {
-  const user = await getUser(userId)
-  if (user) {
-    const profile = await getProfile(user.id)
-    if (profile) {
-      return { user, profile }
-    }
-  }
-  return null
+const user = await getUser(userId)
+if (user) {
+const profile = await getProfile(user.id)
+if (profile) {
+return { user, profile }
+}
+}
+return null
 }
 \`\`\`
 
@@ -286,10 +287,10 @@ async function processUser(userId: string) {
 
 \`\`\`typescript
 describe("UserService", () => {
-  describe("getUser", () => {
-    it("should return user when found", async () => {
-      // Arrange
-      const userId = "123"
+describe("getUser", () => {
+it("should return user when found", async () => {
+// Arrange
+const userId = "123"
 
       // Act
       const user = await getUser(userId)
@@ -302,7 +303,8 @@ describe("UserService", () => {
     it("should return null when not found", async () => {
       // ...
     })
-  })
+
+})
 })
 \`\`\`
 

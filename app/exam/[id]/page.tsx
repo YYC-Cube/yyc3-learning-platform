@@ -4,18 +4,18 @@
  * @version 1.0.0
  * @license MIT
  */
-import { getExamById } from "@/data/exam-data"
+import { getExamById } from '@/data/exam-data';
 
 interface Props {
-  params: { id: string }
+  params: { id: string };
 }
 
 async function ExamPage({ params }: Props) {
-  const { id } = params
-  const exam = await getExamById(id)
+  const { id } = params;
+  const exam = await getExamById(id);
 
   if (!exam) {
-    return <div>Exam not found</div>
+    return <div>Exam not found</div>;
   }
 
   return (
@@ -24,7 +24,7 @@ async function ExamPage({ params }: Props) {
       <p>Description: {exam.description}</p>
       {/* Display other exam details here */}
     </div>
-  )
+  );
 }
 
-export default ExamPage
+export default ExamPage;

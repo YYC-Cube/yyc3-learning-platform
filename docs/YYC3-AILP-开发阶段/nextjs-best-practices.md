@@ -15,11 +15,11 @@
 \`\`\`typescript
 // 服务器组件 (默认)
 async function ProductPage({ params }) {
-  const product = await db.product.findUnique({
-    where: { id: params.id }
-  })
-  
-  return <ProductDetails product={product} />
+const product = await db.product.findUnique({
+where: { id: params.id }
+})
+
+return <ProductDetails product={product} />
 }
 \`\`\`
 
@@ -39,13 +39,13 @@ async function ProductPage({ params }) {
 import { useState } from "react"
 
 function Counter() {
-  const [count, setCount] = useState(0)
-  
-  return (
-    <button onClick={() => setCount(count + 1)}>
-      Count: {count}
-    </button>
-  )
+const [count, setCount] = useState(0)
+
+return (
+<button onClick={() => setCount(count + 1)}>
+Count: {count}
+</button>
+)
 }
 \`\`\`
 
@@ -58,14 +58,14 @@ function Counter() {
 \`\`\`typescript
 // app/products/page.tsx (服务器组件)
 async function ProductsPage() {
-  const products = await fetchProducts()
-  
-  return (
-    <div>
-      <h1>Products</h1>
-      <ProductList products={products} />
-    </div>
-  )
+const products = await fetchProducts()
+
+return (
+<div>
+<h1>Products</h1>
+<ProductList products={products} />
+</div>
+)
 }
 
 // components/product-list.tsx (客户端组件)
@@ -74,19 +74,19 @@ async function ProductsPage() {
 import { useState } from "react"
 
 function ProductList({ products }) {
-  const [filter, setFilter] = useState("")
-  
-  return (
-    <div>
-      <input 
-        value={filter} 
-        onChange={(e) => setFilter(e.target.value)} 
-      />
-      {products.filter(p => p.name.includes(filter)).map(p => (
-        <ProductCard key={p.id} product={p} />
-      ))}
-    </div>
-  )
+const [filter, setFilter] = useState("")
+
+return (
+<div>
+<input
+value={filter}
+onChange={(e) => setFilter(e.target.value)}
+/>
+{products.filter(p => p.name.includes(filter)).map(p => (
+<ProductCard key={p.id} product={p} />
+))}
+</div>
+)
 }
 \`\`\`
 
@@ -97,8 +97,8 @@ function ProductList({ products }) {
 \`\`\`typescript
 // ✅ 正确 - 服务器组件传递数据
 async function Page() {
-  const data = await fetchData()
-  return <ClientComponent data={data} />
+const data = await fetchData()
+return <ClientComponent data={data} />
 }
 
 // ❌ 错误 - 客户端组件导入服务器组件
@@ -113,23 +113,23 @@ import ServerComponent from "./server-component"
 \`\`\`typescript
 // app/layout.tsx (服务器组件)
 export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        <Header />
-        {children}
-        <Footer />
-      </body>
-    </html>
-  )
+return (
+<html>
+<body>
+<Header />
+{children}
+<Footer />
+</body>
+</html>
+)
 }
 
 // components/header.tsx (客户端组件)
 "use client"
 
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false)
-  return <nav>...</nav>
+const [isOpen, setIsOpen] = useState(false)
+return <nav>...</nav>
 }
 \`\`\`
 
@@ -153,8 +153,8 @@ Export encountered an error on /page
 import { useState } from "react"
 
 export default function Page() {
-  const [state, setState] = useState()
-  // ...
+const [state, setState] = useState()
+// ...
 }
 \`\`\`
 
@@ -176,9 +176,9 @@ import { useState } from "react"
 
 // ✅ 方案 2: 将交互逻辑提取到客户端组件
 function InteractiveSection() {
-  "use client"
-  const [state, setState] = useState()
-  // ...
+"use client"
+const [state, setState] = useState()
+// ...
 }
 \`\`\`
 
@@ -196,26 +196,26 @@ Error: async/await is not yet supported in Client Components
 // ❌ 错误
 "use client"
 async function Page() {
-  const data = await fetchData()
-  return <div>{data}</div>
+const data = await fetchData()
+return <div>{data}</div>
 }
 
 // ✅ 正确 - 使用 useEffect
 "use client"
 function Page() {
-  const [data, setData] = useState(null)
-  
-  useEffect(() => {
-    fetchData().then(setData)
-  }, [])
-  
-  return <div>{data}</div>
+const [data, setData] = useState(null)
+
+useEffect(() => {
+fetchData().then(setData)
+}, [])
+
+return <div>{data}</div>
 }
 
 // ✅ 更好 - 服务器组件获取数据
 async function Page() {
-  const data = await fetchData()
-  return <ClientComponent data={data} />
+const data = await fetchData()
+return <ClientComponent data={data} />
 }
 \`\`\`
 
@@ -228,26 +228,26 @@ async function Page() {
 "use client"
 
 export default function Page() {
-  const [count, setCount] = useState(0)
-  
-  return (
-    <div>
-      <StaticHeader />
-      <Counter count={count} setCount={setCount} />
-      <StaticFooter />
-    </div>
-  )
+const [count, setCount] = useState(0)
+
+return (
+<div>
+<StaticHeader />
+<Counter count={count} setCount={setCount} />
+<StaticFooter />
+</div>
+)
 }
 
 // ✅ 只有交互部分是客户端
 export default function Page() {
-  return (
-    <div>
-      <StaticHeader />
-      <Counter />  {/* 这个是客户端组件 */}
-      <StaticFooter />
-    </div>
-  )
+return (
+<div>
+<StaticHeader />
+<Counter /> {/_ 这个是客户端组件 _/}
+<StaticFooter />
+</div>
+)
 }
 \`\`\`
 
@@ -258,17 +258,17 @@ export default function Page() {
 import dynamic from 'next/dynamic'
 
 const HeavyComponent = dynamic(
-  () => import('./heavy-component'),
-  { ssr: false }  // 禁用服务端渲染
+() => import('./heavy-component'),
+{ ssr: false } // 禁用服务端渲染
 )
 
 export default function Page() {
-  return (
-    <div>
-      <LightContent />
-      <HeavyComponent />
-    </div>
-  )
+return (
+<div>
+<LightContent />
+<HeavyComponent />
+</div>
+)
 }
 \`\`\`
 
@@ -277,18 +277,18 @@ export default function Page() {
 \`\`\`typescript
 // 在服务器组件中预取数据
 async function Page() {
-  // 并行获取数据
-  const [user, posts] = await Promise.all([
-    fetchUser(),
-    fetchPosts()
-  ])
-  
-  return (
-    <div>
-      <UserInfo user={user} />
-      <PostList posts={posts} />
-    </div>
-  )
+// 并行获取数据
+const [user, posts] = await Promise.all([
+fetchUser(),
+fetchPosts()
+])
+
+return (
+<div>
+<UserInfo user={user} />
+<PostList posts={posts} />
+</div>
+)
 }
 \`\`\`
 
@@ -324,19 +324,22 @@ async function Page() {
 
 \`\`\`typescript
 // 查看组件是服务器还是客户端
-console.log(typeof window === 'undefined' 
-  ? 'Server Component' 
-  : 'Client Component'
+console.log(typeof window === 'undefined'
+? 'Server Component'
+: 'Client Component'
 )
 \`\`\`
 
 ### 构建时调试
 
 \`\`\`bash
+
 # 查看详细构建信息
+
 npm run build -- --debug
 
 # 分析 bundle 大小
+
 npm run build -- --analyze
 \`\`\`
 

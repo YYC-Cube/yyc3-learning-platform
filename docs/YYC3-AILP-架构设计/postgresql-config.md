@@ -21,22 +21,22 @@ DB_MAX_LIFETIME=600000    # 连接最大生命周期（毫秒）
 
 ### 2.1 基本连接配置
 
-| 配置项 | 描述 | 默认值 |
-|--------|------|--------|
-| DB_HOST | 数据库服务器地址 | localhost |
-| DB_PORT | 数据库服务器端口 | 5432 |
-| DB_USER | 数据库用户名 | postgres |
-| DB_PASS | 数据库用户密码 | - |
-| DB_NAME | 数据库名称 | ai_learning |
-| DB_SSL | 是否启用SSL连接 | false |
+| 配置项  | 描述             | 默认值      |
+| ------- | ---------------- | ----------- |
+| DB_HOST | 数据库服务器地址 | localhost   |
+| DB_PORT | 数据库服务器端口 | 5432        |
+| DB_USER | 数据库用户名     | postgres    |
+| DB_PASS | 数据库用户密码   | -           |
+| DB_NAME | 数据库名称       | ai_learning |
+| DB_SSL  | 是否启用SSL连接  | false       |
 
 ### 2.2 连接池配置
 
-| 配置项 | 描述 | 默认值 |
-|--------|------|--------|
-| DB_CONNECTION_LIMIT | 最大连接数 | 10 |
-| DB_IDLE_TIMEOUT | 连接空闲超时时间（毫秒） | 30000 |
-| DB_MAX_LIFETIME | 连接最大生命周期（毫秒） | 600000 |
+| 配置项              | 描述                     | 默认值 |
+| ------------------- | ------------------------ | ------ |
+| DB_CONNECTION_LIMIT | 最大连接数               | 10     |
+| DB_IDLE_TIMEOUT     | 连接空闲超时时间（毫秒） | 30000  |
+| DB_MAX_LIFETIME     | 连接最大生命周期（毫秒） | 600000 |
 
 ## 3. 数据库初始化
 
@@ -65,16 +65,19 @@ npx tsx scripts/test-db.ts
 ## 6. 生产环境配置建议
 
 1. **启用SSL连接**：
+
    ```env
    DB_SSL=true
    ```
 
 2. **增加连接池限制**：
+
    ```env
    DB_CONNECTION_LIMIT=20
    ```
 
 3. **设置合理的超时时间**：
+
    ```env
    DB_IDLE_TIMEOUT=60000
    DB_MAX_LIFETIME=1200000

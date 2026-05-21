@@ -112,6 +112,7 @@ src/
 **职责**: 导出所有公共 API
 
 **导出内容**:
+
 ```typescript
 // 主类
 export { LearningSystem } from './LearningSystem';
@@ -140,6 +141,7 @@ export * from './types/common.types';
 **职责**: 定义 LearningSystem 的完整接口
 
 **关键接口**:
+
 ```typescript
 // 主系统接口
 interface ILearningSystem extends EventEmitter {
@@ -173,6 +175,7 @@ interface ILearningSystem extends EventEmitter {
 ```
 
 **依赖**:
+
 - `types/common.types.ts` - 类型定义
 - `eventemitter3` - EventEmitter
 
@@ -183,6 +186,7 @@ interface ILearningSystem extends EventEmitter {
 **职责**: 实现三层学习系统的核心功能
 
 **类结构**:
+
 ```typescript
 class LearningSystem extends EventEmitter implements ILearningSystem {
   // 私有属性
@@ -197,14 +201,15 @@ class LearningSystem extends EventEmitter implements ILearningSystem {
   private _metaLayer: MetaLearningLayer;
 
   // 核心方法
-  async initialize(config: LearningSystemConfig): Promise<void>
-  async learn(experience: LearningExperience): Promise<LearningResult>
-  async predict(context: BehaviorContext): Promise<BehaviorPrediction>
-  async optimize(): Promise<PerformanceOptimizationResult>
+  async initialize(config: LearningSystemConfig): Promise<void>;
+  async learn(experience: LearningExperience): Promise<LearningResult>;
+  async predict(context: BehaviorContext): Promise<BehaviorPrediction>;
+  async optimize(): Promise<PerformanceOptimizationResult>;
 }
 ```
 
 **依赖**:
+
 - `ILearningSystem.ts` - 接口定义
 - `types/common.types.ts` - 类型定义
 - `layers/BehavioralLearningLayer.ts` - 行为层
@@ -225,12 +230,14 @@ class LearningSystem extends EventEmitter implements ILearningSystem {
 **职责**: 协调和优化三层学习系统
 
 **关键功能**:
+
 - 跨层协调
 - 性能监控
 - 自适应优化
 - 层间通信
 
 **依赖**:
+
 - `types/common.types.ts` - 类型定义
 - `eventemitter3` - EventEmitter
 
@@ -283,6 +290,7 @@ interface SystemMetrics
 **职责**: 行为记录、模式分析和预测
 
 **模块结构**:
+
 ```typescript
 class BehavioralLearningLayer extends EventEmitter implements IBehavioralLearningLayer {
   // 行为记录管理
@@ -301,14 +309,15 @@ class BehavioralLearningLayer extends EventEmitter implements IBehavioralLearnin
   private optimizer: BehaviorOptimizer;
 
   // 核心方法
-  async recordBehavior(record: BehaviorRecord): Promise<void>
-  async analyzePatterns(range?: TimeRange): Promise<BehaviorPattern[]>
-  async predict(context: BehaviorContext): Promise<BehaviorPrediction>
-  async optimize(): Promise<OptimizationResult>
+  async recordBehavior(record: BehaviorRecord): Promise<void>;
+  async analyzePatterns(range?: TimeRange): Promise<BehaviorPattern[]>;
+  async predict(context: BehaviorContext): Promise<BehaviorPrediction>;
+  async optimize(): Promise<OptimizationResult>;
 }
 ```
 
 **核心模块**:
+
 1. **BehaviorHistoryManager**: 管理行为历史
 2. **PatternAnalyzer**: 分析行为模式
 3. **PredictionEngine**: 预测行为
@@ -316,6 +325,7 @@ class BehavioralLearningLayer extends EventEmitter implements IBehavioralLearnin
 5. **BehaviorOptimizer**: 优化行为模型
 
 **依赖**:
+
 - `types/common.types.ts` - 类型定义
 - `eventemitter3` - EventEmitter
 - `lodash` - 工具函数
@@ -330,6 +340,7 @@ class BehavioralLearningLayer extends EventEmitter implements IBehavioralLearnin
 **职责**: 目标管理、决策制定和资源分配
 
 **模块结构**:
+
 ```typescript
 class StrategicLearningLayer extends EventEmitter implements IStrategicLearningLayer {
   // 目标管理
@@ -348,14 +359,15 @@ class StrategicLearningLayer extends EventEmitter implements IStrategicLearningL
   private riskAssessor: RiskAssessor;
 
   // 核心方法
-  async setGoals(goals: StrategicGoal[]): Promise<void>
-  async makeDecision(context: DecisionContext): Promise<StrategicDecision>
-  async assessPerformance(plan: StrategicPlan): Promise<PlanEvaluation>
-  async allocateResources(request: ResourceAllocationRequest): Promise<ResourceAllocation>
+  async setGoals(goals: StrategicGoal[]): Promise<void>;
+  async makeDecision(context: DecisionContext): Promise<StrategicDecision>;
+  async assessPerformance(plan: StrategicPlan): Promise<PlanEvaluation>;
+  async allocateResources(request: ResourceAllocationRequest): Promise<ResourceAllocation>;
 }
 ```
 
 **核心模块**:
+
 1. **GoalManager**: 管理战略目标
 2. **DecisionMaker**: 制定决策
 3. **ResourceAllocator**: 分配资源
@@ -363,6 +375,7 @@ class StrategicLearningLayer extends EventEmitter implements IStrategicLearningL
 5. **PerformanceTracker**: 跟踪性能
 
 **依赖**:
+
 - `types/common.types.ts` - 类型定义
 - `eventemitter3` - EventEmitter
 - `lodash` - 工具函数
@@ -377,6 +390,7 @@ class StrategicLearningLayer extends EventEmitter implements IStrategicLearningL
 **职责**: 知识管理、推理和泛化
 
 **模块结构**:
+
 ```typescript
 class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLearningLayer {
   // 知识图谱
@@ -393,20 +407,22 @@ class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLearningL
   private validator: KnowledgeValidator;
 
   // 核心方法
-  async acquireKnowledge(knowledge: KnowledgeItem): Promise<void>
-  async reason(query: ReasoningQuery): Promise<ReasoningResult>
-  async generalize(criteria: GeneralizationCriteria): Promise<GeneralizationResult>
-  async validateKnowledge(id: string): Promise<ValidationResult>
+  async acquireKnowledge(knowledge: KnowledgeItem): Promise<void>;
+  async reason(query: ReasoningQuery): Promise<ReasoningResult>;
+  async generalize(criteria: GeneralizationCriteria): Promise<GeneralizationResult>;
+  async validateKnowledge(id: string): Promise<ValidationResult>;
 }
 ```
 
 **核心模块**:
+
 1. **KnowledgeGraphManager**: 管理知识图谱
 2. **ReasoningEngine**: 执行推理
 3. **KnowledgeGeneralizer**: 泛化知识
 4. **KnowledgeValidator**: 验证知识
 
 **依赖**:
+
 - `types/common.types.ts` - 类型定义
 - `eventemitter3` - EventEmitter
 - `lodash` - 工具函数
@@ -448,13 +464,13 @@ docs/learning-system/
 
 ### 文档统计
 
-| 类型 | 数量 | 总行数 |
-|------|------|--------|
-| 架构文档 | 4 | 2,500+ |
-| API 文档 | 4 | 3,000+ |
-| 指南文档 | 4 | 2,000+ |
-| 类型文档 | 1 | 700+ |
-| 索引文档 | 1 | 300+ |
+| 类型     | 数量   | 总行数     |
+| -------- | ------ | ---------- |
+| 架构文档 | 4      | 2,500+     |
+| API 文档 | 4      | 3,000+     |
+| 指南文档 | 4      | 2,000+     |
+| 类型文档 | 1      | 700+       |
+| 索引文档 | 1      | 300+       |
 | **总计** | **14** | **8,500+** |
 
 ---
@@ -466,6 +482,7 @@ docs/learning-system/
 包配置文件，定义包的元数据和依赖。
 
 **关键字段**:
+
 ```json
 {
   "name": "@yyc3/learning-system",
@@ -491,6 +508,7 @@ docs/learning-system/
 TypeScript 配置文件，定义编译选项。
 
 **严格配置**:
+
 ```json
 {
   "compilerOptions": {
@@ -589,11 +607,11 @@ dist/
 
 ### 构建产物
 
-| 文件 | 格式 | 用途 |
-|------|------|------|
-| `*.js` | ES Module | 运行时代码 |
-| `*.d.ts` | TypeScript Definitions | 类型检查 |
-| `*.js.map` | Source Map | 调试 |
+| 文件       | 格式                   | 用途       |
+| ---------- | ---------------------- | ---------- |
+| `*.js`     | ES Module              | 运行时代码 |
+| `*.d.ts`   | TypeScript Definitions | 类型检查   |
+| `*.js.map` | Source Map             | 调试       |
 
 ---
 
@@ -646,10 +664,10 @@ bun test --watch
 ### 生产依赖
 
 ```yaml
-zod: ^3.22.4                    # 数据验证
-eventemitter3: ^5.0.1           # 事件发射器
-lodash: ^4.17.21                # 工具函数
-uuid: ^9.0.1                    # 唯一标识符生成
+zod: ^3.22.4 # 数据验证
+eventemitter3: ^5.0.1 # 事件发射器
+lodash: ^4.17.21 # 工具函数
+uuid: ^9.0.1 # 唯一标识符生成
 ```
 
 ### 开发依赖
@@ -693,17 +711,17 @@ External Dependencies:
 
 ### 源代码统计
 
-| 文件 | 行数 | 类型 |
-|------|------|------|
-| `index.ts` | ~50 | 导出 |
-| `ILearningSystem.ts` | ~300 | 接口定义 |
-| `LearningSystem.ts` | ~2,500 | 实现 |
-| `MetaLearningLayer.ts` | ~1,200 | 实现 |
-| `common.types.ts` | ~1,500 | 类型定义 |
-| `BehavioralLearningLayer.ts` | ~1,800 | 实现 |
-| `StrategicLearningLayer.ts` | ~1,500 | 实现 |
-| `KnowledgeLearningLayer.ts` | ~1,800 | 实现 |
-| **总计** | **~10,650** | **TypeScript** |
+| 文件                         | 行数        | 类型           |
+| ---------------------------- | ----------- | -------------- |
+| `index.ts`                   | ~50         | 导出           |
+| `ILearningSystem.ts`         | ~300        | 接口定义       |
+| `LearningSystem.ts`          | ~2,500      | 实现           |
+| `MetaLearningLayer.ts`       | ~1,200      | 实现           |
+| `common.types.ts`            | ~1,500      | 类型定义       |
+| `BehavioralLearningLayer.ts` | ~1,800      | 实现           |
+| `StrategicLearningLayer.ts`  | ~1,500      | 实现           |
+| `KnowledgeLearningLayer.ts`  | ~1,800      | 实现           |
+| **总计**                     | **~10,650** | **TypeScript** |
 
 ### TypeScript 严格性
 
@@ -737,18 +755,21 @@ External Dependencies:
 ## 📚 相关文档
 
 ### 架构文档
+
 - [ARCH-LearningSystem-Overview.md](./architecture/ARCH-LearningSystem-Overview.md) - 系统架构概览
 - [ARCH-BehavioralLayer.md](./architecture/ARCH-BehavioralLayer.md) - 行为层架构
 - [ARCH-StrategicLayer.md](./architecture/ARCH-StrategicLayer.md) - 战略层架构
 - [ARCH-KnowledgeLayer.md](./architecture/ARCH-KnowledgeLayer.md) - 知识层架构
 
 ### API 文档
+
 - [API-LearningSystem.md](./api/API-LearningSystem.md) - 主系统 API
 - [API-BehavioralLayer.md](./api/API-BehavioralLayer.md) - 行为层 API
 - [API-StrategicLayer.md](./api/API-StrategicLayer.md) - 战略层 API
 - [API-KnowledgeLayer.md](./api/API-KnowledgeLayer.md) - 知识层 API
 
 ### 指南文档
+
 - [GUIDE-QuickStart.md](./guides/GUIDE-QuickStart.md) - 快速入门
 - [GUIDE-Installation.md](./guides/GUIDE-Installation.md) - 安装指南
 - [GUIDE-Configuration.md](./guides/GUIDE-Configuration.md) - 配置指南

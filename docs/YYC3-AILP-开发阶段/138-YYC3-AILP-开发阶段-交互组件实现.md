@@ -60,33 +60,33 @@
 
 ```typescript
 // 核心接口 (10+)
-DragSession          // 拖拽会话状态
-DragSource          // 拖拽源接口
-DropTarget          // 放置目标接口
-DragConstraints     // 约束配置
-DragOptions         // 拖拽选项
-Position            // 位置信息
-Velocity            // 速度信息
-Rect                // 矩形区域
-DragManagerConfig   // 管理器配置
-ConstraintFunction  // 约束函数类型
+DragSession; // 拖拽会话状态
+DragSource; // 拖拽源接口
+DropTarget; // 放置目标接口
+DragConstraints; // 约束配置
+DragOptions; // 拖拽选项
+Position; // 位置信息
+Velocity; // 速度信息
+Rect; // 矩形区域
+DragManagerConfig; // 管理器配置
+ConstraintFunction; // 约束函数类型
 ```
 
 #### 主要方法
 
 ```typescript
 // 公共API (10+)
-registerDragSource()      // 注册拖拽源
-unregisterDragSource()    // 注销拖拽源
-registerDropTarget()      // 注册放置目标
-unregisterDropTarget()    // 注销放置目标
-startDrag()               // 开始拖拽
-updateDrag()              // 更新拖拽位置
-endDrag()                 // 结束拖拽
-cancelDrag()              // 取消拖拽
-registerConstraint()      // 注册自定义约束
-getActiveSession()        // 获取活动会话
-destroy()                 // 销毁管理器
+registerDragSource(); // 注册拖拽源
+unregisterDragSource(); // 注销拖拽源
+registerDropTarget(); // 注册放置目标
+unregisterDropTarget(); // 注销放置目标
+startDrag(); // 开始拖拽
+updateDrag(); // 更新拖拽位置
+endDrag(); // 结束拖拽
+cancelDrag(); // 取消拖拽
+registerConstraint(); // 注册自定义约束
+getActiveSession(); // 获取活动会话
+destroy(); // 销毁管理器
 ```
 
 #### 配置选项
@@ -126,7 +126,7 @@ const source: DragSource = {
   getData: () => ({ id: 'item-1', type: 'widget' }),
   getInitialPosition: () => ({ x: 100, y: 100 }),
   getElementRect: () => element.getBoundingClientRect(),
-  getParentRect: () => element.parentElement.getBoundingClientRect()
+  getParentRect: () => element.parentElement.getBoundingClientRect(),
 };
 
 dragManager.registerDragSource(source);
@@ -136,14 +136,15 @@ const target: DropTarget = {
   element: document.getElementById('drop-zone'),
   contains: (point) => {
     const rect = target.element.getBoundingClientRect();
-    return point.x >= rect.left && point.x <= rect.right &&
-           point.y >= rect.top && point.y <= rect.bottom;
+    return (
+      point.x >= rect.left && point.x <= rect.right && point.y >= rect.top && point.y <= rect.bottom
+    );
   },
   accepts: (data) => data.type === 'widget',
   onDrop: async (data, position) => {
     console.log('Dropped:', data, 'at', position);
     return true;
-  }
+  },
 };
 
 dragManager.registerDropTarget(target);
@@ -193,40 +194,40 @@ dragManager.on('dropSuccess', ({ session, dropTarget }) => {
 
 ```typescript
 // 核心接口 (15+)
-RecommendedPosition      // 推荐位置
-OptimizationContext      // 优化上下文
-UIComponent              // UI组件
-PositionConstraints      // 位置约束
-CandidatePosition        // 候选位置
-ScoredCandidate          // 评分后候选
-ScoreBreakdown           // 评分细节
-ScreenInfo               // 屏幕信息
-DeviceType               // 设备类型
-InteractionRecord        // 交互记录
-PositionMemory           // 位置记忆
-MultiScreenPosition      // 多屏位置
-PositionOptimizerConfig  // 配置
+RecommendedPosition; // 推荐位置
+OptimizationContext; // 优化上下文
+UIComponent; // UI组件
+PositionConstraints; // 位置约束
+CandidatePosition; // 候选位置
+ScoredCandidate; // 评分后候选
+ScoreBreakdown; // 评分细节
+ScreenInfo; // 屏幕信息
+DeviceType; // 设备类型
+InteractionRecord; // 交互记录
+PositionMemory; // 位置记忆
+MultiScreenPosition; // 多屏位置
+PositionOptimizerConfig; // 配置
 ```
 
 #### 主要方法
 
 ```typescript
 // 公共API (10+)
-recommendPosition()       // 推荐最佳位置
-learnFromInteraction()    // 学习交互
-clearHistory()            // 清空历史
-getHeatmapData()         // 获取热图数据
+recommendPosition(); // 推荐最佳位置
+learnFromInteraction(); // 学习交互
+clearHistory(); // 清空历史
+getHeatmapData(); // 获取热图数据
 
 // 内部方法
-generateCandidates()      // 生成候选位置
-scoreCandidates()         // 评估候选
-calculateScores()         // 计算各维度分数
-scoreAccessibility()      // 可访问性评分
-scoreEfficiency()         // 效率评分
-scoreAesthetics()         // 美观性评分
-scoreStability()          // 稳定性评分
-scorePersonalization()    // 个性化评分
-collectContext()          // 收集上下文
+generateCandidates(); // 生成候选位置
+scoreCandidates(); // 评估候选
+calculateScores(); // 计算各维度分数
+scoreAccessibility(); // 可访问性评分
+scoreEfficiency(); // 效率评分
+scoreAesthetics(); // 美观性评分
+scoreStability(); // 稳定性评分
+scorePersonalization(); // 个性化评分
+collectContext(); // 收集上下文
 ```
 
 #### 评分系统
@@ -234,11 +235,11 @@ collectContext()          // 收集上下文
 ```typescript
 // 评分权重
 const weights = {
-  accessibility: 0.3,     // 可访问性 (30%)
-  efficiency: 0.25,       // 效率 (25%)
-  aesthetics: 0.15,       // 美观性 (15%)
-  stability: 0.15,        // 稳定性 (15%)
-  personalization: 0.15   // 个性化 (15%)
+  accessibility: 0.3, // 可访问性 (30%)
+  efficiency: 0.25, // 效率 (25%)
+  aesthetics: 0.15, // 美观性 (15%)
+  stability: 0.15, // 稳定性 (15%)
+  personalization: 0.15, // 个性化 (15%)
 };
 
 // 评分范围: 0.0 - 1.0
@@ -268,15 +269,15 @@ const component: UIComponent = {
   element: document.getElementById('widget'),
   priority: 'high',
   frequency: 10,
-  size: { width: 300, height: 400 }
+  size: { width: 300, height: 400 },
 };
 
 // 推荐位置
 const recommended = await positionOptimizer.recommendPosition(component, {
   avoidAreas: [
-    { x: 0, y: 0, width: 200, height: 100 }  // 避让顶部菜单
+    { x: 0, y: 0, width: 200, height: 100 }, // 避让顶部菜单
   ],
-  minDistanceFromEdge: 20
+  minDistanceFromEdge: 20,
 });
 
 console.log('推荐位置:', recommended);
@@ -288,8 +289,8 @@ console.log('备选方案:', recommended.alternatives);
 await positionOptimizer.learnFromInteraction(
   'ai-widget',
   { x: 100, y: 100 },
-  true,  // 成功
-  5000   // 持续5秒
+  true, // 成功
+  5000 // 持续5秒
 );
 ```
 
@@ -322,22 +323,22 @@ await positionOptimizer.learnFromInteraction(
 
 ```typescript
 // 核心接口 (10+)
-ResizeSession            // 调整会话
-ResizeHandle             // 调整手柄
-ResizeResult             // 调整结果
-ResizeConstraintsType    // 约束类型
-ResizeConfig             // 配置
-HandlePosition           // 手柄位置
-Position                 // 位置
-Size                     // 尺寸
-Rect                     // 矩形
+ResizeSession; // 调整会话
+ResizeHandle; // 调整手柄
+ResizeResult; // 调整结果
+ResizeConstraintsType; // 约束类型
+ResizeConfig; // 配置
+HandlePosition; // 手柄位置
+Position; // 位置
+Size; // 尺寸
+Rect; // 矩形
 ```
 
 #### 手柄定义
 
 ```typescript
 // 8个调整手柄
-HandlePosition = 
+HandlePosition =
   | 'top-left' | 'top' | 'top-right'
   | 'right' | 'bottom-right' | 'bottom'
   | 'bottom-left' | 'left'
@@ -354,19 +355,19 @@ HandlePosition =
 
 ```typescript
 // 公共API
-startResize()             // 开始调整
-updateResize()            // 更新调整
-endResize()               // 结束调整
-cancelResize()            // 取消调整
-handleMultiTouch()        // 处理多点触控
-destroy()                 // 销毁控制器
+startResize(); // 开始调整
+updateResize(); // 更新调整
+endResize(); // 结束调整
+cancelResize(); // 取消调整
+handleMultiTouch(); // 处理多点触控
+destroy(); // 销毁控制器
 
 // 内部方法
-calculateNewRect()        // 计算新矩形
-maintainAspectRatio()     // 保持宽高比
-applySnapping()           // 应用吸附
-snapToScreenEdges()       // 吸附到屏幕边缘
-handlePinchZoom()         // 双指缩放
+calculateNewRect(); // 计算新矩形
+maintainAspectRatio(); // 保持宽高比
+applySnapping(); // 应用吸附
+snapToScreenEdges(); // 吸附到屏幕边缘
+handlePinchZoom(); // 双指缩放
 ```
 
 #### 配置选项
@@ -409,11 +410,7 @@ resizeController.on('resizeEnd', ({ result }) => {
 });
 
 // 开始调整（通常由手柄的mousedown事件触发）
-const session = resizeController.startResize(
-  element,
-  'bottom-right',
-  mouseEvent
-);
+const session = resizeController.startResize(element, 'bottom-right', mouseEvent);
 ```
 
 ---
@@ -440,16 +437,16 @@ const session = resizeController.startResize(
 
 ```typescript
 // 核心接口 (10+)
-Theme                    // 主题定义
-ColorScheme              // 颜色方案
-FontScheme               // 字体方案
-SpacingScheme            // 间距方案
-BorderRadiusScheme       // 圆角方案
-TransitionScheme         // 过渡方案
-ThemeMode                // 主题模式
-ThemeConfig              // 配置
-ApplyThemeOptions        // 应用选项
-ColorValue               // 颜色值
+Theme; // 主题定义
+ColorScheme; // 颜色方案
+FontScheme; // 字体方案
+SpacingScheme; // 间距方案
+BorderRadiusScheme; // 圆角方案
+TransitionScheme; // 过渡方案
+ThemeMode; // 主题模式
+ThemeConfig; // 配置
+ApplyThemeOptions; // 应用选项
+ColorValue; // 颜色值
 ```
 
 #### 主题结构
@@ -477,32 +474,32 @@ ColorScheme {
   primary: string
   primaryHover: string
   primaryActive: string
-  
+
   // 次色系
   secondary: string
   secondaryHover: string
   secondaryActive: string
-  
+
   // 背景色
   background: string
   backgroundSecondary: string
   backgroundTertiary: string
-  
+
   // 前景色（文本）
   foreground: string
   foregroundSecondary: string
   foregroundTertiary: string
-  
+
   // 边框色
   border: string
   borderHover: string
-  
+
   // 状态色
   success: string
   warning: string
   error: string
   info: string
-  
+
   // 阴影
   shadow: string
   shadowHeavy: string
@@ -513,18 +510,18 @@ ColorScheme {
 
 ```typescript
 // 公共API (10+)
-registerTheme()           // 注册主题
-applyTheme()              // 应用主题
-setMode()                 // 设置模式
-toggleMode()              // 切换模式
-getCurrentTheme()         // 获取当前主题
-getCurrentMode()          // 获取当前模式
-getAllThemes()            // 获取所有主题
-customizeTheme()          // 自定义主题
-exportTheme()             // 导出主题
-importTheme()             // 导入主题
-clearPreview()            // 清除预览
-destroy()                 // 销毁管理器
+registerTheme(); // 注册主题
+applyTheme(); // 应用主题
+setMode(); // 设置模式
+toggleMode(); // 切换模式
+getCurrentTheme(); // 获取当前主题
+getCurrentMode(); // 获取当前模式
+getAllThemes(); // 获取所有主题
+customizeTheme(); // 自定义主题
+exportTheme(); // 导出主题
+importTheme(); // 导入主题
+clearPreview(); // 清除预览
+destroy(); // 销毁管理器
 ```
 
 #### 配置选项
@@ -560,8 +557,8 @@ const customTheme = themeManager.customizeTheme('light', {
   name: 'My Custom Theme',
   colors: {
     primary: '#ff6b6b',
-    primaryHover: '#ff5252'
-  }
+    primaryHover: '#ff5252',
+  },
 });
 
 themeManager.applyTheme('my-theme');
@@ -581,33 +578,14 @@ themeManager.applyTheme('dark', { preview: true, duration: 5000 });
 
 ```css
 /* 颜色变量 */
---color-primary: #3b82f6
---color-primary-hover: #2563eb
---color-background: #ffffff
---color-foreground: #111827
-/* ... 更多颜色 */
-
-/* 字体变量 */
---font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto
---font-size-base: 1rem
---font-weight-normal: 400
-/* ... 更多字体 */
-
-/* 间距变量 */
---spacing-sm: 0.5rem
---spacing-md: 1rem
---spacing-lg: 1.5rem
-/* ... 更多间距 */
-
-/* 圆角变量 */
---border-radius-md: 0.375rem
---border-radius-lg: 0.5rem
-/* ... 更多圆角 */
-
-/* 过渡变量 */
---transition-normal: 300ms
---easing-ease-in-out: ease-in-out
-/* ... 更多过渡 */
+--color-primary:
+  #3b82f6 --color-primary-hover: #2563eb --color-background: #ffffff --color-foreground: #111827
+    /* ... 更多颜色 */ /* 字体变量 */ --font-family: -apple-system,
+  BlinkMacSystemFont, 'Segoe UI',
+  Roboto --font-size-base: 1rem --font-weight-normal: 400 /* ... 更多字体 */ /* 间距变量 */
+    --spacing-sm: 0.5rem --spacing-md: 1rem --spacing-lg: 1.5rem /* ... 更多间距 */ /* 圆角变量 */
+    --border-radius-md: 0.375rem --border-radius-lg: 0.5rem /* ... 更多圆角 */ /* 过渡变量 */
+    --transition-normal: 300ms --easing-ease-in-out: ease-in-out /* ... 更多过渡 */;
 ```
 
 ---
@@ -637,15 +615,15 @@ themeManager.applyTheme('dark', { preview: true, duration: 5000 });
 
 ```typescript
 // 核心接口 (10+)
-Notification                // 通知对象
-NotificationOptions         // 通知选项
-NotificationAction          // 操作按钮
-NotificationCenterConfig    // 配置
-NotificationStats           // 统计信息
-NotificationType            // 通知类型
-NotificationPriority        // 优先级
-NotificationPosition        // 位置
-NotificationAnimation       // 动画
+Notification; // 通知对象
+NotificationOptions; // 通知选项
+NotificationAction; // 操作按钮
+NotificationCenterConfig; // 配置
+NotificationStats; // 统计信息
+NotificationType; // 通知类型
+NotificationPriority; // 优先级
+NotificationPosition; // 位置
+NotificationAnimation; // 动画
 ```
 
 #### 通知对象
@@ -666,7 +644,7 @@ Notification {
   groupKey?: string                 // 分组键
   progress?: number                 // 进度（0-100）
   metadata?: Record<string, any>    // 元数据
-  
+
   // 状态
   createdAt: Date                   // 创建时间
   displayedAt?: Date                // 显示时间
@@ -679,20 +657,20 @@ Notification {
 
 ```typescript
 // 公共API (15+)
-notify()                  // 显示通知（主方法）
-success()                 // 成功通知
-warning()                 // 警告通知
-error()                   // 错误通知
-info()                    // 信息通知
-loading()                 // 加载通知
-update()                  // 更新通知
-close()                   // 关闭通知
-closeAll()                // 关闭所有通知
-getActiveNotifications()  // 获取活动通知
-getHistory()              // 获取历史
-getStats()                // 获取统计
-clearHistory()            // 清空历史
-destroy()                 // 销毁中心
+notify(); // 显示通知（主方法）
+success(); // 成功通知
+warning(); // 警告通知
+error(); // 错误通知
+info(); // 信息通知
+loading(); // 加载通知
+update(); // 更新通知
+close(); // 关闭通知
+closeAll(); // 关闭所有通知
+getActiveNotifications(); // 获取活动通知
+getHistory(); // 获取历史
+getStats(); // 获取统计
+clearHistory(); // 清空历史
+destroy(); // 销毁中心
 ```
 
 #### 配置选项
@@ -733,15 +711,15 @@ notificationCenter.notify('新消息', '您有3条未读消息', {
         console.log('查看消息');
         notificationCenter.close(notification.id);
       },
-      style: 'primary'
+      style: 'primary',
     },
     {
       label: '忽略',
       onClick: (notification) => {
         notificationCenter.close(notification.id);
-      }
-    }
-  ]
+      },
+    },
+  ],
 });
 
 // 进度通知
@@ -751,14 +729,14 @@ const id = notificationCenter.loading('上传中', '正在上传文件...');
 setInterval(() => {
   progress += 10;
   notificationCenter.update(id, { progress });
-  
+
   if (progress >= 100) {
     notificationCenter.update(id, {
       type: 'success',
       title: '上传完成',
       message: '文件已成功上传',
       duration: 3000,
-      closable: true
+      closable: true,
     });
   }
 }, 500);
@@ -766,11 +744,11 @@ setInterval(() => {
 // 分组通知
 notificationCenter.notify('新评论', '用户A评论了您的文章', {
   groupKey: 'comments',
-  duration: 5000
+  duration: 5000,
 });
 notificationCenter.notify('新评论', '用户B评论了您的文章', {
   groupKey: 'comments',
-  duration: 5000
+  duration: 5000,
 });
 
 // 监听事件
@@ -860,7 +838,7 @@ enum DragState {
   DRAGGING = 'dragging',
   DROPPING = 'dropping',
   CANCELLED = 'cancelled',
-  COMPLETED = 'completed'
+  COMPLETED = 'completed',
 }
 ```
 
@@ -889,9 +867,9 @@ notificationCenter.on('notificationShown', observer2);
 通知中心使用工厂方法创建不同类型的通知：
 
 ```typescript
-success(title, message, options)  // 创建成功通知
-error(title, message, options)    // 创建错误通知
-loading(title, message, options)  // 创建加载通知
+success(title, message, options); // 创建成功通知
+error(title, message, options); // 创建错误通知
+loading(title, message, options); // 创建加载通知
 ```
 
 ### 7. 命令模式（Command）
@@ -1175,10 +1153,7 @@ AI功能层     ████████████████████ 100
 2. 🔴 UI组件封装（React + Storybook）
 3. 🟡 移动端兼容性测试
 
-**短期计划（1-2周）**:
-4. 性能优化与基准测试
-5. 无障碍功能完善
-6. API文档生成
+**短期计划（1-2周）**: 4. 性能优化与基准测试 5. 无障碍功能完善 6. API文档生成
 
 ---
 

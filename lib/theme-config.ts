@@ -41,20 +41,20 @@ export const colors = {
     DEFAULT: 'hsl(199, 89%, 38%)',
     dark: 'hsl(199, 89%, 28%)',
   },
-} as const
+} as const;
 
 /**
  * 间距系统 - 8px 基准
  */
 export const spacing = {
   xs: '0.25rem', // 4px
-  sm: '0.5rem',  // 8px
-  md: '1rem',    // 16px
-  lg: '1.5rem',  // 24px
-  xl: '2rem',    // 32px
+  sm: '0.5rem', // 8px
+  md: '1rem', // 16px
+  lg: '1.5rem', // 24px
+  xl: '2rem', // 32px
   '2xl': '3rem', // 48px
   '3xl': '4rem', // 64px
-} as const
+} as const;
 
 /**
  * 字体系统
@@ -86,14 +86,14 @@ export const typography = {
     ].join(', '),
   },
   fontSize: {
-    xs: ['0.75rem', { lineHeight: '1rem' }],      // 12px
-    sm: ['0.875rem', { lineHeight: '1.25rem' }],  // 14px
-    base: ['1rem', { lineHeight: '1.5rem' }],     // 16px
-    lg: ['1.125rem', { lineHeight: '1.75rem' }],  // 18px
-    xl: ['1.25rem', { lineHeight: '1.75rem' }],   // 20px
-    '2xl': ['1.5rem', { lineHeight: '2rem' }],    // 24px
+    xs: ['0.75rem', { lineHeight: '1rem' }], // 12px
+    sm: ['0.875rem', { lineHeight: '1.25rem' }], // 14px
+    base: ['1rem', { lineHeight: '1.5rem' }], // 16px
+    lg: ['1.125rem', { lineHeight: '1.75rem' }], // 18px
+    xl: ['1.25rem', { lineHeight: '1.75rem' }], // 20px
+    '2xl': ['1.5rem', { lineHeight: '2rem' }], // 24px
     '3xl': ['1.875rem', { lineHeight: '2.25rem' }], // 30px
-    '4xl': ['2.25rem', { lineHeight: '2.5rem' }],   // 36px
+    '4xl': ['2.25rem', { lineHeight: '2.5rem' }], // 36px
   },
   fontWeight: {
     normal: '400',
@@ -101,21 +101,21 @@ export const typography = {
     semibold: '600',
     bold: '700',
   },
-} as const
+} as const;
 
 /**
  * 边框圆角
  */
 export const borderRadius = {
   none: '0',
-  sm: '0.125rem',   // 2px
+  sm: '0.125rem', // 2px
   DEFAULT: '0.25rem', // 4px
-  md: '0.375rem',   // 6px
-  lg: '0.5rem',     // 8px
-  xl: '0.75rem',    // 12px
-  '2xl': '1rem',    // 16px
+  md: '0.375rem', // 6px
+  lg: '0.5rem', // 8px
+  xl: '0.75rem', // 12px
+  '2xl': '1rem', // 16px
   full: '9999px',
-} as const
+} as const;
 
 /**
  * 阴影系统
@@ -129,7 +129,7 @@ export const shadows = {
   '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
   inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
   none: 'none',
-} as const
+} as const;
 
 /**
  * 动画配置
@@ -147,7 +147,7 @@ export const animation = {
     out: 'cubic-bezier(0, 0, 0.2, 1)',
     inOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
   },
-} as const
+} as const;
 
 /**
  * 断点系统 - 响应式设计
@@ -158,7 +158,7 @@ export const breakpoints = {
   lg: '1024px',
   xl: '1280px',
   '2xl': '1536px',
-} as const
+} as const;
 
 /**
  * Z-index 层级系统
@@ -173,28 +173,28 @@ export const zIndex = {
   popover: 1060,
   tooltip: 1070,
   toast: 1080,
-} as const
+} as const;
 
 /**
  * 表单控件尺寸
  */
 export const controlSizes = {
   sm: {
-    height: '2rem',      // 32px
-    padding: '0.5rem',   // 8px
+    height: '2rem', // 32px
+    padding: '0.5rem', // 8px
     fontSize: '0.875rem', // 14px
   },
   md: {
-    height: '2.5rem',    // 40px
-    padding: '0.75rem',  // 12px
-    fontSize: '1rem',    // 16px
+    height: '2.5rem', // 40px
+    padding: '0.75rem', // 12px
+    fontSize: '1rem', // 16px
   },
   lg: {
-    height: '3rem',      // 48px
-    padding: '1rem',     // 16px
+    height: '3rem', // 48px
+    padding: '1rem', // 16px
     fontSize: '1.125rem', // 18px
   },
-} as const
+} as const;
 
 /**
  * 响应式容器最大宽度
@@ -206,7 +206,7 @@ export const containerMaxWidth = {
   xl: '1280px',
   '2xl': '1536px',
   full: '100%',
-} as const
+} as const;
 
 /**
  * 导出完整主题配置
@@ -222,6 +222,6 @@ export const themeConfig = {
   zIndex,
   controlSizes,
   containerMaxWidth,
-} as const
+} as const;
 
-export type ThemeConfig = typeof themeConfig
+export type ThemeConfig = typeof themeConfig;

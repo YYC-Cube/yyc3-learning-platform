@@ -11,7 +11,7 @@ import {
   SecurityMetrics,
   MaintainabilityMetrics,
   Recommendation,
-  AlertLevel
+  AlertLevel,
 } from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 import { SystemMonitor } from '../monitoring/SystemMonitor';
@@ -88,7 +88,6 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
 
       this._status = 'active';
       this._logger.info('TechnologyDimension initialized successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to initialize TechnologyDimension', error);
@@ -117,7 +116,6 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
 
       this.emit('started', { timestamp: new Date() });
       this._logger.info('TechnologyDimension started successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to start TechnologyDimension', error);
@@ -146,7 +144,6 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
 
       this.emit('stopped', { timestamp: new Date() });
       this._logger.info('TechnologyDimension stopped successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to stop TechnologyDimension', error);
@@ -179,7 +176,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         reliability,
         scalability: await this.getScalabilityMetrics(),
         security,
-        maintainability
+        maintainability,
       };
 
       // Update health score
@@ -191,7 +188,6 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
       this.emit('metric-update', { metrics: this._currentMetrics, timestamp: new Date() });
 
       return this._currentMetrics;
-
     } catch (error) {
       this._logger.error('Failed to collect technology metrics', error);
       throw error;
@@ -213,7 +209,8 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         type: 'technology',
         priority: 'high',
         title: 'High CPU Utilization Detected',
-        description: 'CPU utilization is consistently above 80%. Consider scaling up resources or optimizing code.',
+        description:
+          'CPU utilization is consistently above 80%. Consider scaling up resources or optimizing code.',
         rationale: `Current CPU utilization: ${this._currentMetrics.performance.cpuUtilization}%`,
         expectedImpact: 'Improved system performance and responsiveness',
         effort: 'medium',
@@ -221,7 +218,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         dependencies: [],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+        validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       });
     }
 
@@ -232,7 +229,8 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         type: 'technology',
         priority: 'critical',
         title: 'Security Score Below Acceptable Threshold',
-        description: 'Security assessment score is below 70%. Immediate security improvements required.',
+        description:
+          'Security assessment score is below 70%. Immediate security improvements required.',
         rationale: `Current security score: ${this._currentMetrics.security.securityScore}`,
         expectedImpact: 'Improved security posture and compliance',
         effort: 'high',
@@ -240,7 +238,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         dependencies: [],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) // 3 days
+        validUntil: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
       });
     }
 
@@ -251,7 +249,8 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         type: 'technology',
         priority: 'high',
         title: 'Availability Below SLA Target',
-        description: 'System availability is below the 99.5% SLA target. Investigate and resolve reliability issues.',
+        description:
+          'System availability is below the 99.5% SLA target. Investigate and resolve reliability issues.',
         rationale: `Current availability: ${this._currentMetrics.reliability.availability}%`,
         expectedImpact: 'Improved system reliability and customer satisfaction',
         effort: 'high',
@@ -259,7 +258,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         dependencies: [],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000) // 5 days
+        validUntil: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
       });
     }
 
@@ -282,7 +281,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         diskUtilization: 0,
         networkLatency: 0,
         databaseQueryTime: 0,
-        cacheHitRate: 100
+        cacheHitRate: 100,
       },
       reliability: {
         uptime: 100,
@@ -290,7 +289,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         mttr: 0,
         errorRate: 0,
         availability: 100,
-        slaCompliance: 100
+        slaCompliance: 100,
       },
       scalability: {
         concurrentUsers: 0,
@@ -298,7 +297,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         autoScalingEvents: 0,
         resourceElasticity: 100,
         horizontalScalingCapacity: 100,
-        verticalScalingHeadroom: 100
+        verticalScalingHeadroom: 100,
       },
       security: {
         vulnerabilities: [],
@@ -310,12 +309,12 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
           hipaa: false,
           pciDss: false,
           lastAudit: new Date(),
-          nextAudit: new Date()
+          nextAudit: new Date(),
         },
         incidentCount: 0,
         authenticationAttempts: 0,
         failedAuthentications: 0,
-        securityEvents: []
+        securityEvents: [],
       },
       maintainability: {
         codeQuality: 100,
@@ -325,8 +324,8 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         codeComplexity: 0,
         refactorability: 100,
         deploymentFrequency: 0,
-        leadTime: 0
-      }
+        leadTime: 0,
+      },
     };
   }
 
@@ -352,21 +351,21 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
       performance: 0.25,
       reliability: 0.3,
       security: 0.25,
-      maintainability: 0.2
+      maintainability: 0.2,
     };
 
     const scores = {
       performance: this.calculatePerformanceScore(),
       reliability: this.calculateReliabilityScore(),
       security: this.calculateSecurityScore(),
-      maintainability: this.calculateMaintainabilityScore()
+      maintainability: this.calculateMaintainabilityScore(),
     };
 
     this._healthScore = Math.round(
       scores.performance * weights.performance +
-      scores.reliability * weights.reliability +
-      scores.security * weights.security +
-      scores.maintainability * weights.maintainability
+        scores.reliability * weights.reliability +
+        scores.security * weights.security +
+        scores.maintainability * weights.maintainability
     );
 
     this.emit('health-updated', { score: this._healthScore, timestamp: new Date() });
@@ -454,7 +453,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
       autoScalingEvents: 0,
       resourceElasticity: 100,
       horizontalScalingCapacity: 100,
-      verticalScalingHeadroom: 100
+      verticalScalingHeadroom: 100,
     };
   }
 
@@ -467,7 +466,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         title: 'Critical Response Time',
         description: `Response time is critically high: ${this._currentMetrics.performance.responseTime}ms`,
         source: 'TechnologyDimension',
-        metadata: { metric: 'responseTime', value: this._currentMetrics.performance.responseTime }
+        metadata: { metric: 'responseTime', value: this._currentMetrics.performance.responseTime },
       });
     }
 
@@ -479,13 +478,13 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         title: 'Low Availability',
         description: `System availability is below 99%: ${this._currentMetrics.reliability.availability}%`,
         source: 'TechnologyDimension',
-        metadata: { metric: 'availability', value: this._currentMetrics.reliability.availability }
+        metadata: { metric: 'availability', value: this._currentMetrics.reliability.availability },
       });
     }
 
     // Security alerts
     const criticalVulnerabilities = this._currentMetrics.security.vulnerabilities.filter(
-      v => v.severity === 'critical' && v.status === 'open'
+      (v) => v.severity === 'critical' && v.status === 'open'
     );
 
     if (criticalVulnerabilities.length > 0) {
@@ -495,7 +494,7 @@ export class TechnologyDimension extends EventEmitter implements IDimension {
         title: 'Critical Security Vulnerabilities',
         description: `${criticalVulnerabilities.length} critical security vulnerabilities require immediate attention`,
         source: 'TechnologyDimension',
-        metadata: { vulnerabilities: criticalVulnerabilities }
+        metadata: { vulnerabilities: criticalVulnerabilities },
       });
     }
   }

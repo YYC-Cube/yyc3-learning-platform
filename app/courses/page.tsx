@@ -4,14 +4,21 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useState, useEffect } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Search,
   Filter,
@@ -30,109 +37,120 @@ import {
   MessageSquare,
   Lightbulb,
   Heart,
-} from "lucide-react"
-import Link from "next/link"
-import { courseData } from "@/data/course-data"
-import { CourseImage } from "@/components/course-image"
-import { ResponsiveLayout } from "@/components/responsive-layout"
+} from 'lucide-react';
+import Link from 'next/link';
+import { courseData } from '@/data/course-data';
+import { CourseImage } from '@/components/course-image';
+import { ResponsiveLayout } from '@/components/responsive-layout';
 
 export default function CoursesPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("全部")
-  const [selectedLevel, setSelectedLevel] = useState("全部")
-  const [selectedTab, setSelectedTab] = useState("推荐")
-  const [isFilterOpen, setIsFilterOpen] = useState(false)
-  const [favorites, setFavorites] = useState<string[]>([])
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('全部');
+  const [selectedLevel, setSelectedLevel] = useState('全部');
+  const [selectedTab, setSelectedTab] = useState('推荐');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
   // 模拟加载收藏数据
   useEffect(() => {
-    setFavorites(["2", "5", "8"])
-  }, [])
+    setFavorites(['2', '5', '8']);
+  }, []);
 
   const toggleFavorite = (courseId: string) => {
-    setFavorites((prev) => (prev.includes(courseId) ? prev.filter((id) => id !== courseId) : [...prev, courseId]))
-  }
+    setFavorites((prev) =>
+      prev.includes(courseId) ? prev.filter((id) => id !== courseId) : [...prev, courseId]
+    );
+  };
 
-  const categories = ["全部", "基础理论", "Prompt工程", "模型应用", "开发实战", "高级进阶", "行业应用", "认证课程"]
-  const levels = ["全部", "入门", "初级", "中级", "高级", "专家"]
+  const categories = [
+    '全部',
+    '基础理论',
+    'Prompt工程',
+    '模型应用',
+    '开发实战',
+    '高级进阶',
+    '行业应用',
+    '认证课程',
+  ];
+  const levels = ['全部', '入门', '初级', '中级', '高级', '专家'];
 
   // 根据选项卡筛选课程
   const getFilteredCourses = () => {
-    let filtered = courseData
+    let filtered = courseData;
 
     // 根据选项卡筛选
-    if (selectedTab === "热门") {
-      filtered = filtered.sort((a, b) => b.students - a.students)
-    } else if (selectedTab === "最新") {
-      filtered = filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0))
-    } else if (selectedTab === "免费") {
-      filtered = filtered.filter((course) => course.price === "免费")
-    } else if (selectedTab === "收藏") {
-      filtered = filtered.filter((course) => favorites.includes(course.id))
+    if (selectedTab === '热门') {
+      filtered = filtered.sort((a, b) => b.students - a.students);
+    } else if (selectedTab === '最新') {
+      filtered = filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+    } else if (selectedTab === '免费') {
+      filtered = filtered.filter((course) => course.price === '免费');
+    } else if (selectedTab === '收藏') {
+      filtered = filtered.filter((course) => favorites.includes(course.id));
     }
 
     // 应用搜索和筛选
     return filtered.filter((course) => {
       const matchesSearch =
-        searchTerm === "" ||
+        searchTerm === '' ||
         course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        course.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        course.tags.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
-      const matchesCategory = selectedCategory === "全部" || course.category === selectedCategory
-      const matchesLevel = selectedLevel === "全部" || course.level === selectedLevel
+      const matchesCategory = selectedCategory === '全部' || course.category === selectedCategory;
+      const matchesLevel = selectedLevel === '全部' || course.level === selectedLevel;
 
-      return matchesSearch && matchesCategory && matchesLevel
-    })
-  }
+      return matchesSearch && matchesCategory && matchesLevel;
+    });
+  };
 
-  const filteredCourses = getFilteredCourses()
+  const filteredCourses = getFilteredCourses();
 
   const getLevelColor = (level: string) => {
     switch (level) {
-      case "入门":
-        return "bg-blue-100 text-blue-800 border border-blue-200"
-      case "初级":
-        return "bg-green-100 text-green-800 border border-green-200"
-      case "中级":
-        return "bg-yellow-100 text-yellow-800 border border-yellow-200"
-      case "高级":
-        return "bg-orange-100 text-orange-800 border border-orange-200"
-      case "专家":
-        return "bg-purple-100 text-purple-800 border border-purple-200"
+      case '入门':
+        return 'bg-blue-100 text-blue-800 border border-blue-200';
+      case '初级':
+        return 'bg-green-100 text-green-800 border border-green-200';
+      case '中级':
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+      case '高级':
+        return 'bg-orange-100 text-orange-800 border border-orange-200';
+      case '专家':
+        return 'bg-purple-100 text-purple-800 border border-purple-200';
       default:
-        return "bg-gray-100 text-gray-800 border border-gray-200"
+        return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
-  }
+  };
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case "基础理论":
-        return <BookOpen className="h-4 w-4" />
-      case "Prompt工程":
-        return <MessageSquare className="h-4 w-4" />
-      case "模型应用":
-        return <Layers className="h-4 w-4" />
-      case "开发实战":
-        return <Code className="h-4 w-4" />
-      case "高级进阶":
-        return <TrendingUp className="h-4 w-4" />
-      case "行业应用":
-        return <BarChart3 className="h-4 w-4" />
-      case "认证课程":
-        return <Award className="h-4 w-4" />
+      case '基础理论':
+        return <BookOpen className="h-4 w-4" />;
+      case 'Prompt工程':
+        return <MessageSquare className="h-4 w-4" />;
+      case '模型应用':
+        return <Layers className="h-4 w-4" />;
+      case '开发实战':
+        return <Code className="h-4 w-4" />;
+      case '高级进阶':
+        return <TrendingUp className="h-4 w-4" />;
+      case '行业应用':
+        return <BarChart3 className="h-4 w-4" />;
+      case '认证课程':
+        return <Award className="h-4 w-4" />;
       default:
-        return <BookOpen className="h-4 w-4" />
+        return <BookOpen className="h-4 w-4" />;
     }
-  }
+  };
 
   return (
     <ResponsiveLayout
       title="课程中心"
       user={{
-        name: "YanYu同学",
-        avatar: "/user/User_61.png",
-        level: "中级工程师",
+        name: 'YanYu同学',
+        avatar: '/user/User_61.png',
+        level: '中级工程师',
       }}
     >
       <div>
@@ -143,13 +161,43 @@ export default function CoursesPage() {
         </div>
 
         {/* 选项卡 */}
-        <Tabs defaultValue="推荐" className="mb-6" value={selectedTab} onValueChange={setSelectedTab}>
+        <Tabs
+          defaultValue="推荐"
+          className="mb-6"
+          value={selectedTab}
+          onValueChange={setSelectedTab}
+        >
           <TabsList className="grid grid-cols-5 mb-4 bg-white/80 backdrop-blur-sm p-1 rounded-xl shadow-sm border border-indigo-100">
-            <TabsTrigger value="推荐" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg">推荐</TabsTrigger>
-            <TabsTrigger value="热门" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg">热门</TabsTrigger>
-            <TabsTrigger value="最新" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg">最新</TabsTrigger>
-            <TabsTrigger value="免费" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg">免费</TabsTrigger>
-            <TabsTrigger value="收藏" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg">收藏</TabsTrigger>
+            <TabsTrigger
+              value="推荐"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg"
+            >
+              推荐
+            </TabsTrigger>
+            <TabsTrigger
+              value="热门"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg"
+            >
+              热门
+            </TabsTrigger>
+            <TabsTrigger
+              value="最新"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg"
+            >
+              最新
+            </TabsTrigger>
+            <TabsTrigger
+              value="免费"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg"
+            >
+              免费
+            </TabsTrigger>
+            <TabsTrigger
+              value="收藏"
+              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-purple-600 data-[state=active]:text-white transition-all duration-200 rounded-lg"
+            >
+              收藏
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -186,11 +234,13 @@ export default function CoursesPage() {
                   {categories.map((category) => (
                     <Button
                       key={category}
-                      variant={selectedCategory === category ? "default" : "outline"}
+                      variant={selectedCategory === category ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setSelectedCategory(category)}
                       className={`${
-                        selectedCategory === category ? "bg-blue-600 text-white" : "border-gray-300 text-gray-700"
+                        selectedCategory === category
+                          ? 'bg-blue-600 text-white'
+                          : 'border-gray-300 text-gray-700'
                       } whitespace-nowrap`}
                     >
                       {category}
@@ -205,11 +255,13 @@ export default function CoursesPage() {
                   {levels.map((level) => (
                     <Button
                       key={level}
-                      variant={selectedLevel === level ? "default" : "outline"}
+                      variant={selectedLevel === level ? 'default' : 'outline'}
                       size="sm"
                       onClick={() => setSelectedLevel(level)}
                       className={`${
-                        selectedLevel === level ? "bg-blue-600 text-white" : "border-gray-300 text-gray-700"
+                        selectedLevel === level
+                          ? 'bg-blue-600 text-white'
+                          : 'border-gray-300 text-gray-700'
                       } whitespace-nowrap`}
                     >
                       {level}
@@ -225,11 +277,13 @@ export default function CoursesPage() {
             {categories.slice(0, 6).map((category) => (
               <Button
                 key={category}
-                variant={selectedCategory === category ? "default" : "outline"}
+                variant={selectedCategory === category ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setSelectedCategory(category)}
                 className={`${
-                  selectedCategory === category ? "bg-blue-600 text-white" : "border-gray-300 text-gray-700"
+                  selectedCategory === category
+                    ? 'bg-blue-600 text-white'
+                    : 'border-gray-300 text-gray-700'
                 } whitespace-nowrap`}
               >
                 {category}
@@ -263,7 +317,7 @@ export default function CoursesPage() {
             >
               <div className="relative overflow-hidden">
                 <CourseImage
-                  src={course.image || "/placeholder.svg"}
+                  src={course.image || '/placeholder.svg'}
                   alt={course.title}
                   title={course.title}
                   color={course.color}
@@ -272,7 +326,9 @@ export default function CoursesPage() {
                   <Badge className={getLevelColor(course.level)}>{course.level}</Badge>
                 </div>
                 <div className="absolute top-4 right-4 flex gap-2">
-                  <Badge className="bg-white text-gray-800 border border-gray-300">{course.price}</Badge>
+                  <Badge className="bg-white text-gray-800 border border-gray-300">
+                    {course.price}
+                  </Badge>
                   {course.isNew && <Badge className="bg-blue-600 text-white">新课</Badge>}
                 </div>
                 <Button
@@ -280,12 +336,12 @@ export default function CoursesPage() {
                   size="icon"
                   className="absolute top-4 right-4 bg-white/80 hover:bg-white text-gray-700 hover:text-red-500 rounded-full h-8 w-8 p-1.5"
                   onClick={(e) => {
-                    e.preventDefault()
-                    toggleFavorite(course.id)
+                    e.preventDefault();
+                    toggleFavorite(course.id);
                   }}
                 >
                   <Heart
-                    className={`h-full w-full ${favorites.includes(course.id) ? "fill-red-500 text-red-500" : ""}`}
+                    className={`h-full w-full ${favorites.includes(course.id) ? 'fill-red-500 text-red-500' : ''}`}
                   />
                 </Button>
                 {course.progress > 0 && (
@@ -295,7 +351,10 @@ export default function CoursesPage() {
                       <span>{course.progress}%</span>
                     </div>
                     <div className="w-full bg-blue-200 rounded-full h-2 mt-1">
-                      <div className="h-2 rounded-full bg-blue-500" style={{ width: `${course.progress}%` }}></div>
+                      <div
+                        className="h-2 rounded-full bg-blue-500"
+                        style={{ width: `${course.progress}%` }}
+                      ></div>
                     </div>
                   </div>
                 )}
@@ -313,7 +372,9 @@ export default function CoursesPage() {
                   {getCategoryIcon(course.category)}
                   <span className="ml-1">{course.category}</span>
                 </div>
-                <CardDescription className="line-clamp-2 mt-2">{course.description}</CardDescription>
+                <CardDescription className="line-clamp-2 mt-2">
+                  {course.description}
+                </CardDescription>
               </CardHeader>
 
               <CardContent className="pb-2">
@@ -347,7 +408,11 @@ export default function CoursesPage() {
 
                 <div className="flex flex-wrap gap-1 mb-3">
                   {course.tags.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-xs border-gray-300 text-gray-700">
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-xs border-gray-300 text-gray-700"
+                    >
                       {tag}
                     </Badge>
                   ))}
@@ -364,9 +429,12 @@ export default function CoursesPage() {
                   </div>
 
                   <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
-                    <Link href={`/courses/${course.id}`} className="inline-flex items-center justify-center gap-2">
+                    <Link
+                      href={`/courses/${course.id}`}
+                      className="inline-flex items-center justify-center gap-2"
+                    >
                       <Play className="h-4 w-4 mr-2" />
-                      {course.progress > 0 ? "继续学习" : "开始学习"}
+                      {course.progress > 0 ? '继续学习' : '开始学习'}
                     </Link>
                   </Button>
                 </div>
@@ -383,10 +451,10 @@ export default function CoursesPage() {
             <Button
               variant="outline"
               onClick={() => {
-                setSearchTerm("")
-                setSelectedCategory("全部")
-                setSelectedLevel("全部")
-                setSelectedTab("推荐")
+                setSearchTerm('');
+                setSelectedCategory('全部');
+                setSelectedLevel('全部');
+                setSelectedTab('推荐');
               }}
             >
               重置筛选条件
@@ -395,7 +463,7 @@ export default function CoursesPage() {
         )}
 
         {/* 课程推荐 */}
-        {filteredCourses.length > 0 && selectedTab === "推荐" && (
+        {filteredCourses.length > 0 && selectedTab === '推荐' && (
           <div className="mt-12">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
               <Lightbulb className="h-5 w-5 mr-2 text-yellow-500" />
@@ -446,9 +514,15 @@ export default function CoursesPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-2 mb-4">
-                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">官方认证</Badge>
-                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">高薪岗位</Badge>
-                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">就业保障</Badge>
+                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                      官方认证
+                    </Badge>
+                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                      高薪岗位
+                    </Badge>
+                    <Badge className="bg-purple-100 text-purple-800 border-purple-200">
+                      就业保障
+                    </Badge>
                   </div>
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
@@ -476,5 +550,5 @@ export default function CoursesPage() {
         )}
       </div>
     </ResponsiveLayout>
-  )
+  );
 }

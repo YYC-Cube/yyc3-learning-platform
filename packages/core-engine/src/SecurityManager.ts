@@ -1,10 +1,10 @@
 /**
  * YYC³ 智能AI浮窗系统 - 安全管理组件
- * 
+ *
  * 核心定位：系统安全的守护神，全方位安全防护体系
  * 设计原则：纵深防御、最小权限、零信任、主动安全
  * 技术栈：认证授权 + 加密 + 审计 + 威胁检测
- * 
+ *
  * @author YYC³ AI Team
  * @version 1.0.0
  */
@@ -65,7 +65,7 @@ export enum RiskLevel {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 export interface RiskAssessment {
@@ -146,7 +146,7 @@ export enum ThreatType {
   PHISHING = 'phishing',
   UNAUTHORIZED_ACCESS = 'unauthorized_access',
   DATA_BREACH = 'data_breach',
-  INSIDER_THREAT = 'insider_threat'
+  INSIDER_THREAT = 'insider_threat',
 }
 
 export interface ThreatRecommendation {
@@ -178,7 +178,7 @@ export enum DataClassification {
   INTERNAL = 'internal',
   CONFIDENTIAL = 'confidential',
   SECRET = 'secret',
-  TOP_SECRET = 'top_secret'
+  TOP_SECRET = 'top_secret',
 }
 
 export interface DataProtectionContext {
@@ -298,23 +298,23 @@ export interface SecurityConfig {
   sessionTimeout: number;
   maxLoginAttempts: number;
   mfaThreshold: number;
-  
+
   // 授权配置
   authzModel: 'rbac' | 'abac' | 'hybrid';
   enforceAuthorizationOn: string[];
-  
+
   // 加密配置
   encryptionAlgorithm: string;
   keyRotationInterval: number;
-  
+
   // 威胁检测配置
   anomalyThreshold: number;
   learningPeriod: number;
-  
+
   // 审计配置
   auditorName: string;
   auditScope: string[];
-  
+
   // 其他配置
   reauthThreshold: number;
 }
@@ -332,12 +332,12 @@ export class SecurityManager extends EventEmitter {
 
   constructor(config: Partial<SecurityConfig> = {}) {
     super();
-    
+
     const jwtSecret = process.env.JWT_SECRET;
     if (!jwtSecret) {
       throw new Error('JWT_SECRET must be provided in environment variables');
     }
-    
+
     this.config = {
       jwtSecret: jwtSecret,
       sessionTimeout: 3600000, // 1 hour
@@ -352,7 +352,7 @@ export class SecurityManager extends EventEmitter {
       auditorName: 'YYC³ Security Team',
       auditScope: ['all'],
       reauthThreshold: 0.8,
-      ...config
+      ...config,
     };
 
     if (!this.config.jwtSecret) {
@@ -377,7 +377,7 @@ export class SecurityManager extends EventEmitter {
           authId,
           riskLevel: RiskLevel.HIGH,
           mfaRequired: false,
-          error: 'Account temporarily locked due to too many failed attempts'
+          error: 'Account temporarily locked due to too many failed attempts',
         };
       }
 
@@ -390,7 +390,7 @@ export class SecurityManager extends EventEmitter {
           authId,
           riskLevel: RiskLevel.MEDIUM,
           mfaRequired: false,
-          error: 'Invalid credentials'
+          error: 'Invalid credentials',
         };
       }
 
@@ -398,7 +398,10 @@ export class SecurityManager extends EventEmitter {
       const riskAssessment = await this.assessAuthRisk(basicAuth.userId!, context);
 
       // 4. MFA检查
-      if (riskAssessment.riskLevel >= RiskLevel.HIGH || riskAssessment.score > this.config.mfaThreshold) {
+      if (
+        riskAssessment.riskLevel >= RiskLevel.HIGH ||
+        riskAssessment.score > this.config.mfaThreshold
+      ) {
         if (!credentials.mfaCode) {
           return {
             success: false,
@@ -406,10 +409,10 @@ export class SecurityManager extends EventEmitter {
             userId: basicAuth.userId,
             riskLevel: riskAssessment.riskLevel,
             mfaRequired: true,
-            error: 'MFA required'
+            error: 'MFA required',
           };
         }
-        
+
         const mfaValid = await this.verifyMFA(basicAuth.userId!, credentials.mfaCode);
         if (!mfaValid) {
           return {
@@ -417,13 +420,17 @@ export class SecurityManager extends EventEmitter {
             authId,
             riskLevel: riskAssessment.riskLevel,
             mfaRequired: true,
-            error: 'Invalid MFA code'
+            error: 'Invalid MFA code',
           };
         }
       }
 
       // 5. 创建会话
-      const session = await this.createSession(basicAuth.userId!, context, riskAssessment.riskLevel);
+      const session = await this.createSession(
+        basicAuth.userId!,
+        context,
+        riskAssessment.riskLevel
+      );
 
       // 6. 颁发令牌
       const tokens = await this.issueTokens(session);
@@ -436,7 +443,7 @@ export class SecurityManager extends EventEmitter {
         timestamp: new Date(),
         context,
         riskAssessment,
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       });
 
       // 清除失败计数
@@ -449,9 +456,8 @@ export class SecurityManager extends EventEmitter {
         sessionId: session.id,
         tokens,
         riskLevel: riskAssessment.riskLevel,
-        mfaRequired: false
+        mfaRequired: false,
       };
-
     } catch (error) {
       this.emit('auth:error', { authId, error });
       return {
@@ -459,7 +465,7 @@ export class SecurityManager extends EventEmitter {
         authId,
         riskLevel: RiskLevel.HIGH,
         mfaRequired: false,
-        error: error instanceof Error ? error.message : 'Authentication failed'
+        error: error instanceof Error ? error.message : 'Authentication failed',
       };
     }
   }
@@ -478,7 +484,7 @@ export class SecurityManager extends EventEmitter {
           allowed: false,
           reason: 'Invalid or expired session',
           elevationPossible: false,
-          auditTrailId
+          auditTrailId,
         };
       }
 
@@ -500,7 +506,7 @@ export class SecurityManager extends EventEmitter {
         allowed,
         reason: policyResult.reason,
         timestamp: new Date(),
-        auditTrailId
+        auditTrailId,
       });
 
       this.emit('authorization:checked', { request, allowed });
@@ -510,16 +516,15 @@ export class SecurityManager extends EventEmitter {
         reason: policyResult.reason,
         constraints: policyResult.constraints,
         elevationPossible: !allowed && policyResult.elevationPossible,
-        auditTrailId
+        auditTrailId,
       };
-
     } catch (error) {
       this.emit('authorization:error', { request, error });
       return {
         allowed: false,
         reason: 'Authorization check failed',
         elevationPossible: false,
-        auditTrailId
+        auditTrailId,
       };
     }
   }
@@ -555,15 +560,16 @@ export class SecurityManager extends EventEmitter {
         anomaliesDetected: anomalies.length,
         threatsIdentified: threats.length,
         riskLevel: riskAssessment.overallRisk,
-        highRiskItems: threats.filter(t => t.severity === RiskLevel.HIGH || t.severity === RiskLevel.CRITICAL),
+        highRiskItems: threats.filter(
+          (t) => t.severity === RiskLevel.HIGH || t.severity === RiskLevel.CRITICAL
+        ),
         recommendations,
-        actionsTaken: actions
+        actionsTaken: actions,
       };
 
       this.emit('threat:report', report);
 
       return report;
-
     } catch (error) {
       this.emit('threat:detection:error', { error });
       throw error;
@@ -594,7 +600,7 @@ export class SecurityManager extends EventEmitter {
         dataId: data.id,
         classification,
         context,
-        timestamp: new Date()
+        timestamp: new Date(),
       });
 
       return {
@@ -604,9 +610,8 @@ export class SecurityManager extends EventEmitter {
         protectionLevel: classification,
         accessPolicy,
         encryptionMetadata: encrypted.metadata,
-        auditTrailId
+        auditTrailId,
       };
-
     } catch (error) {
       this.emit('data:protection:error', { error });
       throw error;
@@ -631,7 +636,7 @@ export class SecurityManager extends EventEmitter {
       const securityPosture = await this.assessSecurityPosture({
         complianceResults,
         configurationFindings,
-        vulnerabilities
+        vulnerabilities,
       });
 
       // 5. 改进计划
@@ -648,13 +653,12 @@ export class SecurityManager extends EventEmitter {
         securityPosture,
         improvementPlan,
         riskRating: securityPosture.overallRisk,
-        nextAuditDate: this.calculateNextAuditDate(securityPosture.overallRisk)
+        nextAuditDate: this.calculateNextAuditDate(securityPosture.overallRisk),
       };
 
       this.emit('audit:completed', report);
 
       return report;
-
     } catch (error) {
       this.emit('audit:error', { error });
       throw error;
@@ -685,7 +689,7 @@ export class SecurityManager extends EventEmitter {
   private recordFailedAttempt(identifier: string): void {
     const attempts = (this.loginAttempts.get(identifier) || 0) + 1;
     this.loginAttempts.set(identifier, attempts);
-    
+
     // 自动解锁（15分钟后）
     setTimeout(() => {
       this.loginAttempts.delete(identifier);
@@ -696,12 +700,14 @@ export class SecurityManager extends EventEmitter {
     this.loginAttempts.delete(identifier);
   }
 
-  private async verifyCredentials(credentials: Credentials): Promise<{ success: boolean; userId?: string }> {
+  private async verifyCredentials(
+    credentials: Credentials
+  ): Promise<{ success: boolean; userId?: string }> {
     // 简化的凭证验证（生产环境应使用数据库查询）
     if (credentials.password && credentials.password.length > 0) {
       return {
         success: true,
-        userId: `user_${crypto.randomBytes(8).toString('hex')}`
+        userId: `user_${crypto.randomBytes(8).toString('hex')}`,
       };
     }
     return { success: false };
@@ -717,7 +723,7 @@ export class SecurityManager extends EventEmitter {
       factors.push({
         name: 'suspicious_ip',
         impact: 0.3,
-        description: 'Login from suspicious IP address'
+        description: 'Login from suspicious IP address',
       });
     }
 
@@ -727,7 +733,7 @@ export class SecurityManager extends EventEmitter {
       factors.push({
         name: 'suspicious_user_agent',
         impact: 0.2,
-        description: 'Unusual user agent detected'
+        description: 'Unusual user agent detected',
       });
     }
 
@@ -737,7 +743,7 @@ export class SecurityManager extends EventEmitter {
       riskLevel,
       score,
       factors,
-      recommendations: factors.map(f => f.description)
+      recommendations: factors.map((f) => f.description),
     };
   }
 
@@ -746,7 +752,11 @@ export class SecurityManager extends EventEmitter {
     return code.length === 6;
   }
 
-  private async createSession(userId: string, context: AuthContext, riskLevel: RiskLevel): Promise<Session> {
+  private async createSession(
+    userId: string,
+    context: AuthContext,
+    riskLevel: RiskLevel
+  ): Promise<Session> {
     const session: Session = {
       id: `sess_${Date.now()}_${crypto.randomBytes(8).toString('hex')}`,
       userId,
@@ -755,7 +765,7 @@ export class SecurityManager extends EventEmitter {
       lastActivity: new Date(),
       context,
       riskLevel,
-      metadata: {}
+      metadata: {},
     };
 
     this.sessionStore.set(session.id, session);
@@ -776,7 +786,7 @@ export class SecurityManager extends EventEmitter {
       accessToken,
       refreshToken,
       expiresIn: this.config.sessionTimeout / 1000,
-      tokenType: 'Bearer'
+      tokenType: 'Bearer',
     };
   }
 
@@ -786,7 +796,7 @@ export class SecurityManager extends EventEmitter {
       sid: session.id,
       type,
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(session.expiresAt.getTime() / 1000)
+      exp: Math.floor(session.expiresAt.getTime() / 1000),
     };
 
     // 简化的JWT生成（生产环境应使用完整的JWT库）
@@ -803,7 +813,7 @@ export class SecurityManager extends EventEmitter {
   private async logAuthentication(data: any): Promise<void> {
     this.auditLog.push({
       type: 'authentication',
-      ...data
+      ...data,
     });
   }
 
@@ -823,7 +833,7 @@ export class SecurityManager extends EventEmitter {
       allowed: true,
       reason: 'Policy evaluation passed',
       constraints: [],
-      elevationPossible: false
+      elevationPossible: false,
     };
   }
 
@@ -831,64 +841,68 @@ export class SecurityManager extends EventEmitter {
     return true;
   }
 
-  private async checkAuthorizationRisk(request: AuthorizationRequest): Promise<{ acceptable: boolean }> {
+  private async checkAuthorizationRisk(
+    request: AuthorizationRequest
+  ): Promise<{ acceptable: boolean }> {
     return { acceptable: true };
   }
 
   private async logAuthorization(data: any): Promise<void> {
     this.auditLog.push({
       type: 'authorization',
-      ...data
+      ...data,
     });
   }
 
   private async collectSecurityEvents(): Promise<any[]> {
-    return this.auditLog.filter(log => 
-      log.type === 'authentication' || log.type === 'authorization'
+    return this.auditLog.filter(
+      (log) => log.type === 'authentication' || log.type === 'authorization'
     );
   }
 
   private async detectAnomalies(events: any[]): Promise<any[]> {
     // 简单的异常检测
-    return events.filter(e => e.riskAssessment?.riskLevel === RiskLevel.HIGH);
+    return events.filter((e) => e.riskAssessment?.riskLevel === RiskLevel.HIGH);
   }
 
   private async matchThreats(anomalies: any[]): Promise<ThreatItem[]> {
-    return anomalies.map(a => ({
+    return anomalies.map((a) => ({
       id: `threat_${Date.now()}`,
       type: ThreatType.UNAUTHORIZED_ACCESS,
       severity: RiskLevel.HIGH,
       description: 'Potential unauthorized access detected',
       indicators: ['high_risk_authentication'],
       affectedResources: [a.userId],
-      timestamp: new Date()
+      timestamp: new Date(),
     }));
   }
 
   private async assessThreatRisk(threats: ThreatItem[]): Promise<{ overallRisk: RiskLevel }> {
-    const highRiskCount = threats.filter(t => t.severity === RiskLevel.HIGH).length;
+    const highRiskCount = threats.filter((t) => t.severity === RiskLevel.HIGH).length;
     return {
-      overallRisk: highRiskCount > 5 ? RiskLevel.HIGH : RiskLevel.MEDIUM
+      overallRisk: highRiskCount > 5 ? RiskLevel.HIGH : RiskLevel.MEDIUM,
     };
   }
 
   private async generateThreatRecommendations(assessment: any): Promise<ThreatRecommendation[]> {
-    return [{
-      priority: 'high',
-      action: 'Review authentication logs',
-      rationale: 'Multiple high-risk authentications detected',
-      impact: 'Prevent unauthorized access',
-      effort: 'Low'
-    }];
+    return [
+      {
+        priority: 'high',
+        action: 'Review authentication logs',
+        rationale: 'Multiple high-risk authentications detected',
+        impact: 'Prevent unauthorized access',
+        effort: 'Low',
+      },
+    ];
   }
 
   private async executeThreatResponses(threats: ThreatItem[]): Promise<Action[]> {
-    return threats.map(t => ({
+    return threats.map((t) => ({
       type: 'log_threat',
       target: t.id,
       result: 'success',
       timestamp: new Date(),
-      details: 'Threat logged for review'
+      details: 'Threat logged for review',
     }));
   }
 
@@ -896,11 +910,14 @@ export class SecurityManager extends EventEmitter {
     return data.classification || DataClassification.INTERNAL;
   }
 
-  private async encryptData(content: any, classification: DataClassification): Promise<{ data: string; metadata: EncryptionMetadata }> {
+  private async encryptData(
+    content: any,
+    classification: DataClassification
+  ): Promise<{ data: string; metadata: EncryptionMetadata }> {
     const key = crypto.randomBytes(32);
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-    
+
     let encrypted = cipher.update(JSON.stringify(content), 'utf8', 'hex');
     encrypted += cipher.final('hex');
 
@@ -911,22 +928,27 @@ export class SecurityManager extends EventEmitter {
         keyId: key.toString('hex').substring(0, 16),
         iv: iv.toString('hex'),
         encryptedAt: new Date(),
-        version: '1.0'
-      }
+        version: '1.0',
+      },
     };
   }
 
-  private async createAccessPolicy(classification: DataClassification, context: DataProtectionContext): Promise<AccessPolicy> {
+  private async createAccessPolicy(
+    classification: DataClassification,
+    context: DataProtectionContext
+  ): Promise<AccessPolicy> {
     return {
       id: `policy_${Date.now()}`,
-      rules: [{
-        id: 'rule_1',
-        effect: 'allow',
-        principals: [context.userId],
-        actions: ['read'],
-        resources: ['*']
-      }],
-      effectiveFrom: new Date()
+      rules: [
+        {
+          id: 'rule_1',
+          effect: 'allow',
+          principals: [context.userId],
+          actions: ['read'],
+          resources: ['*'],
+        },
+      ],
+      effectiveFrom: new Date(),
     };
   }
 
@@ -934,7 +956,7 @@ export class SecurityManager extends EventEmitter {
     // 简单的水印添加
     return {
       ...data,
-      watermark: `${context.userId}_${Date.now()}`
+      watermark: `${context.userId}_${Date.now()}`,
     };
   }
 
@@ -943,18 +965,20 @@ export class SecurityManager extends EventEmitter {
     this.auditLog.push({
       type: 'data_protection',
       ...data,
-      auditTrailId
+      auditTrailId,
     });
     return auditTrailId;
   }
 
   private async checkCompliance(): Promise<ComplianceCheck[]> {
-    return [{
-      standard: 'GDPR',
-      requirement: 'Data encryption at rest',
-      status: 'compliant',
-      evidence: ['AES-256 encryption enabled']
-    }];
+    return [
+      {
+        standard: 'GDPR',
+        requirement: 'Data encryption at rest',
+        status: 'compliant',
+        evidence: ['AES-256 encryption enabled'],
+      },
+    ];
   }
 
   private async auditConfigurations(): Promise<Finding[]> {
@@ -971,14 +995,14 @@ export class SecurityManager extends EventEmitter {
       score: 85,
       strengths: ['Strong encryption', 'Multi-factor authentication'],
       weaknesses: [],
-      trends: []
+      trends: [],
     };
   }
 
   private async createImprovementPlan(posture: SecurityPosture): Promise<ImprovementPlan> {
     return {
       priorities: [],
-      timeline: '6 months'
+      timeline: '6 months',
     };
   }
 

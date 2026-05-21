@@ -4,17 +4,17 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { ResponsiveLayout } from "@/components/responsive-layout"
+import { useState } from 'react';
+import { ResponsiveLayout } from '@/components/responsive-layout';
 
 export default function SimpleEditProfilePage() {
   const [currentUser] = useState({
-    name: "YanYu同学",
-    avatar: "/placeholder.svg?height=80&width=80&text=YY",
-    level: "高级"
-  })
+    name: 'YanYu同学',
+    avatar: '/placeholder.svg?height=80&width=80&text=YY',
+    level: '高级',
+  });
 
   return (
     <ResponsiveLayout title="编辑资料" user={currentUser}>
@@ -23,5 +23,5 @@ export default function SimpleEditProfilePage() {
         <p>这是一个简化版本的编辑资料页面</p>
       </div>
     </ResponsiveLayout>
-  )
+  );
 }

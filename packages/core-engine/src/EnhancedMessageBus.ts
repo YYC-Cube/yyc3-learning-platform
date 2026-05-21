@@ -4,7 +4,7 @@ export enum MessagePriority {
   CRITICAL = 0,
   HIGH = 1,
   NORMAL = 2,
-  LOW = 3
+  LOW = 3,
 }
 
 export enum MessageType {
@@ -20,7 +20,7 @@ export enum MessageType {
   RESOURCE_ALLOCATION = 'resource.allocation',
   COLLABORATION = 'collaboration',
   HEALTH_CHECK = 'health.check',
-  SYSTEM = 'system'
+  SYSTEM = 'system',
 }
 
 export interface MessageEnvelope {
@@ -160,14 +160,14 @@ export class EnhancedMessageBus extends EventEmitter {
         backoffFactor: 2,
         initialDelayMs: 100,
         maxDelayMs: 5000,
-        retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED']
+        retryableErrors: ['ECONNRESET', 'ETIMEDOUT', 'ECONNREFUSED'],
       },
       enablePersistence: config.enablePersistence || false,
       deadLetterQueueSize: config.deadLetterQueueSize || 100,
       enableMetrics: config.enableMetrics || true,
       enableTracing: config.enableTracing || true,
       maxProcessingTime: config.maxProcessingTime || 30000,
-      maxConcurrentMessages: config.maxConcurrentMessages || 10
+      maxConcurrentMessages: config.maxConcurrentMessages || 10,
     };
 
     this.metrics = this.initializeMetrics();
@@ -209,9 +209,9 @@ export class EnhancedMessageBus extends EventEmitter {
         [MessagePriority.CRITICAL]: 0,
         [MessagePriority.HIGH]: 0,
         [MessagePriority.NORMAL]: 0,
-        [MessagePriority.LOW]: 0
+        [MessagePriority.LOW]: 0,
       },
-      deadLetterQueueSize: 0
+      deadLetterQueueSize: 0,
     };
   }
 
@@ -236,7 +236,7 @@ export class EnhancedMessageBus extends EventEmitter {
       sender: options.sender || 'system',
       retryCount: 0,
       maxRetries: this.config.retryPolicy.maxRetries,
-      metadata: options.metadata || {}
+      metadata: options.metadata || {},
     };
 
     if (options.correlationId !== undefined) {
@@ -291,7 +291,7 @@ export class EnhancedMessageBus extends EventEmitter {
       type,
       handler,
       active: true,
-      createdAt: Date.now()
+      createdAt: Date.now(),
     };
 
     if (options?.filter !== undefined) {
@@ -314,7 +314,7 @@ export class EnhancedMessageBus extends EventEmitter {
     subscription.active = false;
     const handlers = this.handlers.get(subscription.type);
     if (handlers) {
-      const index = handlers.findIndex(s => s.id === subscriptionId);
+      const index = handlers.findIndex((s) => s.id === subscriptionId);
       if (index !== -1) {
         handlers.splice(index, 1);
       }
@@ -324,11 +324,7 @@ export class EnhancedMessageBus extends EventEmitter {
     return true;
   }
 
-  async request<T = any>(
-    type: MessageType,
-    payload: any,
-    timeoutMs: number = 5000
-  ): Promise<T> {
+  async request<T = any>(type: MessageType, payload: any, timeoutMs: number = 5000): Promise<T> {
     return new Promise((resolve, reject) => {
       const correlationId = this.generateMessageId();
       const replyType = `${type}:reply` as MessageType;
@@ -348,15 +344,12 @@ export class EnhancedMessageBus extends EventEmitter {
 
       this.publish(type, payload, {
         correlationId,
-        replyTo: replyType
+        replyTo: replyType,
       }).catch(reject);
     });
   }
 
-  async reply<T = any>(
-    originalMessage: MessageEnvelope,
-    payload: T
-  ): Promise<void> {
+  async reply<T = any>(originalMessage: MessageEnvelope, payload: T): Promise<void> {
     if (!originalMessage.replyTo) {
       throw new Error('Original message does not have a replyTo field');
     }
@@ -365,24 +358,22 @@ export class EnhancedMessageBus extends EventEmitter {
       correlationId?: string;
       metadata?: MessageMetadata;
     } = {
-      metadata: originalMessage.metadata
+      metadata: originalMessage.metadata,
     };
 
     if (originalMessage.correlationId !== undefined) {
       options.correlationId = originalMessage.correlationId;
     }
 
-    await this.publish(
-      originalMessage.replyTo as MessageType,
-      payload,
-      options
-    );
+    await this.publish(originalMessage.replyTo as MessageType, payload, options);
   }
 
   private insertByPriority(message: MessageEnvelope): void {
     let index = 0;
-    while (index < this.messageQueue.length && 
-           this.messageQueue[index]!.priority <= message.priority) {
+    while (
+      index < this.messageQueue.length &&
+      this.messageQueue[index]!.priority <= message.priority
+    ) {
       index++;
     }
     this.messageQueue.splice(index, 0, message);
@@ -465,7 +456,6 @@ export class EnhancedMessageBus extends EventEmitter {
       if (this.config.enableTracing) {
         this.updateTrace(message.id, 'completed');
       }
-
     } catch (error) {
       processingTime = Date.now() - startTime;
       await this.handleProcessingError(message, error as Error);
@@ -476,7 +466,7 @@ export class EnhancedMessageBus extends EventEmitter {
 
   private getHandlersForMessage(message: MessageEnvelope): Subscription[] {
     const handlers = this.handlers.get(message.type) || [];
-    return handlers.filter(sub => {
+    return handlers.filter((sub) => {
       if (!sub.active) return false;
       if (!sub.filter) return true;
       return this.matchesFilter(message, sub.filter);
@@ -496,7 +486,7 @@ export class EnhancedMessageBus extends EventEmitter {
 
     if (filter.tags && filter.tags.length > 0) {
       const messageTags = message.metadata.tags || [];
-      const hasAllTags = filter.tags.every(tag => messageTags.includes(tag));
+      const hasAllTags = filter.tags.every((tag) => messageTags.includes(tag));
       if (!hasAllTags) return false;
     }
 
@@ -513,22 +503,16 @@ export class EnhancedMessageBus extends EventEmitter {
     return true;
   }
 
-  private async executeWithTimeout<T>(
-    promise: Promise<T>,
-    timeoutMs: number
-  ): Promise<T> {
+  private async executeWithTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
     return Promise.race([
       promise,
       new Promise<T>((_, reject) =>
         setTimeout(() => reject(new Error('Handler timeout')), timeoutMs)
-      )
+      ),
     ]);
   }
 
-  private async handleProcessingError(
-    message: MessageEnvelope,
-    error: Error
-  ): Promise<void> {
+  private async handleProcessingError(message: MessageEnvelope, error: Error): Promise<void> {
     this.metrics.messagesFailed++;
 
     const isRetryable = this.isRetryableError(error);
@@ -541,14 +525,14 @@ export class EnhancedMessageBus extends EventEmitter {
 
   private isRetryableError(error: Error): boolean {
     const retryableErrors = this.config.retryPolicy.retryableErrors || [];
-    return retryableErrors.some(err => error.message.includes(err));
+    return retryableErrors.some((err) => error.message.includes(err));
   }
 
   private async retryMessage(message: MessageEnvelope): Promise<void> {
     message.retryCount++;
     const delay = Math.min(
-      this.config.retryPolicy.initialDelayMs * 
-      Math.pow(this.config.retryPolicy.backoffFactor, message.retryCount),
+      this.config.retryPolicy.initialDelayMs *
+        Math.pow(this.config.retryPolicy.backoffFactor, message.retryCount),
       this.config.retryPolicy.maxDelayMs
     );
 
@@ -560,10 +544,7 @@ export class EnhancedMessageBus extends EventEmitter {
     }, delay);
   }
 
-  private async moveToDeadLetterQueue(
-    message: MessageEnvelope,
-    error: Error
-  ): Promise<void> {
+  private async moveToDeadLetterQueue(message: MessageEnvelope, error: Error): Promise<void> {
     if (this.deadLetterQueue.length >= this.config.deadLetterQueueSize) {
       this.deadLetterQueue.shift();
     }
@@ -615,11 +596,11 @@ export class EnhancedMessageBus extends EventEmitter {
         {
           timestamp: Date.now(),
           event: 'created',
-          metadata: { type: message.type, priority: message.priority }
-        }
+          metadata: { type: message.type, priority: message.priority },
+        },
       ],
       startTime: Date.now(),
-      status: 'pending'
+      status: 'pending',
     };
     this.traces.set(message.id, trace);
   }
@@ -631,7 +612,7 @@ export class EnhancedMessageBus extends EventEmitter {
     const traceEvent: TraceEvent = {
       timestamp: Date.now(),
       event,
-      metadata: {}
+      metadata: {},
     };
 
     if (handler !== undefined) {
@@ -668,7 +649,7 @@ export class EnhancedMessageBus extends EventEmitter {
   }
 
   getTracesByTraceId(traceId: string): MessageTrace[] {
-    return Array.from(this.traces.values()).filter(t => t.traceId === traceId);
+    return Array.from(this.traces.values()).filter((t) => t.traceId === traceId);
   }
 
   getDeadLetterQueue(): MessageEnvelope[] {
@@ -676,7 +657,7 @@ export class EnhancedMessageBus extends EventEmitter {
   }
 
   async retryFromDeadLetterQueue(messageId: string): Promise<boolean> {
-    const index = this.deadLetterQueue.findIndex(m => m.id === messageId);
+    const index = this.deadLetterQueue.findIndex((m) => m.id === messageId);
     if (index === -1) return false;
 
     const message = this.deadLetterQueue.splice(index, 1)[0];
@@ -725,7 +706,7 @@ export class EnhancedMessageBus extends EventEmitter {
     const start = Date.now();
 
     while (this.processing.size > 0 && Date.now() - start < maxWait) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 }

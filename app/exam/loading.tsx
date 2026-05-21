@@ -32,5 +32,5 @@ export default function ExamLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

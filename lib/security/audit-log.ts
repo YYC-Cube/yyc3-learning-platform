@@ -120,7 +120,7 @@ const eventStore = {
     if (!this.buckets.has(bucketKey)) {
       this.buckets.set(bucketKey, {
         timestamp: parseInt(bucketKey) * this.bucketSizeMs,
-        events: new Map()
+        events: new Map(),
       });
 
       // Clean up old buckets if we exceed max
@@ -154,9 +154,8 @@ const eventStore = {
       }
     }
 
-    return events.filter(event =>
-      event.timestamp.getTime() >= startTime &&
-      event.timestamp.getTime() <= endTime
+    return events.filter(
+      (event) => event.timestamp.getTime() >= startTime && event.timestamp.getTime() <= endTime
     );
   },
 
@@ -167,7 +166,7 @@ const eventStore = {
       total += bucket.events.size;
     }
     return total;
-  }
+  },
 };
 
 /**
@@ -205,7 +204,12 @@ function generateEventId(): string {
  */
 function shouldLog(severity: SecuritySeverity): boolean {
   const config = getConfig();
-  const severityOrder = [SecuritySeverity.INFO, SecuritySeverity.WARNING, SecuritySeverity.ERROR, SecuritySeverity.CRITICAL];
+  const severityOrder = [
+    SecuritySeverity.INFO,
+    SecuritySeverity.WARNING,
+    SecuritySeverity.ERROR,
+    SecuritySeverity.CRITICAL,
+  ];
   const minIndex = severityOrder.indexOf(config.minSeverity || SecuritySeverity.INFO);
   const currentIndex = severityOrder.indexOf(severity);
   return currentIndex >= minIndex;
@@ -225,7 +229,7 @@ async function flushBatch(): Promise<void> {
 
   try {
     // Log batch to memory store
-    batchToProcess.forEach(event => {
+    batchToProcess.forEach((event) => {
       eventStore.add(event);
 
       // Log to console/logger with proper severity
@@ -255,7 +259,6 @@ async function flushBatch(): Promise<void> {
           break;
       }
     });
-
   } catch (error) {
     logger.error('Error flushing audit log batch:', error);
   } finally {
@@ -304,7 +307,7 @@ export function logSecurityEvent(event: Omit<SecurityEvent, 'id' | 'timestamp'>)
 
     // If batch size reached, flush immediately
     if (batchQueue.length >= config.batchSize!) {
-      flushBatch().catch(error => {
+      flushBatch().catch((error) => {
         logger.error('Error during async log flush:', error);
       });
     } else {
@@ -534,21 +537,23 @@ export function getRecentEvents(limit: number = 100): SecurityEvent[] {
 /**
  * Get events by type (optimized with Map iteration)
  */
-export function getEventsByType(eventType: SecurityEventType, limit: number = 100): SecurityEvent[] {
+export function getEventsByType(
+  eventType: SecurityEventType,
+  limit: number = 100
+): SecurityEvent[] {
   const eventsArray = getEventsArray();
-  return eventsArray
-    .filter(event => event.eventType === eventType)
-    .slice(0, limit);
+  return eventsArray.filter((event) => event.eventType === eventType).slice(0, limit);
 }
 
 /**
  * Get events by severity (optimized with Map iteration)
  */
-export function getEventsBySeverity(severity: SecuritySeverity, limit: number = 100): SecurityEvent[] {
+export function getEventsBySeverity(
+  severity: SecuritySeverity,
+  limit: number = 100
+): SecurityEvent[] {
   const eventsArray = getEventsArray();
-  return eventsArray
-    .filter(event => event.severity === severity)
-    .slice(0, limit);
+  return eventsArray.filter((event) => event.severity === severity).slice(0, limit);
 }
 
 /**
@@ -556,9 +561,7 @@ export function getEventsBySeverity(severity: SecuritySeverity, limit: number = 
  */
 export function getEventsByUser(userId: string, limit: number = 100): SecurityEvent[] {
   const eventsArray = getEventsArray();
-  return eventsArray
-    .filter(event => event.userId === userId)
-    .slice(0, limit);
+  return eventsArray.filter((event) => event.userId === userId).slice(0, limit);
 }
 
 /**
@@ -566,9 +569,7 @@ export function getEventsByUser(userId: string, limit: number = 100): SecurityEv
  */
 export function getEventsByIPAddress(ipAddress: string, limit: number = 100): SecurityEvent[] {
   const eventsArray = getEventsArray();
-  return eventsArray
-    .filter(event => event.ipAddress === ipAddress)
-    .slice(0, limit);
+  return eventsArray.filter((event) => event.ipAddress === ipAddress).slice(0, limit);
 }
 
 /**
@@ -632,7 +633,7 @@ export function clearOldEvents(daysOld: number = 30): number {
       }
 
       // Delete the identified old events
-      eventsToDelete.forEach(eventId => {
+      eventsToDelete.forEach((eventId) => {
         bucket.events.delete(eventId);
         removedCount++;
       });
@@ -659,7 +660,10 @@ export function initializeAuditLog(): void {
   logger.info('Initializing security audit log system with performance optimizations');
 
   // Set up periodic cleanup of old events
-  setInterval(() => {
-    clearOldEvents(7); // Clear events older than 7 days
-  }, 24 * 60 * 60 * 1000); // Run daily
+  setInterval(
+    () => {
+      clearOldEvents(7); // Clear events older than 7 days
+    },
+    24 * 60 * 60 * 1000
+  ); // Run daily
 }

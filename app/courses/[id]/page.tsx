@@ -4,16 +4,16 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useParams } from "next/navigation"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { useState } from 'react';
+import { useParams } from 'next/navigation';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import {
   BookOpen,
   Clock,
@@ -30,17 +30,17 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowLeft,
-} from "lucide-react"
-import Link from "next/link"
-import { courseData } from "@/data/course-data"
+} from 'lucide-react';
+import Link from 'next/link';
+import { courseData } from '@/data/course-data';
 
 export default function CourseDetailPage() {
-  const params = useParams()
-  const courseId = params.id as string
-  const course = courseData.find((c) => c.id === courseId)
+  const params = useParams();
+  const courseId = params.id as string;
+  const course = courseData.find((c) => c.id === courseId);
 
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   if (!course) {
     return (
@@ -56,25 +56,25 @@ export default function CourseDetailPage() {
           </Button>
         </div>
       </div>
-    )
+    );
   }
 
   const getLevelColor = (level: string) => {
     switch (level) {
-      case "入门":
-        return "bg-blue-100 text-blue-800 border border-blue-200"
-      case "初级":
-        return "bg-green-100 text-green-800 border border-green-200"
-      case "中级":
-        return "bg-yellow-100 text-yellow-800 border border-yellow-200"
-      case "高级":
-        return "bg-orange-100 text-orange-800 border border-orange-200"
-      case "专家":
-        return "bg-purple-100 text-purple-800 border border-purple-200"
+      case '入门':
+        return 'bg-blue-100 text-blue-800 border border-blue-200';
+      case '初级':
+        return 'bg-green-100 text-green-800 border border-green-200';
+      case '中级':
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+      case '高级':
+        return 'bg-orange-100 text-orange-800 border border-orange-200';
+      case '专家':
+        return 'bg-purple-100 text-purple-800 border border-purple-200';
       default:
-        return "bg-gray-100 text-gray-800 border border-gray-200"
+        return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -93,7 +93,7 @@ export default function CourseDetailPage() {
         <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
           <div className="relative h-64 sm:h-80">
             <Image
-              src={course.image || "/placeholder.svg"}
+              src={course.image || '/placeholder.svg'}
               alt={course.title}
               fill
               className="object-cover"
@@ -155,7 +155,9 @@ export default function CourseDetailPage() {
                   className="rounded-full"
                   onClick={() => setIsFavorite(!isFavorite)}
                 >
-                  <Heart className={`h-5 w-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
+                  <Heart
+                    className={`h-5 w-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
+                  />
                 </Button>
                 <Button variant="outline" size="icon" className="rounded-full">
                   <Share2 className="h-5 w-5 text-gray-600" />
@@ -260,11 +262,22 @@ export default function CourseDetailPage() {
                 {course.syllabus ? (
                   <div className="space-y-4">
                     {course.syllabus.map((section, index) => (
-                      <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+                      <div
+                        key={index}
+                        className="border border-gray-200 rounded-lg overflow-hidden"
+                      >
                         <div className="bg-gray-50 p-4 flex items-center justify-between">
                           <h3 className="font-medium text-gray-800">{section.title}</h3>
-                          <Button variant="ghost" size="sm" onClick={() => setIsExpanded(!isExpanded)}>
-                            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setIsExpanded(!isExpanded)}
+                          >
+                            {isExpanded ? (
+                              <ChevronUp className="h-4 w-4" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
                         {isExpanded && (
@@ -326,10 +339,18 @@ export default function CourseDetailPage() {
 
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">专业领域</h3>
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <Badge className="bg-blue-100 text-blue-800 border border-blue-200">大语言模型</Badge>
-                  <Badge className="bg-blue-100 text-blue-800 border border-blue-200">自然语言处理</Badge>
-                  <Badge className="bg-blue-100 text-blue-800 border border-blue-200">AI应用开发</Badge>
-                  <Badge className="bg-blue-100 text-blue-800 border border-blue-200">企业AI解决方案</Badge>
+                  <Badge className="bg-blue-100 text-blue-800 border border-blue-200">
+                    大语言模型
+                  </Badge>
+                  <Badge className="bg-blue-100 text-blue-800 border border-blue-200">
+                    自然语言处理
+                  </Badge>
+                  <Badge className="bg-blue-100 text-blue-800 border border-blue-200">
+                    AI应用开发
+                  </Badge>
+                  <Badge className="bg-blue-100 text-blue-800 border border-blue-200">
+                    企业AI解决方案
+                  </Badge>
                 </div>
 
                 <h3 className="text-lg font-semibold text-gray-800 mb-3">其他课程</h3>
@@ -338,7 +359,7 @@ export default function CourseDetailPage() {
                     <Card key={relatedCourse.id} className="overflow-hidden">
                       <div className="relative h-32 overflow-hidden">
                         <Image
-                          src={relatedCourse.image || "/placeholder.svg"}
+                          src={relatedCourse.image || '/placeholder.svg'}
                           alt={relatedCourse.title}
                           fill
                           className="object-cover"
@@ -346,7 +367,9 @@ export default function CourseDetailPage() {
                         />
                       </div>
                       <CardContent className="p-4">
-                        <h4 className="font-medium text-gray-800 mb-1 line-clamp-1">{relatedCourse.title}</h4>
+                        <h4 className="font-medium text-gray-800 mb-1 line-clamp-1">
+                          {relatedCourse.title}
+                        </h4>
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">{relatedCourse.duration}</span>
                           <div className="flex items-center">
@@ -371,7 +394,9 @@ export default function CourseDetailPage() {
                           <Star
                             key={star}
                             className={`h-5 w-5 ${
-                              star <= Math.floor(course.rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"
+                              star <= Math.floor(course.rating)
+                                ? 'text-yellow-500 fill-yellow-500'
+                                : 'text-gray-300'
                             }`}
                           />
                         ))}
@@ -401,7 +426,7 @@ export default function CourseDetailPage() {
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
                                 key={star}
-                                className={`h-4 w-4 ${star <= 5 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                                className={`h-4 w-4 ${star <= 5 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
                               />
                             ))}
                           </div>
@@ -433,7 +458,7 @@ export default function CourseDetailPage() {
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
                                 key={star}
-                                className={`h-4 w-4 ${star <= 4 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                                className={`h-4 w-4 ${star <= 4 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
                               />
                             ))}
                           </div>
@@ -465,7 +490,7 @@ export default function CourseDetailPage() {
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star
                                 key={star}
-                                className={`h-4 w-4 ${star <= 5 ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                                className={`h-4 w-4 ${star <= 5 ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
                               />
                             ))}
                           </div>
@@ -504,7 +529,8 @@ export default function CourseDetailPage() {
                       <Progress value={course.progress} className="h-2" />
                     </div>
                     <p className="text-sm text-gray-600">
-                      您已完成 {Math.floor((course.progress / 100) * course.chapters)} / {course.chapters} 章节
+                      您已完成 {Math.floor((course.progress / 100) * course.chapters)} /{' '}
+                      {course.chapters} 章节
                     </p>
                   </CardContent>
                 </Card>
@@ -515,12 +541,14 @@ export default function CourseDetailPage() {
                 <CardContent className="p-6">
                   <div className="text-center mb-4">
                     <div className="text-2xl font-bold text-gray-900 mb-1">{course.price}</div>
-                    {course.price !== "免费" && <div className="text-sm text-gray-600 line-through">原价 ¥999</div>}
+                    {course.price !== '免费' && (
+                      <div className="text-sm text-gray-600 line-through">原价 ¥999</div>
+                    )}
                   </div>
 
                   <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white mb-3">
                     <Play className="h-4 w-4 mr-2" />
-                    {course.progress > 0 ? "继续学习" : "立即开始"}
+                    {course.progress > 0 ? '继续学习' : '立即开始'}
                   </Button>
 
                   <Button variant="outline" className="w-full mb-4">
@@ -591,7 +619,7 @@ export default function CourseDetailPage() {
                           <div className="flex">
                             <div className="relative w-16 h-12 mr-3">
                               <Image
-                                src={relatedCourse.image || "/placeholder.svg"}
+                                src={relatedCourse.image || '/placeholder.svg'}
                                 alt={relatedCourse.title}
                                 fill
                                 className="object-cover rounded"
@@ -621,5 +649,5 @@ export default function CourseDetailPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -4,171 +4,174 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import type React from "react"
-import { useState, useEffect, useCallback, createContext } from "react"
-import type { User, ApiResponse, CourseProgress } from "@/app/types"
+import type React from 'react';
+import { useState, useEffect, useCallback, createContext } from 'react';
+import type { User, ApiResponse, CourseProgress } from '@/app/types';
 
 interface UserContextType {
-  user: User | null
-  loading: boolean
-  error: string | null
-  updateUser: (data: Partial<User>) => Promise<boolean>
-  updateProgress: (courseId: string, progress: number) => Promise<boolean>
-  updateStreak: () => Promise<boolean>
-  logout: () => void
-  refreshUser: () => Promise<void>
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  updateUser: (data: Partial<User>) => Promise<boolean>;
+  updateProgress: (courseId: string, progress: number) => Promise<boolean>;
+  updateStreak: () => Promise<boolean>;
+  logout: () => void;
+  refreshUser: () => Promise<void>;
 }
 
-const UserContext = createContext<UserContextType | undefined>(undefined)
+const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // 获取用户信息
   const fetchUser = useCallback(async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
-      const response = await fetch("/api/user")
-      const result: ApiResponse<User> = await response.json()
+      const response = await fetch('/api/user');
+      const result: ApiResponse<User> = await response.json();
 
       if (result.success && result.data) {
-        setUser(result.data)
+        setUser(result.data);
       } else {
-        throw new Error(result.error || "获取用户信息失败")
+        throw new Error(result.error || '获取用户信息失败');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "网络错误"
-      setError(errorMessage)
-      console.error("获取用户信息失败:", err)
+      const errorMessage = err instanceof Error ? err.message : '网络错误';
+      setError(errorMessage);
+      console.error('获取用户信息失败:', err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }, [])
+  }, []);
 
   // 更新用户信息
   const updateUser = useCallback(async (data: Partial<User>): Promise<boolean> => {
     try {
-      setError(null)
+      setError(null);
 
-      const response = await fetch("/api/user", {
-        method: "PUT",
+      const response = await fetch('/api/user', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      })
+      });
 
-      const result: ApiResponse<User> = await response.json()
+      const result: ApiResponse<User> = await response.json();
 
       if (result.success && result.data) {
-        setUser(result.data)
-        return true
+        setUser(result.data);
+        return true;
       } else {
-        throw new Error(result.error || "更新用户信息失败")
+        throw new Error(result.error || '更新用户信息失败');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "更新失败"
-      setError(errorMessage)
-      console.error("更新用户信息失败:", err)
-      return false
+      const errorMessage = err instanceof Error ? err.message : '更新失败';
+      setError(errorMessage);
+      console.error('更新用户信息失败:', err);
+      return false;
     }
-  }, [])
+  }, []);
 
   // 更新学习进度
-  const updateProgress = useCallback(async (courseId: string, progress: number): Promise<boolean> => {
-    try {
-      setError(null)
+  const updateProgress = useCallback(
+    async (courseId: string, progress: number): Promise<boolean> => {
+      try {
+        setError(null);
 
-      const response = await fetch("/api/user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          action: "updateProgress",
-          courseId,
-          progress,
-        }),
-      })
+        const response = await fetch('/api/user', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            action: 'updateProgress',
+            courseId,
+            progress,
+          }),
+        });
 
-      const result: ApiResponse<User> = await response.json()
+        const result: ApiResponse<User> = await response.json();
 
-      if (result.success && result.data) {
-        setUser(result.data)
-        return true
-      } else {
-        throw new Error(result.error || "更新学习进度失败")
+        if (result.success && result.data) {
+          setUser(result.data);
+          return true;
+        } else {
+          throw new Error(result.error || '更新学习进度失败');
+        }
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : '更新失败';
+        setError(errorMessage);
+        console.error('更新学习进度失败', err);
+        return false;
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "更新失败"
-      setError(errorMessage)
-      console.error("更新学习进度失败", err)
-      return false
-    }
-  }, [])
+    },
+    []
+  );
 
   // 更新学习连续天数
   const updateStreak = useCallback(async (): Promise<boolean> => {
     try {
-      setError(null)
+      setError(null);
 
-      const response = await fetch("/api/user", {
-        method: "POST",
+      const response = await fetch('/api/user', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          action: "updateStreak",
+          action: 'updateStreak',
         }),
-      })
+      });
 
-      const result: ApiResponse<User> = await response.json()
+      const result: ApiResponse<User> = await response.json();
 
       if (result.success && result.data) {
-        setUser(result.data)
-        return true
+        setUser(result.data);
+        return true;
       } else {
-        throw new Error(result.error || "更新学习连续天数失败")
+        throw new Error(result.error || '更新学习连续天数失败');
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "更新失败"
-      setError(errorMessage)
-      console.error("更新学习连续天数失败:", err)
-      return false
+      const errorMessage = err instanceof Error ? err.message : '更新失败';
+      setError(errorMessage);
+      console.error('更新学习连续天数失败:', err);
+      return false;
     }
-  }, [])
+  }, []);
 
   // 登出
   const logout = useCallback(() => {
-    setUser(null)
-    setError(null)
+    setUser(null);
+    setError(null);
     // 清除本地存储
-    localStorage.removeItem("user-token")
-    localStorage.removeItem("user-preferences")
-  }, [])
+    localStorage.removeItem('user-token');
+    localStorage.removeItem('user-preferences');
+  }, []);
 
   // 刷新用户信息
   const refreshUser = useCallback(async () => {
-    await fetchUser()
-  }, [fetchUser])
+    await fetchUser();
+  }, [fetchUser]);
 
   // 初始化时获取用户信息
   useEffect(() => {
-    fetchUser()
-  }, [fetchUser])
+    fetchUser();
+  }, [fetchUser]);
 
   // 自动保存用户偏好设置
   useEffect(() => {
     if (user?.preferences) {
-      localStorage.setItem("user-preferences", JSON.stringify(user.preferences))
+      localStorage.setItem('user-preferences', JSON.stringify(user.preferences));
     }
-  }, [user?.preferences])
+  }, [user?.preferences]);
 
   const value: UserContextType = {
     user,
@@ -179,46 +182,46 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     updateStreak,
     logout,
     refreshUser,
-  }
+  };
 
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
 // 使用用户信息的Hook
 export function useUser() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // 模拟获取用户数据
     const fetchUser = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
         // 模拟API调用延迟
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const userData: User = {
-          id: "1",
-          name: "张同学",
-          email: "zhang@example.com",
-          avatar: "/placeholder.svg?height=40&width=40",
+          id: '1',
+          name: '张同学',
+          email: 'zhang@example.com',
+          avatar: '/placeholder.svg?height=40&width=40',
           studyPoints: 2450,
           studyDays: 77,
           completedCourses: 12,
           studyHours: 156,
-          level: "beginner",
+          level: 'beginner',
           points: 1500,
           streak: 15,
-          joinDate: "2024-01-15",
+          joinDate: '2024-01-15',
           certificates: 3,
           rank: 42,
           profile: {
-            bio: "",
-            location: "",
-            website: "",
-            github: "",
-            linkedin: ""
+            bio: '',
+            location: '',
+            website: '',
+            github: '',
+            linkedin: '',
           },
           learningStats: {
             totalCourses: 15,
@@ -226,64 +229,64 @@ export function useUser() {
             totalHours: 156,
             currentStreak: 15,
             longestStreak: 30,
-            averageScore: 85.5
+            averageScore: 85.5,
           },
           enrolledCourses: [],
           achievements: [],
           preferences: {
-            language: "zh-CN",
-            timezone: "Asia/Shanghai",
+            language: 'zh-CN',
+            timezone: 'Asia/Shanghai',
             emailNotifications: true,
             pushNotifications: true,
             weeklyReport: true,
-            theme: "system",
+            theme: 'system',
             learningReminder: {
               enabled: true,
-              time: "09:00",
-              days: ["周一", "周二", "周三", "周四", "周五"]
+              time: '09:00',
+              days: ['周一', '周二', '周三', '周四', '周五'],
             },
             notifications: true,
-            emailUpdates: true
+            emailUpdates: true,
           },
-          progress: {}
-        }
+          progress: {},
+        };
 
-        setUser(userData)
+        setUser(userData);
       } catch (_err) {
-        setError("获取用户信息失败")
+        setError('获取用户信息失败');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchUser()
-  }, [])
+    fetchUser();
+  }, []);
 
   const updateUser = async (updates: Partial<User>): Promise<boolean> => {
     if (user) {
-      setUser({ ...user, ...updates })
-      return true
+      setUser({ ...user, ...updates });
+      return true;
     }
-    return false
-  }
+    return false;
+  };
 
   const logout = () => {
-    setUser(null)
-    setError(null)
-    localStorage.removeItem("user-token")
-    localStorage.removeItem("user-preferences")
-  }
+    setUser(null);
+    setError(null);
+    localStorage.removeItem('user-token');
+    localStorage.removeItem('user-preferences');
+  };
 
-  return { user, loading, error, updateUser, logout }
+  return { user, loading, error, updateUser, logout };
 }
 
 // 用户认证状态Hook
 export function useAuth() {
-  const { user, loading, error, logout } = useUser()
+  const { user, loading, error, logout } = useUser();
 
-  const isAuthenticated = !!user
-  const isLoading = loading
-  const authError = error
+  const isAuthenticated = !!user;
+  const isLoading = loading;
+  const authError = error;
 
   return {
     user,
@@ -291,65 +294,69 @@ export function useAuth() {
     isLoading,
     authError,
     logout,
-  }
+  };
 }
 
 // 用户权限Hook
 export function usePermissions() {
-  const { user } = useUser()
+  const { user } = useUser();
 
   const hasPermission = useCallback(
     (permission: string): boolean => {
-      if (!user) return false
+      if (!user) return false;
 
       // 基于用户等级的权限判断
-      const userLevel = user.level
+      const userLevel = user.level;
       const permissions: Record<string, string[]> = {
-        初级学习者: ["view_courses", "take_exams"],
-        中级学习者: ["view_courses", "take_exams", "join_groups", "post_comments"],
+        初级学习者: ['view_courses', 'take_exams'],
+        中级学习者: ['view_courses', 'take_exams', 'join_groups', 'post_comments'],
         高级学习者: [
-          "view_courses",
-          "take_exams",
-          "join_groups",
-          "post_comments",
-          "create_groups",
-          "access_advanced_features",
+          'view_courses',
+          'take_exams',
+          'join_groups',
+          'post_comments',
+          'create_groups',
+          'access_advanced_features',
         ],
-        管理员: ["*"], // 所有权限
-      }
+        管理员: ['*'], // 所有权限
+      };
 
-      const userPermissions = permissions[userLevel] || []
-      return userPermissions.includes("*") || userPermissions.includes(permission)
+      const userPermissions = permissions[userLevel] || [];
+      return userPermissions.includes('*') || userPermissions.includes(permission);
     },
-    [user],
-  )
+    [user]
+  );
 
   const canAccessCourse = useCallback(
     (courseLevel: string): boolean => {
-      if (!user) return false
+      if (!user) return false;
 
-      const levelHierarchy = ["beginner", "intermediate", "advanced"]
+      const levelHierarchy = ['beginner', 'intermediate', 'advanced'];
       const userLevelIndex = levelHierarchy.indexOf(
-        user.level.includes("初级") ? "beginner" : user.level.includes("中级") ? "intermediate" : "advanced",
-      )
-      const courseLevelIndex = levelHierarchy.indexOf(courseLevel)
+        user.level.includes('初级')
+          ? 'beginner'
+          : user.level.includes('中级')
+            ? 'intermediate'
+            : 'advanced'
+      );
+      const courseLevelIndex = levelHierarchy.indexOf(courseLevel);
 
-      return userLevelIndex >= courseLevelIndex
+      return userLevelIndex >= courseLevelIndex;
     },
-    [user],
-  )
+    [user]
+  );
 
   return {
     hasPermission,
     canAccessCourse,
-    isAdmin: user?.level === "管理员",
-    isPremium: user?.level.includes("高级") || user?.level === "管理员",
-  }
+    isAdmin: user?.level === '管理员',
+    isPremium: user?.level.includes('高级') || user?.level === '管理员',
+  };
 }
 
 // 学习统计Hook
 export function useUserStats() {
-  const { user } = useUser()
+  const { user } = useUser();
 
   const stats = {
     totalCourses: user ? Object.keys(user.progress).length : 0,
@@ -358,73 +365,77 @@ export function useUserStats() {
     currentStreak: user?.studyDays || 0,
     totalStudyTime: user?.studyHours || 0,
     certificates: user?.certificates || 0,
-  }
+  };
 
-  const completionRate = stats.totalCourses > 0 ? (stats.completedCourses / stats.totalCourses) * 100 : 0
+  const completionRate =
+    stats.totalCourses > 0 ? (stats.completedCourses / stats.totalCourses) * 100 : 0;
 
   const getProgressForCourse = useCallback(
     (courseId: string): CourseProgress | null => {
-      return user?.progress[courseId] || null
+      return user?.progress[courseId] || null;
     },
-    [user],
-  )
+    [user]
+  );
 
   const getAverageProgress = useCallback((): number => {
-    if (!user || Object.keys(user.progress).length === 0) return 0
+    if (!user || Object.keys(user.progress).length === 0) return 0;
 
-    const totalProgress = Object.values(user.progress).reduce((sum, progress) => sum + progress.progress, 0)
-    return totalProgress / Object.keys(user.progress).length
-  }, [user])
+    const totalProgress = Object.values(user.progress).reduce(
+      (sum, progress) => sum + progress.progress,
+      0
+    );
+    return totalProgress / Object.keys(user.progress).length;
+  }, [user]);
 
   return {
     stats,
     completionRate,
     getProgressForCourse,
     getAverageProgress,
-  }
+  };
 }
 
 // 用户偏好设置Hook
 export function useUserPreferences() {
-  const { user, updateUser } = useUser()
+  const { user, updateUser } = useUser();
 
   const updatePreference = useCallback(
-    async (key: keyof User["preferences"], value: any): Promise<boolean> => {
-      if (!user) return false
+    async (key: keyof User['preferences'], value: any): Promise<boolean> => {
+      if (!user) return false;
 
       const newPreferences = {
         ...user.preferences,
         [key]: value,
-      }
+      };
 
-      return await updateUser({ preferences: newPreferences })
+      return await updateUser({ preferences: newPreferences });
     },
-    [user, updateUser],
-  )
+    [user, updateUser]
+  );
 
   const toggleNotifications = useCallback(async (): Promise<boolean> => {
-    if (!user) return false
-    return await updatePreference("notifications", !user.preferences.notifications)
-  }, [user, updatePreference])
+    if (!user) return false;
+    return await updatePreference('notifications', !user.preferences.notifications);
+  }, [user, updatePreference]);
 
   const toggleEmailUpdates = useCallback(async (): Promise<boolean> => {
-    if (!user) return false
-    return await updatePreference("emailUpdates", !user.preferences.emailUpdates)
-  }, [user, updatePreference])
+    if (!user) return false;
+    return await updatePreference('emailUpdates', !user.preferences.emailUpdates);
+  }, [user, updatePreference]);
 
   const setTheme = useCallback(
-    async (theme: "light" | "dark" | "system"): Promise<boolean> => {
-      return await updatePreference("theme", theme)
+    async (theme: 'light' | 'dark' | 'system'): Promise<boolean> => {
+      return await updatePreference('theme', theme);
     },
-    [updatePreference],
-  )
+    [updatePreference]
+  );
 
   const setLanguage = useCallback(
     async (language: string): Promise<boolean> => {
-      return await updatePreference("language", language)
+      return await updatePreference('language', language);
     },
-    [updatePreference],
-  )
+    [updatePreference]
+  );
 
   return {
     preferences: user?.preferences,
@@ -433,5 +444,5 @@ export function useUserPreferences() {
     toggleEmailUpdates,
     setTheme,
     setLanguage,
-  }
+  };
 }

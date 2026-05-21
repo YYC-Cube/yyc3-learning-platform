@@ -216,7 +216,7 @@ class WorkflowEngine {
   }
 
   getCurrent(): Workflow | null {
-    return this.currentWorkflowId ? (this.workflows.get(this.currentWorkflowId) || null) : null;
+    return this.currentWorkflowId ? this.workflows.get(this.currentWorkflowId) || null : null;
   }
 
   async save(workflowId: string): Promise<SaveResult> {
@@ -230,7 +230,7 @@ class WorkflowEngine {
       success: true,
       workflowId,
       version: '1.0.0',
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 }
@@ -244,15 +244,13 @@ class CanvasManager {
     this.config = config;
   }
 
-  initialize(workflowId: string, _metadata: Record<string, unknown>): void {
-  }
+  initialize(workflowId: string, _metadata: Record<string, unknown>): void {}
 
   renderNode(node: { id: string }): { rendered: boolean; nodeId: string } {
     return { rendered: true, nodeId: node.id };
   }
 
-  renderConnection(_connection: unknown): void {
-  }
+  renderConnection(_connection: unknown): void {}
 
   zoomIn(): void {
     this.zoomLevel = Math.min(this.zoomLevel * 1.2, 3.0);
@@ -267,11 +265,9 @@ class CanvasManager {
     this.offset = { x: 0, y: 0 };
   }
 
-  showRemoteCursor(_userId: string, _position: { x: number; y: number }): void {
-  }
+  showRemoteCursor(_userId: string, _position: { x: number; y: number }): void {}
 
-  highlightRemoteSelection(_userId: string, _elementIds: string[]): void {
-  }
+  highlightRemoteSelection(_userId: string, _elementIds: string[]): void {}
 }
 
 class ElementRegistry {
@@ -329,15 +325,13 @@ class CollaborationManager extends EventEmitter {
     this.sessions.set(workflowId, {
       id: workflowId,
       startedAt: new Date(),
-      participants: []
+      participants: [],
     });
   }
 
-  rejectChange(_changeId: string, _reason: string): void {
-  }
+  rejectChange(_changeId: string, _reason: string): void {}
 
-  acceptChange(_changeId: string): void {
-  }
+  acceptChange(_changeId: string): void {}
 }
 
 class ExecutionEngine {
@@ -347,8 +341,21 @@ class ExecutionEngine {
     this.config = config;
   }
 
-  async execute(_workflow: unknown, _environment: unknown): Promise<{ success: boolean; result: { completed: boolean }; metrics: { nodesExecuted: number; totalTime: number; averageNodeTime: number; maxNodeTime: number; memoryUsed: number } }> {
-    const [, ] = [_workflow, _environment];
+  async execute(
+    _workflow: unknown,
+    _environment: unknown
+  ): Promise<{
+    success: boolean;
+    result: { completed: boolean };
+    metrics: {
+      nodesExecuted: number;
+      totalTime: number;
+      averageNodeTime: number;
+      maxNodeTime: number;
+      memoryUsed: number;
+    };
+  }> {
+    const [,] = [_workflow, _environment];
     // 模拟执行
     return {
       success: true,
@@ -358,18 +365,18 @@ class ExecutionEngine {
         totalTime: 1000,
         averageNodeTime: 100,
         maxNodeTime: 200,
-        memoryUsed: 50 * 1024 * 1024
-      }
+        memoryUsed: 50 * 1024 * 1024,
+      },
     };
   }
 
   async debug(_workflow: unknown, _breakpoints: Breakpoint[]): Promise<DebugResult> {
-    const [, ] = [_workflow, _breakpoints];
+    const [,] = [_workflow, _breakpoints];
     return {
       stopped: true,
       currentNode: 'node-1',
       variables: {},
-      callStack: ['main', 'processData']
+      callStack: ['main', 'processData'],
     };
   }
 
@@ -379,7 +386,7 @@ class ExecutionEngine {
       actual: {},
       expected: testCase.expectedOutputs,
       duration: 100,
-      errors: []
+      errors: [],
     };
   }
 }
@@ -449,28 +456,28 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
   private initialize(): void {
     this.workflowEngine = new WorkflowEngine({
       persistence: this.config.persistence,
-      versioning: this.config.versioning
+      versioning: this.config.versioning,
     });
 
     this.canvasManager = new CanvasManager({
       renderer: this.config.renderer,
       grid: this.config.grid,
-      snap: this.config.snap
+      snap: this.config.snap,
     });
 
     this.elementRegistry = new ElementRegistry({
       elementTypes: this.config.elementTypes,
-      validationRules: this.config.validationRules
+      validationRules: this.config.validationRules,
     });
 
     this.collaborationManager = new CollaborationManager({
       realtime: this.config.realtime,
-      conflictResolution: this.config.conflictResolution
+      conflictResolution: this.config.conflictResolution,
     });
 
     this.executionEngine = new ExecutionEngine({
       executor: this.config.executor,
-      timeout: this.config.executionTimeout
+      timeout: this.config.executionTimeout,
     });
 
     this.setupEventHandlers();
@@ -489,25 +496,37 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
   }
 
   private setupCollaboration(): void {
-    this.collaborationManager.on('element_modified', (event: { changeId: string; change: unknown }) => {
-      const validation = this.validateRemoteChange(event);
-      if (!validation.valid) {
-        this.collaborationManager.rejectChange(event.changeId, validation.reason ?? 'Validation failed');
-        return;
+    this.collaborationManager.on(
+      'element_modified',
+      (event: { changeId: string; change: unknown }) => {
+        const validation = this.validateRemoteChange(event);
+        if (!validation.valid) {
+          this.collaborationManager.rejectChange(
+            event.changeId,
+            validation.reason ?? 'Validation failed'
+          );
+          return;
+        }
+
+        this.applyRemoteChange(event);
+        this.updateUIForChange(event);
+        this.collaborationManager.acceptChange(event.changeId);
       }
+    );
 
-      this.applyRemoteChange(event);
-      this.updateUIForChange(event);
-      this.collaborationManager.acceptChange(event.changeId);
-    });
+    this.collaborationManager.on(
+      'cursor_moved',
+      (event: { userId: string; position: { x: number; y: number } }) => {
+        this.canvasManager.showRemoteCursor(event.userId, event.position);
+      }
+    );
 
-    this.collaborationManager.on('cursor_moved', (event: { userId: string; position: { x: number; y: number } }) => {
-      this.canvasManager.showRemoteCursor(event.userId, event.position);
-    });
-
-    this.collaborationManager.on('selection_changed', (event: { userId: string; elementIds: string[] }) => {
-      this.canvasManager.highlightRemoteSelection(event.userId, event.elementIds);
-    });
+    this.collaborationManager.on(
+      'selection_changed',
+      (event: { userId: string; elementIds: string[] }) => {
+        this.canvasManager.highlightRemoteSelection(event.userId, event.elementIds);
+      }
+    );
   }
 
   // ============ 工作流管理 ============
@@ -515,9 +534,7 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
   createWorkflow(template?: WorkflowTemplate): string {
     const workflowId = `workflow_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-    const workflow = template
-      ? this.createFromTemplate(template)
-      : this.createBlankWorkflow();
+    const workflow = template ? this.createFromTemplate(template) : this.createBlankWorkflow();
 
     this.workflowEngine.register(workflowId, workflow);
     this.canvasManager.initialize(workflowId, workflow.metadata || {});
@@ -571,8 +588,8 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
       metadata: {
         workflowId: workflow.id,
         version: workflow.version || '1.0.0',
-        exportedAt: new Date()
-      }
+        exportedAt: new Date(),
+      },
     };
   }
 
@@ -583,13 +600,13 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     const warnings: string[] = [];
 
     // 检查是否有开始节点
-    const hasStart = elements.some(e => e.type === 'start');
+    const hasStart = elements.some((e) => e.type === 'start');
     if (!hasStart) {
       errors.push('工作流必须包含一个开始节点');
     }
 
     // 检查是否有结束节点
-    const hasEnd = elements.some(e => e.type === 'end');
+    const hasEnd = elements.some((e) => e.type === 'end');
     if (!hasEnd) {
       warnings.push('工作流建议包含结束节点');
     }
@@ -610,7 +627,7 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     return {
       valid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -711,7 +728,9 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
   }
 
   undo(): void {
-    if (this.undoStack.length === 0) { return; }
+    if (this.undoStack.length === 0) {
+      return;
+    }
 
     const action = this.undoStack.pop();
     this.redoStack.push(action);
@@ -720,7 +739,9 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
   }
 
   redo(): void {
-    if (this.redoStack.length === 0) { return; }
+    if (this.redoStack.length === 0) {
+      return;
+    }
 
     const action = this.redoStack.pop();
     this.undoStack.push(action);
@@ -729,8 +750,10 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
   }
 
   clear(): void {
-    this.elementRegistry.getAllElements().forEach(el => this.elementRegistry.remove(el.id));
-    this.elementRegistry.getAllConnections().forEach(conn => this.elementRegistry.removeConnection(conn.id));
+    this.elementRegistry.getAllElements().forEach((el) => this.elementRegistry.remove(el.id));
+    this.elementRegistry
+      .getAllConnections()
+      .forEach((conn) => this.elementRegistry.removeConnection(conn.id));
     this.undoStack = [];
     this.redoStack = [];
     this.emit('canvas:cleared');
@@ -748,7 +771,7 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
           success: false,
           errors: validation.errors,
           warnings: validation.warnings,
-          executionTime: 0
+          executionTime: 0,
         };
       }
 
@@ -767,14 +790,13 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
         result: executionResult.result,
         metrics,
         visualization,
-        executionTime
+        executionTime,
       };
-
     } catch (error: unknown) {
       return {
         success: false,
         errors: [error instanceof Error ? error.message : 'Unknown error'],
-        executionTime: 0
+        executionTime: 0,
       };
     }
   }
@@ -833,17 +855,23 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
       description: template.description,
       nodes: template.nodes,
       connections: template.connections,
-      metadata: template.metadata || {}
+      metadata: template.metadata || {},
     };
   }
 
-  private createBlankWorkflow(): { id: string; name: string; nodes: []; connections: []; metadata: Record<string, unknown> } {
+  private createBlankWorkflow(): {
+    id: string;
+    name: string;
+    nodes: [];
+    connections: [];
+    metadata: Record<string, unknown>;
+  } {
     return {
       id: `workflow_${Date.now()}`,
       name: '新工作流',
       nodes: [],
       connections: [],
-      metadata: {}
+      metadata: {},
     };
   }
 
@@ -853,8 +881,12 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
 
   private validateNode(node: NodeDefinition): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
-    if (!node.label) { errors.push('节点标签不能为空'); }
-    if (!node.type) { errors.push('节点类型不能为空'); }
+    if (!node.label) {
+      errors.push('节点标签不能为空');
+    }
+    if (!node.type) {
+      errors.push('节点类型不能为空');
+    }
     return { valid: errors.length === 0, errors };
   }
 
@@ -862,11 +894,14 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     return `${type}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   }
 
-  private createElement(node: NodeDefinition, nodeId: string): NodeDefinition & { id: string; createdAt: Date } {
+  private createElement(
+    node: NodeDefinition,
+    nodeId: string
+  ): NodeDefinition & { id: string; createdAt: Date } {
     return {
       ...node,
       id: nodeId,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
   }
 
@@ -883,12 +918,17 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     return `conn_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   }
 
-  private createConnection(sourceId: string, targetId: string, connectionId: string, connection?: Connection): ConnectionWithId {
+  private createConnection(
+    sourceId: string,
+    targetId: string,
+    connectionId: string,
+    connection?: Connection
+  ): ConnectionWithId {
     return {
       id: connectionId,
       source: sourceId,
       target: targetId,
-      ...connection
+      ...connection,
     };
   }
 
@@ -896,14 +936,18 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     // 更新节点连接信息
   }
 
-  private recordChange(type: 'add' | 'update' | 'delete', elementId: string, description: string): void {
+  private recordChange(
+    type: 'add' | 'update' | 'delete',
+    elementId: string,
+    description: string
+  ): void {
     this.changeLogs.push({
       id: `change_${Date.now()}`,
       type,
       elementId,
       timestamp: new Date(),
       author: 'current-user',
-      description
+      description,
     });
   }
 
@@ -911,7 +955,9 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     // 应用撤销/重做动作
   }
 
-  private validateWorkflowForExecution(_workflow: unknown): ReturnType<typeof this.validateWorkflow> {
+  private validateWorkflowForExecution(
+    _workflow: unknown
+  ): ReturnType<typeof this.validateWorkflow> {
     return this.validateWorkflow();
   }
 
@@ -919,18 +965,26 @@ export class WorkflowDesigner extends EventEmitter implements IWorkflowDesigner 
     return _workflow;
   }
 
-  private async prepareExecutionEnvironment(executable: unknown, options?: ExecutionOptions): Promise<{ executable: unknown; options?: ExecutionOptions }> {
+  private async prepareExecutionEnvironment(
+    executable: unknown,
+    options?: ExecutionOptions
+  ): Promise<{ executable: unknown; options?: ExecutionOptions }> {
     return { executable, options };
   }
 
-  private collectExecutionMetrics(result: { metrics?: ExecutionMetrics }, executionTime: number): ExecutionMetrics {
-    return result.metrics || {
-      nodesExecuted: 0,
-      totalTime: executionTime,
-      averageNodeTime: 0,
-      maxNodeTime: 0,
-      memoryUsed: 0
-    };
+  private collectExecutionMetrics(
+    result: { metrics?: ExecutionMetrics },
+    executionTime: number
+  ): ExecutionMetrics {
+    return (
+      result.metrics || {
+        nodesExecuted: 0,
+        totalTime: executionTime,
+        averageNodeTime: 0,
+        maxNodeTime: 0,
+        memoryUsed: 0,
+      }
+    );
   }
 
   private visualizeExecutionResult(_result: unknown): string {

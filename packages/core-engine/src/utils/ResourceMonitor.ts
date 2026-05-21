@@ -152,10 +152,10 @@ export class ResourceMonitor extends EventEmitter {
         cpu: config.alertThresholds?.cpu || 80,
         memory: config.alertThresholds?.memory || 85,
         disk: config.alertThresholds?.disk || 90,
-        network: config.alertThresholds?.network || 90
+        network: config.alertThresholds?.network || 90,
       },
       enablePersistence: config.enablePersistence || false,
-      persistencePath: config.persistencePath || './metrics'
+      persistencePath: config.persistencePath || './metrics',
     };
 
     this.startTime = Date.now();
@@ -205,7 +205,7 @@ export class ResourceMonitor extends EventEmitter {
       memory,
       disk,
       network,
-      system
+      system,
     };
 
     this.addToHistory(metrics);
@@ -225,7 +225,7 @@ export class ResourceMonitor extends EventEmitter {
       loadAverage,
       coreCount: cpus.length,
       model: cpus[0]?.model || 'Unknown',
-      speed: cpus[0]?.speed || 0
+      speed: cpus[0]?.speed || 0,
     };
   }
 
@@ -233,7 +233,7 @@ export class ResourceMonitor extends EventEmitter {
     const startUsage = process.cpuUsage();
     const startTime = Date.now();
 
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     const endUsage = process.cpuUsage(startUsage);
     const endTime = Date.now();
@@ -256,7 +256,7 @@ export class ResourceMonitor extends EventEmitter {
       usage: (used / total) * 100,
       swapTotal: 0,
       swapUsed: 0,
-      swapUsage: 0
+      swapUsage: 0,
     };
   }
 
@@ -272,10 +272,12 @@ export class ResourceMonitor extends EventEmitter {
       let used = 0;
 
       if (process.platform === 'win32') {
-        const { stdout } = await execAsync(`wmic logicaldisk where "DeviceID='${rootPath}'" get size,freespace /format:list`);
+        const { stdout } = await execAsync(
+          `wmic logicaldisk where "DeviceID='${rootPath}'" get size,freespace /format:list`
+        );
         const lines = stdout.split('\n');
-        const sizeLine = lines.find(line => line.startsWith('Size='));
-        const freeLine = lines.find(line => line.startsWith('FreeSpace='));
+        const sizeLine = lines.find((line) => line.startsWith('Size='));
+        const freeLine = lines.find((line) => line.startsWith('FreeSpace='));
         total = parseInt(sizeLine?.split('=')[1] || '0');
         free = parseInt(freeLine?.split('=')[1] || '0');
       } else {
@@ -302,7 +304,7 @@ export class ResourceMonitor extends EventEmitter {
         inodesTotal: 0,
         inodesUsed: 0,
         inodesFree: 0,
-        inodesUsage: 0
+        inodesUsage: 0,
       };
     } catch (error) {
       logger.error('[ResourceMonitor] Failed to collect disk metrics:', error);
@@ -315,7 +317,7 @@ export class ResourceMonitor extends EventEmitter {
         inodesTotal: 0,
         inodesUsed: 0,
         inodesFree: 0,
-        inodesUsage: 0
+        inodesUsage: 0,
       };
     }
   }
@@ -345,14 +347,17 @@ export class ResourceMonitor extends EventEmitter {
 
     const bandwidth = {
       inbound: 0,
-      outbound: 0
+      outbound: 0,
     };
 
     if (this.previousNetworkMetrics) {
-      const timeDiff = Date.now() - (this.metricsHistory[this.metricsHistory.length - 1]?.timestamp || Date.now());
+      const timeDiff =
+        Date.now() - (this.metricsHistory[this.metricsHistory.length - 1]?.timestamp || Date.now());
       if (timeDiff > 0) {
-        bandwidth.inbound = ((bytesReceived - this.previousNetworkMetrics.bytesReceived) / timeDiff) * 1000;
-        bandwidth.outbound = ((bytesSent - this.previousNetworkMetrics.bytesSent) / timeDiff) * 1000;
+        bandwidth.inbound =
+          ((bytesReceived - this.previousNetworkMetrics.bytesReceived) / timeDiff) * 1000;
+        bandwidth.outbound =
+          ((bytesSent - this.previousNetworkMetrics.bytesSent) / timeDiff) * 1000;
       }
     }
 
@@ -365,7 +370,7 @@ export class ResourceMonitor extends EventEmitter {
       errorsOut,
       dropsIn,
       dropsOut,
-      bandwidth
+      bandwidth,
     };
 
     this.previousNetworkMetrics = metrics;
@@ -381,7 +386,7 @@ export class ResourceMonitor extends EventEmitter {
       nodeVersion: process.version,
       processUptime: process.uptime(),
       processMemory: process.memoryUsage(),
-      processCpuUsage: process.cpuUsage()
+      processCpuUsage: process.cpuUsage(),
     };
   }
 
@@ -391,7 +396,7 @@ export class ResourceMonitor extends EventEmitter {
     const retentionTime = this.config.historyRetentionHours * 60 * 60 * 1000;
     const cutoffTime = Date.now() - retentionTime;
 
-    this.metricsHistory = this.metricsHistory.filter(m => m.timestamp >= cutoffTime);
+    this.metricsHistory = this.metricsHistory.filter((m) => m.timestamp >= cutoffTime);
 
     if (this.config.enablePersistence) {
       this.persistMetrics(metrics);
@@ -410,7 +415,7 @@ export class ResourceMonitor extends EventEmitter {
         threshold: this.config.alertThresholds.cpu,
         currentValue: metrics.cpu.usage,
         timestamp: metrics.timestamp,
-        message: `CPU usage ${metrics.cpu.usage.toFixed(2)}% exceeds threshold ${this.config.alertThresholds.cpu}%`
+        message: `CPU usage ${metrics.cpu.usage.toFixed(2)}% exceeds threshold ${this.config.alertThresholds.cpu}%`,
       });
     }
 
@@ -421,7 +426,7 @@ export class ResourceMonitor extends EventEmitter {
         threshold: this.config.alertThresholds.memory,
         currentValue: metrics.memory.usage,
         timestamp: metrics.timestamp,
-        message: `Memory usage ${metrics.memory.usage.toFixed(2)}% exceeds threshold ${this.config.alertThresholds.memory}%`
+        message: `Memory usage ${metrics.memory.usage.toFixed(2)}% exceeds threshold ${this.config.alertThresholds.memory}%`,
       });
     }
 
@@ -432,23 +437,28 @@ export class ResourceMonitor extends EventEmitter {
         threshold: this.config.alertThresholds.disk,
         currentValue: metrics.disk.usage,
         timestamp: metrics.timestamp,
-        message: `Disk usage ${metrics.disk.usage.toFixed(2)}% exceeds threshold ${this.config.alertThresholds.disk}%`
+        message: `Disk usage ${metrics.disk.usage.toFixed(2)}% exceeds threshold ${this.config.alertThresholds.disk}%`,
       });
     }
 
-    if (metrics.network.bandwidth.inbound >= this.config.alertThresholds.network ||
-      metrics.network.bandwidth.outbound >= this.config.alertThresholds.network) {
+    if (
+      metrics.network.bandwidth.inbound >= this.config.alertThresholds.network ||
+      metrics.network.bandwidth.outbound >= this.config.alertThresholds.network
+    ) {
       alerts.push({
         type: 'network',
         severity: 'warning',
         threshold: this.config.alertThresholds.network,
-        currentValue: Math.max(metrics.network.bandwidth.inbound, metrics.network.bandwidth.outbound),
+        currentValue: Math.max(
+          metrics.network.bandwidth.inbound,
+          metrics.network.bandwidth.outbound
+        ),
         timestamp: metrics.timestamp,
-        message: `Network bandwidth usage exceeds threshold ${this.config.alertThresholds.network}%`
+        message: `Network bandwidth usage exceeds threshold ${this.config.alertThresholds.network}%`,
       });
     }
 
-    alerts.forEach(alert => {
+    alerts.forEach((alert) => {
       this.emit('alert:triggered', alert);
     });
   }
@@ -481,44 +491,44 @@ export class ResourceMonitor extends EventEmitter {
 
   async getStatistics(hours: number = 1): Promise<ResourceStatistics> {
     const cutoffTime = Date.now() - hours * 60 * 60 * 1000;
-    const recentMetrics = this.metricsHistory.filter(m => m.timestamp >= cutoffTime);
+    const recentMetrics = this.metricsHistory.filter((m) => m.timestamp >= cutoffTime);
 
     if (recentMetrics.length === 0) {
       return this.getEmptyStatistics();
     }
 
-    const cpuValues = recentMetrics.map(m => m.cpu.usage);
-    const memoryValues = recentMetrics.map(m => m.memory.usage);
-    const diskValues = recentMetrics.map(m => m.disk.usage);
-    const inboundValues = recentMetrics.map(m => m.network.bandwidth.inbound);
-    const outboundValues = recentMetrics.map(m => m.network.bandwidth.outbound);
+    const cpuValues = recentMetrics.map((m) => m.cpu.usage);
+    const memoryValues = recentMetrics.map((m) => m.memory.usage);
+    const diskValues = recentMetrics.map((m) => m.disk.usage);
+    const inboundValues = recentMetrics.map((m) => m.network.bandwidth.inbound);
+    const outboundValues = recentMetrics.map((m) => m.network.bandwidth.outbound);
 
     return {
       period: {
         start: recentMetrics[0].timestamp,
-        end: recentMetrics[recentMetrics.length - 1].timestamp
+        end: recentMetrics[recentMetrics.length - 1].timestamp,
       },
       cpu: {
         avg: this.average(cpuValues),
         max: Math.max(...cpuValues),
-        min: Math.min(...cpuValues)
+        min: Math.min(...cpuValues),
       },
       memory: {
         avg: this.average(memoryValues),
         max: Math.max(...memoryValues),
-        min: Math.min(...memoryValues)
+        min: Math.min(...memoryValues),
       },
       disk: {
         avg: this.average(diskValues),
         max: Math.max(...diskValues),
-        min: Math.min(...diskValues)
+        min: Math.min(...diskValues),
       },
       network: {
         avgInbound: this.average(inboundValues),
         maxInbound: Math.max(...inboundValues),
         avgOutbound: this.average(outboundValues),
-        maxOutbound: Math.max(...outboundValues)
-      }
+        maxOutbound: Math.max(...outboundValues),
+      },
     };
   }
 
@@ -531,19 +541,19 @@ export class ResourceMonitor extends EventEmitter {
     return {
       period: {
         start: Date.now(),
-        end: Date.now()
+        end: Date.now(),
       },
       cpu: { avg: 0, max: 0, min: 0 },
       memory: { avg: 0, max: 0, min: 0 },
       disk: { avg: 0, max: 0, min: 0 },
-      network: { avgInbound: 0, maxInbound: 0, avgOutbound: 0, maxOutbound: 0 }
+      network: { avgInbound: 0, maxInbound: 0, avgOutbound: 0, maxOutbound: 0 },
     };
   }
 
   updateAlertThresholds(thresholds: Partial<AlertThresholds>): void {
     this.config.alertThresholds = {
       ...this.config.alertThresholds,
-      ...thresholds
+      ...thresholds,
     };
     this.emit('thresholds:updated', this.config.alertThresholds);
   }
@@ -563,7 +573,7 @@ export class ResourceMonitor extends EventEmitter {
       isMonitoring: this.isMonitoring,
       historySize: this.metricsHistory.length,
       uptime: Date.now() - this.startTime,
-      config: this.config
+      config: this.config,
     };
   }
 

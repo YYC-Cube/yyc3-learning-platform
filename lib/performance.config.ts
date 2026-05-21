@@ -8,27 +8,27 @@
  */
 
 export interface PerformanceThreshold {
-  name: string
-  description: string
-  threshold: number
-  unit: string
-  critical: boolean
+  name: string;
+  description: string;
+  threshold: number;
+  unit: string;
+  critical: boolean;
 }
 
 export interface PerformanceMetric {
-  name: string
-  value: number
-  threshold: number
-  unit: string
-  status: 'pass' | 'fail' | 'warning'
-  timestamp: number
+  name: string;
+  value: number;
+  threshold: number;
+  unit: string;
+  status: 'pass' | 'fail' | 'warning';
+  timestamp: number;
 }
 
 export interface PerformanceReport {
-  timestamp: number
-  metrics: PerformanceMetric[]
-  overallScore: number
-  recommendations: string[]
+  timestamp: number;
+  metrics: PerformanceMetric[];
+  overallScore: number;
+  recommendations: string[];
 }
 
 export const PERFORMANCE_THRESHOLDS: PerformanceThreshold[] = [
@@ -102,7 +102,7 @@ export const PERFORMANCE_THRESHOLDS: PerformanceThreshold[] = [
     unit: 'ms',
     critical: true,
   },
-]
+];
 
 export const PERFORMANCE_MEASUREMENT_POINTS = [
   {
@@ -125,29 +125,26 @@ export const PERFORMANCE_MEASUREMENT_POINTS = [
     component: 'IntelligentAIWidget',
     description: '智能AI浮窗组件性能',
   },
-]
+];
 
-export function evaluatePerformanceMetric(
-  name: string,
-  value: number
-): PerformanceMetric {
-  const threshold = PERFORMANCE_THRESHOLDS.find(t => t.name === name)
-  
+export function evaluatePerformanceMetric(name: string, value: number): PerformanceMetric {
+  const threshold = PERFORMANCE_THRESHOLDS.find((t) => t.name === name);
+
   if (!threshold) {
-    throw new Error(`Unknown performance metric: ${name}`)
+    throw new Error(`Unknown performance metric: ${name}`);
   }
 
-  let status: 'pass' | 'fail' | 'warning'
-  
+  let status: 'pass' | 'fail' | 'warning';
+
   if (threshold.critical) {
-    status = value <= threshold.threshold ? 'pass' : 'fail'
+    status = value <= threshold.threshold ? 'pass' : 'fail';
   } else {
     if (value >= threshold.threshold) {
-      status = 'pass'
+      status = 'pass';
     } else if (value >= threshold.threshold * 0.8) {
-      status = 'warning'
+      status = 'warning';
     } else {
-      status = 'fail'
+      status = 'fail';
     }
   }
 
@@ -158,36 +155,36 @@ export function evaluatePerformanceMetric(
     unit: threshold.unit,
     status,
     timestamp: Date.now(),
-  }
+  };
 }
 
-export function generatePerformanceReport(
-  metrics: PerformanceMetric[]
-): PerformanceReport {
-  const passCount = metrics.filter(m => m.status === 'pass').length
-  const _warningCount = metrics.filter(m => m.status === 'warning').length
-  const _failCount = metrics.filter(m => m.status === 'fail').length
-  
-  const overallScore = Math.round(
-    (passCount / metrics.length) * 100
-  )
+export function generatePerformanceReport(metrics: PerformanceMetric[]): PerformanceReport {
+  const passCount = metrics.filter((m) => m.status === 'pass').length;
+  const _warningCount = metrics.filter((m) => m.status === 'warning').length;
+  const _failCount = metrics.filter((m) => m.status === 'fail').length;
 
-  const recommendations: string[] = []
+  const overallScore = Math.round((passCount / metrics.length) * 100);
 
-  metrics.forEach(metric => {
+  const recommendations: string[] = [];
+
+  metrics.forEach((metric) => {
     if (metric.status === 'fail') {
-      recommendations.push(`⚠️ ${metric.name} (${metric.value}${metric.unit}) 超过阈值 ${metric.threshold}${metric.unit}`)
+      recommendations.push(
+        `⚠️ ${metric.name} (${metric.value}${metric.unit}) 超过阈值 ${metric.threshold}${metric.unit}`
+      );
     } else if (metric.status === 'warning') {
-      recommendations.push(`⚡ ${metric.name} (${metric.value}${metric.unit}) 接近阈值 ${metric.threshold}${metric.unit}`)
+      recommendations.push(
+        `⚡ ${metric.name} (${metric.value}${metric.unit}) 接近阈值 ${metric.threshold}${metric.unit}`
+      );
     }
-  })
+  });
 
   return {
     timestamp: Date.now(),
     metrics,
     overallScore,
     recommendations,
-  }
+  };
 }
 
 export function formatPerformanceReport(report: PerformanceReport): string {
@@ -197,14 +194,14 @@ export function formatPerformanceReport(report: PerformanceReport): string {
     `🎯 总体评分: ${report.overallScore}/100`,
     '',
     '📈 性能指标:',
-    ...report.metrics.map(m => {
-      const statusIcon = m.status === 'pass' ? '✅' : m.status === 'warning' ? '⚡' : '❌'
-      return `  ${statusIcon} ${m.name}: ${m.value}${m.unit} (阈值: ${m.threshold}${m.unit})`
+    ...report.metrics.map((m) => {
+      const statusIcon = m.status === 'pass' ? '✅' : m.status === 'warning' ? '⚡' : '❌';
+      return `  ${statusIcon} ${m.name}: ${m.value}${m.unit} (阈值: ${m.threshold}${m.unit})`;
     }),
     '',
     '💡 优化建议:',
-    ...report.recommendations.map(r => `  ${r}`),
-  ]
+    ...report.recommendations.map((r) => `  ${r}`),
+  ];
 
-  return lines.join('\n')
+  return lines.join('\n');
 }

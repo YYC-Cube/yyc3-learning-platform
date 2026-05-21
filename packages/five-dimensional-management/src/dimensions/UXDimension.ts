@@ -12,7 +12,7 @@ import {
   UserSatisfactionMetrics,
   UserEngagementMetrics,
   Recommendation,
-  AlertLevel
+  AlertLevel,
 } from '../types/IFiveDimensionalManagement';
 import { Logger } from '../utils/Logger';
 
@@ -90,7 +90,6 @@ export class UXDimension extends EventEmitter implements IDimension {
 
       this.emit('started', { timestamp: new Date() });
       this._logger.info('UXDimension started successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to start UXDimension', error);
@@ -112,7 +111,6 @@ export class UXDimension extends EventEmitter implements IDimension {
 
       this.emit('stopped', { timestamp: new Date() });
       this._logger.info('UXDimension stopped successfully');
-
     } catch (error) {
       this._status = 'error';
       this._logger.error('Failed to stop UXDimension', error);
@@ -135,7 +133,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         efficiency: 85,
         memorability: 90,
         satisfaction: 87,
-        systemUsabilityScale: 85
+        systemUsabilityScale: 85,
       };
 
       const accessibility: AccessibilityMetrics = {
@@ -146,7 +144,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         alternativeText: 93,
         focusManagement: 96,
         overallAccessibility: 93,
-        issues: []
+        issues: [],
       };
 
       const performance: UXPerformanceMetrics = {
@@ -156,7 +154,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         cumulativeLayoutShift: 0.1,
         firstInputDelay: 85,
         timeToInteractive: 2100,
-        coreWebVitalsScore: 88
+        coreWebVitalsScore: 88,
       };
 
       const satisfaction: UserSatisfactionMetrics = {
@@ -166,7 +164,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         userRating: 4.2,
         feedbackVolume: 245,
         sentiment: 'positive',
-        sentimentScore: 0.65
+        sentimentScore: 0.65,
       };
 
       const engagement: UserEngagementMetrics = {
@@ -177,7 +175,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         bounceRate: 28,
         retentionRate: 72,
         featureAdoption: [],
-        userJourneys: []
+        userJourneys: [],
       };
 
       this._currentMetrics = {
@@ -187,7 +185,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         accessibility,
         performance,
         satisfaction,
-        engagement
+        engagement,
       };
 
       // Update health score
@@ -196,7 +194,6 @@ export class UXDimension extends EventEmitter implements IDimension {
       this.emit('metric-update', { metrics: this._currentMetrics, timestamp: new Date() });
 
       return this._currentMetrics;
-
     } catch (error) {
       this._logger.error('Failed to collect UX metrics', error);
       throw error;
@@ -218,7 +215,8 @@ export class UXDimension extends EventEmitter implements IDimension {
         type: 'ux',
         priority: 'high',
         title: 'Optimize Page Load Time',
-        description: 'Page load time is above optimal threshold. Implement performance optimizations.',
+        description:
+          'Page load time is above optimal threshold. Implement performance optimizations.',
         rationale: `Current page load time: ${this._currentMetrics.performance.pageLoadTime}ms`,
         expectedImpact: 'Improved user experience and conversion rates',
         effort: 'medium',
@@ -226,7 +224,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         dependencies: [],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
+        validUntil: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
       });
     }
 
@@ -237,7 +235,8 @@ export class UXDimension extends EventEmitter implements IDimension {
         type: 'ux',
         priority: 'medium',
         title: 'Improve Accessibility Compliance',
-        description: 'Improve accessibility to meet WCAG standards and provide better user experience.',
+        description:
+          'Improve accessibility to meet WCAG standards and provide better user experience.',
         rationale: `Current accessibility score: ${this._currentMetrics.accessibility.overallAccessibility}%`,
         expectedImpact: 'Better accessibility compliance and inclusive design',
         effort: 'medium',
@@ -245,7 +244,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         dependencies: [],
         status: 'pending',
         createdAt: new Date(),
-        validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        validUntil: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
     }
 
@@ -268,7 +267,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         efficiency: 100,
         memorability: 100,
         satisfaction: 100,
-        systemUsabilityScale: 100
+        systemUsabilityScale: 100,
       },
       accessibility: {
         wcagCompliance: 100,
@@ -278,7 +277,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         alternativeText: 100,
         focusManagement: 100,
         overallAccessibility: 100,
-        issues: []
+        issues: [],
       },
       performance: {
         pageLoadTime: 0,
@@ -287,7 +286,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         cumulativeLayoutShift: 0,
         firstInputDelay: 0,
         timeToInteractive: 0,
-        coreWebVitalsScore: 100
+        coreWebVitalsScore: 100,
       },
       satisfaction: {
         overallSatisfaction: 100,
@@ -296,7 +295,7 @@ export class UXDimension extends EventEmitter implements IDimension {
         userRating: 5,
         feedbackVolume: 0,
         sentiment: 'positive',
-        sentimentScore: 1
+        sentimentScore: 1,
       },
       engagement: {
         dailyActiveUsers: 0,
@@ -306,8 +305,8 @@ export class UXDimension extends EventEmitter implements IDimension {
         bounceRate: 0,
         retentionRate: 100,
         featureAdoption: [],
-        userJourneys: []
-      }
+        userJourneys: [],
+      },
     };
   }
 
@@ -317,7 +316,7 @@ export class UXDimension extends EventEmitter implements IDimension {
       accessibility: 0.2,
       performance: 0.3,
       satisfaction: 0.15,
-      engagement: 0.1
+      engagement: 0.1,
     };
 
     const scores = {
@@ -325,15 +324,15 @@ export class UXDimension extends EventEmitter implements IDimension {
       accessibility: this._currentMetrics.accessibility.overallAccessibility,
       performance: this._currentMetrics.performance.coreWebVitalsScore,
       satisfaction: this._currentMetrics.satisfaction.overallSatisfaction,
-      engagement: this.calculateEngagementScore()
+      engagement: this.calculateEngagementScore(),
     };
 
     this._healthScore = Math.round(
       scores.usability * weights.usability +
-      scores.accessibility * weights.accessibility +
-      scores.performance * weights.performance +
-      scores.satisfaction * weights.satisfaction +
-      scores.engagement * weights.engagement
+        scores.accessibility * weights.accessibility +
+        scores.performance * weights.performance +
+        scores.satisfaction * weights.satisfaction +
+        scores.engagement * weights.engagement
     );
 
     this.emit('health-updated', { score: this._healthScore, timestamp: new Date() });
@@ -343,11 +342,12 @@ export class UXDimension extends EventEmitter implements IDimension {
     const { usability } = this._currentMetrics;
     return Math.round(
       (usability.taskSuccessRate +
-       usability.learnability +
-       usability.efficiency +
-       usability.memorability +
-       usability.satisfaction +
-       usability.systemUsabilityScale) / 6
+        usability.learnability +
+        usability.efficiency +
+        usability.memorability +
+        usability.satisfaction +
+        usability.systemUsabilityScale) /
+        6
     );
   }
 

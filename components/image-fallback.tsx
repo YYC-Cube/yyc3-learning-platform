@@ -4,45 +4,45 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState } from "react"
-import Image from "next/image"
+import { useState } from 'react';
+import Image from 'next/image';
 
 interface ImageFallbackProps {
-  src: string
-  alt: string
-  title: string
-  className?: string
-  fallbackColor?: string
+  src: string;
+  alt: string;
+  title: string;
+  className?: string;
+  fallbackColor?: string;
 }
 
 export function ImageFallback({
   src,
   alt,
   title,
-  className = "",
-  fallbackColor = "from-blue-500 to-purple-600",
+  className = '',
+  fallbackColor = 'from-blue-500 to-purple-600',
 }: ImageFallbackProps) {
-  const [imageError, setImageError] = useState(false)
-  const [imageLoaded, setImageLoaded] = useState(false)
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   const handleImageError = () => {
-    setImageError(true)
-  }
+    setImageError(true);
+  };
 
   const handleImageLoad = () => {
-    setImageLoaded(true)
-  }
+    setImageLoaded(true);
+  };
 
   // 使用设计系统CSS变量替代硬编码颜色
-  const cWhite = "var(--svg-white)"
-  const cWhite90 = "var(--svg-white-90)"
-  const cWhite80 = "var(--svg-white-80)"
-  const cGold = "var(--svg-gold)"
+  const cWhite = 'var(--svg-white)';
+  const cWhite90 = 'var(--svg-white-90)';
+  const cWhite80 = 'var(--svg-white-80)';
+  const cGold = 'var(--svg-gold)';
 
   const createFallbackSVG = () => {
-    if (title.includes("新手学习小组")) {
+    if (title.includes('新手学习小组')) {
       return (
         <div
           className={`w-full h-32 bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center ${className}`}
@@ -63,19 +63,31 @@ export function ImageFallback({
               <circle cx="30" cy="15" r="8" fill="url(#newbieGrad)" />
               <circle cx="27" cy="12" r="1.5" fill={cWhite90} />
               <circle cx="33" cy="12" r="1.5" fill={cWhite90} />
-              <path d="M25 17 Q30 20 35 17" stroke={cWhite90} strokeWidth="2" fill="none" strokeLinecap="round" />
+              <path
+                d="M25 17 Q30 20 35 17"
+                stroke={cWhite90}
+                strokeWidth="2"
+                fill="none"
+                strokeLinecap="round"
+              />
               <g transform="translate(10, 35)">
-                <path d="M0 10 Q5 5 10 10 Q15 5 20 10" stroke={cWhite80} strokeWidth="3" fill="none" strokeLinecap="round" />
+                <path
+                  d="M0 10 Q5 5 10 10 Q15 5 20 10"
+                  stroke={cWhite80}
+                  strokeWidth="3"
+                  fill="none"
+                  strokeLinecap="round"
+                />
               </g>
             </svg>
             <div className="text-sm font-bold">新手学习小组</div>
             <div className="text-xs opacity-90">友好互助 共同成长</div>
           </div>
         </div>
-      )
+      );
     }
 
-    if (title.includes("AI创新实验室")) {
+    if (title.includes('AI创新实验室')) {
       return (
         <div
           className={`w-full h-32 bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center ${className}`}
@@ -92,13 +104,28 @@ export function ImageFallback({
               <rect x="18" y="12" width="24" height="6" rx="2" fill="url(#labGrad)" />
               <g>
                 <circle cx="25" cy="25" r="2" fill={cGold} opacity="0.8">
-                  <animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite" />
+                  <animate
+                    attributeName="opacity"
+                    values="0.5;1;0.5"
+                    dur="2s"
+                    repeatCount="indefinite"
+                  />
                 </circle>
                 <circle cx="35" cy="30" r="1.5" fill={cGold} opacity="0.6">
-                  <animate attributeName="opacity" values="0.3;0.8;0.3" dur="1.5s" repeatCount="indefinite" />
+                  <animate
+                    attributeName="opacity"
+                    values="0.3;0.8;0.3"
+                    dur="1.5s"
+                    repeatCount="indefinite"
+                  />
                 </circle>
                 <circle cx="30" cy="35" r="1" fill={cGold} opacity="0.7">
-                  <animate attributeName="opacity" values="0.4;0.9;0.4" dur="1.8s" repeatCount="indefinite" />
+                  <animate
+                    attributeName="opacity"
+                    values="0.4;0.9;0.4"
+                    dur="1.8s"
+                    repeatCount="indefinite"
+                  />
                 </circle>
               </g>
             </svg>
@@ -106,10 +133,10 @@ export function ImageFallback({
             <div className="text-xs opacity-90">前沿研究 技术创新</div>
           </div>
         </div>
-      )
+      );
     }
 
-    if (title.includes("Prompt工程师联盟")) {
+    if (title.includes('Prompt工程师联盟')) {
       return (
         <div
           className={`w-full h-32 bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center ${className}`}
@@ -124,21 +151,32 @@ export function ImageFallback({
               </defs>
               <rect x="10" y="15" width="40" height="30" rx="3" fill="url(#promptGrad)" />
               <rect x="12" y="17" width="36" height="26" rx="2" fill="rgba(0,0,0,0.2)" />
-              <text x="15" y="25" fill={cWhite90} fontSize="6" fontFamily="monospace">&gt;</text>
+              <text x="15" y="25" fill={cWhite90} fontSize="6" fontFamily="monospace">
+                &gt;
+              </text>
               <rect x="18" y="22" width="15" height="1" fill={cWhite80} />
               <rect x="18" y="26" width="20" height="1" fill={cWhite80} />
               <rect x="18" y="30" width="12" height="1" fill={cWhite80} />
               <circle cx="45" cy="20" r="8" fill={cGold} style={{ opacity: 0.8 }} />
-              <text x="45" y="23" textAnchor="middle" fill="rgba(0,0,0,0.8)" fontSize="8" fontWeight="bold">P</text>
+              <text
+                x="45"
+                y="23"
+                textAnchor="middle"
+                fill="rgba(0,0,0,0.8)"
+                fontSize="8"
+                fontWeight="bold"
+              >
+                P
+              </text>
             </svg>
             <div className="text-sm font-bold">Prompt工程师联盟</div>
             <div className="text-xs opacity-90">专业技术 实战交流</div>
           </div>
         </div>
-      )
+      );
     }
 
-    if (title.includes("AI基础知识测试")) {
+    if (title.includes('AI基础知识测试')) {
       return (
         <div
           className={`w-full h-48 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center ${className}`}
@@ -151,7 +189,10 @@ export function ImageFallback({
                   <stop offset="100%" stopColor={cWhite} opacity="0.7" />
                 </linearGradient>
               </defs>
-              <path d="M25 30 Q20 20 30 20 Q35 15 45 20 Q55 15 60 25 Q65 35 55 40 Q50 45 40 40 Q30 45 25 35 Z" fill="url(#basicGrad)" />
+              <path
+                d="M25 30 Q20 20 30 20 Q35 15 45 20 Q55 15 60 25 Q65 35 55 40 Q50 45 40 40 Q30 45 25 35 Z"
+                fill="url(#basicGrad)"
+              />
               <g stroke={cWhite80} strokeWidth="2" fill="none" style={{ strokeOpacity: 0.6 }}>
                 <line x1="30" y1="25" x2="35" y2="30" />
                 <line x1="35" y1="30" x2="45" y2="25" />
@@ -161,46 +202,59 @@ export function ImageFallback({
               <circle cx="30" cy="25" r="2" fill={cGold} />
               <circle cx="45" cy="25" r="2" fill={cGold} />
               <circle cx="40" cy="35" r="2" fill={cGold} />
-              <text x="40" y="60" textAnchor="middle" fill={cWhite90} fontSize="12" fontWeight="bold">基础测试</text>
+              <text
+                x="40"
+                y="60"
+                textAnchor="middle"
+                fill={cWhite90}
+                fontSize="12"
+                fontWeight="bold"
+              >
+                基础测试
+              </text>
             </svg>
             <div className="text-lg font-bold">AI基础知识测试</div>
             <div className="text-sm opacity-90">测试基本概念和原理</div>
           </div>
         </div>
-      )
+      );
     }
 
     return (
-      <div className={`w-full h-32 bg-gradient-to-br ${fallbackColor} flex items-center justify-center ${className}`}>
+      <div
+        className={`w-full h-32 bg-gradient-to-br ${fallbackColor} flex items-center justify-center ${className}`}
+      >
         <div className="text-center text-white">
-          <div className="text-lg font-bold mb-1">{title.split(" ")[0]}</div>
+          <div className="text-lg font-bold mb-1">{title.split(' ')[0]}</div>
           <div className="text-sm opacity-90">{title}</div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
       {!imageError && (
         <Image
-          src={src || "/placeholder.svg"}
+          src={src || '/placeholder.svg'}
           alt={alt}
           fill
           className={`object-cover transition-opacity duration-300 ${
-            imageLoaded ? "opacity-100" : "opacity-0"
+            imageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
           onError={handleImageError}
           onLoad={handleImageLoad}
           unoptimized
         />
       )}
-      {(imageError || !imageLoaded) && <div className="absolute inset-0">{createFallbackSVG()}</div>}
+      {(imageError || !imageLoaded) && (
+        <div className="absolute inset-0">{createFallbackSVG()}</div>
+      )}
       {!imageLoaded && !imageError && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100 animate-pulse">
           <div className="text-gray-500 text-sm">加载中...</div>
         </div>
       )}
     </div>
-  )
+  );
 }

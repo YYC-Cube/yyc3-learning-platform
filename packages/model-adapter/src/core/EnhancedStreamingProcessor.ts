@@ -79,7 +79,7 @@ export class EnhancedStreamingProcessor extends EventEmitter {
       retryOnFailure: config.retryOnFailure ?? true,
       maxRetries: config.maxRetries ?? 3,
       enablePrefetch: config.enablePrefetch ?? true,
-      prefetchThreshold: config.prefetchThreshold ?? 0.8
+      prefetchThreshold: config.prefetchThreshold ?? 0.8,
     };
 
     this.metrics = this.initializeMetrics();
@@ -99,7 +99,7 @@ export class EnhancedStreamingProcessor extends EventEmitter {
       errorRate: 0,
       retryRate: 0,
       compressionRatio: 0,
-      deduplicationRate: 0
+      deduplicationRate: 0,
     };
   }
 
@@ -156,7 +156,7 @@ export class EnhancedStreamingProcessor extends EventEmitter {
     this.streamBuffers.set(streamId, {
       chunks: buffer,
       size: 0,
-      lastFlush: Date.now()
+      lastFlush: Date.now(),
     });
 
     const flushBuffer = async () => {
@@ -166,7 +166,7 @@ export class EnhancedStreamingProcessor extends EventEmitter {
         this.streamBuffers.set(streamId, {
           chunks: buffer,
           size: 0,
-          lastFlush: Date.now()
+          lastFlush: Date.now(),
         });
 
         for (const chunk of chunksToFlush) {
@@ -218,7 +218,8 @@ export class EnhancedStreamingProcessor extends EventEmitter {
 
     this.metrics.totalChunks++;
 
-    const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+    const content =
+      typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
     this.chunkSizes.push(content.length);
 
     if (this.config.enableDeduplication) {
@@ -235,7 +236,7 @@ export class EnhancedStreamingProcessor extends EventEmitter {
       if (compressed) {
         const originalSize = content.length;
         const compressedSize = JSON.stringify(compressed).length;
-        this.compressionSavings += (originalSize - compressedSize);
+        this.compressionSavings += originalSize - compressedSize;
         chunk = compressed;
       }
     }
@@ -249,8 +250,9 @@ export class EnhancedStreamingProcessor extends EventEmitter {
   }
 
   private deduplicateChunk(chunk: ModelResponse): ModelResponse | null {
-    const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
-    
+    const content =
+      typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+
     if (!content || content.length < 10) {
       return null;
     }
@@ -259,8 +261,9 @@ export class EnhancedStreamingProcessor extends EventEmitter {
   }
 
   private compressChunk(chunk: ModelResponse): ModelResponse | null {
-    const content = typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
-    
+    const content =
+      typeof chunk.content === 'string' ? chunk.content : JSON.stringify(chunk.content);
+
     if (content.length < 100) {
       return null;
     }
@@ -268,7 +271,10 @@ export class EnhancedStreamingProcessor extends EventEmitter {
     return chunk;
   }
 
-  async prefetch(request: ModelRequest, streamProcessor: (request: ModelRequest) => AsyncIterable<ModelResponse>): Promise<void> {
+  async prefetch(
+    request: ModelRequest,
+    streamProcessor: (request: ModelRequest) => AsyncIterable<ModelResponse>
+  ): Promise<void> {
     if (!this.config.enablePrefetch) {
       return;
     }
@@ -277,7 +283,7 @@ export class EnhancedStreamingProcessor extends EventEmitter {
       requestId: request.id,
       prompt: request.prompt,
       timestamp: Date.now(),
-      priority: request.metadata?.priority || 'normal'
+      priority: request.metadata?.priority || 'normal',
     };
 
     this.prefetchQueue.set(request.id, context);
@@ -309,12 +315,14 @@ export class EnhancedStreamingProcessor extends EventEmitter {
 
   private updateMetrics(): void {
     if (this.chunkSizes.length > 0) {
-      this.metrics.averageChunkSize = this.chunkSizes.reduce((a, b) => a + b, 0) / this.chunkSizes.length;
+      this.metrics.averageChunkSize =
+        this.chunkSizes.reduce((a, b) => a + b, 0) / this.chunkSizes.length;
     }
 
     if (this.latencyHistory.length > 0) {
-      this.metrics.averageLatency = this.latencyHistory.reduce((a, b) => a + b, 0) / this.latencyHistory.length;
-      
+      this.metrics.averageLatency =
+        this.latencyHistory.reduce((a, b) => a + b, 0) / this.latencyHistory.length;
+
       const sorted = [...this.latencyHistory].sort((a, b) => a - b);
       this.metrics.p50Latency = sorted[Math.floor(sorted.length * 0.5)];
       this.metrics.p95Latency = sorted[Math.floor(sorted.length * 0.95)];
@@ -328,7 +336,8 @@ export class EnhancedStreamingProcessor extends EventEmitter {
 
     if (this.metrics.totalChunks > 0) {
       this.metrics.deduplicationRate = this.deduplicationHits / this.metrics.totalChunks;
-      this.metrics.compressionRatio = this.compressionSavings / (this.chunkSizes.reduce((a, b) => a + b, 0) || 1);
+      this.metrics.compressionRatio =
+        this.compressionSavings / (this.chunkSizes.reduce((a, b) => a + b, 0) || 1);
     }
   }
 
@@ -345,7 +354,7 @@ export class EnhancedStreamingProcessor extends EventEmitter {
   private startCleanupTask(): void {
     setInterval(() => {
       const now = Date.now();
-      
+
       for (const [streamId, buffer] of this.streamBuffers.entries()) {
         if (now - buffer.lastFlush > this.config.bufferFlushInterval * 10) {
           this.streamBuffers.delete(streamId);

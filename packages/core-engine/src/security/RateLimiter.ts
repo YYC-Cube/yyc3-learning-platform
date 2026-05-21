@@ -41,7 +41,7 @@ export enum RateLimitStrategy {
   FIXED_WINDOW = 'fixed_window',
   SLIDING_WINDOW = 'sliding_window',
   TOKEN_BUCKET = 'token_bucket',
-  LEAKY_BUCKET = 'leaky_bucket'
+  LEAKY_BUCKET = 'leaky_bucket',
 }
 
 export class RateLimiter extends EventEmitter {
@@ -51,7 +51,10 @@ export class RateLimiter extends EventEmitter {
   private strategy: RateLimitStrategy;
   private cleanupInterval: NodeJS.Timeout;
 
-  constructor(config: RateLimitConfig, strategy: RateLimitStrategy = RateLimitStrategy.SLIDING_WINDOW) {
+  constructor(
+    config: RateLimitConfig,
+    strategy: RateLimitStrategy = RateLimitStrategy.SLIDING_WINDOW
+  ) {
     super();
 
     this.config = {
@@ -60,14 +63,17 @@ export class RateLimiter extends EventEmitter {
       skipSuccessfulRequests: config.skipSuccessfulRequests || false,
       skipFailedRequests: config.skipFailedRequests || false,
       keyGenerator: config.keyGenerator || ((id: string) => id),
-      handler: config.handler || this.defaultHandler
+      handler: config.handler || this.defaultHandler,
     };
 
     this.strategy = strategy;
 
-    this.cleanupInterval = setInterval(() => {
-      this.cleanup();
-    }, Math.min(this.config.windowMs, 60000));
+    this.cleanupInterval = setInterval(
+      () => {
+        this.cleanup();
+      },
+      Math.min(this.config.windowMs, 60000)
+    );
 
     this.setupEventHandlers();
   }
@@ -78,7 +84,9 @@ export class RateLimiter extends EventEmitter {
 
   private setupEventHandlers(): void {
     this.on('rateLimit:exceeded', (data) => {
-      logger.warn(`Rate limit exceeded for ${data.identifier}: ${data.limit.remaining}/${data.limit.limit} remaining`);
+      logger.warn(
+        `Rate limit exceeded for ${data.identifier}: ${data.limit.remaining}/${data.limit.limit} remaining`
+      );
     });
   }
 
@@ -128,7 +136,7 @@ export class RateLimiter extends EventEmitter {
       entry = {
         count: 0,
         resetTime: now + this.config.windowMs,
-        windowStart: now
+        windowStart: now,
       };
       this.store.set(key, entry);
     }
@@ -147,7 +155,7 @@ export class RateLimiter extends EventEmitter {
         limit: maxRequests,
         remaining: maxRequests - entry.count,
         reset: new Date(entry.resetTime),
-        resetTime: entry.resetTime
+        resetTime: entry.resetTime,
       };
     }
 
@@ -157,7 +165,7 @@ export class RateLimiter extends EventEmitter {
         limit: maxRequests,
         remaining: maxRequests - entry.count,
         reset: new Date(entry.resetTime),
-        resetTime: entry.resetTime
+        resetTime: entry.resetTime,
       };
     }
 
@@ -225,7 +233,7 @@ export class RateLimiter extends EventEmitter {
       limit: maxRequests,
       remaining,
       reset: new Date(entry.resetTime),
-      resetTime: entry.resetTime
+      resetTime: entry.resetTime,
     };
 
     if (!allowed) {
@@ -270,16 +278,15 @@ export class RateLimiter extends EventEmitter {
     topViolators.sort((a, b) => b.violations - a.violations);
     topViolators.splice(10);
 
-    const averageRequestsPerWindow = totalRequests > 0
-      ? totalRequests / (this.config.windowMs / 1000)
-      : 0;
+    const averageRequestsPerWindow =
+      totalRequests > 0 ? totalRequests / (this.config.windowMs / 1000) : 0;
 
     return {
       totalRequests,
       blockedRequests,
       allowedRequests,
       topViolators,
-      averageRequestsPerWindow
+      averageRequestsPerWindow,
     };
   }
 

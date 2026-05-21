@@ -26,7 +26,7 @@ export type {
   RegistrationResult,
   CacheEntry,
   ToolUsageStats,
-  RegistryConfig
+  RegistryConfig,
 } from './ToolRegistry';
 
 export {
@@ -34,5 +34,5 @@ export {
   ToolNotFoundError,
   PermissionError,
   RateLimitError,
-  OrchestrationError
+  OrchestrationError,
 } from './ToolRegistry';

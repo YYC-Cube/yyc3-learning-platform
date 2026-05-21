@@ -18,7 +18,7 @@ import {
   ModelRequest,
   ModelResponse,
   SafetyRating,
-  TokenUsage
+  TokenUsage,
 } from './IModelAdapter';
 
 import { createLogger } from '../../../lib/logger';
@@ -57,7 +57,7 @@ export class GoogleProvider implements IModelProvider {
     codeGeneration: true,
     reasoning: true,
     multilingual: true,
-    customInstructions: true
+    customInstructions: true,
   };
 
   get status(): 'active' | 'inactive' | 'error' {
@@ -67,7 +67,8 @@ export class GoogleProvider implements IModelProvider {
   async initialize(config: ModelConfig): Promise<void> {
     this._config = config;
     this._apiKey = config.credentials.apiKey;
-    this._baseURL = config.credentials.baseURL || 'https://generativelanguage.googleapis.com/v1beta';
+    this._baseURL =
+      config.credentials.baseURL || 'https://generativelanguage.googleapis.com/v1beta';
     this._timeout = config.credentials.timeout || 60000;
     this._maxRetries = config.credentials.maxRetries || 3;
     this._startTime = Date.now();
@@ -109,9 +110,9 @@ export class GoogleProvider implements IModelProvider {
           processingTime: latency,
           retryCount: 0,
           cacheHit: false,
-          safetyRatings: this._parseSafetyRatings(response.candidates[0]?.safetyRatings)
+          safetyRatings: this._parseSafetyRatings(response.candidates[0]?.safetyRatings),
         },
-        streaming: false
+        streaming: false,
       };
     } catch (error) {
       this._errorCount++;
@@ -132,13 +133,16 @@ export class GoogleProvider implements IModelProvider {
     const startTime = Date.now();
 
     try {
-      const response = await fetch(`${this._baseURL}/models/${this._config!.model}:streamGenerateContent?key=${this._apiKey}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(this._buildRequestBody(request))
-      });
+      const response = await fetch(
+        `${this._baseURL}/models/${this._config!.model}:streamGenerateContent?key=${this._apiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this._buildRequestBody(request)),
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Google API error: ${response.status} ${response.statusText}`);
@@ -180,7 +184,7 @@ export class GoogleProvider implements IModelProvider {
                   usage: {
                     inputTokens: 0,
                     outputTokens: totalTokens,
-                    totalTokens: totalTokens
+                    totalTokens: totalTokens,
                   },
                   metadata: {
                     latency: Date.now() - startTime,
@@ -188,9 +192,9 @@ export class GoogleProvider implements IModelProvider {
                     provider: this.provider,
                     timestamp: Date.now(),
                     requestId: request.id,
-                    processingTime: Date.now() - startTime
+                    processingTime: Date.now() - startTime,
                   },
-                  streaming: true
+                  streaming: true,
                 });
               }
             } catch (e) {
@@ -212,7 +216,7 @@ export class GoogleProvider implements IModelProvider {
 
     try {
       const response = await fetch(`${this._baseURL}/models?key=${this._apiKey}`, {
-        method: 'GET'
+        method: 'GET',
       });
 
       const responseTime = Date.now() - startTime;
@@ -238,8 +242,8 @@ export class GoogleProvider implements IModelProvider {
           p95Latency: responseTime * 1.5,
           p99Latency: responseTime * 2,
           timeoutRate: 0,
-          queueDepth: 0
-        }
+          queueDepth: 0,
+        },
       };
 
       if (health.status === 'healthy') {
@@ -265,8 +269,8 @@ export class GoogleProvider implements IModelProvider {
           p95Latency: (Date.now() - startTime) * 1.5,
           p99Latency: (Date.now() - startTime) * 2,
           timeoutRate: 1,
-          queueDepth: 0
-        }
+          queueDepth: 0,
+        },
       };
     }
   }
@@ -276,11 +280,7 @@ export class GoogleProvider implements IModelProvider {
   }
 
   validateConfig(config: ModelConfig): boolean {
-    return !!(
-      config.credentials?.apiKey &&
-      config.model &&
-      config.id
-    );
+    return !!(config.credentials?.apiKey && config.model && config.id);
   }
 
   async cleanup(): Promise<void> {
@@ -297,14 +297,17 @@ export class GoogleProvider implements IModelProvider {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this._timeout);
 
-        const response = await fetch(`${this._baseURL}/models/${this._config!.model}:generateContent?key=${this._apiKey}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(body),
-          signal: controller.signal
-        });
+        const response = await fetch(
+          `${this._baseURL}/models/${this._config!.model}:generateContent?key=${this._apiKey}`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+            signal: controller.signal,
+          }
+        );
 
         clearTimeout(timeoutId);
 
@@ -321,7 +324,7 @@ export class GoogleProvider implements IModelProvider {
           throw error;
         }
 
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
       }
     }
 
@@ -334,11 +337,11 @@ export class GoogleProvider implements IModelProvider {
     if (request.systemPrompt) {
       contents.push({
         role: 'user',
-        parts: [{ text: request.systemPrompt }]
+        parts: [{ text: request.systemPrompt }],
       });
       contents.push({
         role: 'model',
-        parts: [{ text: 'Understood. I will follow these instructions.' }]
+        parts: [{ text: 'Understood. I will follow these instructions.' }],
       });
     }
 
@@ -347,13 +350,13 @@ export class GoogleProvider implements IModelProvider {
         const role = msg.role === 'assistant' ? 'model' : msg.role;
         contents.push({
           role,
-          parts: this._formatContent(msg.content)
+          parts: this._formatContent(msg.content),
         });
       }
     } else {
       contents.push({
         role: 'user',
-        parts: [{ text: request.prompt }]
+        parts: [{ text: request.prompt }],
       });
     }
 
@@ -363,17 +366,19 @@ export class GoogleProvider implements IModelProvider {
         temperature: request.temperature ?? 0.7,
         maxOutputTokens: request.maxTokens ?? 4000,
         topP: request.topP ?? 1.0,
-        topK: request.topK ?? 40
-      }
+        topK: request.topK ?? 40,
+      },
     };
 
     if (request.tools && request.tools.length > 0) {
-      body.tools = request.tools.map(tool => ({
-        functionDeclarations: [{
-          name: tool.function.name,
-          description: tool.function.name,
-          parameters: JSON.parse(tool.function.arguments)
-        }]
+      body.tools = request.tools.map((tool) => ({
+        functionDeclarations: [
+          {
+            name: tool.function.name,
+            description: tool.function.name,
+            parameters: JSON.parse(tool.function.arguments),
+          },
+        ],
       }));
     }
 
@@ -389,15 +394,15 @@ export class GoogleProvider implements IModelProvider {
       return [{ text: content }];
     }
 
-    return content.map(block => {
+    return content.map((block) => {
       if (block.type === 'text') {
         return { text: block.content };
       } else if (block.type === 'image') {
         return {
           inlineData: {
             mimeType: 'image/jpeg',
-            data: block.content
-          }
+            data: block.content,
+          },
         };
       }
       return { text: String(block.content) };
@@ -413,7 +418,7 @@ export class GoogleProvider implements IModelProvider {
       return content.parts.map((part: any) => ({
         type: part.text ? 'text' : part.inlineData ? 'image' : 'text',
         content: part.text || part.inlineData?.data || JSON.stringify(part),
-        metadata: part.metadata
+        metadata: part.metadata,
       }));
     }
 
@@ -422,11 +427,11 @@ export class GoogleProvider implements IModelProvider {
 
   private _parseFinishReason(reason: string | undefined): FinishReason {
     const mapping: Record<string, FinishReason> = {
-      'STOP': 'stop',
-      'MAX_TOKENS': 'length',
-      'SAFETY': 'content_filter',
-      'RECITATION': 'content_filter',
-      'OTHER': 'error'
+      STOP: 'stop',
+      MAX_TOKENS: 'length',
+      SAFETY: 'content_filter',
+      RECITATION: 'content_filter',
+      OTHER: 'error',
     };
 
     return mapping[reason || ''] || 'stop';
@@ -440,7 +445,8 @@ export class GoogleProvider implements IModelProvider {
     const pricing = this._config?.pricing;
     let cost = 0;
     if (pricing) {
-      cost = (inputTokens / 1000) * pricing.inputTokensPer1K +
+      cost =
+        (inputTokens / 1000) * pricing.inputTokensPer1K +
         (outputTokens / 1000) * pricing.outputTokensPer1K;
     }
 
@@ -449,7 +455,7 @@ export class GoogleProvider implements IModelProvider {
       outputTokens,
       totalTokens,
       cachedTokens: usage?.cachedContentTokenCount || 0,
-      cost
+      cost,
     };
   }
 
@@ -460,10 +466,10 @@ export class GoogleProvider implements IModelProvider {
 
     return ratings.map((rating: any) => ({
       category: rating.category || '',
-      severity: rating.probability === 'HIGH' ? 'high' :
-        rating.probability === 'MEDIUM' ? 'medium' : 'low',
+      severity:
+        rating.probability === 'HIGH' ? 'high' : rating.probability === 'MEDIUM' ? 'medium' : 'low',
       blocked: rating.blocked || false,
-      reason: ''
+      reason: '',
     }));
   }
 

@@ -14,7 +14,9 @@ export class GoalValidator {
     this.logger.info('Initializing GoalValidator...');
   }
 
-  async validateGoal(goal: Omit<StrategicGoal, 'id' | 'createdAt' | 'updatedAt' | 'lastReviewed'>): Promise<void> {
+  async validateGoal(
+    goal: Omit<StrategicGoal, 'id' | 'createdAt' | 'updatedAt' | 'lastReviewed'>
+  ): Promise<void> {
     // Basic validation
     if (!goal.title || goal.title.trim() === '') {
       throw new Error('Goal title is required');

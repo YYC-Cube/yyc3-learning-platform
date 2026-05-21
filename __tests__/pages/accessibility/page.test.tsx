@@ -93,7 +93,11 @@ vi.mock('@/components/accessibility/accessible-button', () => ({
 }));
 
 vi.mock('@/components/accessibility/live-region', () => ({
-  LiveRegion: ({ message }: any) => <div role="status" aria-live="polite" id="live-region">{message}</div>,
+  LiveRegion: ({ message }: any) => (
+    <div role="status" aria-live="polite" id="live-region">
+      {message}
+    </div>
+  ),
 }));
 
 vi.mock('lucide-react', () => ({
@@ -113,9 +117,7 @@ describe('AccessibilityPage页面组件测试', () => {
       render(<AccessibilityPage />);
 
       expect(screen.getByText('无障碍访问设置')).toBeTruthy();
-      expect(
-        screen.getByText('自定义您的学习体验，让系统更适合您的需求')
-      ).toBeTruthy();
+      expect(screen.getByText('自定义您的学习体验，让系统更适合您的需求')).toBeTruthy();
     });
 
     it('应该渲染所有设置卡片', () => {

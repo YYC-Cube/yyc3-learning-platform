@@ -9,7 +9,7 @@
  * @license MIT
  */
 
-import { Cloud, Sparkles } from "lucide-react"
+import { Cloud, Sparkles } from 'lucide-react';
 
 export function BrandFooter() {
   return (
@@ -35,11 +35,13 @@ export function BrandFooter() {
 
           {/* 版权信息 */}
           <div className="pt-4 border-t border-blue-800/30">
-            <p className="text-blue-300 text-sm">© 2024 YanYu Smart Cloud³ Learning Platform. All rights reserved.</p>
+            <p className="text-blue-300 text-sm">
+              © 2024 YanYu Smart Cloud³ Learning Platform. All rights reserved.
+            </p>
             <p className="text-blue-400 text-xs mt-1">Powered by Advanced AI Technology</p>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }

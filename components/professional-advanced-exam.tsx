@@ -4,17 +4,17 @@
  * @version 1.0.0
  * @license MIT
  */
-"use client"
+'use client';
 
-import { useState, useEffect, useCallback } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import {
   Clock,
   ArrowLeft,
@@ -26,167 +26,173 @@ import {
   Lightbulb,
   Target,
   Code,
-} from "lucide-react"
-import type { ProfessionalAdvancedQuestion } from "@/data/professional-advanced-questions"
-import { generateProfessionalExamPaper } from "@/data/professional-advanced-questions"
+} from 'lucide-react';
+import type { ProfessionalAdvancedQuestion } from '@/data/professional-advanced-questions';
+import { generateProfessionalExamPaper } from '@/data/professional-advanced-questions';
 
 interface ProfessionalAdvancedExamProps {
-  examType: "technical-foundation" | "core-tech-depth" | "multimodal" | "rlhf" | "comprehensive"
-  timeLimit?: number
-  onComplete?: (results: ProfessionalAdvancedExamResults) => void
+  examType: 'technical-foundation' | 'core-tech-depth' | 'multimodal' | 'rlhf' | 'comprehensive';
+  timeLimit?: number;
+  onComplete?: (results: ProfessionalAdvancedExamResults) => void;
 }
 
 interface ProfessionalAdvancedExamResults {
-  totalQuestions: number
-  totalPoints: number
-  earnedPoints: number
-  score: number
-  timeUsed: number
-  categoryScores: Record<string, { correct: number; total: number; points: number }>
-  answers: Record<string, any>
-  feedback: Record<string, string>
+  totalQuestions: number;
+  totalPoints: number;
+  earnedPoints: number;
+  score: number;
+  timeUsed: number;
+  categoryScores: Record<string, { correct: number; total: number; points: number }>;
+  answers: Record<string, any>;
+  feedback: Record<string, string>;
 }
 
-export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete }: ProfessionalAdvancedExamProps) {
-  const [examQuestions, setExamQuestions] = useState<ProfessionalAdvancedQuestion[]>([])
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, any>>({})
-  const [timeRemaining, setTimeRemaining] = useState(timeLimit * 60)
-  const [examStarted, setExamStarted] = useState(false)
-  const [examCompleted, setExamCompleted] = useState(false)
-  const [showResults, setShowResults] = useState(false)
-  const [results, setResults] = useState<ProfessionalAdvancedExamResults | null>(null)
+export function ProfessionalAdvancedExam({
+  examType,
+  timeLimit = 120,
+  onComplete,
+}: ProfessionalAdvancedExamProps) {
+  const [examQuestions, setExamQuestions] = useState<ProfessionalAdvancedQuestion[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [timeRemaining, setTimeRemaining] = useState(timeLimit * 60);
+  const [examStarted, setExamStarted] = useState(false);
+  const [examCompleted, setExamCompleted] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [results, setResults] = useState<ProfessionalAdvancedExamResults | null>(null);
 
   // 初始化考试
   useEffect(() => {
-    let questions: ProfessionalAdvancedQuestion[] = []
+    let questions: ProfessionalAdvancedQuestion[] = [];
 
     switch (examType) {
-      case "technical-foundation":
+      case 'technical-foundation':
         questions = generateProfessionalExamPaper({
-          categories: ["技术基础"],
+          categories: ['技术基础'],
           difficultyRange: [2, 4],
           questionCount: 20,
           includeSystemDesign: false,
-        })
-        break
-      case "core-tech-depth":
+        });
+        break;
+      case 'core-tech-depth':
         questions = generateProfessionalExamPaper({
-          categories: ["核心技术深度"],
+          categories: ['核心技术深度'],
           difficultyRange: [3, 5],
           questionCount: 10,
           includeSystemDesign: true,
-        })
-        break
-      case "multimodal":
+        });
+        break;
+      case 'multimodal':
         questions = generateProfessionalExamPaper({
-          categories: ["多模态生成"],
+          categories: ['多模态生成'],
           difficultyRange: [3, 5],
           questionCount: 8,
           includeSystemDesign: true,
-        })
-        break
-      case "rlhf":
+        });
+        break;
+      case 'rlhf':
         questions = generateProfessionalExamPaper({
-          categories: ["RLHF调优"],
+          categories: ['RLHF调优'],
           difficultyRange: [3, 5],
           questionCount: 8,
           includeSystemDesign: true,
-        })
-        break
-      case "comprehensive":
+        });
+        break;
+      case 'comprehensive':
         questions = generateProfessionalExamPaper({
-          categories: ["技术基础", "核心技术深度", "多模态生成", "RLHF调优"],
+          categories: ['技术基础', '核心技术深度', '多模态生成', 'RLHF调优'],
           difficultyRange: [2, 5],
           questionCount: 25,
           includeSystemDesign: true,
-        })
-        break
+        });
+        break;
     }
 
-    setExamQuestions(questions)
-  }, [examType])
+    setExamQuestions(questions);
+  }, [examType]);
 
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
-  }
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleStartExam = () => {
-    setExamStarted(true)
-  }
+    setExamStarted(true);
+  };
 
   const handleAnswerChange = (questionId: string, answer: any) => {
     setAnswers((prev) => ({
       ...prev,
       [questionId]: answer,
-    }))
-  }
+    }));
+  };
 
   const handleSubmitExam = useCallback(() => {
-    const timeUsed = timeLimit * 60 - timeRemaining
-    let totalPoints = 0
-    let earnedPoints = 0
-    const categoryScores: Record<string, { correct: number; total: number; points: number }> = {}
-    const feedback: Record<string, string> = {}
+    const timeUsed = timeLimit * 60 - timeRemaining;
+    let totalPoints = 0;
+    let earnedPoints = 0;
+    const categoryScores: Record<string, { correct: number; total: number; points: number }> = {};
+    const feedback: Record<string, string> = {};
 
     examQuestions.forEach((question) => {
-      totalPoints += question.points
-      const userAnswer = answers[question.id]
-      const category = question.category
+      totalPoints += question.points;
+      const userAnswer = answers[question.id];
+      const category = question.category;
 
       if (!categoryScores[category]) {
-        categoryScores[category] = { correct: 0, total: 0, points: 0 }
+        categoryScores[category] = { correct: 0, total: 0, points: 0 };
       }
-      categoryScores[category].total++
+      categoryScores[category].total++;
 
-      let score = 0
-      let isCorrect = false
+      let score = 0;
+      let isCorrect = false;
 
-      if (question.type === "single") {
-        isCorrect = userAnswer === question.correctAnswers[0]
-        score = isCorrect ? question.points : 0
-      } else if (question.type === "multiple") {
+      if (question.type === 'single') {
+        isCorrect = userAnswer === question.correctAnswers[0];
+        score = isCorrect ? question.points : 0;
+      } else if (question.type === 'multiple') {
         if (Array.isArray(userAnswer) && userAnswer.length === question.correctAnswers.length) {
-          isCorrect = userAnswer.every((ans: number) => question.correctAnswers.includes(ans))
-          score = isCorrect ? question.points : question.points * 0.5
+          isCorrect = userAnswer.every((ans: number) => question.correctAnswers.includes(ans));
+          score = isCorrect ? question.points : question.points * 0.5;
         }
-      } else if (question.type === "technical-analysis" || question.type === "system-design") {
+      } else if (question.type === 'technical-analysis' || question.type === 'system-design') {
         if (userAnswer && userAnswer.trim().length > 0) {
-          const answerLength = userAnswer.trim().length
+          const answerLength = userAnswer.trim().length;
           const hasKeywords = question.keywords.some((keyword) =>
-            userAnswer.toLowerCase().includes(keyword.toLowerCase()),
-          )
+            userAnswer.toLowerCase().includes(keyword.toLowerCase())
+          );
 
-          if (question.type === "technical-analysis") {
-            score = hasKeywords && answerLength > 200 ? question.points * 0.8 : question.points * 0.6
-          } else if (question.type === "system-design") {
-            score = hasKeywords && answerLength > 300 ? question.points * 0.85 : question.points * 0.65
+          if (question.type === 'technical-analysis') {
+            score =
+              hasKeywords && answerLength > 200 ? question.points * 0.8 : question.points * 0.6;
+          } else if (question.type === 'system-design') {
+            score =
+              hasKeywords && answerLength > 300 ? question.points * 0.85 : question.points * 0.65;
           }
 
-          isCorrect = score >= question.points * 0.7
+          isCorrect = score >= question.points * 0.7;
         }
       }
 
-      earnedPoints += score
-      categoryScores[category].points += score
+      earnedPoints += score;
+      categoryScores[category].points += score;
       if (isCorrect) {
-        categoryScores[category].correct++
+        categoryScores[category].correct++;
       }
 
-      if (question.type === "single" || question.type === "multiple") {
+      if (question.type === 'single' || question.type === 'multiple') {
         feedback[question.id] = isCorrect
           ? `✅ 回答正确！得分：${score}/${question.points}分`
-          : `❌ 回答错误。正确答案：${question.correctAnswers.map((i) => question.options?.[i]).join(", ")}。得分：${score}/${question.points}分`
+          : `❌ 回答错误。正确答案：${question.correctAnswers.map((i) => question.options?.[i]).join(', ')}。得分：${score}/${question.points}分`;
       } else {
         feedback[question.id] =
           userAnswer && userAnswer.trim().length > 0
-            ? `📝 主观题得分：${score.toFixed(1)}/${question.points}分。${score >= question.points * 0.7 ? "回答质量良好" : "建议补充更多技术细节"}`
-            : `❌ 未作答，得分：0/${question.points}分`
+            ? `📝 主观题得分：${score.toFixed(1)}/${question.points}分。${score >= question.points * 0.7 ? '回答质量良好' : '建议补充更多技术细节'}`
+            : `❌ 未作答，得分：0/${question.points}分`;
       }
-    })
+    });
 
     const examResults: ProfessionalAdvancedExamResults = {
       totalQuestions: examQuestions.length,
@@ -197,84 +203,87 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
       categoryScores,
       answers,
       feedback,
-    }
+    };
 
-    setResults(examResults)
-    setExamCompleted(true)
-    setShowResults(true)
-    onComplete?.(examResults)
-  }, [timeLimit, timeRemaining, examQuestions, answers, onComplete])
+    setResults(examResults);
+    setExamCompleted(true);
+    setShowResults(true);
+    onComplete?.(examResults);
+  }, [timeLimit, timeRemaining, examQuestions, answers, onComplete]);
 
   // 计时器
   useEffect(() => {
-    if (!examStarted || examCompleted) return
+    if (!examStarted || examCompleted) return;
 
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
         if (prev <= 1) {
-          return 0
+          return 0;
         }
-        return prev - 1
-      })
-    }, 1000)
+        return prev - 1;
+      });
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [examStarted, examCompleted])
+    return () => clearInterval(timer);
+  }, [examStarted, examCompleted]);
 
   // 当时间到0时自动提交
   useEffect(() => {
     if (timeRemaining === 0 && examStarted && !examCompleted) {
-      handleSubmitExam()
+      handleSubmitExam();
     }
-  }, [timeRemaining, examStarted, examCompleted, handleSubmitExam])
+  }, [timeRemaining, examStarted, examCompleted, handleSubmitExam]);
 
-  const currentQuestion = examQuestions[currentQuestionIndex]
+  const currentQuestion = examQuestions[currentQuestionIndex];
 
   const getQuestionTypeIcon = (type: string) => {
     switch (type) {
-      case "single":
-      case "multiple":
-        return <FileText className="h-5 w-5" />
-      case "technical-analysis":
-        return <Lightbulb className="h-5 w-5" />
-      case "system-design":
-        return <Target className="h-5 w-5" />
+      case 'single':
+      case 'multiple':
+        return <FileText className="h-5 w-5" />;
+      case 'technical-analysis':
+        return <Lightbulb className="h-5 w-5" />;
+      case 'system-design':
+        return <Target className="h-5 w-5" />;
       default:
-        return <Code className="h-5 w-5" />
+        return <Code className="h-5 w-5" />;
     }
-  }
+  };
 
   const getQuestionTypeName = (type: string) => {
     switch (type) {
-      case "single":
-        return "单选题"
-      case "multiple":
-        return "多选题"
-      case "technical-analysis":
-        return "技术分析题"
-      case "system-design":
-        return "系统设计题"
+      case 'single':
+        return '单选题';
+      case 'multiple':
+        return '多选题';
+      case 'technical-analysis':
+        return '技术分析题';
+      case 'system-design':
+        return '系统设计题';
       default:
-        return "综合题"
+        return '综合题';
     }
-  }
+  };
 
   const getDifficultyStars = (difficulty: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <Star key={i} className={`h-4 w-4 ${i < difficulty ? "text-yellow-500 fill-current" : "text-gray-300"}`} />
-    ))
-  }
+      <Star
+        key={i}
+        className={`h-4 w-4 ${i < difficulty ? 'text-yellow-500 fill-current' : 'text-gray-300'}`}
+      />
+    ));
+  };
 
   if (!examStarted) {
     return (
       <Card className="max-w-4xl mx-auto">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">
-            {examType === "technical-foundation" && "技术基础专项考试"}
-            {examType === "core-tech-depth" && "核心技术深度考试"}
-            {examType === "multimodal" && "多模态生成专项考试"}
-            {examType === "rlhf" && "RLHF调优专项考试"}
-            {examType === "comprehensive" && "综合能力测试"}
+            {examType === 'technical-foundation' && '技术基础专项考试'}
+            {examType === 'core-tech-depth' && '核心技术深度考试'}
+            {examType === 'multimodal' && '多模态生成专项考试'}
+            {examType === 'rlhf' && 'RLHF调优专项考试'}
+            {examType === 'comprehensive' && '综合能力测试'}
           </CardTitle>
           <CardDescription>生成式人工智能应用工程师（高级）专业能力测试</CardDescription>
         </CardHeader>
@@ -326,7 +335,7 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (showResults && results) {
@@ -383,7 +392,8 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
                   <CardHeader className="pb-2">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-sm flex items-center gap-2">
-                        {getQuestionTypeIcon(question.type)}第{index + 1}题：{getQuestionTypeName(question.type)}
+                        {getQuestionTypeIcon(question.type)}第{index + 1}题：
+                        {getQuestionTypeName(question.type)}
                       </CardTitle>
                       <div className="flex items-center gap-2">
                         <div className="flex">{getDifficultyStars(question.difficulty)}</div>
@@ -393,7 +403,9 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-gray-600 mb-2">{question.question}</p>
-                    <div className="bg-gray-50 p-3 rounded text-sm">{results.feedback[question.id]}</div>
+                    <div className="bg-gray-50 p-3 rounded text-sm">
+                      {results.feedback[question.id]}
+                    </div>
                     {question.relatedConcepts && (
                       <div className="mt-2">
                         <strong className="text-xs">相关概念：</strong>
@@ -420,10 +432,10 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  if (!currentQuestion) return null
+  if (!currentQuestion) return null;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-8">
@@ -435,7 +447,9 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
               <Badge variant="outline">
                 题目 {currentQuestionIndex + 1} / {examQuestions.length}
               </Badge>
-              <div className="flex items-center gap-1">{getDifficultyStars(currentQuestion.difficulty)}</div>
+              <div className="flex items-center gap-1">
+                {getDifficultyStars(currentQuestion.difficulty)}
+              </div>
               <Badge variant="outline" className="flex items-center gap-1">
                 {getQuestionTypeIcon(currentQuestion.type)}
                 {getQuestionTypeName(currentQuestion.type)}
@@ -444,7 +458,9 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
             </div>
             <div className="flex items-center space-x-4">
               <div className="text-sm text-gray-600">剩余时间</div>
-              <div className="text-lg font-mono font-bold text-red-600">{formatTime(timeRemaining)}</div>
+              <div className="text-lg font-mono font-bold text-red-600">
+                {formatTime(timeRemaining)}
+              </div>
             </div>
           </div>
           <div className="mt-4">
@@ -464,13 +480,18 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {currentQuestion.type === "single" && (
+          {currentQuestion.type === 'single' && (
             <RadioGroup
-              value={answers[currentQuestion.id]?.toString() || ""}
-              onValueChange={(value) => handleAnswerChange(currentQuestion.id, Number.parseInt(value))}
+              value={answers[currentQuestion.id]?.toString() || ''}
+              onValueChange={(value) =>
+                handleAnswerChange(currentQuestion.id, Number.parseInt(value))
+              }
             >
               {currentQuestion.options?.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50">
+                <div
+                  key={index}
+                  className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50"
+                >
                   <RadioGroupItem value={index.toString()} id={`option-${index}`} />
                   <Label htmlFor={`option-${index}`} className="flex-1 cursor-pointer">
                     <span className="font-medium mr-2">{String.fromCharCode(65 + index)}.</span>
@@ -481,22 +502,25 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
             </RadioGroup>
           )}
 
-          {currentQuestion.type === "multiple" && (
+          {currentQuestion.type === 'multiple' && (
             <div className="space-y-3">
               {currentQuestion.options?.map((option, index) => (
-                <div key={index} className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50">
+                <div
+                  key={index}
+                  className="flex items-center space-x-2 p-3 rounded-lg hover:bg-gray-50"
+                >
                   <Checkbox
                     id={`option-${index}`}
                     checked={answers[currentQuestion.id]?.includes(index) || false}
                     onCheckedChange={(checked) => {
-                      const currentAnswers = answers[currentQuestion.id] || []
+                      const currentAnswers = answers[currentQuestion.id] || [];
                       if (checked) {
-                        handleAnswerChange(currentQuestion.id, [...currentAnswers, index])
+                        handleAnswerChange(currentQuestion.id, [...currentAnswers, index]);
                       } else {
                         handleAnswerChange(
                           currentQuestion.id,
-                          currentAnswers.filter((a: number) => a !== index),
-                        )
+                          currentAnswers.filter((a: number) => a !== index)
+                        );
                       }
                     }}
                   />
@@ -509,15 +533,16 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
             </div>
           )}
 
-          {(currentQuestion.type === "technical-analysis" || currentQuestion.type === "system-design") && (
+          {(currentQuestion.type === 'technical-analysis' ||
+            currentQuestion.type === 'system-design') && (
             <div className="space-y-4">
               <Textarea
                 placeholder={
-                  currentQuestion.type === "technical-analysis"
-                    ? "请详细分析技术原理，包含数学推导、算法对比、优缺点分析等..."
-                    : "请设计完整的系统架构，包含组件设计、数据流、技术选型、性能考虑等..."
+                  currentQuestion.type === 'technical-analysis'
+                    ? '请详细分析技术原理，包含数学推导、算法对比、优缺点分析等...'
+                    : '请设计完整的系统架构，包含组件设计、数据流、技术选型、性能考虑等...'
                 }
-                value={answers[currentQuestion.id] || ""}
+                value={answers[currentQuestion.id] || ''}
                 onChange={(e) => handleAnswerChange(currentQuestion.id, e.target.value)}
                 className="min-h-[400px]"
               />
@@ -550,8 +575,8 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
 
               <div className="text-sm text-gray-500">
                 建议答题字数：
-                {currentQuestion.type === "technical-analysis" && "300-800字"}
-                {currentQuestion.type === "system-design" && "500-1200字"}
+                {currentQuestion.type === 'technical-analysis' && '300-800字'}
+                {currentQuestion.type === 'system-design' && '500-1200字'}
               </div>
             </div>
           )}
@@ -579,7 +604,9 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
             </Button>
           ) : (
             <Button
-              onClick={() => setCurrentQuestionIndex((prev) => Math.min(examQuestions.length - 1, prev + 1))}
+              onClick={() =>
+                setCurrentQuestionIndex((prev) => Math.min(examQuestions.length - 1, prev + 1))
+              }
               className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white"
             >
               下一题
@@ -589,5 +616,5 @@ export function ProfessionalAdvancedExam({ examType, timeLimit = 120, onComplete
         </div>
       </div>
     </div>
-  )
+  );
 }

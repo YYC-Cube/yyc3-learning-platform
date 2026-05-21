@@ -65,7 +65,7 @@ import type {
   createLearningExperience,
   createBehaviorRecord,
   createStrategicGoal,
-  createKnowledgeItem
+  createKnowledgeItem,
 } from '@yyc3/learning-system';
 ```
 
@@ -76,6 +76,7 @@ import type {
 ### 基础类型
 
 #### EntityId
+
 实体唯一标识符类型
 
 ```typescript
@@ -85,6 +86,7 @@ export type EntityId = string;
 **使用场景**: 所有实体的唯一标识
 
 **示例**:
+
 ```typescript
 const userId: EntityId = 'user_123';
 const knowledgeId: EntityId = 'know_456';
@@ -93,6 +95,7 @@ const knowledgeId: EntityId = 'know_456';
 ---
 
 #### Timestamp
+
 时间戳类型（毫秒）
 
 ```typescript
@@ -102,6 +105,7 @@ export type Timestamp = number;
 **使用场景**: 所有时间相关字段
 
 **示例**:
+
 ```typescript
 const now: Timestamp = Date.now();
 const createdAt: Timestamp = 1704230400000;
@@ -110,6 +114,7 @@ const createdAt: Timestamp = 1704230400000;
 ---
 
 #### Confidence
+
 置信度分数类型（0-1）
 
 ```typescript
@@ -119,6 +124,7 @@ export type Confidence = number;
 **使用场景**: 预测置信度、知识可信度
 
 **示例**:
+
 ```typescript
 const confidence: Confidence = 0.95; // 95% 置信度
 ```
@@ -126,6 +132,7 @@ const confidence: Confidence = 0.95; // 95% 置信度
 ---
 
 #### Priority
+
 优先级级别
 
 ```typescript
@@ -135,6 +142,7 @@ export type Priority = 'low' | 'medium' | 'high' | 'critical';
 **使用场景**: 任务优先级、目标优先级
 
 **示例**:
+
 ```typescript
 const priority: Priority = 'high';
 ```
@@ -142,6 +150,7 @@ const priority: Priority = 'high';
 ---
 
 #### Status
+
 状态类型
 
 ```typescript
@@ -151,6 +160,7 @@ export type Status = 'pending' | 'in_progress' | 'completed' | 'failed';
 **使用场景**: 任务状态、系统状态
 
 **示例**:
+
 ```typescript
 const status: Status = 'in_progress';
 ```
@@ -160,6 +170,7 @@ const status: Status = 'in_progress';
 ### 数据类型
 
 #### FeatureVector
+
 特征向量
 
 ```typescript
@@ -180,6 +191,7 @@ export interface FeatureMetadata {
 **使用场景**: 机器学习特征
 
 **示例**:
+
 ```typescript
 const feature: FeatureVector = {
   values: [0.5, 0.8, 0.3],
@@ -188,14 +200,15 @@ const feature: FeatureVector = {
     name: 'User Engagement',
     description: 'User engagement metrics',
     type: 'numeric',
-    version: '1.0'
-  }
+    version: '1.0',
+  },
 };
 ```
 
 ---
 
 #### TrainingData
+
 训练数据
 
 ```typescript
@@ -214,17 +227,19 @@ export interface Label {
 **使用场景**: 模型训练
 
 **示例**:
+
 ```typescript
 const trainingData: TrainingData = {
   features: [feature1, feature2],
   labels: [{ value: 'class_a', confidence: 0.9 }],
-  timestamps: [Date.now()]
+  timestamps: [Date.now()],
 };
 ```
 
 ---
 
 #### TimeRange
+
 时间范围
 
 ```typescript
@@ -237,10 +252,11 @@ export interface TimeRange {
 **使用场景**: 查询时间范围、分析周期
 
 **示例**:
+
 ```typescript
 const range: TimeRange = {
   start: Date.now() - 86400000, // 24小时前
-  end: Date.now()
+  end: Date.now(),
 };
 ```
 
@@ -249,6 +265,7 @@ const range: TimeRange = {
 ### 结果类型
 
 #### Result
+
 通用结果包装器
 
 ```typescript
@@ -263,17 +280,19 @@ export interface Result<T = unknown, E = Error> {
 **使用场景**: API 响应、操作结果
 
 **示例**:
+
 ```typescript
 const result: Result<string> = {
   success: true,
   data: 'Operation completed',
-  timestamp: Date.now()
+  timestamp: Date.now(),
 };
 ```
 
 ---
 
 #### ValidationResult
+
 验证结果
 
 ```typescript
@@ -288,18 +307,20 @@ export interface ValidationResult {
 **使用场景**: 数据验证
 
 **示例**:
+
 ```typescript
 const validation: ValidationResult = {
   isValid: false,
   errors: ['Missing required field: id'],
   warnings: ['Deprecated property used'],
-  timestamp: Date.now()
+  timestamp: Date.now(),
 };
 ```
 
 ---
 
 #### PaginatedResponse
+
 分页响应
 
 ```typescript
@@ -315,13 +336,14 @@ export interface PaginatedResponse<T> {
 **使用场景**: 列表查询
 
 **示例**:
+
 ```typescript
 const response: PaginatedResponse<BehaviorPattern> = {
   items: [pattern1, pattern2],
   total: 100,
   page: 1,
   pageSize: 10,
-  hasMore: true
+  hasMore: true,
 };
 ```
 
@@ -330,6 +352,7 @@ const response: PaginatedResponse<BehaviorPattern> = {
 ### 内容类型
 
 #### Content
+
 通用内容类型
 
 ```typescript
@@ -344,18 +367,20 @@ export interface Content {
 **使用场景**: 知识内容、消息内容
 
 **示例**:
+
 ```typescript
 const content: Content = {
   type: 'rule',
   data: { condition: 'x > 10', action: 'trigger_alert' },
   text: 'If x > 10, trigger alert',
-  format: 'text'
+  format: 'text',
 };
 ```
 
 ---
 
 #### NodeData
+
 节点数据结构
 
 ```typescript
@@ -370,18 +395,20 @@ export interface NodeData {
 **使用场景**: 知识图谱节点
 
 **示例**:
+
 ```typescript
 const node: NodeData = {
   id: 'node_001',
   type: 'concept',
   properties: { category: 'AI', importance: 'high' },
-  content: content
+  content: content,
 };
 ```
 
 ---
 
 #### Pattern
+
 模式数据结构
 
 ```typescript
@@ -397,19 +424,21 @@ export interface Pattern {
 **使用场景**: 行为模式、知识模式
 
 **示例**:
+
 ```typescript
 const pattern: Pattern = {
   id: 'pattern_001',
   type: 'behavioral',
   description: 'Users who click X often also click Y',
   confidence: 0.85,
-  metadata: { frequency: 100, support: 0.3 }
+  metadata: { frequency: 100, support: 0.3 },
 };
 ```
 
 ---
 
 #### Recommendation
+
 推荐数据结构
 
 ```typescript
@@ -429,6 +458,7 @@ export interface Recommendation {
 **使用场景**: 系统推荐、优化建议
 
 **示例**:
+
 ```typescript
 const recommendation: Recommendation = {
   id: 'rec_001',
@@ -439,7 +469,7 @@ const recommendation: Recommendation = {
   rationale: 'Current accuracy is below threshold',
   expectedImpact: 0.15,
   effort: 0.5,
-  timestamp: Date.now()
+  timestamp: Date.now(),
 };
 ```
 
@@ -448,6 +478,7 @@ const recommendation: Recommendation = {
 ### 配置类型
 
 #### ConfigObject
+
 通用配置对象
 
 ```typescript
@@ -455,25 +486,19 @@ export interface ConfigObject {
   [key: string]: ConfigValue;
 }
 
-export type ConfigValue =
-  | string
-  | number
-  | boolean
-  | string[]
-  | number[]
-  | ConfigObject
-  | null;
+export type ConfigValue = string | number | boolean | string[] | number[] | ConfigObject | null;
 ```
 
 **使用场景**: 动态配置、选项参数
 
 **示例**:
+
 ```typescript
 const config: ConfigObject = {
   enabled: true,
   threshold: 0.8,
   tags: ['important', 'production'],
-  nested: { key: 'value' }
+  nested: { key: 'value' },
 };
 ```
 
@@ -484,6 +509,7 @@ const config: ConfigObject = {
 ### 行为层类型
 
 #### BehaviorRecord
+
 行为记录
 
 ```typescript
@@ -499,6 +525,7 @@ export interface BehaviorRecord {
 ```
 
 **字段说明**:
+
 - `id`: 行为唯一标识
 - `timestamp`: 时间戳
 - `actor`: 行为主体信息
@@ -510,6 +537,7 @@ export interface BehaviorRecord {
 ---
 
 #### BehaviorPattern
+
 行为模式
 
 ```typescript
@@ -526,6 +554,7 @@ export interface BehaviorPattern {
 ```
 
 **字段说明**:
+
 - `frequency`: 模式出现频率
 - `conditions`: 模式条件列表
 - `actions`: 模式动作列表
@@ -533,6 +562,7 @@ export interface BehaviorPattern {
 ---
 
 #### BehaviorPrediction
+
 行为预测
 
 ```typescript
@@ -547,6 +577,7 @@ export interface BehaviorPrediction {
 ```
 
 **字段说明**:
+
 - `predictedBehavior`: 预测的行为
 - `reasoning`: 预测推理过程
 - `alternatives`: 备选预测
@@ -556,6 +587,7 @@ export interface BehaviorPrediction {
 ### 策略层类型
 
 #### StrategicGoal
+
 战略目标
 
 ```typescript
@@ -583,6 +615,7 @@ export interface StrategicGoal {
 ```
 
 **字段说明**:
+
 - `targetValue`: 目标值
 - `currentValue`: 当前值
 - `progress`: 进度（0-1）
@@ -592,6 +625,7 @@ export interface StrategicGoal {
 ---
 
 #### StrategicDecision
+
 战略决策
 
 ```typescript
@@ -608,6 +642,7 @@ export interface StrategicDecision {
 ```
 
 **字段说明**:
+
 - `options`: 可选方案列表
 - `selectedOption`: 选定方案
 - `reasoning`: 决策推理
@@ -618,6 +653,7 @@ export interface StrategicDecision {
 ### 知识层类型
 
 #### KnowledgeItem
+
 知识项
 
 ```typescript
@@ -634,6 +670,7 @@ export interface KnowledgeItem {
 ```
 
 **字段说明**:
+
 - `type`: 知识类型（fact, rule, concept等）
 - `content`: 知识内容
 - `validity`: 有效期
@@ -642,6 +679,7 @@ export interface KnowledgeItem {
 ---
 
 #### ReasoningResult
+
 推理结果
 
 ```typescript
@@ -657,6 +695,7 @@ export interface ReasoningResult {
 ```
 
 **字段说明**:
+
 - `query`: 推理查询
 - `conclusion`: 推理结论
 - `reasoning`: 推理路径
@@ -667,41 +706,44 @@ export interface ReasoningResult {
 ## 🎨 枚举类型 (Enum Types)
 
 ### LayerStatus
+
 层状态
 
 ```typescript
 export type LayerStatus =
-  | 'initializing'  // 初始化中
-  | 'active'        // 活跃
-  | 'suspended'     // 暂停
-  | 'error';        // 错误
+  | 'initializing' // 初始化中
+  | 'active' // 活跃
+  | 'suspended' // 暂停
+  | 'error'; // 错误
 ```
 
 ---
 
 ### ModelType
+
 模型类型
 
 ```typescript
 export type ModelType =
-  | 'classification'  // 分类
-  | 'regression'     // 回归
-  | 'clustering'     // 聚类
+  | 'classification' // 分类
+  | 'regression' // 回归
+  | 'clustering' // 聚类
   | 'anomaly_detection'; // 异常检测
 ```
 
 ---
 
 ### KnowledgeType
+
 知识类型
 
 ```typescript
 export type KnowledgeType =
-  | 'fact'      // 事实
-  | 'rule'      // 规则
-  | 'concept'   // 概念
-  | 'pattern'   // 模式
-  | 'procedure';// 流程
+  | 'fact' // 事实
+  | 'rule' // 规则
+  | 'concept' // 概念
+  | 'pattern' // 模式
+  | 'procedure'; // 流程
 ```
 
 ---
@@ -814,16 +856,11 @@ export type {
   LearningSystemConfig,
   LearningSystemMetrics,
   LearningExperience,
-  LearningResult
+  LearningResult,
 };
 
 // 导出工厂函数
-export {
-  createLearningExperience,
-  createBehaviorRecord,
-  createStrategicGoal,
-  createKnowledgeItem
-};
+export { createLearningExperience, createBehaviorRecord, createStrategicGoal, createKnowledgeItem };
 ```
 
 ---

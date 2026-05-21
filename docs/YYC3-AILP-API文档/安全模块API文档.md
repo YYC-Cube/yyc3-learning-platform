@@ -1,10 +1,10 @@
 # YYC³ 学习平台 - 安全模块 API 文档
 
-> ***YanYuCloudCube***
+> **_YanYuCloudCube_**
 > **标语**：言启象限 | 语枢未来
-> ***Words Initiate Quadrants, Language Serves as Core for the Future***
+> **_Words Initiate Quadrants, Language Serves as Core for the Future_**
 > **标语**：万象归元于云枢 | 深栈智启新纪元
-> ***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***
+> **_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**
 
 ---
 
@@ -292,7 +292,7 @@ console.log(isValid); // true
 | 参数名       | 类型   | 必需 | 描述                      |
 | ------------ | ------ | ---- | ------------------------- |
 | data         | string | 是   | 原始数据                  |
-| maskChar     | string | 否   | 掩码字符（默认：*）       |
+| maskChar     | string | 否   | 掩码字符（默认：\*）      |
 | visibleStart | number | 否   | 开头可见字符数（默认：2） |
 | visibleEnd   | number | 否   | 结尾可见字符数（默认：2） |
 
@@ -489,7 +489,7 @@ import { validateString } from '@/lib/security/input-validator';
 
 const result = validateString('hello', {
   minLength: 3,
-  maxLength: 10
+  maxLength: 10,
 });
 console.log(result); // { valid: true }
 ```
@@ -1067,12 +1067,12 @@ import { validateBatch, validateEmail, validatePhone } from '@/lib/security/inpu
 
 const data = {
   email: 'user@example.com',
-  phone: '13800138000'
+  phone: '13800138000',
 };
 
 const results = validateBatch(data, {
   email: (value) => validateEmail(value),
-  phone: (value) => validatePhone(value)
+  phone: (value) => validatePhone(value),
 });
 console.log(results); // { email: { valid: true }, phone: { valid: true } }
 ```
@@ -1096,16 +1096,21 @@ console.log(results); // { email: { valid: true }, phone: { valid: true } }
 **示例**:
 
 ```typescript
-import { validateBatch, isAllValid, validateEmail, validatePhone } from '@/lib/security/input-validator';
+import {
+  validateBatch,
+  isAllValid,
+  validateEmail,
+  validatePhone,
+} from '@/lib/security/input-validator';
 
 const data = {
   email: 'user@example.com',
-  phone: '13800138000'
+  phone: '13800138000',
 };
 
 const results = validateBatch(data, {
   email: (value) => validateEmail(value),
-  phone: (value) => validatePhone(value)
+  phone: (value) => validatePhone(value),
 });
 const allValid = isAllValid(results);
 console.log(allValid); // true
@@ -1254,7 +1259,10 @@ logRateLimitEvent('login', '192.168.1.1', '123', { attempts: 5 });
 ```typescript
 import { logDataAccessEvent } from '@/lib/security/audit-log';
 
-logDataAccessEvent('get_questions', 'questions', true, '123', '192.168.1.1', { page: 1, pageSize: 20 });
+logDataAccessEvent('get_questions', 'questions', true, '123', '192.168.1.1', {
+  page: 1,
+  pageSize: 20,
+});
 ```
 
 ---
@@ -1284,7 +1292,9 @@ logDataAccessEvent('get_questions', 'questions', true, '123', '192.168.1.1', { p
 ```typescript
 import { logDataModificationEvent } from '@/lib/security/audit-log';
 
-logDataModificationEvent('create_question', 'questions', true, '123', '192.168.1.1', { questionId: 1 });
+logDataModificationEvent('create_question', 'questions', true, '123', '192.168.1.1', {
+  questionId: 1,
+});
 ```
 
 ---
@@ -1545,14 +1555,9 @@ import {
   validatePasswordStrength,
   validateUsername,
   isAllValid,
-  validateBatch
+  validateBatch,
 } from '@/lib/security/input-validator';
-import {
-  hashPassword,
-  encrypt,
-  maskEmail,
-  maskPhone
-} from '@/lib/security/encryption';
+import { hashPassword, encrypt, maskEmail, maskPhone } from '@/lib/security/encryption';
 
 async function registerUser(userData: {
   username: string;
@@ -1565,7 +1570,7 @@ async function registerUser(userData: {
     username: (value) => validateUsername(value),
     email: (value) => validateEmail(value),
     phone: (value) => validatePhone(value),
-    password: (value) => validatePasswordStrength(value)
+    password: (value) => validatePasswordStrength(value),
   });
 
   if (!isAllValid(validationResults)) {
@@ -1583,14 +1588,14 @@ async function registerUser(userData: {
     username: userData.username,
     email: userData.email,
     phone: encryptedPhone,
-    password: hashedPassword
+    password: hashedPassword,
   });
 
   // 5. 返回脱敏后的用户数据
   return {
     ...user,
     email: maskEmail(user.email),
-    phone: maskPhone(user.phone)
+    phone: maskPhone(user.phone),
   };
 }
 ```
@@ -1632,7 +1637,7 @@ async function registerUser(userData: {
 
 ## 📄 文档标尾 (Footer)
 
-> 「***YanYuCloudCube***」
-> 「***<admin@0379.email>***」
-> 「***Words Initiate Quadrants, Language Serves as Core for the Future***」
-> 「***All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence***」
+> 「**_YanYuCloudCube_**」
+> 「**_<admin@0379.email>_**」
+> 「**_Words Initiate Quadrants, Language Serves as Core for the Future_**」
+> 「**_All things converge in the cloud pivot; Deep stacks ignite a new era of intelligence_**」

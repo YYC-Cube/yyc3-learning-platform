@@ -163,7 +163,7 @@ describe('registerSchema', () => {
     const result = registerSchema.safeParse(invalidData);
     expect(result.success).toBe(false);
     if (!result.success) {
-      const hasPasswordError = result.error.errors.some(e => e.message.includes('密码至少8位'));
+      const hasPasswordError = result.error.errors.some((e) => e.message.includes('密码至少8位'));
       expect(hasPasswordError).toBe(true);
     }
   });

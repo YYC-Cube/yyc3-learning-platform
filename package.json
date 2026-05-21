@@ -30,7 +30,10 @@
     "check:headers": "node scripts/add-file-headers.js",
     "lint:jsdoc": "eslint --ext .ts,.tsx components/ lib/ app/",
     "db:migrate": "prisma migrate deploy",
-    "test:all": "vitest run --coverage && playwright test"
+    "test:all": "vitest run --coverage && playwright test",
+    "test:performance": "playwright test e2e/performance-baseline.spec.ts",
+    "test:baseline": "playwright test e2e/performance-baseline.spec.ts --grep 'Baseline Establishment'",
+    "test:regression": "playwright test e2e/performance-baseline.spec.ts --grep 'Regression Detection'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

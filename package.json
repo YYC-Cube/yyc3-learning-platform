@@ -151,7 +151,14 @@
       "ip-address": "^10.1.1",
       "flatted": "^3.4.2",
       "fast-uri": "^3.0.6",
-      "vite": "^7.3.2"
+      "vite": "^7.3.2",
+      "uuid": "^11.0.3",
+      "node-notifier": "^10.0.1",
+      "@typescript-eslint/eslint-plugin": "^8.59.4",
+      "@typescript-eslint/parser": "^8.59.4",
+      "@typescript-eslint/type-utils": "^8.59.4",
+      "@typescript-eslint/typescript-estree": "^8.59.4",
+      "@typescript-eslint/utils": "^8.59.4"
     }
   }
 }

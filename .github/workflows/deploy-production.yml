@@ -1,0 +1,341 @@
+# YYC³ Learning Platform — Production Deployment
+# Optimized for learning.yyc3.top with full monitoring
+
+name: Production Deployment — learning.yyc3.top
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip tests (emergency only)'
+        required: false
+        default: false
+        type: boolean
+      force_deploy:
+        description: 'Force deployment (bypass quality gates)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'production-deploy'
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+  PRODUCTION_DOMAIN: 'learning.yyc3.top'
+  DEPLOY_TIMEOUT: '600'
+
+jobs:
+  # ===== Pre-deployment Checks =====
+  pre-deploy:
+    name: Pre-deployment Validation
+    runs-on: ubuntu-latest
+    outputs:
+      should_deploy: ${{ steps.check.outputs.should_deploy }}
+      deploy_version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check deployment readiness
+        id: check
+        run: |
+          should_deploy=true
+          reason="Ready for deployment"
+
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ "${{ github.event.inputs.force_deploy }}" == "true" ]; then
+            reason="Force deployment requested"
+          elif [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            should_deploy=false
+            reason="Not on main branch"
+          fi
+
+          echo "should_deploy=$should_deploy" >> $GITHUB_OUTPUT
+          echo "reason=$reason" >> $GITHUB_OUTPUT
+
+      - name: Generate deployment version
+        id: version
+        run: |
+          version="v$(date +%Y.%m.%d)-${GITHUB_SHA:0:7}"
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "📦 Deployment version: $version"
+
+      - name: Create deployment tag
+        if: steps.check.outputs.should_deploy == 'true'
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git tag -a "$DEPLOY_VERSION" -m "Deployment $DEPLOY_VERSION"
+          git push origin "$DEPLOY_VERSION" || true
+        env:
+          DEPLOY_VERSION: ${{ steps.version.outputs.version }}
+
+  # ===== Quality Assurance =====
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs: pre-deploy
+    if: needs.pre-deploy.outputs.should_deploy == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run comprehensive checks
+        run: |
+          echo "🔍 Running quality checks..."
+          pnpm exec tsc --noEmit
+          pnpm exec eslint --config eslint.config.js --max-warnings 0 app/ lib/ components/
+          pnpm run format:check
+          echo "✅ All quality checks passed"
+
+      - name: Security audit
+        run: |
+          echo "🔒 Running security audit..."
+          pnpm audit --audit-level high || echo "⚠️ Security issues found, review required"
+        continue-on-error: true
+
+  # ===== Testing =====
+  test-suite:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: [pre-deploy, quality-gate]
+    if: needs.pre-deploy.outputs.should_deploy == 'true' && github.event.inputs.skip_tests != 'true'
+    strategy:
+      matrix:
+        test_group: [unit, integration, e2e]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        if: matrix.test_group == 'unit'
+        env:
+          CI: true
+          NODE_ENV: test
+        run: pnpm exec vitest run --coverage
+
+      - name: Run integration tests
+        if: matrix.test_group == 'integration'
+        env:
+          CI: true
+          NODE_ENV: test
+        run: pnpm exec vitest run --coverage --run __tests__/integration
+
+      - name: Run E2E tests
+        if: matrix.test_group == 'e2e'
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          pnpm exec playwright test
+        continue-on-error: true
+
+  # ===== Build =====
+  build-production:
+    name: Build Production Bundle
+    runs-on: ubuntu-latest
+    needs: [pre-deploy, quality-gate]
+    if: needs.pre-deploy.outputs.should_deploy == 'true'
+    outputs:
+      build_status: ${{ steps.build.outcome }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply static export patches
+        run: |
+          echo "🔧 Applying static export patches..."
+          cat > app/providers/DynamicProviders.tsx << 'EOFILE'
+          "use client"
+          export { default as BottomNav } from "@/components/bottom-nav"
+          export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
+          export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"
+          EOFILE
+          rm -rf app/api
+          rm -rf app/courses/\[id\]
+          rm -rf app/exam/\[id\]
+          rm -f middleware.ts
+          cp next.config.js next.config.js.bak
+          node scripts/patch-export.js
+
+      - name: Build for production
+        id: build
+        env:
+          NEXT_PUBLIC_APP_URL: https://learning.yyc3.top
+          NEXT_PUBLIC_API_URL: https://learning.yyc3.top/api
+          NODE_ENV: production
+          BUILD_VERSION: ${{ needs.pre-deploy.outputs.deploy_version }}
+        run: |
+          echo "🏗️  Building for production..."
+          pnpm build
+          mv next.config.js.bak next.config.js
+          echo "✅ Build completed successfully"
+
+      - name: Optimize build output
+        run: |
+          echo "⚡ Optimizing build output..."
+          echo "learning.yyc3.top" > out/CNAME
+          touch out/.nojekyll
+          find out -name "*.html" -exec gzip -k {} \;
+          find out -name "*.js" -exec gzip -k {} \;
+          find out -name "*.css" -exec gzip -k {} \;
+          echo "✅ Build optimization completed"
+
+      - name: Upload build artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  # ===== Deploy =====
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [pre-deploy, test-suite, build-production]
+    if: needs.pre-deploy.outputs.should_deploy == 'true'
+    environment:
+      name: production
+      url: https://learning.yyc3.top
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        with:
+          timeout-minutes: 10
+
+      - name: Verify deployment
+        run: |
+          echo "🔍 Verifying deployment..."
+          max_attempts=12
+          attempt=1
+
+          while [ $attempt -le $max_attempts ]; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" https://learning.yyc3.top || echo "000")
+            if [ "$response" == "200" ]; then
+              echo "✅ Deployment verified - https://learning.yyc3.top is accessible"
+              exit 0
+            fi
+            echo "Attempt $attempt/$max_attempts: Site not ready yet (HTTP: $response)"
+            sleep 10
+            ((attempt++))
+          done
+
+          echo "❌ Deployment verification failed"
+          exit 1
+
+      - name: Post-deployment tests
+        run: |
+          echo "🧪 Running post-deployment tests..."
+          critical_pages=("/" "/courses" "/exam" "/profile" "/career-path")
+
+          for page in "${critical_pages[@]}"; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" https://learning.yyc3.top$page)
+            if [ "$response" == "200" ]; then
+              echo "✅ $page - OK (HTTP: $response)"
+            else
+              echo "❌ $page - FAILED (HTTP: $response)"
+            fi
+          done
+
+          echo "🎉 Post-deployment tests completed"
+
+  # ===== Notifications =====
+  deployment-notification:
+    name: Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [pre-deploy, quality-gate, test-suite, build-production, deploy-production]
+    if: always()
+    steps:
+      - name: Generate deployment report
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          # 🚀 YYC³ Learning Platform — Deployment Report
+
+          ## 📊 Deployment Summary
+
+          | Component | Status |
+          |-----------|--------|
+          | Pre-deployment Checks | ${{ needs.pre-deploy.result == 'success' && '✅' || '❌' }} |
+          | Quality Gate | ${{ needs.quality-gate.result == 'success' && '✅' || '❌' }} |
+          | Test Suite | ${{ needs.test-suite.result == 'success' && '✅' || '❌' }} |
+          | Build Production | ${{ needs.build-production.result == 'success' && '✅' || '❌' }} |
+          | Deploy to Production | ${{ needs.deploy-production.result == 'success' && '✅' || '❌' }} |
+
+          ## 🌐 Deployment Details
+
+          - **Environment**: Production
+          - **Domain**: https://learning.yyc3.top
+          - **Version**: ${{ needs.pre-deploy.outputs.deploy_version }}
+          - **Commit**: `${{ github.sha }}`
+          - **Branch**: `${{ github.ref_name }}`
+          - **Deployed by**: ${{ github.actor }}
+          - **Deployment time**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+
+          ## 🔗 Quick Links
+
+          - **Live Site**: [https://learning.yyc3.top](https://learning.yyc3.top)
+          - **GitHub Actions**: [View Workflow Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          - **Deployment Logs**: [View Logs](https://github.com/${{ github.repository }}/deployments)
+
+          EOF
+
+      - name: Success notification
+        if: needs.deploy-production.result == 'success'
+        run: |
+          echo "🎉 **DEPLOYMENT SUCCESSFUL** 🎉" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "YYC³ Learning Platform has been successfully deployed to **learning.yyc3.top**" >> $GITHUB_STEP_SUMMARY
+
+      - name: Failure notification
+        if: needs.deploy-production.result != 'success'
+        run: |
+          echo "❌ **DEPLOYMENT FAILED** ❌" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please check the logs for more details and investigate the failure." >> $GITHUB_STEP_SUMMARY

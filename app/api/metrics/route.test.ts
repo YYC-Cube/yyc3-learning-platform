@@ -35,7 +35,7 @@ describe('GET /api/metrics', () => {
   });
 
   it('should return Prometheus format when Accept header is text/plain', async () => {
-    const request = new Request('http://localhost:3000/api/metrics', {
+    const request = new Request('http://localhost:3200/api/metrics', {
       headers: { Accept: 'text/plain' },
     });
 
@@ -47,7 +47,7 @@ describe('GET /api/metrics', () => {
   });
 
   it('should return JSON format by default', async () => {
-    const request = new Request('http://localhost:3000/api/metrics');
+    const request = new Request('http://localhost:3200/api/metrics');
 
     const response = await GET(request);
     const data = await response.json();
@@ -60,7 +60,7 @@ describe('GET /api/metrics', () => {
   });
 
   it('should include system metrics', async () => {
-    const request = new Request('http://localhost:3000/api/metrics');
+    const request = new Request('http://localhost:3200/api/metrics');
 
     const response = await GET(request);
     const data = await response.json();
@@ -71,7 +71,7 @@ describe('GET /api/metrics', () => {
   });
 
   it('should include security headers', async () => {
-    const request = new Request('http://localhost:3000/api/metrics');
+    const request = new Request('http://localhost:3200/api/metrics');
 
     const response = await GET(request);
 

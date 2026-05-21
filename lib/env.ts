@@ -18,12 +18,12 @@ const envSchema = z.object({
     .string()
     .url('NEXT_PUBLIC_APP_URL 必须是有效的URL')
     .optional()
-    .default('http://localhost:3000'),
+    .default('http://localhost:3200'),
   NEXT_PUBLIC_API_URL: z
     .string()
     .url('NEXT_PUBLIC_API_URL 必须是有效的URL')
     .optional()
-    .default('http://localhost:3000/api'),
+    .default('http://localhost:3200/api'),
 
   // 数据库配置
   DB_HOST: z.string().min(1, 'DB_HOST 不能为空').optional().default('localhost'),
@@ -117,7 +117,7 @@ const envSchema = z.object({
   PORT: z
     .string()
     .regex(/^[0-9]+$/, 'PORT 必须是数字')
-    .default('3000'),
+    .default('3200'),
 
   // 可选：Redis 配置
   REDIS_HOST: z.string().optional(),
@@ -288,13 +288,13 @@ export function getEnvInfo(): Record<string, any> {
     // 如果验证失败，返回基本信息
     return {
       NODE_ENV: process.env.NODE_ENV || 'development',
-      PORT: parseInt(process.env.PORT || '3000', 10),
+      PORT: parseInt(process.env.PORT || '3200', 10),
       DB_HOST: process.env.DB_HOST || 'localhost',
       DB_PORT: parseInt(process.env.DB_PORT || '5432', 10),
       DB_NAME: process.env.DB_NAME || 'ai_learning',
       DB_SSL: (process.env.DB_SSL || 'false').toLowerCase() === 'true',
-      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-      NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api',
+      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3200',
+      NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3200/api',
       JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
       BCRYPT_ROUNDS: parseInt(process.env.BCRYPT_ROUNDS || '10', 10),
       hasRedis: !!(process.env.REDIS_HOST && process.env.REDIS_PORT),
@@ -306,7 +306,7 @@ export function getEnvInfo(): Record<string, any> {
   }
 
   const currentEnv = parseResult.data;
-  const port = parseInt(currentEnv.PORT || '3000', 10);
+  const port = parseInt(currentEnv.PORT || '3200', 10);
   const dbPort = parseInt(currentEnv.DB_PORT || '5432', 10);
   const bcryptRounds = parseInt(currentEnv.BCRYPT_ROUNDS || '10', 10);
   const dbConnectionLimit = parseInt(currentEnv.DB_CONNECTION_LIMIT || '10', 10);

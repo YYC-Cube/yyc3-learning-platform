@@ -5,7 +5,6 @@
     "lib": ["ES2020"],
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -14,13 +13,7 @@
     "moduleResolution": "node",
     "types": ["node", "express"],
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["../../*"]
-    },
-    "noResolve": false,
-    "allowSyntheticDefaultImports": true,
-    "preserveSymlinks": true,
-    "composite": true
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]

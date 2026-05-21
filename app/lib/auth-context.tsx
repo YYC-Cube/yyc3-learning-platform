@@ -1,14 +1,17 @@
 /**
  * @fileoverview 工具函数/库 · auth-context.tsx
  * @author YYC³ <admin@0379.email>
- * @version 2.0.0
+ * @version 2.1.0
  * @license MIT
  */
 'use client';
 
 import type { User } from '@/app/types';
+import { createLogger } from '@/lib/logger';
 import type React from 'react';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+
+const logger = createLogger('AuthContext');
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'user';
@@ -133,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(JSON.parse(savedUser));
       }
     } catch (error) {
-      console.error('恢复会话失败', error);
+      logger.error('恢复会话失败', error);
       localStorage.removeItem(USER_KEY);
       localStorage.removeItem(TOKEN_KEY);
     } finally {

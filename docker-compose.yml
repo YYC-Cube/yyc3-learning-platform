@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL 数据库
   postgres:
@@ -49,26 +47,26 @@ services:
       dockerfile: Dockerfile
       target: runner
       args:
-        NEXT_PUBLIC_API_BASE_URL: http://localhost:3000/api
+        NEXT_PUBLIC_API_BASE_URL: http://localhost:3200/api
         NEXT_PUBLIC_APP_VERSION: dev
     container_name: yyc3-learning-app
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      PORT: 3000
+      PORT: 3200
       DATABASE_URL: postgresql://yyc3:yyc3_my@postgres:5432/yyc3_my
       REDIS_URL: redis://:redis_password@redis:6379
       JWT_SECRET: your-jwt-secret-key-here
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:3000/api
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3200/api
     ports:
-      - '3000:3000'
+      - '3200:3200'
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:3000/api/health']
+      test: ['CMD', 'curl', '-f', 'http://localhost:3200/api/health']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -124,7 +122,7 @@ services:
       - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
       - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
     ports:
-      - '3001:3000'
+      - '3221:3000'
     depends_on:
       - prometheus
     networks:

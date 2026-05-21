@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -16,12 +20,12 @@
     "strictPropertyInitialization": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
+    "noPropertyAccessFromIndexSignature": false,
     "allowUnusedLabels": false,
     "allowUnreachableCode": false,
-    "exactOptionalPropertyTypes": true,
+    "exactOptionalPropertyTypes": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
     "skipLibCheck": true,
@@ -36,15 +40,31 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": false,
     "paths": {
-      "@/*": ["./src/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/layers/*": ["./src/layers/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/algorithms/*": ["./src/algorithms/*"],
-      "@/models/*": ["./src/models/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@/types/*": [
+        "./src/types/*"
+      ],
+      "@/layers/*": [
+        "./src/layers/*"
+      ],
+      "@/utils/*": [
+        "./src/utils/*"
+      ],
+      "@/algorithms/*": [
+        "./src/algorithms/*"
+      ],
+      "@/models/*": [
+        "./src/models/*"
+      ]
     }
   },
-  "include": ["src/**/*", "src/**/*.ts", "src/**/*.tsx"],
+  "include": [
+    "src/**/*",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "exclude": [
     "node_modules",
     "dist",

@@ -145,7 +145,7 @@ export const defaultSecurityConfig: SecurityConfig = {
       ipWhitelist: [],
     },
     cors: {
-      allowedOrigins: ['http://localhost:3000', 'http://localhost:3491'],
+      allowedOrigins: ['http://localhost:3200', 'http://localhost:3491'],
       allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
       allowCredentials: true,

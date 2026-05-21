@@ -10,6 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { performanceAlertManager } from '@/lib/performance-alerts';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
       stats,
     });
   } catch (error) {
-    console.error('Error retrieving alerts:', error);
+    logger.error('Error retrieving alerts', error);
     return NextResponse.json({ error: 'Failed to retrieve alerts' }, { status: 500 });
   }
 }
@@ -84,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error) {
-    console.error('Error managing alerts:', error);
+    logger.error('Error managing alerts', error);
     return NextResponse.json({ error: 'Failed to manage alerts' }, { status: 500 });
   }
 }
@@ -104,7 +105,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
   } catch (error) {
-    console.error('Error clearing alerts:', error);
+    logger.error('Error clearing alerts', error);
     return NextResponse.json({ error: 'Failed to clear alerts' }, { status: 500 });
   }
 }

@@ -12,6 +12,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { performanceDataStore } from '@/lib/performance-data-store';
 import { performanceAlertManager } from '@/lib/performance-alerts';
 import type { PerformanceMetric } from '@/lib/performance.config';
+import { logger } from '@/lib/logger';
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
       message: 'Performance data stored successfully',
     });
   } catch (error) {
-    console.error('Error storing performance data:', error);
+    logger.error('Error storing performance data', error);
     return NextResponse.json({ error: 'Failed to store performance data' }, { status: 500 });
   }
 }
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
       count: data.length,
     });
   } catch (error) {
-    console.error('Error retrieving performance data:', error);
+    logger.error('Error retrieving performance data', error);
     return NextResponse.json({ error: 'Failed to retrieve performance data' }, { status: 500 });
   }
 }

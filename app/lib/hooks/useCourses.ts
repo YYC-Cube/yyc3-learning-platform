@@ -9,6 +9,9 @@
 import type { ApiResponse, Course, PaginationInfo, SearchFilters } from '@/app/types';
 import { courseData } from '@/data/course-data';
 import { useCallback, useEffect, useState } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('useCourses');
 
 interface UseCoursesOptions {
   initialFilters?: SearchFilters;
@@ -73,7 +76,7 @@ export function useCourses(options: UseCoursesOptions = {}) {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : '获取课程失败';
         setError(errorMessage);
-        console.error('获取课程失败:', err);
+        logger.error('获取课程失败', err);
       } finally {
         setLoading(false);
       }
@@ -104,7 +107,7 @@ export function useCourses(options: UseCoursesOptions = {}) {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '搜索课程失败';
       setError(errorMessage);
-      console.error('搜索课程失败:', err);
+      logger.error('搜索课程失败', err);
     } finally {
       setLoading(false);
     }
@@ -147,7 +150,7 @@ export function useCourses(options: UseCoursesOptions = {}) {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '报名失败';
       setError(errorMessage);
-      console.error('报名课程失败:', err);
+      logger.error('报名课程失败', err);
       throw err;
     }
   }, []);
@@ -182,7 +185,7 @@ export function useCourses(options: UseCoursesOptions = {}) {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : '更新进度失败';
         setError(errorMessage);
-        console.error('更新学习进度失败:', err);
+        logger.error('更新学习进度失败', err);
         throw err;
       }
     },
@@ -216,7 +219,7 @@ export function useCourses(options: UseCoursesOptions = {}) {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '创建课程失败';
       setError(errorMessage);
-      console.error('创建课程失败:', err);
+      logger.error('创建课程失败', err);
       throw err;
     } finally {
       setLoading(false);
@@ -405,7 +408,7 @@ export function useUserProgress() {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : '更新进度失败';
         setError(errorMessage);
-        console.error('更新学习进度失败:', err);
+        logger.error('更新学习进度失败', err);
         throw err;
       } finally {
         setLoading(false);
@@ -435,7 +438,7 @@ export function useUserProgress() {
 
       return result.data;
     } catch (err) {
-      console.error('更新连续学习天数失败:', err);
+      logger.error('更新连续学习天数失败', err);
       throw err;
     }
   }, []);

@@ -31,7 +31,7 @@ scrape_configs:
     metrics_path: '/api/metrics'
     static_configs:
       - targets:
-          - 'host.docker.internal:3000'
+          - 'host.docker.internal:3200'
         labels:
           service: 'learning-platform'
           tier: 'application'
@@ -51,7 +51,7 @@ scrape_configs:
     metrics_path: '/api/metrics'
     static_configs:
       - targets:
-          - 'host.docker.internal:3000'
+          - 'host.docker.internal:3200'
         labels:
           service: 'nextjs'
           tier: 'frontend'

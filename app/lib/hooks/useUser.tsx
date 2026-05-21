@@ -9,6 +9,9 @@
 import type React from 'react';
 import { useState, useEffect, useCallback, createContext } from 'react';
 import type { User, ApiResponse, CourseProgress } from '@/app/types';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('useUser');
 
 interface UserContextType {
   user: User | null;
@@ -45,7 +48,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '网络错误';
       setError(errorMessage);
-      console.error('获取用户信息失败:', err);
+      logger.error('获取用户信息失败', err);
     } finally {
       setLoading(false);
     }
@@ -75,7 +78,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '更新失败';
       setError(errorMessage);
-      console.error('更新用户信息失败:', err);
+      logger.error('更新用户信息失败', err);
       return false;
     }
   }, []);
@@ -109,7 +112,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : '更新失败';
         setError(errorMessage);
-        console.error('更新学习进度失败', err);
+        logger.error('更新学习进度失败', err);
         return false;
       }
     },
@@ -142,7 +145,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '更新失败';
       setError(errorMessage);
-      console.error('更新学习连续天数失败:', err);
+      logger.error('更新学习连续天数失败', err);
       return false;
     }
   }, []);

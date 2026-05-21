@@ -14,7 +14,7 @@ import { apiClient } from '@/lib/api-client';
 // Mock env module
 vi.mock('@/lib/env', () => ({
   env: {
-    NEXT_PUBLIC_API_URL: 'http://localhost:3000/api',
+    NEXT_PUBLIC_API_URL: 'http://localhost:3200/api',
   },
 }));
 
@@ -51,7 +51,7 @@ describe('ApiClient', () => {
 
       const result = await apiClient.get<{ message: string }>('/test');
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ describe('ApiClient', () => {
         },
       });
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ describe('ApiClient', () => {
 
       const result = await apiClient.post('/test', postData);
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ describe('ApiClient', () => {
 
       await apiClient.post('/test');
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -149,7 +149,7 @@ describe('ApiClient', () => {
 
       const result = await apiClient.put('/test/1', putData);
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test/1', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test/1', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -176,7 +176,7 @@ describe('ApiClient', () => {
         }
       );
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test/1', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test/1', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -197,7 +197,7 @@ describe('ApiClient', () => {
 
       const result = await apiClient.delete('/test/1');
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test/1', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test/1', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -219,7 +219,7 @@ describe('ApiClient', () => {
         },
       });
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test/1', {
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test/1', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -244,7 +244,7 @@ describe('ApiClient', () => {
       });
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:3000/api/test',
+        'http://localhost:3200/api/test',
         expect.objectContaining({
           headers: expect.objectContaining({
             'Content-Type': 'application/json',
@@ -268,7 +268,7 @@ describe('ApiClient', () => {
       });
 
       expect(mockFetch).toHaveBeenCalledWith(
-        'http://localhost:3000/api/test',
+        'http://localhost:3200/api/test',
         expect.objectContaining({
           headers: expect.objectContaining({
             'Content-Type': 'text/plain',
@@ -356,7 +356,7 @@ describe('ApiClient', () => {
 
       await apiClient.get('/test');
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3000/api/test', expect.any(Object));
+      expect(mockFetch).toHaveBeenCalledWith('http://localhost:3200/api/test', expect.any(Object));
     });
   });
 });

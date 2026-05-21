@@ -110,11 +110,11 @@ vi.mock('next-themes', () => ({
 // 环境变量设置
 // ============================================
 
-process.env.NEXT_PUBLIC_API_BASE_URL = 'http://localhost:3000/api';
+process.env.NEXT_PUBLIC_API_BASE_URL = 'http://localhost:3200/api';
 process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test_db';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 process.env.NEXTAUTH_SECRET = 'test-secret-key-for-testing-only'; // cspell:disable-line
-process.env.NEXTAUTH_URL = 'http://localhost:3000'; // cspell:disable-line
+process.env.NEXTAUTH_URL = 'http://localhost:3200'; // cspell:disable-line
 process.env.JWT_SECRET = 'test-jwt-secret-key-32-characters-long';
 
 // Set NODE_ENV to test (cast to allow assignment to read-only property)

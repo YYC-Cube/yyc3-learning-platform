@@ -11,9 +11,12 @@
 
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { createLogger } from '@/lib/logger';
 import { usePathname } from 'next/navigation';
+import { useCallback, useEffect, useRef } from 'react';
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
+
+const logger = createLogger('PerformanceMonitor');
 
 interface PerformanceMetric {
   name: string;
@@ -90,19 +93,6 @@ function evaluatePerformanceMetric(name: string, value: number): PerformanceMetr
     threshold: threshold.threshold,
   };
 }
-
-const logger = {
-  error: (message: string, error: any) => {
-    console.error(`[PerformanceMonitor] ${message}`, error);
-  },
-  warn: (message: string) => {
-    console.warn(`[PerformanceMonitor] ${message}`);
-  },
-  info: (message: string) => {
-    // eslint-disable-next-line no-console
-    console.info(`[PerformanceMonitor] ${message}`);
-  },
-};
 
 export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
   enabled = true,

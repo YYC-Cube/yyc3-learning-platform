@@ -11,7 +11,7 @@
 export const APP_CONFIG = {
   name: 'AI学习平台',
   description: 'AI Learning Platform',
-  url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3200',
   locale: 'zh-CN',
   supportEmail: 'support@ai-learning.com',
 } as const;

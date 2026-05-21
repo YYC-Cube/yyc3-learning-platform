@@ -198,6 +198,8 @@ export interface Content {
   data: Record<string, unknown>;
   text?: string;
   format?: 'text' | 'json' | 'xml' | 'binary';
+  confidence?: number;
+  keywords?: string[];
 }
 
 /**

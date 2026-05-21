@@ -4,7 +4,7 @@
 # ============================================
 
 # 阶段 1: 依赖安装
-FROM node:18-alpine AS deps
+FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -24,7 +24,7 @@ RUN npm install -g pnpm@8
 RUN pnpm install --frozen-lockfile
 
 # 阶段 2: 构建器
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # 复制依赖
@@ -46,7 +46,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm run build
 
 # 阶段 3: 运行时
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -80,14 +80,13 @@ RUN chown -R nextjs:nodejs /app
 USER nextjs
 
 # 暴露端口
-EXPOSE 3000
+EXPOSE 3200
 
-ENV PORT=3000
+ENV PORT=3200
 ENV HOSTNAME="0.0.0.0"
 
-# 健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:3000/api/health || exit 1
+    CMD curl -f http://localhost:3200/api/health || exit 1
 
 # 启动应用
 CMD ["node", "server.js"]

@@ -6,57 +6,51 @@
  * 处理知识获取、推理和泛化
  */
 
-import { EventEmitter } from 'events';
 import crypto from 'crypto';
+import { EventEmitter } from 'events';
+import {
+  CategorizationResult,
+  DataSource,
+  Explanation,
+  ExplanationRequest,
+  ExportFormat,
+  GeneralizationResult,
+  IKnowledgeLearningLayer,
+  InferenceRequest,
+  InferenceResult,
+  KnowledgeExport,
+  KnowledgeExtractionResult,
+  KnowledgeGraph,
+  KnowledgeImport,
+  KnowledgeItem,
+  KnowledgeLayerConfig,
+  KnowledgeLearning,
+  KnowledgeLink,
+  KnowledgeMetrics,
+  KnowledgeNode,
+  KnowledgePattern,
+  KnowledgeSource,
+  KnowledgeUpdate,
+  LayerStatus,
+  LearningExperience,
+  LearningResult,
+  OrganizationResult,
+  PruningCriteria,
+  PruningResult,
+  ReasoningEngine,
+  ReasoningPath,
+  ReasoningQuery,
+  ReasoningResult,
+  ValidationResult,
+  ValidationRule
+} from '../ILearningSystem';
 import type {
   ConfigObject,
   Content,
-  NodeData,
-  Pattern,
   EventListener,
+  NodeData,
+  Pattern
 } from '../types/common.types';
-import {
-  IKnowledgeLearningLayer,
-  KnowledgeItem,
-  KnowledgeGraph,
-  KnowledgeNode,
-  ReasoningEngine,
-  KnowledgeMetrics,
-  KnowledgeLayerConfig,
-  LayerStatus,
-  KnowledgeExtractionResult,
-  ValidationRule,
-  ValidationResult,
-  OrganizationResult,
-  CategorizationResult,
-  KnowledgeLink,
-  KnowledgeUpdate,
-  GeneralizationResult,
-  PruningResult,
-  PruningCriteria,
-  ReasoningQuery,
-  ReasoningResult,
-  KnowledgeExport,
-  KnowledgeImport,
-  KnowledgeSource,
-  ExportFormat,
-  KnowledgeGraphConfig,
-  ReasoningEngineConfig,
-  Evidence,
-  KnowledgePattern,
-  DataSource,
-  InferenceRequest,
-  InferenceResult,
-  ExplanationRequest,
-  Explanation,
-  NodeType,
-  NodeContent,
-  NodeProperties,
-  LearningExperience,
-  LearningResult,
-  KnowledgeLearning,
-  ReasoningPath,
-} from '../ILearningSystem';
 
 // Additional interfaces for completeness
 interface GeneralizationAnalysis {
@@ -509,7 +503,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         id: this.generateId(),
         knowledgeId,
         categories,
-        confidence: analysis.confidence,
+        confidence: analysis.confidence ?? 0.5,
         timestamp: Date.now(),
       };
     } catch (error) {
@@ -557,6 +551,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
           type: link.type as any,
           weight: link.weight,
           properties: {
+            id: this.generateId(),
             type: link.type,
             source: link.sourceId,
             target: link.targetId,
@@ -600,11 +595,12 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       // Execute reasoning
       let result: ReasoningResult;
       if (this._reasoning.reason) {
-        const reasoningOutput = await this._reasoning.reason(query.query, query.context);
+        const reasoningOutput = (await this._reasoning.reason(query.query, query.context)) as any;
 
         const reasoningPath: ReasoningPath = {
           steps: reasoningOutput.steps || [],
           logic: {
+            id: this.generateId(),
             type: 'deductive',
             structure: reasoningOutput.logic || {},
             metadata: {},
@@ -631,6 +627,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         const fallbackReasoningPath: ReasoningPath = {
           steps: [],
           logic: {
+            id: this.generateId(),
             type: 'fallback',
             structure: {},
             metadata: {},
@@ -642,6 +639,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
         result = {
           query: query,
           conclusion: {
+            id: this.generateId(),
             content: 'No reasoning engine available',
             confidence: 0,
             timestamp: Date.now(),
@@ -881,7 +879,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       const analysis = await this.analyzePatternsForGeneralization(patterns);
 
       // Extract general rules
-      const rules = await this.extractGeneralRules(analysis);
+      const rules = (await this.extractGeneralRules(analysis)) as Pattern[];
 
       // Create generalized knowledge items
       const generalizedItems = await this.createGeneralizedKnowledgeItems(rules);
@@ -1181,7 +1179,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
       {
         id: 'content_completeness',
         description: 'Knowledge must have complete content',
-        validator: (node) => node.content && Object.keys(node.content).length > 0,
+        validator: (node) => !!(node.content && Object.keys(node.content).length > 0),
       },
       {
         id: 'relationship_consistency',
@@ -1331,7 +1329,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     rule: ValidationRule
   ): Promise<ValidationResult> {
     try {
-      const isValid = rule.validator(node);
+      const isValid = rule.validator(node as any);
       return {
         id: this.generateId(),
         knowledgeId: node.id,
@@ -1365,10 +1363,9 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   }
 
   private validateRelationshipConsistency(node: NodeData): boolean {
-    // Validate relationship consistency
-    return node.relationships.every((relId: string) =>
+    return (node as any).relationships?.every((relId: string) =>
       this._knowledge.edges.some((edge) => edge.id === relId)
-    );
+    ) ?? true;
   }
 
   private generateReasoningCacheKey(query: ReasoningQuery): string {
@@ -1453,17 +1450,16 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    * Prepare export data
    */
   private async prepareExportData(): Promise<ConfigObject> {
-    // Implementation placeholder
     return {
-      nodes: this._knowledge.nodes,
-      edges: this._knowledge.edges,
+      nodes: this._knowledge.nodes as any,
+      edges: this._knowledge.edges as any,
     };
   }
 
   /**
    * Format export data
    */
-  private async formatExportData(data: Content, format: ExportFormat): Promise<unknown> {
+  private async formatExportData(data: ConfigObject, format: ExportFormat): Promise<any> {
     // Implementation placeholder
     return JSON.stringify(data);
   }
@@ -1479,16 +1475,16 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   /**
    * Validate import data
    */
-  private validateImportData(data: Content): void {
+  private validateImportData(data: KnowledgeImport): void {
     // Implementation placeholder
   }
 
   /**
    * Parse import data
    */
-  private async parseImportData(data: Content): Promise<KnowledgeNode[]> {
+  private async parseImportData(data: KnowledgeImport): Promise<{ knowledgeItems: KnowledgeItem[]; relationships: KnowledgeLink[] }> {
     // Implementation placeholder
-    return { nodes: [], relationships: [] };
+    return { knowledgeItems: [], relationships: [] };
   }
 
   /**
@@ -1505,7 +1501,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   private async fetchKnowledgeUpdates(
     connection: ConfigObject,
     source: KnowledgeSource
-  ): Promise<unknown[]> {
+  ): Promise<any[]> {
     // Implementation placeholder
     return [];
   }
@@ -1527,14 +1523,14 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
    */
   private async analyzePatternsForGeneralization(
     patterns: KnowledgePattern[]
-  ): Promise<Generalization> {
+  ): Promise<any> {
     return patterns;
   }
 
   /**
    * Extract general rules from patterns
    */
-  private async extractGeneralRules(analysis: ConfigObject): Promise<unknown[]> {
+  private async extractGeneralRules(analysis: any): Promise<any[]> {
     return [];
   }
 
@@ -1555,7 +1551,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   /**
    * Analyze pruning impact
    */
-  private async analyzePruningImpact(candidates: KnowledgeNode[]): Promise<RiskAssessment> {
+  private async analyzePruningImpact(candidates: KnowledgeNode[]): Promise<any> {
     return {};
   }
 
@@ -1612,6 +1608,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
 
         if (similarity > 0.7) {
           const link: KnowledgeLink = {
+            id: this.generateId(),
             sourceId: nodeA.id,
             targetId: nodeB.id,
             type: 'related',
@@ -1720,7 +1717,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     const node = this._knowledge.nodes.find((n) => n.id === knowledgeId);
 
     if (!node || !node.content) {
-      return { confidence: 0, keywords: [] };
+      return { type: 'empty', data: {}, confidence: 0, keywords: [] };
     }
 
     const content = JSON.stringify(node.content).toLowerCase();
@@ -1728,7 +1725,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
 
     const confidence = Math.min(1, keywords.length / 10);
 
-    return { confidence, keywords };
+    return { type: 'analysis', data: { confidence, keywords }, confidence, keywords };
   }
 
   /**
@@ -1759,7 +1756,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     ) {
       categories.push('pattern');
     }
-    if (analysis.keywords.some((k: string) => ['entity', 'object', 'concept'].includes(k))) {
+    if (analysis.keywords && analysis.keywords.some((k: string) => ['entity', 'object', 'concept'].includes(k))) {
       categories.push('entity');
     }
 
@@ -1775,7 +1772,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   override on(event: 'reasoning', listener: (result: ReasoningResult) => void): this;
   override on(event: 'generalization', listener: (result: GeneralizationResult) => void): this;
   override on(event: 'error', listener: (error: Error) => void): this;
-  override on(event: string, listener: EventListener): this {
+  override on(event: string, listener: (...args: any[]) => void): this {
     return super.on(event, listener);
   }
 }

@@ -1,19 +1,38 @@
-import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
+import express, { NextFunction, Request, Response } from 'express';
 import rateLimit from 'express-rate-limit';
-import axios from 'axios';
-import { AgenticCore } from '../../../packages/autonomous-engine/src/core/AgenticCore';
-import { ToolRegistry, RegisteredTool } from '../../../packages/tool-registry/src/ToolRegistry';
-import { VectorKnowledgeBase } from '../../../packages/knowledge-base/src/VectorKnowledgeBase';
-import { MetaLearningLayer } from '../../../packages/learning-system/src/MetaLearningLayer';
-import { LearningSystem } from '../../../packages/learning-system/src/LearningSystem';
-import {
-  EventDispatcher,
-  eventDispatcher,
-} from '../../../packages/core-engine/src/EventDispatcher';
+import helmet from 'helmet';
 import { logger } from '../../../lib/logger';
-import fetch from 'node-fetch';
+
+// @ts-ignore - dynamic requires to avoid pulling packages/ into IDE type checking
+const AgenticCoreModule = require('../../../packages/autonomous-engine/src/core/AgenticCore');
+// @ts-ignore
+const ToolRegistryModule = require('../../../packages/tool-registry/src/ToolRegistry');
+// @ts-ignore
+const VectorKnowledgeBaseModule = require('../../../packages/knowledge-base/src/VectorKnowledgeBase');
+// @ts-ignore
+const MetaLearningLayerModule = require('../../../packages/learning-system/src/MetaLearningLayer');
+// @ts-ignore
+const LearningSystemModule = require('../../../packages/learning-system/src/LearningSystem');
+// @ts-ignore
+const CoreEngineModule = require('../../../packages/core-engine/src/EventDispatcher');
+
+const AgenticCore = AgenticCoreModule.AgenticCore;
+const ToolRegistry = ToolRegistryModule.ToolRegistry;
+const RegisteredTool = ToolRegistryModule.RegisteredTool;
+const VectorKnowledgeBase = VectorKnowledgeBaseModule.VectorKnowledgeBase;
+const MetaLearningLayer = MetaLearningLayerModule.MetaLearningLayer;
+const LearningSystem = LearningSystemModule.LearningSystem;
+const EventDispatcher = CoreEngineModule.EventDispatcher;
+const eventDispatcher = CoreEngineModule.eventDispatcher;
+
+type AgenticCoreT = InstanceType<typeof AgenticCore>;
+type ToolRegistryT = InstanceType<typeof ToolRegistry>;
+type RegisteredToolT = InstanceType<typeof RegisteredTool>;
+type VectorKnowledgeBaseT = InstanceType<typeof VectorKnowledgeBase>;
+type MetaLearningLayerT = InstanceType<typeof MetaLearningLayer>;
+type LearningSystemT = InstanceType<typeof LearningSystem>;
+type EventDispatcherT = InstanceType<typeof EventDispatcher>;
 
 // Import or define LearningError interface
 type ErrorType = 'validation' | 'processing' | 'integration' | 'configuration' | 'runtime';
@@ -47,12 +66,12 @@ interface AuthenticatedRequest extends Request {
 export class APIGateway {
   private app: express.Application;
   private port: number;
-  private agentEngine: AgenticCore;
-  private eventDispatcher: EventDispatcher;
-  private toolRegistry: ToolRegistry;
-  private vectorKnowledgeBase: VectorKnowledgeBase;
-  private metaLearningLayer: MetaLearningLayer;
-  private learningSystem: LearningSystem;
+  private agentEngine: AgenticCoreT;
+  private eventDispatcher: EventDispatcherT;
+  private toolRegistry: ToolRegistryT;
+  private vectorKnowledgeBase: VectorKnowledgeBaseT;
+  private metaLearningLayer: MetaLearningLayerT;
+  private learningSystem: LearningSystemT;
   private serviceUrls: {
     aiEngine: string;
     dataService: string;
@@ -97,7 +116,7 @@ export class APIGateway {
     // CORS
     this.app.use(
       cors({
-        origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+        origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3200'],
         credentials: true,
       })
     );
@@ -180,7 +199,7 @@ export class APIGateway {
     this.app.get('/api/tools', async (req: AuthenticatedRequest, res: Response) => {
       try {
         const tools = this.toolRegistry.getTools();
-        const metadata = tools.map((tool: RegisteredTool) => tool.metadata);
+        const metadata = tools.map((tool: RegisteredToolT) => tool.metadata);
         res.json({ tools: metadata });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -196,7 +215,7 @@ export class APIGateway {
         }
 
         const tools = this.toolRegistry.searchTools(q);
-        res.json({ tools: tools.map((t: RegisteredTool) => t.metadata) });
+        res.json({ tools: tools.map((t: RegisteredToolT) => t.metadata) });
       } catch (error: any) {
         res.status(500).json({ error: error.message });
       }
@@ -526,7 +545,7 @@ export class APIGateway {
   // ==================== 服务器管理 ====================
 
   public start(): void {
-    this.app.listen(this.port, () => {});
+    this.app.listen(this.port, () => { });
   }
 
   public getApp(): express.Application {

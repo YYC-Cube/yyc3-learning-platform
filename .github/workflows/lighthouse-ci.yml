@@ -65,7 +65,7 @@ jobs:
             "use client"
             export { default as BottomNav } from "@/components/bottom-nav"
             export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
-            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"}
+            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"
             EOFILE
             rm -rf app/api
             rm -rf app/courses/\[id\]
@@ -427,7 +427,7 @@ jobs:
             "use client"
             export { default as BottomNav } from "@/components/bottom-nav"
             export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
-            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"}
+            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"
             EOFILE
             rm -rf app/api
             rm -rf app/courses/\[id\]

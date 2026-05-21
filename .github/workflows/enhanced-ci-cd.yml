@@ -59,7 +59,7 @@ jobs:
 
       - name: Security vulnerability scan
         run: |
-          pnpm audit --audit-level high --no-registry || echo "Security issues found, check logs"
+          pnpm audit --audit-level high --registry https://registry.npmjs.org || echo "Security issues found, check logs"
         continue-on-error: true
 
   # ===== Phase 2: Testing =====

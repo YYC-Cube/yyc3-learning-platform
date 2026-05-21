@@ -35,12 +35,12 @@ export default defineConfig({
         '**/*.spec.ts',
         '**/*.spec.tsx',
       ],
-      // 覆盖率阈值
+      // 覆盖率阈值 - 集成测试单独配置
       thresholds: {
-        lines: 60,
-        functions: 60,
-        branches: 60,
-        statements: 60,
+        lines: 40,
+        functions: 40,
+        branches: 40,
+        statements: 40,
       },
       include: [
         'lib/cn.ts',

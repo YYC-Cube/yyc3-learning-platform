@@ -214,7 +214,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build application
-        run: pnpm run build --no-turbopack
+        run: pnpm run build
         env:
           NEXT_PUBLIC_APP_VERSION: ${{ github.sha }}
           JWT_SECRET: ci-build-dummy-key

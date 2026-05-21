@@ -217,13 +217,13 @@ jobs:
         run: pnpm run build
         env:
           NEXT_PUBLIC_APP_VERSION: ${{ github.sha }}
-          JWT_SECRET: ci-build-dummy-key
+          JWT_SECRET: ci-build-dummy-key-must-be-at-least-32-characters-long
           JWT_EXPIRES_IN: 7d
           BCRYPT_ROUNDS: 10
           DB_HOST: localhost
           DB_PORT: 5432
           DB_USER: dummy
-          DB_PASS: dummy
+          DB_PASS: dummy-dummy-password-not-real
           DB_NAME: dummy
 
       - name: Upload build artifact

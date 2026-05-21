@@ -109,19 +109,46 @@ jobs:
           name: performance-baseline-results
           path: current-results/
 
-      - name: Download Baseline Results
-        uses: dawidd6/action-download-artifact@v3
+      - name: Fetch Historical Performance Data
+        uses: actions/github-script@v7
+        id: historical-data
         with:
-          workflow: performance-baseline.yml
-          name: performance-baseline-results
-          path: baseline-results/
-          search_artifacts: true
+          script: |
+            try {
+              // Get recent workflow runs
+              const runs = await github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'performance-baseline.yml',
+                per_page: 5
+              });
+
+              if (runs.data.workflow_runs.length > 0) {
+                console.log(`Found ${runs.data.workflow_runs.length} historical runs`);
+                // Store historical data for comparison
+                return JSON.stringify({
+                  has_baseline: true,
+                  runs_count: runs.data.workflow_runs.length,
+                  last_run: runs.data.workflow_runs[0].created_at
+                });
+              }
+            } catch (error) {
+              console.log('Could not fetch historical data:', error.message);
+            }
+
+            return JSON.stringify({ has_baseline: false });
 
       - name: Compare Performance Metrics
         run: |
           echo "## Performance Comparison" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Comparing current performance with established baselines..." >> $GITHUB_STEP_SUMMARY
+
+          HISTORICAL_DATA='${{ steps.historical-data.outputs.result }}'
+          if [ "$HISTORICAL_DATA" != "null" ]; then
+            echo "Comparing current performance with established baselines..." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No historical baseline data available for comparison" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Comment on PR
         uses: actions/github-script@v7

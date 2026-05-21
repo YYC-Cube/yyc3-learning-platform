@@ -161,7 +161,14 @@
       "@typescript-eslint/parser": "^8.59.4",
       "@typescript-eslint/type-utils": "^8.59.4",
       "@typescript-eslint/typescript-estree": "^8.59.4",
-      "@typescript-eslint/utils": "^8.59.4"
+      "@typescript-eslint/utils": "^8.59.4",
+      "axios": "^1.7.9",
+      "semver": "^7.6.3",
+      "follow-redirects": "^1.15.9",
+      "debug": "^4.4.0",
+      "resolve-url": "^0.2.1",
+      "source-map-url": "^0.4.1",
+      "urix": "^0.1.0"
     }
   }
 }

@@ -545,7 +545,7 @@ export class APIGateway {
   // ==================== 服务器管理 ====================
 
   public start(): void {
-    this.app.listen(this.port, () => { });
+    this.app.listen(this.port, () => {});
   }
 
   public getApp(): express.Application {

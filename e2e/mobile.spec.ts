@@ -24,7 +24,9 @@ test.describe('Mobile Device Core Functionality', () => {
 
   test('should have mobile navigation', async ({ page }) => {
     // Test mobile menu button
-    const mobileMenuButton = page.locator('[data-testid="mobile-menu-button"], button:has-text("菜单")');
+    const mobileMenuButton = page.locator(
+      '[data-testid="mobile-menu-button"], button:has-text("菜单")'
+    );
 
     if (await mobileMenuButton.isVisible()) {
       await mobileMenuButton.click();
@@ -77,9 +79,9 @@ test.describe('Mobile Device Core Functionality', () => {
         });
 
         el.dispatchEvent(touchStart);
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         el.dispatchEvent(touchMove);
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
         el.dispatchEvent(touchEnd);
       });
     }
@@ -160,7 +162,7 @@ test.describe('Mobile Device Core Functionality', () => {
             touches: [{ clientX: 200, clientY: currentY }],
           });
           el.dispatchEvent(touchMove);
-          await new Promise(resolve => setTimeout(resolve, 50));
+          await new Promise((resolve) => setTimeout(resolve, 50));
         }
 
         const touchEnd = new TouchEvent('touchend', { bubbles: true });
@@ -177,7 +179,7 @@ test.describe('Mobile Device Core Functionality', () => {
     // Check if page respects safe area insets
     const safeAreaElements = page.locator('[style*="env(safe-area-inset"]');
 
-    if (await safeAreaElements.count() > 0) {
+    if ((await safeAreaElements.count()) > 0) {
       await expect(safeAreaElements.first()).toBeVisible();
     }
   });
@@ -224,7 +226,7 @@ test.describe('iOS-Specific Features', () => {
 
       // Scroll down
       scrollContainer.scrollTop = 500;
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Should have momentum scroll effect
       return scrollContainer.scrollTop > 0;
@@ -293,7 +295,7 @@ test.describe('Android-Specific Features', () => {
         // Should open in new tab or custom tab
         const [newPage] = await Promise.all([
           page.context().waitForEvent('page'),
-          externalLink.click()
+          externalLink.click(),
         ]);
 
         await newPage.waitForLoadState();
@@ -367,7 +369,7 @@ test.describe('Responsive Design Tests', () => {
     await expect(heading).toBeVisible();
 
     // Check if font size is appropriate for mobile
-    const fontSize = await heading.evaluate(el => {
+    const fontSize = await heading.evaluate((el) => {
       return window.getComputedStyle(el).fontSize;
     });
 
@@ -382,7 +384,7 @@ test.describe('Responsive Design Tests', () => {
     // Check if images are responsive
     const images = page.locator('img:visible');
 
-    if (await images.count() > 0) {
+    if ((await images.count()) > 0) {
       const firstImage = images.first();
 
       // Image should fit within viewport
@@ -413,7 +415,7 @@ test.describe('Responsive Design Tests', () => {
 
     // Card-based layout
     const cards = page.locator('[data-testid="course-card"]');
-    if (await cards.count() > 0) {
+    if ((await cards.count()) > 0) {
       await expect(cards.first()).toBeVisible();
 
       // Cards should be stackable on mobile
@@ -429,8 +431,8 @@ test.describe('Responsive Design Tests', () => {
 test.describe('Mobile Performance', () => {
   test('should load quickly on mobile networks', async ({ page }) => {
     // Simulate slower mobile network
-    await page.route('**/*', async route => {
-      await new Promise(resolve => setTimeout(resolve, 100)); // Add 100ms delay
+    await page.route('**/*', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Add 100ms delay
       return route.continue();
     });
 
@@ -447,7 +449,7 @@ test.describe('Mobile Performance', () => {
     // Simulate intermittent network failures
     let requestCount = 0;
 
-    await page.route('**/*', async route => {
+    await page.route('**/*', async (route) => {
       requestCount++;
 
       // Fail every 3rd request
@@ -472,7 +474,9 @@ test.describe('Mobile Performance', () => {
 
     // Check for energy-efficient practices
     const animations = await page.evaluate(() => {
-      const animatedElements = document.querySelectorAll('[class*="animate"], [class*="transition"]');
+      const animatedElements = document.querySelectorAll(
+        '[class*="animate"], [class*="transition"]'
+      );
       return animatedElements.length;
     });
 
@@ -514,11 +518,12 @@ test.describe('Accessibility on Mobile', () => {
 
     for (let i = 0; i < Math.min(count, 10); i++) {
       const element = interactiveElements.nth(i);
-      const hasAria = await element.evaluate(el =>
-        el.hasAttribute('aria-label') ||
-        el.hasAttribute('aria-labelledby') ||
-        el.hasAttribute('aria-describedby') ||
-        el.textContent?.trim()
+      const hasAria = await element.evaluate(
+        (el) =>
+          el.hasAttribute('aria-label') ||
+          el.hasAttribute('aria-labelledby') ||
+          el.hasAttribute('aria-describedby') ||
+          el.textContent?.trim()
       );
 
       expect(hasAria).toBeTruthy();
@@ -534,8 +539,8 @@ test.describe('Accessibility on Mobile', () => {
 
     if (viewportMeta) {
       // Should allow user scaling
-      const allowsZoom = viewportMeta.includes('user-scalable=yes') ||
-                       !viewportMeta.includes('user-scalable=no');
+      const allowsZoom =
+        viewportMeta.includes('user-scalable=yes') || !viewportMeta.includes('user-scalable=no');
 
       expect(allowsZoom).toBeTruthy();
     }

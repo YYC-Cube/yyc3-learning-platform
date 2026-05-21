@@ -3,6 +3,7 @@
 ## Overview
 
 The YYC³ Learning Platform includes a comprehensive API performance baseline system designed to:
+
 - Establish performance benchmarks for all API endpoints
 - Detect performance regressions automatically
 - Track performance trends over time
@@ -87,6 +88,7 @@ The performance baseline workflow runs automatically:
 #### Manual Workflow Dispatch
 
 From GitHub Actions UI:
+
 - Navigate to "API Performance Baseline Testing" workflow
 - Click "Run workflow"
 - Optionally select "Create new performance baseline"
@@ -252,15 +254,17 @@ Performance results are included in PR comments:
 ## 📊 Performance Test Results
 
 ### Summary
+
 - ✅ API endpoints tested
 - ✅ Performance metrics collected
 - ✅ No critical regressions detected
 
 ### Performance Metrics
-| Endpoint | P50 | P95 | P99 | Status |
-|----------|-----|-----|-----|--------|
-| /api/health | < 50ms | < 100ms | < 200ms | ✅ |
-| /api/courses | < 200ms | < 500ms | < 1000ms | ✅ |
+
+| Endpoint     | P50     | P95     | P99      | Status |
+| ------------ | ------- | ------- | -------- | ------ |
+| /api/health  | < 50ms  | < 100ms | < 200ms  | ✅     |
+| /api/courses | < 200ms | < 500ms | < 1000ms | ✅     |
 ```
 
 ## Troubleshooting
@@ -291,7 +295,7 @@ for (let i = 0; i < 20; i++) {
 
 ```yaml
 permissions:
-  contents: write  # Required for storing performance data
+  contents: write # Required for storing performance data
 ```
 
 ### Debug Mode
@@ -408,12 +412,14 @@ test('should send metrics to DataDog', async ({ request }) => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      series: [{
-        metric: 'api.performance.p95',
-        points: [[Date.now(), metrics.p95]],
-        tags: [`endpoint:${endpoint}`]
-      }]
-    })
+      series: [
+        {
+          metric: 'api.performance.p95',
+          points: [[Date.now(), metrics.p95]],
+          tags: [`endpoint:${endpoint}`],
+        },
+      ],
+    }),
   });
 });
 ```

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "emitDeclarationOnly": true,
@@ -40,31 +36,15 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": false,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/types/*": [
-        "./src/types/*"
-      ],
-      "@/layers/*": [
-        "./src/layers/*"
-      ],
-      "@/utils/*": [
-        "./src/utils/*"
-      ],
-      "@/algorithms/*": [
-        "./src/algorithms/*"
-      ],
-      "@/models/*": [
-        "./src/models/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/layers/*": ["./src/layers/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/algorithms/*": ["./src/algorithms/*"],
+      "@/models/*": ["./src/models/*"]
     }
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
+  "include": ["src/**/*", "src/**/*.ts", "src/**/*.tsx"],
   "exclude": [
     "node_modules",
     "dist",

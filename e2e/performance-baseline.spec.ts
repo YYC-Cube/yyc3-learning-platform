@@ -192,21 +192,25 @@ test.describe('API Performance Regression Detection', () => {
       const threshold = endpoint.threshold;
 
       // Check for regressions
-      const p50Regression = metrics.p50 > (threshold.p50 * (1 + REGRESSION_TOLERANCE / 100));
-      const p95Regression = metrics.p95 > (threshold.p95 * (1 + REGRESSION_TOLERANCE / 100));
-      const p99Regression = metrics.p99 > (threshold.p99 * (1 + REGRESSION_TOLERANCE / 100));
+      const p50Regression = metrics.p50 > threshold.p50 * (1 + REGRESSION_TOLERANCE / 100);
+      const p95Regression = metrics.p95 > threshold.p95 * (1 + REGRESSION_TOLERANCE / 100);
+      const p99Regression = metrics.p99 > threshold.p99 * (1 + REGRESSION_TOLERANCE / 100);
 
       if (p50Regression || p95Regression || p99Regression) {
         console.warn(`⚠️  Potential regression detected in ${endpoint.name}:`);
-        console.warn(`   Current: p50=${metrics.p50}ms, p95=${metrics.p95}ms, p99=${metrics.p99}ms`);
-        console.warn(`   Baseline: p50=${threshold.p50}ms, p95=${threshold.p95}ms, p99=${threshold.p99}ms`);
+        console.warn(
+          `   Current: p50=${metrics.p50}ms, p95=${metrics.p95}ms, p99=${metrics.p99}ms`
+        );
+        console.warn(
+          `   Baseline: p50=${threshold.p50}ms, p95=${threshold.p95}ms, p99=${threshold.p99}ms`
+        );
       } else {
         console.log(`✅ ${endpoint.name}: No regression detected`);
       }
 
       // Fail test if significant regression detected (> 20% degradation)
       const CRITICAL_TOLERANCE = 20;
-      const criticalRegression = metrics.p95 > (threshold.p95 * (1 + CRITICAL_TOLERANCE / 100));
+      const criticalRegression = metrics.p95 > threshold.p95 * (1 + CRITICAL_TOLERANCE / 100);
       expect(criticalRegression).toBeFalsy();
     }
   });
@@ -272,7 +276,7 @@ test.describe('API Performance Trends', () => {
       trendData.push({ iteration: i + 1, ...metrics });
 
       // Small delay between iterations
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
 
     console.log('📊 Performance Trend Data:', trendData);
@@ -294,8 +298,8 @@ test.describe('Network Performance', () => {
     console.log('🐢 Testing with slow network conditions...');
 
     // Simulate slow 3G network
-    await page.route('**/*', async route => {
-      await new Promise(resolve => setTimeout(resolve, 200)); // Add 200ms delay
+    await page.route('**/*', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 200)); // Add 200ms delay
       return route.continue();
     });
 
@@ -356,7 +360,7 @@ function calculateMetrics(timings: number[]) {
   const len = sorted.length;
 
   return {
-    p50: sorted[Math.floor(len * 0.50)],
+    p50: sorted[Math.floor(len * 0.5)],
     p95: sorted[Math.floor(len * 0.95)],
     p99: sorted[Math.floor(len * 0.99)],
     avg: sorted.reduce((sum, val) => sum + val, 0) / len,

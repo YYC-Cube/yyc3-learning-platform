@@ -125,7 +125,7 @@ test.describe('Critical User Flows', () => {
 
     await test.step('display achievement categories', async () => {
       const categories = page.locator('[data-testid="achievement-category"]');
-      if (await categories.count() > 0) {
+      if ((await categories.count()) > 0) {
         await expect(categories.first()).toBeVisible();
       }
     });
@@ -150,7 +150,7 @@ test.describe('Critical User Flows', () => {
 
     await test.step('display career milestones', async () => {
       const milestones = page.locator('[data-testid="career-milestone"]');
-      if (await milestones.count() > 0) {
+      if ((await milestones.count()) > 0) {
         await expect(milestones.first()).toBeVisible();
       }
     });
@@ -200,10 +200,11 @@ test.describe('Critical User Flows', () => {
 
       for (let i = 0; i < Math.min(count, 5); i++) {
         const element = interactiveElements.nth(i);
-        const hasAria = await element.evaluate(el =>
-          el.hasAttribute('aria-label') ||
-          el.hasAttribute('aria-labelledby') ||
-          el.textContent?.trim()
+        const hasAria = await element.evaluate(
+          (el) =>
+            el.hasAttribute('aria-label') ||
+            el.hasAttribute('aria-labelledby') ||
+            el.textContent?.trim()
         );
         expect(hasAria).toBeTruthy();
       }
@@ -231,7 +232,7 @@ test.describe('Critical User Flows', () => {
 
     await test.step('handle network errors gracefully', async () => {
       // Simulate network conditions
-      await page.route('**/*', route => route.abort());
+      await page.route('**/*', (route) => route.abort());
 
       await page.goto('/');
       // Should show user-friendly error message
@@ -255,9 +256,9 @@ test.describe('Critical User Flows', () => {
 
     await test.step('responsive design on different viewports', async () => {
       const viewports = [
-        { width: 1920, height: 1080 },  // Desktop
-        { width: 768, height: 1024 },   // Tablet
-        { width: 375, height: 667 },    // Mobile
+        { width: 1920, height: 1080 }, // Desktop
+        { width: 768, height: 1024 }, // Tablet
+        { width: 375, height: 667 }, // Mobile
       ];
 
       for (const viewport of viewports) {
@@ -349,7 +350,7 @@ test.describe('Critical User Flows', () => {
 
 test.describe('Cross-browser Compatibility', () => {
   // Test critical flows across different browsers
-  ['chromium', 'firefox', 'webkit'].forEach(browserName => {
+  ['chromium', 'firefox', 'webkit'].forEach((browserName) => {
     test(`${browserName} - core functionality`, async ({ page }) => {
       test.skip(browserName !== 'chromium', 'Only chromium is currently configured');
 

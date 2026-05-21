@@ -48,7 +48,7 @@ test.describe('Opera Browser Compatibility', () => {
     expect(modernJS).toBeTruthy();
   });
 
-  test('should handle Opera's battery API', async ({ page }) => {
+  test("should handle Opera's battery API", async ({ page }) => {
     // Test Opera's battery API implementation
     await page.goto('/');
 
@@ -97,7 +97,7 @@ test.describe('Brave Browser Compatibility', () => {
     }
   });
 
-  test('should support Brave's crypto wallet', async ({ page }) => {
+  test("should support Brave's crypto wallet", async ({ page }) => {
     // Test if page works with Brave's built-in crypto wallet
     await page.goto('/');
 
@@ -109,15 +109,15 @@ test.describe('Brave Browser Compatibility', () => {
     expect(typeof braveWallet).toBe('boolean');
   });
 
-  test('should handle Brave's privacy features', async ({ page }) => {
+  test("should handle Brave's privacy features", async ({ page }) => {
     // Test compatibility with Brave's aggressive tracking protection
     await page.goto('/');
 
     // Analytics should still work (or fail gracefully)
     const analyticsScripts = await page.evaluate(() => {
       const scripts = document.querySelectorAll('script');
-      return Array.from(scripts).filter(script =>
-        script.src.includes('analytics') || script.src.includes('gtag')
+      return Array.from(scripts).filter(
+        (script) => script.src.includes('analytics') || script.src.includes('gtag')
       );
     });
 
@@ -125,7 +125,7 @@ test.describe('Brave Browser Compatibility', () => {
     await expect(page.locator('h1')).toBeVisible();
   });
 
-  test('should support Brave's Web3 API', async ({ page }) => {
+  test("should support Brave's Web3 API", async ({ page }) => {
     // Test Brave's enhanced Web3 support
     await page.goto('/');
 
@@ -141,18 +141,20 @@ test.describe('Brave Browser Compatibility', () => {
 test.describe('Chromium-Based Browser Consistency', () => {
   const chromiumBrowsers = ['chromium-desktop', 'opera-desktop', 'brave-desktop', 'edge-desktop'];
 
-  chromiumBrowsers.forEach(browserName => {
+  chromiumBrowsers.forEach((browserName) => {
     test(`${browserName} - should have consistent rendering`, async ({ page }) => {
       test.skip(process.env.CI && browserName !== 'chromium-desktop', 'Skip redundant tests in CI');
 
       // Set user agent to simulate different browsers if needed
       if (browserName === 'opera-desktop') {
         await page.setExtraHTTPHeaders({
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0',
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0',
         });
       } else if (browserName === 'brave-desktop') {
         await page.setExtraHTTPHeaders({
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Brave/114.0.0.0',
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Brave/114.0.0.0',
         });
       }
 
@@ -345,7 +347,13 @@ test.describe('Security & Privacy Features', () => {
 
 test.describe('Developer Tools Compatibility', () => {
   test('should have consistent DevTools experience', async ({ page, browserName }) => {
-    const browsers = ['chromium-desktop', 'opera-desktop', 'brave-desktop', 'edge-desktop', 'firefox-desktop'];
+    const browsers = [
+      'chromium-desktop',
+      'opera-desktop',
+      'brave-desktop',
+      'edge-desktop',
+      'firefox-desktop',
+    ];
 
     test.skip(!browsers.includes(browserName), 'Supported browser test');
 
@@ -372,22 +380,23 @@ test.describe('Developer Tools Compatibility', () => {
 
     // Capture console messages
     const messages: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       messages.push(msg.text());
     });
 
     await page.goto('/');
 
     // Console should be clean or have useful messages
-    const errorMessages = messages.filter(msg => msg.includes('error') || msg.includes('Error'));
+    const errorMessages = messages.filter((msg) => msg.includes('error') || msg.includes('Error'));
 
     if (errorMessages.length > 0) {
       console.log(`Console errors in ${browserName}:`, errorMessages);
     }
 
     // Should not have critical errors
-    const criticalErrors = errorMessages.filter(msg =>
-      msg.includes('TypeError') || msg.includes('ReferenceError') || msg.includes('NetworkError')
+    const criticalErrors = errorMessages.filter(
+      (msg) =>
+        msg.includes('TypeError') || msg.includes('ReferenceError') || msg.includes('NetworkError')
     );
 
     expect(criticalErrors.length).toBe(0);

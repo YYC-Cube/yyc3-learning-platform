@@ -47,22 +47,24 @@ test.describe('Performance & Regression Tests', () => {
       // Monitor layout shifts
       let layoutShifts = 0;
 
-      await page.evaluate(() => {
-        return new Promise((resolve) => {
-          let cls = 0;
-          const observer = new PerformanceObserver((list) => {
-            for (const entry of list.getEntries()) {
-              if (!entry.hadRecentInput) {
-                cls += entry.value;
+      await page
+        .evaluate(() => {
+          return new Promise((resolve) => {
+            let cls = 0;
+            const observer = new PerformanceObserver((list) => {
+              for (const entry of list.getEntries()) {
+                if (!entry.hadRecentInput) {
+                  cls += entry.value;
+                }
               }
-            }
+            });
+            observer.observe({ entryTypes: ['layout-shift'] });
+            setTimeout(() => resolve(cls), 3000);
           });
-          observer.observe({ entryTypes: ['layout-shift'] });
-          setTimeout(() => resolve(cls), 3000);
+        })
+        .then((cls: number) => {
+          layoutShifts = cls;
         });
-      }).then((cls: number) => {
-        layoutShifts = cls;
-      });
 
       // CLS should be under 0.1
       expect(layoutShifts).toBeLessThan(0.1);
@@ -120,18 +122,18 @@ test.describe('Performance & Regression Tests', () => {
       const jsResources = await page.evaluate(() => {
         const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
         return resources
-          .filter(r => r.name.endsWith('.js'))
-          .map(r => ({
+          .filter((r) => r.name.endsWith('.js'))
+          .map((r) => ({
             name: r.name.split('/').pop(),
             size: r.transferSize,
-            duration: r.duration
+            duration: r.duration,
           }));
       });
 
       console.log('JavaScript Resources:', jsResources);
 
       // Check for large bundles (>200KB)
-      const largeBundles = jsResources.filter(r => r.size > 200 * 1024);
+      const largeBundles = jsResources.filter((r) => r.size > 200 * 1024);
       expect(largeBundles.length).toBe(0);
     });
 
@@ -141,18 +143,18 @@ test.describe('Performance & Regression Tests', () => {
       const cssResources = await page.evaluate(() => {
         const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
         return resources
-          .filter(r => r.name.endsWith('.css'))
-          .map(r => ({
+          .filter((r) => r.name.endsWith('.css'))
+          .map((r) => ({
             name: r.name.split('/').pop(),
             size: r.transferSize,
-            duration: r.duration
+            duration: r.duration,
           }));
       });
 
       console.log('CSS Resources:', cssResources);
 
       // Check for large stylesheets (>50KB)
-      const largeStylesheets = cssResources.filter(r => r.size > 50 * 1024);
+      const largeStylesheets = cssResources.filter((r) => r.size > 50 * 1024);
       expect(largeStylesheets.length).toBe(0);
     });
 
@@ -162,18 +164,18 @@ test.describe('Performance & Regression Tests', () => {
       const images = await page.evaluate(() => {
         const resources = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
         return resources
-          .filter(r => r.name.match(/\.(jpg|jpeg|png|webp|avif)$/))
-          .map(r => ({
+          .filter((r) => r.name.match(/\.(jpg|jpeg|png|webp|avif)$/))
+          .map((r) => ({
             name: r.name.split('/').pop(),
             size: r.transferSize,
-            duration: r.duration
+            duration: r.duration,
           }));
       });
 
       console.log('Images:', images);
 
       // Check for unoptimized images (>200KB)
-      const unoptimizedImages = images.filter(r => r.size > 200 * 1024);
+      const unoptimizedImages = images.filter((r) => r.size > 200 * 1024);
       expect(unoptimizedImages.length).toBeLessThan(2); // Allow some hero images
     });
   });
@@ -185,16 +187,16 @@ test.describe('Performance & Regression Tests', () => {
 
       const scriptTiming = await page.evaluate(() => {
         const measures = performance.getEntriesByType('measure') as PerformanceMeasure[];
-        return measures.map(m => ({
+        return measures.map((m) => ({
           name: m.name,
-          duration: m.duration
+          duration: m.duration,
         }));
       });
 
       console.log('Script Timings:', scriptTiming);
 
       // Check for long-running tasks (>50ms)
-      const longTasks = scriptTiming.filter(t => t.duration > 50);
+      const longTasks = scriptTiming.filter((t) => t.duration > 50);
       expect(longTasks.length).toBeLessThan(3);
     });
 
@@ -202,10 +204,12 @@ test.describe('Performance & Regression Tests', () => {
       await page.goto('/');
 
       const renderMetrics = await page.evaluate(() => {
-        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        const navigation = performance.getEntriesByType(
+          'navigation'
+        )[0] as PerformanceNavigationTiming;
         return {
           domComplete: navigation.domComplete - navigation.fetchStart,
-          loadComplete: navigation.loadEventEnd - navigation.fetchStart
+          loadComplete: navigation.loadEventEnd - navigation.fetchStart,
         };
       });
 
@@ -227,7 +231,7 @@ test.describe('Performance & Regression Tests', () => {
           return {
             usedJSHeapSize: (performance as any).memory.usedJSHeapSize,
             totalJSHeapSize: (performance as any).memory.totalJSHeapSize,
-            jsHeapSizeLimit: (performance as any).memory.jsHeapSizeLimit
+            jsHeapSizeLimit: (performance as any).memory.jsHeapSizeLimit,
           };
         }
         return null;
@@ -238,7 +242,9 @@ test.describe('Performance & Regression Tests', () => {
         const limitMB = memoryInfo.jsHeapSizeLimit / (1024 * 1024);
         const usagePercent = (usedMB / limitMB) * 100;
 
-        console.log(`Memory Usage: ${usedMB.toFixed(2)}MB / ${limitMB.toFixed(2)}MB (${usagePercent.toFixed(1)}%)`);
+        console.log(
+          `Memory Usage: ${usedMB.toFixed(2)}MB / ${limitMB.toFixed(2)}MB (${usagePercent.toFixed(1)}%)`
+        );
 
         // Memory usage should be under 80%
         expect(usagePercent).toBeLessThan(80);

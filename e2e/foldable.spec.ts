@@ -82,11 +82,12 @@ test.describe('Galaxy Z Fold 4 Tests', () => {
     const hingeOptimization = await page.evaluate(() => {
       // Check for safe area insets or hinge avoidance
       const hasSafeAreas = document.querySelectorAll('[style*="env(safe-area-inset"]').length > 0;
-      const hasHingePadding = document.querySelectorAll('[style*="padding-left"], [style*="padding-right"]').length > 0;
+      const hasHingePadding =
+        document.querySelectorAll('[style*="padding-left"], [style*="padding-right"]').length > 0;
 
       return {
         hasSafeAreas,
-        hasHingePadding
+        hasHingePadding,
       };
     });
 
@@ -194,12 +195,12 @@ test.describe('Microsoft Surface Duo Tests', () => {
       if (!mainContent) return false;
 
       const rect = mainContent.getBoundingClientRect();
-      const spansHinge = rect.left < 100 || rect.right > (window.innerWidth - 100);
+      const spansHinge = rect.left < 100 || rect.right > window.innerWidth - 100;
 
       return {
         contentWidth: rect.width,
         spansHinge,
-        fitsInSingleScreen: !spansHinge
+        fitsInSingleScreen: !spansHinge,
       };
     });
 
@@ -214,7 +215,7 @@ test.describe('Microsoft Surface Duo Tests', () => {
     const touchSupport = await page.evaluate(() => {
       return {
         hasTouch: 'ontouchstart' in window,
-        maxTouchPoints: navigator.maxTouchPoints || 0
+        maxTouchPoints: navigator.maxTouchPoints || 0,
       };
     });
 
@@ -224,7 +225,7 @@ test.describe('Microsoft Surface Duo Tests', () => {
     const penSupport = await page.evaluate(() => {
       return {
         pointerFine: window.matchMedia('(pointer: fine)').matches,
-        hoverSupport: window.matchMedia('(hover: hover)').matches
+        hoverSupport: window.matchMedia('(hover: hover)').matches,
       };
     });
 
@@ -325,7 +326,7 @@ test.describe('Foldable User Experience', () => {
     // Test navigation in both states
     const states = [
       { width: 361, height: 850, name: 'folded' },
-      { width: 1812, height: 2172, name: 'unfolded' }
+      { width: 1812, height: 2172, name: 'unfolded' },
     ];
 
     for (const state of states) {
@@ -354,7 +355,7 @@ test.describe('Foldable User Experience', () => {
       return {
         fontSize: styles.fontSize,
         lineHeight: styles.lineHeight,
-        maxWidth: styles.maxWidth
+        maxWidth: styles.maxWidth,
       };
     });
 
@@ -368,7 +369,7 @@ test.describe('Foldable User Experience', () => {
       return {
         fontSize: styles.fontSize,
         lineHeight: styles.lineHeight,
-        maxWidth: styles.maxWidth
+        maxWidth: styles.maxWidth,
       };
     });
 
@@ -392,14 +393,14 @@ test.describe('Foldable User Experience', () => {
         if (rect.width >= 44 && rect.height >= 44) {
           touchTargets.push({
             width: rect.width,
-            height: rect.height
+            height: rect.height,
           });
         }
       });
 
       return {
         totalButtons: buttons.length,
-        validTouchTargets: touchTargets.length
+        validTouchTargets: touchTargets.length,
       };
     });
 
@@ -428,7 +429,7 @@ test.describe('Foldable-Specific APIs', () => {
       return {
         orientation: screen.orientation?.type,
         angle: screen.orientation?.angle,
-        type: screen.orientation?.type
+        type: screen.orientation?.type,
       };
     });
 
@@ -461,7 +462,7 @@ test.describe('Foldable-Specific APIs', () => {
       return {
         isNarrow: window.matchMedia('(max-width: 400px)').matches,
         isPortrait: window.matchMedia('(orientation: portrait)').matches,
-        isHoverCapable: window.matchMedia('(hover: hover)').matches
+        isHoverCapable: window.matchMedia('(hover: hover)').matches,
       };
     });
 
@@ -475,7 +476,7 @@ test.describe('Foldable-Specific APIs', () => {
       return {
         isWide: window.matchMedia('(min-width: 1400px)').matches,
         isLandscape: window.matchMedia('(orientation: landscape)').matches,
-        isHoverCapable: window.matchMedia('(hover: hover)').matches
+        isHoverCapable: window.matchMedia('(hover: hover)').matches,
       };
     });
 

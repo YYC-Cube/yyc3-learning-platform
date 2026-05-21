@@ -126,7 +126,8 @@ test.describe('Foldable Device Tests', () => {
     // Unfolded should show enhanced layout
     const enhancedLayout = await page.evaluate(() => {
       const hasDualColumn = window.innerWidth > 1700;
-      const hasDesktopFeatures = document.querySelectorAll('[data-testid="desktop-feature"]').length > 0;
+      const hasDesktopFeatures =
+        document.querySelectorAll('[data-testid="desktop-feature"]').length > 0;
       return { hasDualColumn, hasDesktopFeatures };
     });
 
@@ -141,7 +142,7 @@ test.describe('Foldable Device Tests', () => {
     const foldedState = await page.evaluate(() => {
       return {
         scrollY: window.scrollY,
-        elementsVisible: document.querySelectorAll('body > *').length
+        elementsVisible: document.querySelectorAll('body > *').length,
       };
     });
 
@@ -152,7 +153,7 @@ test.describe('Foldable Device Tests', () => {
     const unfoldedState = await page.evaluate(() => {
       return {
         scrollY: window.scrollY,
-        elementsVisible: document.querySelectorAll('body > *').length
+        elementsVisible: document.querySelectorAll('body > *').length,
       };
     });
 
@@ -213,14 +214,14 @@ test.describe('Foldable Device Tests', () => {
     await page.setViewportSize({ width: 361, height: 850 });
     await page.goto('/');
 
-    const hingeOptimization = await page evaluate(() => {
+    const hingeOptimization = await page.evaluate(() => {
       // Check for hinge-aware layout
       const hasHingeAvoidance = document.querySelectorAll('[style*="hinge"]').length > 0;
       const hasSafeAreas = document.querySelectorAll('[style*="env(safe-area"]').length > 0;
 
       return {
         hasHingeAvoidance,
-        hasSafeAreas
+        hasSafeAreas,
       };
     });
 
@@ -260,7 +261,7 @@ test.describe('Tablet-Specific Features', () => {
         if (rect.width >= 44 && rect.height >= 44) {
           validTargets.push({
             width: rect.width,
-            height: rect.height
+            height: rect.height,
           });
         }
       });
@@ -268,7 +269,7 @@ test.describe('Tablet-Specific Features', () => {
       return {
         total: buttons.length,
         valid: validTargets.length,
-        percentage: buttons.length > 0 ? (validTargets.length / buttons.length) * 100 : 0
+        percentage: buttons.length > 0 ? (validTargets.length / buttons.length) * 100 : 0,
       };
     });
 
@@ -290,7 +291,7 @@ test.describe('Tablet-Specific Features', () => {
       return {
         hasHoverSupport,
         hasPointerCoarse,
-        supportsStylus: !hasPointerCoarse
+        supportsStylus: !hasPointerCoarse,
       };
     });
 
@@ -307,7 +308,7 @@ test.describe('Tablet-Specific Features', () => {
       const focused = document.activeElement;
       return {
         tagName: focused?.tagName,
-        hasFocus: document.hasFocus()
+        hasFocus: document.hasFocus(),
       };
     });
 
@@ -322,19 +323,19 @@ test.describe('Tablet-Specific Features', () => {
     const swipeContainer = page.locator('[data-testid="swipe-container"]');
 
     if (await swipeContainer.isVisible()) {
-      await swipeContainer.evaluate(el => {
+      await swipeContainer.evaluate((el) => {
         // Simulate swipe gesture
         let startX = 0;
         let startY = 0;
 
         const touchStart = new TouchEvent('touchstart', {
           bubbles: true,
-          touches: [{ clientX: startX, clientY: startY }]
+          touches: [{ clientX: startX, clientY: startY }],
         });
 
         const touchMove = new TouchEvent('touchmove', {
           bubbles: true,
-          touches: [{ clientX: startX + 500, clientY: startY }]
+          touches: [{ clientX: startX + 500, clientY: startY }],
         });
 
         const touchEnd = new TouchEvent('touchend', { bubbles: true });
@@ -354,8 +355,8 @@ test.describe('Tablet Performance Optimization', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
 
     // Simulate tablet network conditions
-    await page.route('**/*', async route => {
-      await new Promise(resolve => setTimeout(resolve, 100)); // Add 100ms delay
+    await page.route('**/*', async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 100)); // Add 100ms delay
       return route.continue();
     });
 
@@ -386,15 +387,16 @@ test.describe('Tablet Performance Optimization', () => {
             hasSrcset: !!srcset,
             hasLoading: img.getAttribute('loading') === 'lazy',
             naturalWidth: (img as HTMLImageElement).naturalWidth,
-            naturalHeight: (img as HTMLImageElement).naturalHeight
+            naturalHeight: (img as HTMLImageElement).naturalHeight,
           });
         }
       });
 
       return {
         total: images.length,
-        withLazyLoading: optimizedImages.filter(img => img.hasLoading).length,
-        averageWidth: optimizedImages.reduce((sum, img) => sum + img.naturalWidth, 0) / optimizedImages.length
+        withLazyLoading: optimizedImages.filter((img) => img.hasLoading).length,
+        averageWidth:
+          optimizedImages.reduce((sum, img) => sum + img.naturalWidth, 0) / optimizedImages.length,
       };
     });
 
@@ -444,7 +446,7 @@ test.describe('Tablet Accessibility', () => {
       const focused = document.activeElement;
       return {
         hasFocus: document.hasFocus(),
-        focusedTag: focused?.tagName
+        focusedTag: focused?.tagName,
       };
     });
 
@@ -455,12 +457,13 @@ test.describe('Tablet Accessibility', () => {
     // Test voice control compatibility
     const voiceControlSupport = await page.evaluate(() => {
       const hasAriaLabels = document.querySelectorAll('[aria-label], [aria-labelledby]').length > 0;
-      const hasReadableNames = document.querySelectorAll('button[aria-label], a[aria-label]').length > 0;
+      const hasReadableNames =
+        document.querySelectorAll('button[aria-label], a[aria-label]').length > 0;
 
       return {
         hasAriaLabels,
         hasReadableNames,
-        voiceControlReady: hasAriaLabels || hasReadableNames
+        voiceControlReady: hasAriaLabels || hasReadableNames,
       };
     });
 
@@ -491,7 +494,8 @@ test.describe('Tablet Landscape/Portrait', () => {
     await page.goto('/');
 
     const landscapeFeatures = await page.evaluate(() => {
-      const hasHorizontalNav = document.querySelectorAll('[data-orientation="landscape"]').length > 0;
+      const hasHorizontalNav =
+        document.querySelectorAll('[data-orientation="landscape"]').length > 0;
       const hasWideLayout = window.innerWidth > window.innerHeight;
       return { hasHorizontalNav, hasWideLayout };
     });

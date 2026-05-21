@@ -10,7 +10,7 @@ test.describe('API Integration Tests', () => {
 
   test.beforeEach(async ({ page }) => {
     // Set up API response monitoring
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         console.log('Browser console error:', msg.text());
       }
@@ -110,12 +110,12 @@ test.describe('API Integration Tests', () => {
       const timings = [];
 
       // Monitor API calls for performance
-      page.on('response', async response => {
+      page.on('response', async (response) => {
         if (response.url().includes('/api/')) {
           const timing = response.timing();
           timings.push({
             url: response.url(),
-            duration: timing.responseEnd
+            duration: timing.responseEnd,
           });
         }
       });
@@ -124,7 +124,7 @@ test.describe('API Integration Tests', () => {
       await page.waitForLoadState('networkidle');
 
       // Verify API responses are within acceptable limits
-      const slowApis = timings.filter(t => t.duration > 3000);
+      const slowApis = timings.filter((t) => t.duration > 3000);
       expect(slowApis.length).toBe(0);
     });
   });
@@ -148,8 +148,8 @@ test.describe('API Integration Tests', () => {
 
     await test.step('handle slow network', async () => {
       // Simulate slow 3G connection
-      await page.route('**/*', async route => {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+      await page.route('**/*', async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         return route.continue();
       });
 
@@ -164,7 +164,7 @@ test.describe('API Integration Tests', () => {
       // Eventually should load content
       await page.waitForTimeout(3000);
       const courseCards = page.locator('[data-testid="course-card"]');
-      if (await courseCards.count() > 0) {
+      if ((await courseCards.count()) > 0) {
         await expect(courseCards.first()).toBeVisible();
       }
     });
@@ -209,7 +209,7 @@ test.describe('API Integration Tests', () => {
     // Test error handling and recovery mechanisms
     await test.step('API error recovery', async () => {
       // Mock API failure
-      await page.route('**/api/courses', route => route.abort());
+      await page.route('**/api/courses', (route) => route.abort());
 
       await page.goto('/courses');
 

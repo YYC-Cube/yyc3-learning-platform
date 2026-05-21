@@ -42,14 +42,14 @@ import {
   ReasoningQuery,
   ReasoningResult,
   ValidationResult,
-  ValidationRule
+  ValidationRule,
 } from '../ILearningSystem';
 import type {
   ConfigObject,
   Content,
   EventListener,
   NodeData,
-  Pattern
+  Pattern,
 } from '../types/common.types';
 
 // Additional interfaces for completeness
@@ -1363,9 +1363,11 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   }
 
   private validateRelationshipConsistency(node: NodeData): boolean {
-    return (node as any).relationships?.every((relId: string) =>
-      this._knowledge.edges.some((edge) => edge.id === relId)
-    ) ?? true;
+    return (
+      (node as any).relationships?.every((relId: string) =>
+        this._knowledge.edges.some((edge) => edge.id === relId)
+      ) ?? true
+    );
   }
 
   private generateReasoningCacheKey(query: ReasoningQuery): string {
@@ -1482,7 +1484,9 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   /**
    * Parse import data
    */
-  private async parseImportData(data: KnowledgeImport): Promise<{ knowledgeItems: KnowledgeItem[]; relationships: KnowledgeLink[] }> {
+  private async parseImportData(
+    data: KnowledgeImport
+  ): Promise<{ knowledgeItems: KnowledgeItem[]; relationships: KnowledgeLink[] }> {
     // Implementation placeholder
     return { knowledgeItems: [], relationships: [] };
   }
@@ -1521,9 +1525,7 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
   /**
    * Analyze patterns for generalization
    */
-  private async analyzePatternsForGeneralization(
-    patterns: KnowledgePattern[]
-  ): Promise<any> {
+  private async analyzePatternsForGeneralization(patterns: KnowledgePattern[]): Promise<any> {
     return patterns;
   }
 
@@ -1756,7 +1758,10 @@ export class KnowledgeLearningLayer extends EventEmitter implements IKnowledgeLe
     ) {
       categories.push('pattern');
     }
-    if (analysis.keywords && analysis.keywords.some((k: string) => ['entity', 'object', 'concept'].includes(k))) {
+    if (
+      analysis.keywords &&
+      analysis.keywords.some((k: string) => ['entity', 'object', 'concept'].includes(k))
+    ) {
       categories.push('entity');
     }
 

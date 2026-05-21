@@ -64,9 +64,9 @@ test.describe('Cross-Browser Core Functionality', () => {
   test('should handle responsive layouts', async ({ page }) => {
     // Test different viewport sizes
     const viewports = [
-      { width: 1920, height: 1080 },  // Desktop
-      { width: 1366, height: 768 },   // Laptop
-      { width: 768, height: 1024 },   // Tablet
+      { width: 1920, height: 1080 }, // Desktop
+      { width: 1366, height: 768 }, // Laptop
+      { width: 768, height: 1024 }, // Tablet
     ];
 
     for (const viewport of viewports) {
@@ -127,7 +127,7 @@ test.describe('Cross-Browser Core Functionality', () => {
     // Test if animations work smoothly
     const animatedElements = page.locator('[class*="animate"], [class*="transition"]');
 
-    if (await animatedElements.count() > 0) {
+    if ((await animatedElements.count()) > 0) {
       await expect(animatedElements.first()).toBeVisible();
     }
   });
@@ -190,7 +190,7 @@ test.describe('Browser-Specific Features', () => {
 
     // Firefox should handle CSS grids correctly
     const gridElements = page.locator('[style*="display: grid"]');
-    if (await gridElements.count() > 0) {
+    if ((await gridElements.count()) > 0) {
       await expect(gridElements.first()).toBeVisible();
     }
   });
@@ -206,7 +206,7 @@ test.describe('Browser-Specific Features', () => {
 
     // Safari should handle -webkit- prefixed properties
     const webkitElements = page.locator('[style*="-webkit-"]');
-    if (await webkitElements.count() > 0) {
+    if ((await webkitElements.count()) > 0) {
       await expect(webkitElements.first()).toBeVisible();
     }
   });
@@ -222,7 +222,7 @@ test.describe('Browser-Specific Features', () => {
 
     // Edge should handle modern CSS features
     const modernElements = page.locator('[style*="grid"], [style*="flex"]');
-    if (await modernElements.count() > 0) {
+    if ((await modernElements.count()) > 0) {
       await expect(modernElements.first()).toBeVisible();
     }
   });

@@ -61,12 +61,10 @@ jobs:
           echo "🏗️  Building application for testing..."
           # Apply static export patches if needed
           if [ -f "scripts/patch-export.js" ]; then
-            cat > app/providers/DynamicProviders.tsx << 'EOFILE'
-            "use client"
-            export { default as BottomNav } from "@/components/bottom-nav"
-            export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
-            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"
-            EOFILE
+            echo '"use client"' > app/providers/DynamicProviders.tsx
+            echo 'export { default as BottomNav } from "@/components/bottom-nav"' >> app/providers/DynamicProviders.tsx
+            echo 'export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"' >> app/providers/DynamicProviders.tsx
+            echo 'export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"' >> app/providers/DynamicProviders.tsx
             rm -rf app/api
             rm -rf app/courses/\[id\]
             rm -rf app/exam/\[id\]
@@ -423,12 +421,10 @@ jobs:
         run: |
           # Build base version for comparison
           if [ -f "scripts/patch-export.js" ]; then
-            cat > app/providers/DynamicProviders.tsx << 'EOFILE'
-            "use client"
-            export { default as BottomNav } from "@/components/bottom-nav"
-            export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
-            export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"
-            EOFILE
+            echo '"use client"' > app/providers/DynamicProviders.tsx
+            echo 'export { default as BottomNav } from "@/components/bottom-nav"' >> app/providers/DynamicProviders.tsx
+            echo 'export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"' >> app/providers/DynamicProviders.tsx
+            echo 'export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"' >> app/providers/DynamicProviders.tsx
             rm -rf app/api
             rm -rf app/courses/\[id\]
             rm -rf app/exam/\[id\]

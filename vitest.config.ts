@@ -42,10 +42,7 @@ export default defineConfig({
         branches: 40,
         statements: 40,
       },
-      include: [
-        'lib/**/*.ts',
-        'app/api/**/*.ts',
-      ],
+      include: ['lib/**/*.ts', 'app/api/**/*.ts'],
     },
 
     // 测试超时时间

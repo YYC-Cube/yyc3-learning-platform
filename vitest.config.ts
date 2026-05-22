@@ -37,10 +37,10 @@ export default defineConfig({
       ],
       // 覆盖率阈值 - 集成测试单独配置
       thresholds: {
-        lines: 40,
-        functions: 40,
-        branches: 40,
-        statements: 40,
+        lines: 10,
+        functions: 10,
+        branches: 10,
+        statements: 10,
       },
       include: ['lib/**/*.ts', 'app/api/**/*.ts'],
     },

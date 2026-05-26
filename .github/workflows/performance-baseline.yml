@@ -2,11 +2,11 @@ name: API Performance Baseline Testing
 
 on:
   schedule:
-    - cron: "0 2 * * *"
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       create_baseline:
-        description: "Create new performance baseline"
+        description: 'Create new performance baseline'
         required: false
         type: boolean
         default: false
@@ -30,13 +30,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "pnpm"
+          node-version: '20'
+          cache: 'pnpm'
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: "9"
+          version: '9'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -298,12 +298,7 @@ jobs:
   notify-team:
     name: Notify Team of Results
     runs-on: ubuntu-latest
-    needs:
-      [
-        performance-baseline,
-        performance-comparison,
-        performance-regression-check,
-      ]
+    needs: [performance-baseline, performance-comparison, performance-regression-check]
     if: always()
 
     steps:

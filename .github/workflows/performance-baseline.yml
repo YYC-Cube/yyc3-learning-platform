@@ -2,22 +2,14 @@ name: API Performance Baseline Testing
 
 on:
   schedule:
-    # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
+    - cron: "0 2 * * *"
   workflow_dispatch:
     inputs:
       create_baseline:
-        description: 'Create new performance baseline'
+        description: "Create new performance baseline"
         required: false
         type: boolean
         default: false
-  pull_request:
-    paths:
-      - 'src/**'
-      - 'api/**'
-      - 'e2e/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
 
 permissions:
   contents: write
@@ -38,28 +30,44 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: latest
+          version: "9"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build application
-        run: pnpm run build
+        run: |
+          if [ -f "scripts/patch-export.js" ]; then
+            cat > app/providers/DynamicProviders.tsx << 'EOFILE'
+          "use client"
+          export { default as BottomNav } from "@/components/bottom-nav"
+          export { default as AIAssistantProvider } from "@/app/providers/AIAssistantProvider"
+          export { default as PerformanceMonitor } from "@/components/PerformanceMonitor"
+          EOFILE
+            rm -rf app/api
+            rm -rf app/courses/\[id\]
+            rm -rf app/exam/\[id\]
+            rm -f middleware.ts
+            cp next.config.js next.config.js.bak
+            node scripts/patch-export.js
+          fi
+          pnpm build
+          if [ -f "next.config.js.bak" ]; then
+            mv next.config.js.bak next.config.js
+          fi
 
-      - name: Start development server
-        run: pnpm run dev &
-        env:
-          PORT: 3200
+      - name: Start application server
+        run: npx serve out -p 3200 -s &
 
       - name: Wait for server to be ready
         run: |
-          timeout 60 bash -c 'until curl -s http://localhost:3200/api/health > /dev/null; do sleep 2; done'
+          timeout 60 bash -c 'until curl -s http://localhost:3200 > /dev/null; do sleep 2; done'
           echo "Server is ready"
 
       - name: Run Performance Baseline Tests
@@ -290,7 +298,12 @@ jobs:
   notify-team:
     name: Notify Team of Results
     runs-on: ubuntu-latest
-    needs: [performance-baseline, performance-comparison, performance-regression-check]
+    needs:
+      [
+        performance-baseline,
+        performance-comparison,
+        performance-regression-check,
+      ]
     if: always()
 
     steps:

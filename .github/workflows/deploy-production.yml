@@ -7,18 +7,18 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'LICENSE'
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
   workflow_dispatch:
     inputs:
       skip_tests:
-        description: 'Skip tests (emergency only)'
+        description: "Skip tests (emergency only)"
         required: false
         default: false
         type: boolean
       force_deploy:
-        description: 'Force deployment (bypass quality gates)'
+        description: "Force deployment (bypass quality gates)"
         required: false
         default: false
         type: boolean
@@ -29,14 +29,14 @@ permissions:
   id-token: write
 
 concurrency:
-  group: 'production-deploy'
+  group: "production-deploy"
   cancel-in-progress: false
 
 env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '9'
-  PRODUCTION_DOMAIN: 'learning.yyc3.top'
-  DEPLOY_TIMEOUT: '600'
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
+  PRODUCTION_DOMAIN: "learning.yyc3.top"
+  DEPLOY_TIMEOUT: "600"
 
 jobs:
   # ===== Pre-deployment Checks =====
@@ -121,11 +121,12 @@ jobs:
 
   # ===== Testing =====
   test-suite:
-    name: Test Suite
+    name: Test Suite (${{ matrix.test_group }})
     runs-on: ubuntu-latest
     needs: [pre-deploy, quality-gate]
     if: needs.pre-deploy.outputs.should_deploy == 'true' && github.event.inputs.skip_tests != 'true'
     strategy:
+      fail-fast: false
       matrix:
         test_group: [unit, integration, e2e]
     steps:
@@ -242,13 +243,11 @@ jobs:
     needs: [pre-deploy, test-suite, build-production]
     if: needs.pre-deploy.outputs.should_deploy == 'true'
     environment:
-      name: production
+      name: github-pages
       url: https://learning.yyc3.top
     steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
-        with:
-          timeout-minutes: 10
 
       - name: Verify deployment
         run: |
@@ -290,7 +289,14 @@ jobs:
   deployment-notification:
     name: Deployment Notification
     runs-on: ubuntu-latest
-    needs: [pre-deploy, quality-gate, test-suite, build-production, deploy-production]
+    needs:
+      [
+        pre-deploy,
+        quality-gate,
+        test-suite,
+        build-production,
+        deploy-production,
+      ]
     if: always()
     steps:
       - name: Generate deployment report

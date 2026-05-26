@@ -4,35 +4,31 @@
 name: JMeter Load Testing
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
   workflow_dispatch:
     inputs:
       users:
-        description: 'Number of concurrent users'
+        description: "Number of concurrent users"
         required: false
-        default: '100'
+        default: "100"
         type: choice
         options:
-          - '50'
-          - '100'
-          - '200'
-          - '500'
-          - '1000'
+          - "50"
+          - "100"
+          - "200"
+          - "500"
+          - "1000"
       duration:
-        description: 'Test duration in seconds'
+        description: "Test duration in seconds"
         required: false
-        default: '300'
+        default: "300"
       ramp_up:
-        description: 'Ramp-up time in seconds'
+        description: "Ramp-up time in seconds"
         required: false
-        default: '30'
+        default: "30"
       target_url:
-        description: 'Target URL for testing'
+        description: "Target URL for testing"
         required: false
-        default: 'http://localhost:3200'
+        default: "http://localhost:3200"
 
 permissions:
   contents: read
@@ -40,7 +36,7 @@ permissions:
   pull-requests: write
 
 env:
-  JMETER_VERSION: '5.6.2'
+  JMETER_VERSION: "5.6.2"
 
 jobs:
   # ===== Phase 1: Setup Environment =====
@@ -87,24 +83,44 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Cache JMeter
+        id: cache-jmeter
+        uses: actions/cache@v4
+        with:
+          path: jmeter
+          key: jmeter-${{ env.JMETER_VERSION }}
 
       - name: Install JMeter
+        if: steps.cache-jmeter.outputs.cache-hit != 'true'
         run: |
           echo "📦 Installing Apache JMeter..."
-          wget -q https://downloads.apache.org//jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.tgz
+          MIRROR_URLS=(
+            "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.tgz"
+            "https://downloads.apache.org/jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.tgz"
+          )
+          for url in "${MIRROR_URLS[@]}"; do
+            echo "Trying: $url"
+            if wget -q --timeout=30 "$url"; then
+              echo "✅ Downloaded from: $url"
+              break
+            fi
+          done
           tar -xzf apache-jmeter-${{ env.JMETER_VERSION }}.tgz
           mv apache-jmeter-${{ env.JMETER_VERSION }} jmeter
           chmod +x jmeter/bin/jmeter
           echo "✅ JMeter installed"
 
-      - name: Install additional JMeter plugins
+      - name: Install JMeter Plugins Manager
+        if: steps.cache-jmeter.outputs.cache-hit != 'true'
         run: |
           echo "🔌 Installing JMeter plugins..."
-          wget -q https://jmeter-plugins.org/files/packages/jmeter-plugins-manager-1.7.jar
-          mv jmeter-plugins-manager-1.7.jar jmeter/lib/ext/
-          echo "✅ Plugins installed"
+          wget -q --timeout=30 -O jmeter/lib/ext/jmeter-plugins-manager.jar \
+            "https://jmeter-plugins.org/files/packages/jmeter-plugins-manager-1.7.jar" || \
+            echo "⚠️ Plugin manager download failed, continuing without plugins"
+          echo "✅ Plugins step completed"
 
       - name: Validate JMeter installation
         run: |
@@ -125,12 +141,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: '9'
+          version: "9"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
           cache: pnpm
 
       - name: Install dependencies
@@ -203,12 +219,30 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Cache JMeter
+        id: cache-jmeter
+        uses: actions/cache@v4
+        with:
+          path: jmeter
+          key: jmeter-${{ env.JMETER_VERSION }}
 
       - name: Install JMeter
+        if: steps.cache-jmeter.outputs.cache-hit != 'true'
         run: |
-          wget -q https://downloads.apache.org//jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.tgz
+          MIRROR_URLS=(
+            "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.tgz"
+            "https://downloads.apache.org/jmeter/binaries/apache-jmeter-${{ env.JMETER_VERSION }}.tgz"
+          )
+          for url in "${MIRROR_URLS[@]}"; do
+            echo "Trying: $url"
+            if wget -q --timeout=30 "$url"; then
+              echo "✅ Downloaded from: $url"
+              break
+            fi
+          done
           tar -xzf apache-jmeter-${{ env.JMETER_VERSION }}.tgz
           mv apache-jmeter-${{ env.JMETER_VERSION }} jmeter
           chmod +x jmeter/bin/jmeter

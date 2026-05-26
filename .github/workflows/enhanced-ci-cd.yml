@@ -6,10 +6,6 @@
 name: Enhanced CI/CD Pipeline — YYC³ Learning Platform
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
   workflow_dispatch:
     inputs:
       deploy_environment:

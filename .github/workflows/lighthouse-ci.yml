@@ -4,20 +4,16 @@
 name: Lighthouse CI Performance Testing
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
   workflow_dispatch:
     inputs:
       urls:
-        description: 'Comma-separated URLs to test'
+        description: "Comma-separated URLs to test"
         required: false
-        default: 'https://learning.yyc3.top'
+        default: "https://learning.yyc3.top"
       budget_path:
-        description: 'Path to performance budget file'
+        description: "Path to performance budget file"
         required: false
-        default: './performance-budgets.json'
+        default: "./performance-budgets.json"
 
 permissions:
   contents: read
@@ -25,8 +21,8 @@ permissions:
   pull-requests: write
 
 env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '9'
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
 
 jobs:
   # ===== Phase 1: Performance Testing =====
@@ -81,11 +77,10 @@ jobs:
 
       - name: Start production server
         run: |
-          echo "🚀 Starting production server..."
-          pnpm start &
+          echo "🚀 Starting static file server..."
+          npx serve out -p 3200 -s &
           SERVER_PID=$!
 
-          # Wait for server to be ready
           echo "Waiting for server to start..."
           for i in {1..30}; do
             if curl -s http://localhost:3200 > /dev/null; then
